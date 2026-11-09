@@ -1,0 +1,8 @@
+:root { --bg: #cfe8d5; --ink: #2b2b2b; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100dvh; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, sans-serif; }
+#game { position: fixed; inset: 0; touch-action: none; }
+#fallback { max-width: 40rem; margin: 0 auto; padding: 2rem 1rem; padding-top: max(2rem, env(safe-area-inset-top)); }
+body.playing #fallback { display: none; }
+.skip { position: absolute; left: -999px; }
+.skip:focus { left: 1rem; top: 1rem; z-index: 10; background: #fff; padding: .5rem; }
