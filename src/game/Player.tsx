@@ -2,6 +2,7 @@ import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import type { Mesh } from 'three'
 import { bindKeys, keys } from './input'
+import { playerPos } from './state'
 
 export const FLOOR_RADIUS = 8
 
@@ -34,6 +35,8 @@ export function Player() {
       p.x *= s
       p.z *= s
     }
+    playerPos.x = p.x
+    playerPos.z = p.z
   })
 
   return (
