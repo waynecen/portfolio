@@ -19,6 +19,18 @@ function reset() {
   keys.forward = keys.back = keys.left = keys.right = false
 }
 
+// Calls `cb` when E or Enter is pressed in the game view (not on a focused control).
+export function bindInteract(cb: () => void): () => void {
+  const onDown = (e: KeyboardEvent) => {
+    if (e.repeat || (e.code !== 'KeyE' && e.code !== 'Enter')) return
+    if (!document.body.classList.contains('playing') || isTyping(e.target)) return
+    if (e.target instanceof HTMLElement && e.target.closest('a, button')) return
+    cb()
+  }
+  window.addEventListener('keydown', onDown)
+  return () => window.removeEventListener('keydown', onDown)
+}
+
 export function bindKeys(): () => void {
   const set = (down: boolean) => (e: KeyboardEvent) => {
     const dir = codes[e.code]

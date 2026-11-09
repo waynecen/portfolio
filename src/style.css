@@ -14,3 +14,12 @@ body:not(.playing) #game { visibility: hidden; }
 }
 .view-toggle:hover { text-decoration: underline; }
 .view-toggle:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.project-card-region {
+  position: absolute; left: 16px; right: 16px; bottom: max(16px, env(safe-area-inset-bottom));
+  max-width: 28rem; margin: 0 auto; pointer-events: none;
+}
+.project-card { pointer-events: auto; background: #fff; border: 2px solid var(--ink); border-radius: 0; padding: 20px; }
+.project-card h2 { margin: 0 0 8px; font-weight: 300; font-size: 25px; line-height: 1.27; letter-spacing: -.02em; }
+.project-card p { margin: 0 0 12px; }
+.project-card .project-card-action { margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: .2em; }
+.project-card a { color: var(--ink); }
