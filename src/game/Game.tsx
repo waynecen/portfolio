@@ -1,5 +1,6 @@
 import { Canvas } from '@react-three/fiber'
 import { useEffect, useState } from 'react'
+import { FLOOR_RADIUS, Player } from './Player'
 import { detectTier } from './quality'
 
 const tier = detectTier()
@@ -24,13 +25,10 @@ export function Game() {
       <hemisphereLight args={['#ffffff', '#88aa77', 1.2]} />
       <directionalLight position={[5, 10, 4]} intensity={1.5} />
       <mesh rotation-x={-Math.PI / 2}>
-        <circleGeometry args={[8, 32]} />
+        <circleGeometry args={[FLOOR_RADIUS, 32]} />
         <meshLambertMaterial color="#8cc084" />
       </mesh>
-      <mesh position={[0, 0.5, 0]}>
-        <capsuleGeometry args={[0.35, 0.4, 4, 8]} />
-        <meshLambertMaterial color="#f2c14e" />
-      </mesh>
+      <Player />
     </Canvas>
   )
 }
