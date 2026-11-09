@@ -7,15 +7,23 @@ const tier = detectTier()
 
 export function Game() {
   const [visible, setVisible] = useState(!document.hidden)
+  const isGameView = () => document.body.dataset.view === 'game'
+  const [active, setActive] = useState(isGameView)
   useEffect(() => {
-    const on = () => setVisible(!document.hidden)
-    document.addEventListener('visibilitychange', on)
-    return () => document.removeEventListener('visibilitychange', on)
+    setActive(isGameView()) // catch a switch that happened before this effect attached
+    const onVisibility = () => setVisible(!document.hidden)
+    const onView = (e: Event) => setActive((e as CustomEvent<string>).detail === 'game')
+    document.addEventListener('visibilitychange', onVisibility)
+    window.addEventListener('viewchange', onView)
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility)
+      window.removeEventListener('viewchange', onView)
+    }
   }, [])
 
   return (
     <Canvas
-      frameloop={visible ? 'always' : 'never'}
+      frameloop={visible && active ? 'always' : 'never'}
       dpr={tier === 'low' ? [1, 1.25] : [1, 1.5]}
       gl={{ antialias: tier === 'high', powerPreference: 'high-performance' }}
       camera={{ position: [0, 10, 10], fov: 35 }}

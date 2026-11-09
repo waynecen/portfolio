@@ -22,7 +22,7 @@ function reset() {
 export function bindKeys(): () => void {
   const set = (down: boolean) => (e: KeyboardEvent) => {
     const dir = codes[e.code]
-    if (!dir || isTyping(e.target)) return
+    if (!dir || isTyping(e.target) || !document.body.classList.contains('playing')) return
     if (e.code.startsWith('Arrow')) e.preventDefault()
     keys[dir] = down
   }
@@ -31,10 +31,12 @@ export function bindKeys(): () => void {
   window.addEventListener('keydown', onDown)
   window.addEventListener('keyup', onUp)
   window.addEventListener('blur', reset)
+  window.addEventListener('viewchange', reset)
   return () => {
     window.removeEventListener('keydown', onDown)
     window.removeEventListener('keyup', onUp)
     window.removeEventListener('blur', reset)
+    window.removeEventListener('viewchange', reset)
     reset()
   }
 }

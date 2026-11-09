@@ -4,5 +4,13 @@ html, body { margin: 0; height: 100dvh; background: var(--bg); color: var(--ink)
 #game { position: fixed; inset: 0; touch-action: none; }
 #fallback { max-width: 40rem; margin: 0 auto; padding: 2rem 1rem; padding-top: max(2rem, env(safe-area-inset-top)); }
 body.playing #fallback { display: none; }
-.skip { position: absolute; left: -999px; }
-.skip:focus { left: 1rem; top: 1rem; z-index: 10; background: #fff; padding: .5rem; }
+/* visibility (not display) keeps the canvas sized, so returning to the game doesn't resize it */
+body:not(.playing) #game { visibility: hidden; }
+.view-toggle {
+  position: fixed; z-index: 10;
+  top: max(12px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right));
+  padding: 8px 20px; border: 0; border-radius: 0; background: var(--bg); color: var(--ink);
+  font: 300 12px/1.34 system-ui, sans-serif; text-transform: uppercase; letter-spacing: .2em; cursor: pointer;
+}
+.view-toggle:hover { text-decoration: underline; }
+.view-toggle:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
