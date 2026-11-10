@@ -20,6 +20,8 @@ const TURN = 14 // how quickly the pill turns to face its direction
 const STRIDE = 0.14 // how far each foot swings forward/back
 const LIFT = 0.12 // how high a foot lifts mid-swing
 const BREATHE = 0.015 // idle breathing scale
+const SPRINT_LEAN = 0.6 // extra forward lean at full sprint (+60%, about 16° total)
+const SPRINT_STRIDE = 0.3 // longer foot swing at full sprint (+30%)
 const TUCK = 0.22 // how much the body squashes into a ball mid-roll
 const ROLL_DROP = 0.28 // how far the body's centre drops mid-roll so it tumbles along the floor
 
@@ -58,9 +60,12 @@ export function PillCharacter() {
     const env = p >= 0 ? Math.sin(Math.PI * p) : 0
 
     // Walk weight fades the whole cycle in and out; the phase pauses when standing still.
-    s.w = MathUtils.damp(s.w, v.speed, 8, dt)
+    // Cadence follows speed, so sprinting (speed above 1) steps faster.
+    s.w = MathUtils.damp(s.w, Math.min(1, v.speed), 8, dt)
     s.phase += dt * STEP_RATE * v.speed
     const w = s.w * (1 - env)
+    // 0 when walking, 1 at full sprint (speed 1.5): drives the extra lean and longer stride.
+    const sprint = Math.min(1, Math.max(0, (v.speed - 1) * 2)) * (1 - env)
 
     // Turn toward the direction of travel, the short way round.
     if (v.speed > 0.05) {
@@ -87,14 +92,15 @@ export function PillCharacter() {
     body.current.scale.x = xz
     body.current.scale.z = xz
 
-    lean.current.rotation.x = LEAN * w * MOTION
+    lean.current.rotation.x = LEAN * w * MOTION * (1 + SPRINT_LEAN * sprint)
 
     // Feet are half a cycle apart: one plants and slides back while the other swings forward.
     const l = footL.current.position
     const r = footR.current.position
-    l.z = FOOT_Z + Math.sin(s.phase) * STRIDE * w
+    const stride = STRIDE * w * (1 + SPRINT_STRIDE * sprint)
+    l.z = FOOT_Z + Math.sin(s.phase) * stride
     l.y = FOOT_Y + Math.max(0, Math.cos(s.phase)) * LIFT * w
-    r.z = FOOT_Z - Math.sin(s.phase) * STRIDE * w
+    r.z = FOOT_Z - Math.sin(s.phase) * stride
     r.y = FOOT_Y + Math.max(0, -Math.cos(s.phase)) * LIFT * w
 
     // Tuck the feet away quickly as the roll starts, and pop them back out at the end.

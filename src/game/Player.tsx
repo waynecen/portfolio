@@ -7,7 +7,8 @@ import { playerFacing, playerPos, playerRoll, playerVel } from './state'
 
 export const FLOOR_RADIUS = 8
 
-const SPEED = 4 // units per second
+const SPEED = 4 // walking speed, units per second
+const SPRINT = 1.5 // holding Shift multiplies top speed by this (moderate: 4 → 6 units/s)
 const ACCEL = 12 // damp rate toward the input velocity while a direction is held
 const DECEL = 16 // a little snappier when letting go
 const LIMIT = FLOOR_RADIUS - PILL_RADIUS
@@ -64,9 +65,11 @@ export function Player() {
     }
     if (roll.p < 0) {
       // Ease velocity toward the input instead of snapping, so starts and stops feel weighty.
+      // Sprint eases in and out through the same damp, so pressing Shift ramps up rather than jumps.
       const rate = len2 > 0 ? ACCEL : DECEL
-      v.x = MathUtils.damp(v.x, x * SPEED, rate, dt)
-      v.z = MathUtils.damp(v.z, z * SPEED, rate, dt)
+      const top = keys.sprint ? SPEED * SPRINT : SPEED
+      v.x = MathUtils.damp(v.x, x * top, rate, dt)
+      v.z = MathUtils.damp(v.z, z * top, rate, dt)
       if (len2 === 0 && v.x * v.x + v.z * v.z < 1e-4) v.x = v.z = 0
     }
 
@@ -89,7 +92,8 @@ export function Player() {
       }
     }
 
-    v.speed = Math.min(1, Math.sqrt(v.x * v.x + v.z * v.z) / SPEED)
+    // Relative to walking speed: 1 = walking, 1.5 = sprinting. Capped so the roll burst doesn't spin the legs.
+    v.speed = Math.min(SPRINT, Math.sqrt(v.x * v.x + v.z * v.z) / SPEED)
     playerPos.x = p.x
     playerPos.z = p.z
   })

@@ -1,5 +1,5 @@
 // Keyboard state lives outside React so per-frame reads don't trigger renders.
-export const keys = { forward: false, back: false, left: false, right: false }
+export const keys = { forward: false, back: false, left: false, right: false, sprint: false }
 
 // Analog input from the on-screen joystick, each axis in -1..1 (z is toward the camera).
 export const stick = { x: 0, z: 0 }
@@ -14,6 +14,7 @@ const codes: Record<string, Dir> = {
   KeyS: 'back', ArrowDown: 'back',
   KeyA: 'left', ArrowLeft: 'left',
   KeyD: 'right', ArrowRight: 'right',
+  ShiftLeft: 'sprint', ShiftRight: 'sprint',
 }
 
 function isTyping(t: EventTarget | null) {
@@ -22,7 +23,7 @@ function isTyping(t: EventTarget | null) {
 }
 
 function reset() {
-  keys.forward = keys.back = keys.left = keys.right = false
+  keys.forward = keys.back = keys.left = keys.right = keys.sprint = false
   actions.roll = false
 }
 
