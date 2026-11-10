@@ -23,3 +23,14 @@ body:not(.playing) #game { visibility: hidden; }
 .project-card p { margin: 0 0 12px; }
 .project-card .project-card-action { margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: .2em; }
 .project-card a { color: var(--ink); }
+.joystick {
+  position: absolute; width: 112px; height: 112px; display: grid; place-items: center;
+  left: max(24px, env(safe-area-inset-left)); bottom: max(24px, env(safe-area-inset-bottom));
+  border: 2px solid var(--ink); border-radius: 50%; background: rgb(255 255 255 / .35); touch-action: none;
+}
+.joystick-knob { width: 48px; height: 48px; border-radius: 50%; background: #fff; border: 2px solid var(--ink); pointer-events: none; }
+@media (pointer: coarse) {
+  /* Lift the card above the joystick; there's no E key to hint at on touch. */
+  .project-card-region { bottom: calc(max(24px, env(safe-area-inset-bottom)) + 128px); }
+  .project-card-action span { display: none; }
+}

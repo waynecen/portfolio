@@ -1,6 +1,7 @@
 import { Canvas } from '@react-three/fiber'
 import { useEffect, useState } from 'react'
 import { CameraRig, DISTANCE, HEIGHT } from './CameraRig'
+import { Joystick } from './Joystick'
 import { FLOOR_RADIUS, Player } from './Player'
 import { ProjectCard } from './ProjectCard'
 import { detectTier } from './quality'
@@ -44,6 +45,7 @@ export function Game() {
         <CameraRig />
       </Canvas>
       <ProjectCard />
+      <Joystick />
     </>
   )
 }
