@@ -1,6 +1,7 @@
 import { Canvas } from '@react-three/fiber'
 import { useEffect, useState } from 'react'
 import { CameraRig, DISTANCE, HEIGHT } from './CameraRig'
+import { Hearts } from './Hearts'
 import { Joystick } from './Joystick'
 import { FLOOR_RADIUS, Player } from './Player'
 import { ProjectCard } from './ProjectCard'
@@ -44,6 +45,7 @@ export function Game() {
         <Player />
         <CameraRig />
       </Canvas>
+      <Hearts />
       <ProjectCard />
       <Joystick />
     </>
