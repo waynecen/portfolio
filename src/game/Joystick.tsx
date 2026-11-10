@@ -1,8 +1,6 @@
 import { useRef, type PointerEvent } from 'react'
-import { stick } from './input'
-
-// Only touch-first devices get the on-screen stick; desktops use the keyboard.
-const coarse = matchMedia('(pointer: coarse)').matches
+import { actions, stick } from './input'
+import { isTouch } from './quality'
 
 const TRAVEL = 40 // px the knob can move from center
 const DEAD_ZONE = 0.15
@@ -56,6 +54,35 @@ function Stick() {
   )
 }
 
+// Controller-style face button. Fires on press (not release) so the roll feels instant.
+function RollButton() {
+  const roll = () => {
+    actions.roll = true
+  }
+  return (
+    <button
+      type="button"
+      className="action-button"
+      aria-label="Roll"
+      onPointerDown={(e) => {
+        e.preventDefault() // keep focus and the 300ms tap delay out of the way
+        roll()
+      }}
+      onClick={(e) => {
+        if (e.detail === 0) roll() // keyboard / assistive-tech activation, which has no pointerdown
+      }}
+    >
+      A
+    </button>
+  )
+}
+
+// Only touch-first devices get on-screen controls; desktops use the keyboard.
 export function Joystick() {
-  return coarse ? <Stick /> : null
+  return isTouch ? (
+    <>
+      <Stick />
+      <RollButton />
+    </>
+  ) : null
 }
