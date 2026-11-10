@@ -57,4 +57,4 @@ Vercel builds and deploys `main`. Cache headers are set in `vercel.json`.
 
 ## Design
 
-The visual style reference for the HTML page is in [DESIGN.md](DESIGN.md). Contributor conventions (commits, workflow) are in [CLAUDE.md](CLAUDE.md).
+The visual style reference for the HTML page is in [DESIGN.md](DESIGN.md). Every gameplay and rendering constant (speeds, roll timing, camera, animation feel) is listed in [docs/TUNING.md](docs/TUNING.md). Contributor conventions (commits, workflow) are in [CLAUDE.md](CLAUDE.md).
