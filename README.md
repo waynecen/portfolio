@@ -26,6 +26,7 @@ npm run preview   # serve the production build
 | S / ↓ | Move toward the camera |
 | A / ← | Move left |
 | D / → | Move right |
+| Space / **A** button (touch) | Roll forward in the facing direction |
 | **View as page** / **Play the game** (top right) | Switch between the 3D game and the HTML page |
 
 The game starts automatically on devices with WebGL 2. Visitors who prefer reduced motion get the HTML page first and can opt into the game with the toggle. Without WebGL 2, only the HTML page is shown.
