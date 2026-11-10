@@ -1,9 +1,9 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { MathUtils, type Group } from 'three'
-import { bindKeys, keys, stick } from './input'
+import { actions, bindKeys, keys, stick } from './input'
 import { PillCharacter, PILL_RADIUS } from './PillCharacter'
-import { playerPos, playerVel } from './state'
+import { playerFacing, playerPos, playerRoll, playerVel } from './state'
 
 export const FLOOR_RADIUS = 8
 
@@ -12,8 +12,13 @@ const ACCEL = 12 // damp rate toward the input velocity while a direction is hel
 const DECEL = 16 // a little snappier when letting go
 const LIMIT = FLOOR_RADIUS - PILL_RADIUS
 
+const ROLL_TIME = 0.45 // seconds for one tumble
+const ROLL_SPEED = 9 // burst speed at the start of a roll, eases down toward walk speed
+const ROLL_COOLDOWN = 0.2 // seconds after a roll before the next can start
+
 export function Player() {
   const ref = useRef<Group>(null)
+  const cooldown = useRef(0)
 
   useEffect(() => bindKeys(), [])
 
@@ -21,6 +26,19 @@ export function Player() {
     const root = ref.current
     if (!root) return
     const dt = Math.min(delta, 0.1)
+    const v = playerVel
+    const roll = playerRoll
+
+    // Start a roll in the direction the character is facing (works from standing still too).
+    cooldown.current -= dt
+    if (actions.roll) {
+      actions.roll = false
+      if (roll.p < 0 && cooldown.current <= 0) {
+        roll.p = 0
+        roll.dirX = Math.sin(playerFacing.heading)
+        roll.dirZ = Math.cos(playerFacing.heading)
+      }
+    }
 
     let x = +keys.right - +keys.left + stick.x
     let z = +keys.back - +keys.forward + stick.z
@@ -32,12 +50,25 @@ export function Player() {
       z *= s
     }
 
-    // Ease velocity toward the input instead of snapping, so starts and stops feel weighty.
-    const v = playerVel
-    const rate = len2 > 0 ? ACCEL : DECEL
-    v.x = MathUtils.damp(v.x, x * SPEED, rate, dt)
-    v.z = MathUtils.damp(v.z, z * SPEED, rate, dt)
-    if (len2 === 0 && v.x * v.x + v.z * v.z < 1e-4) v.x = v.z = 0
+    if (roll.p >= 0) {
+      // Committed burst: input is ignored until the tumble finishes.
+      roll.p += dt / ROLL_TIME
+      if (roll.p >= 1) {
+        roll.p = -1
+        cooldown.current = ROLL_COOLDOWN
+      } else {
+        const burst = ROLL_SPEED * (1 - 0.6 * roll.p)
+        v.x = roll.dirX * burst
+        v.z = roll.dirZ * burst
+      }
+    }
+    if (roll.p < 0) {
+      // Ease velocity toward the input instead of snapping, so starts and stops feel weighty.
+      const rate = len2 > 0 ? ACCEL : DECEL
+      v.x = MathUtils.damp(v.x, x * SPEED, rate, dt)
+      v.z = MathUtils.damp(v.z, z * SPEED, rate, dt)
+      if (len2 === 0 && v.x * v.x + v.z * v.z < 1e-4) v.x = v.z = 0
+    }
 
     const p = root.position
     p.x += v.x * dt

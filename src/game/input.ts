@@ -4,6 +4,9 @@ export const keys = { forward: false, back: false, left: false, right: false }
 // Analog input from the on-screen joystick, each axis in -1..1 (z is toward the camera).
 export const stick = { x: 0, z: 0 }
 
+// One-shot action requests, set by input and consumed (cleared) by the player each frame.
+export const actions = { roll: false }
+
 type Dir = keyof typeof keys
 
 const codes: Record<string, Dir> = {
@@ -20,6 +23,7 @@ function isTyping(t: EventTarget | null) {
 
 function reset() {
   keys.forward = keys.back = keys.left = keys.right = false
+  actions.roll = false
 }
 
 // Calls `cb` when E or Enter is pressed in the game view (not on a focused control).
@@ -36,6 +40,14 @@ export function bindInteract(cb: () => void): () => void {
 
 export function bindKeys(): () => void {
   const set = (down: boolean) => (e: KeyboardEvent) => {
+    if (e.code === 'Space') {
+      // Leave Space alone on focused controls so it still presses buttons and links.
+      if (isTyping(e.target) || !document.body.classList.contains('playing')) return
+      if (e.target instanceof HTMLElement && e.target.closest('a, button')) return
+      e.preventDefault() // don't scroll the page
+      if (down && !e.repeat) actions.roll = true
+      return
+    }
     const dir = codes[e.code]
     if (!dir || isTyping(e.target) || !document.body.classList.contains('playing')) return
     if (e.code.startsWith('Arrow')) e.preventDefault()
