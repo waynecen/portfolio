@@ -2,8 +2,8 @@ import { useFrame } from '@react-three/fiber'
 import { MathUtils } from 'three'
 import { playerPos } from './state'
 
-const HEIGHT = 10
-const DISTANCE = 10
+export const HEIGHT = 12
+export const DISTANCE = 12
 const LAMBDA = 4 // higher = snappier follow
 
 export function CameraRig() {

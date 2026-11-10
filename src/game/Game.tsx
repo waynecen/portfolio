@@ -1,6 +1,6 @@
 import { Canvas } from '@react-three/fiber'
 import { useEffect, useState } from 'react'
-import { CameraRig } from './CameraRig'
+import { CameraRig, DISTANCE, HEIGHT } from './CameraRig'
 import { FLOOR_RADIUS, Player } from './Player'
 import { ProjectCard } from './ProjectCard'
 import { detectTier } from './quality'
@@ -30,7 +30,7 @@ export function Game() {
         frameloop={visible && active ? 'always' : 'never'}
         dpr={tier === 'low' ? [1, 1.25] : [1, 1.5]}
         gl={{ antialias: tier === 'high', powerPreference: 'high-performance' }}
-        camera={{ position: [0, 10, 10], fov: 35 }}
+        camera={{ position: [0, HEIGHT, DISTANCE], fov: 35 }}
       >
         <color attach="background" args={['#cfe8d5']} />
         <hemisphereLight args={['#ffffff', '#88aa77', 1.2]} />
