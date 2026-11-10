@@ -1,36 +1,50 @@
+import { useId } from 'react'
 import { useGame } from './store'
 
-// 9×8 pixel heart. o = outline, r = fill, d = shade, w = highlight.
-const SPRITE = [
-  '.ooo.ooo.',
-  'owrrorrro',
-  'orrrrrrro',
-  'orrrrrrdo',
-  '.orrrrdo.',
-  '..orrdo..',
-  '...oro...',
-  '....o....',
-]
-
-const COLORS = { o: '#1d1d1d', r: '#e0302f', d: '#a51e1e', w: '#ffffff' } as const
-const EMPTY = '#4a3b3b'
+// Vector heart drawn in a 32×30 box. Medium fidelity: gradient body, outline,
+// gloss highlight, and a dark "socket" that shows through when the heart is empty.
+const HEART =
+  'M16 27.5C16 27.5 3 19.5 3 10.6 3 6.2 6.4 3 10.4 3c2.5 0 4.5 1.4 5.6 3.5C17.1 4.4 19.1 3 21.6 3 25.6 3 29 6.2 29 10.6 29 19.5 16 27.5 16 27.5Z'
 
 type Fill = 'full' | 'half' | 'empty'
 
 function Heart({ fill }: { fill: Fill }) {
-  const cells = []
-  for (let y = 0; y < SPRITE.length; y++) {
-    for (let x = 0; x < SPRITE[y].length; x++) {
-      const c = SPRITE[y][x] as keyof typeof COLORS | '.'
-      if (c === '.') continue
-      const filled = fill === 'full' || (fill === 'half' && x <= 4)
-      const color = c === 'o' || filled ? COLORS[c] : EMPTY
-      cells.push(<rect key={`${x},${y}`} x={x} y={y} width={1} height={1} fill={color} />)
-    }
-  }
+  // Gradient/clip ids must be unique per heart; useId's colons are awkward inside url().
+  const id = useId().replace(/:/g, '')
+  const red = `${id}-red`
+  const socket = `${id}-socket`
+  const clip = `${id}-clip`
+  const width = fill === 'full' ? 32 : fill === 'half' ? 16 : 0
+
   return (
-    <svg className="heart" viewBox="0 0 9 8" shapeRendering="crispEdges" aria-hidden="true">
-      {cells}
+    <svg className="heart" viewBox="0 0 32 30" aria-hidden="true">
+      <defs>
+        <linearGradient id={red} x1="0" y1="0" x2="0.6" y2="1">
+          <stop offset="0" stopColor="#ff6b5e" />
+          <stop offset="0.55" stopColor="#e2262b" />
+          <stop offset="1" stopColor="#a3121a" />
+        </linearGradient>
+        <linearGradient id={socket} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#4a3436" />
+          <stop offset="1" stopColor="#2b1c1e" />
+        </linearGradient>
+        <clipPath id={clip}>
+          <rect x="0" y="0" width={width} height="30" />
+        </clipPath>
+      </defs>
+
+      {/* Empty socket underneath everything */}
+      <path d={HEART} fill={`url(#${socket})`} />
+
+      {/* Red body + gloss, clipped to how much health this heart holds */}
+      <g clipPath={`url(#${clip})`}>
+        <path d={HEART} fill={`url(#${red})`} />
+        <ellipse cx="9.6" cy="9.4" rx="3.4" ry="2.2" transform="rotate(-35 9.6 9.4)" fill="#fff" opacity="0.85" />
+        <circle cx="13.4" cy="6.6" r="1" fill="#fff" opacity="0.7" />
+      </g>
+
+      {/* Outline on top so the half-heart edge stays crisp */}
+      <path d={HEART} fill="none" stroke="#2a1416" strokeWidth="2.2" strokeLinejoin="round" />
     </svg>
   )
 }
