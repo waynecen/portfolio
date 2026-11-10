@@ -12,7 +12,8 @@ Every constant that changes how the game looks, moves or performs, grouped by sy
 
 ```ts
 export const FLOOR_RADIUS = 8 // radius of the round floor; the floor mesh and the walkable edge both use it
-const SPEED = 4               // top walking speed, units/s (a full joystick push or any WASD key)
+const SPEED = 4               // walking speed, units/s (a full joystick push or any WASD key)
+const SPRINT = 1.5            // holding Shift (or the B button on touch) multiplies top speed by this (4 → 6 units/s); also caps the animation's speed value
 const ACCEL = 12              // damp rate toward the input velocity while a direction is held; lower = slidier, heavier starts
 const DECEL = 16              // damp rate back to a stop after letting go; higher than ACCEL so stops feel crisp
 const LIMIT = FLOOR_RADIUS - PILL_RADIUS // derived, don't edit: how far the centre can go before the body would hang off the edge
@@ -57,7 +58,11 @@ const TURN = 14               // how quickly it turns to face the direction of t
 const STRIDE = 0.14           // how far each foot swings forward and back from its rest spot, units
 const LIFT = 0.12             // how high a foot lifts at the middle of its swing, units
 const BREATHE = 0.015         // idle breathing: gentle ±1.5% scale pulse while standing still
+const SPRINT_LEAN = 0.6       // extra forward lean at full sprint (+60%, about 16° in total)
+const SPRINT_STRIDE = 0.3     // longer foot swing at full sprint (+30%)
 ```
+
+Sprinting also speeds up the steps, because the walk cycle advances in proportion to speed (1.5× faster at full sprint). `SPRINT_LEAN` and `SPRINT_STRIDE` fade in between walking and full sprint, and they're switched off during a roll.
 
 **Foot sliding:** a foot stays still on the floor only when its backward slide matches walking speed. That's roughly `SPEED ÷ (STEP_RATE / π) ≈ 2 × STRIDE`. With the defaults the feet slide (cartoony, intentional). To reduce it, raise `STRIDE` or `STEP_RATE`. Raising `STEP_RATE` too high makes the walk look frantic.
 
@@ -131,7 +136,7 @@ const TRAVEL = 40      // pixels the knob can move from centre; dragging this fa
 const DEAD_ZONE = 0.15 // the first 15% of travel does nothing, so a resting thumb doesn't creep
 ```
 
-Joystick and A-button sizes and positions are in [style.css](../src/style.css) (`.joystick`, `.joystick-knob`, `.action-button`). If you resize the joystick, also update the `.action-button` `bottom` offset (it's set to line up with the joystick's middle) and the touch-device `.project-card-region` `bottom` offset (it keeps the card above the controls).
+Joystick and A/B button sizes and positions are in [style.css](../src/style.css) (`.joystick`, `.joystick-knob`, `.action-button` for A, `.action-button-b` for B). B sits 72px left of A (button width 64 + an 8px gap) and 24px lower. If you resize the buttons, update that `72px` too. If you resize the joystick, also update the `.action-button` `bottom` offset (it's set to line up with the joystick's middle) and the touch-device `.project-card-region` `bottom` offset (it keeps the card above the controls).
 
 ---
 
@@ -143,6 +148,7 @@ const codes: Record<string, Dir> = {
   KeyS: 'back', ArrowDown: 'back',
   KeyA: 'left', ArrowLeft: 'left',
   KeyD: 'right', ArrowRight: 'right',
+  ShiftLeft: 'sprint', ShiftRight: 'sprint', // hold to sprint
 }
 // Space = roll (in bindKeys); E / Enter = open the nearby project (in bindInteract)
 ```

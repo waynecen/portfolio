@@ -26,6 +26,7 @@ npm run preview   # serve the production build
 | S / ↓ | Move toward the camera |
 | A / ← | Move left |
 | D / → | Move right |
+| Shift / **B** button (touch), hold | Sprint |
 | Space / **A** button (touch) | Roll forward in the facing direction |
 | **View as page** / **Play the game** (top right) | Switch between the 3D game and the HTML page |
 
