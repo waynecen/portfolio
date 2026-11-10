@@ -43,7 +43,11 @@ body:not(.playing) #game { visibility: hidden; }
   font: 600 26px/1 system-ui, sans-serif; touch-action: none; user-select: none; -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent; cursor: pointer;
 }
-.action-button:active { transform: scale(.92); background: #444; box-shadow: inset 0 2px 0 rgb(0 0 0 / .35); }
+/* B sits down and to the left of A, like a controller's face buttons. */
+.action-button-b {
+  right: calc(max(32px, env(safe-area-inset-right)) + 72px); bottom: max(24px, env(safe-area-inset-bottom));
+}
+.action-button:active, .action-button[aria-pressed="true"] { transform: scale(.92); background: #444; box-shadow: inset 0 2px 0 rgb(0 0 0 / .35); }
 .action-button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 @media (pointer: coarse) {
   /* Lift the card above the joystick; there's no E key to hint at on touch. */

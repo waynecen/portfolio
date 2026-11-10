@@ -1,5 +1,5 @@
 import { useRef, type PointerEvent } from 'react'
-import { actions, stick } from './input'
+import { actions, buttons, stick } from './input'
 import { isTouch } from './quality'
 
 const TRAVEL = 40 // px the knob can move from center
@@ -77,11 +77,49 @@ function RollButton() {
   )
 }
 
+// Hold to sprint. Pointer capture keeps the release tracked even if the thumb slides off the button.
+function SprintButton() {
+  const pointer = useRef<number | null>(null)
+  const set = (on: boolean, el: HTMLButtonElement) => {
+    buttons.sprint = on
+    el.setAttribute('aria-pressed', String(on))
+  }
+  const end = (e: PointerEvent<HTMLButtonElement>) => {
+    if (e.pointerId !== pointer.current) return
+    pointer.current = null
+    set(false, e.currentTarget)
+  }
+  return (
+    <button
+      type="button"
+      className="action-button action-button-b"
+      aria-label="Sprint"
+      aria-pressed="false"
+      onPointerDown={(e) => {
+        e.preventDefault()
+        pointer.current = e.pointerId
+        e.currentTarget.setPointerCapture(e.pointerId)
+        set(true, e.currentTarget)
+      }}
+      onPointerUp={end}
+      onPointerCancel={end}
+      onLostPointerCapture={end}
+      onClick={(e) => {
+        // Keyboard / assistive tech can't hold, so a click toggles sprint instead.
+        if (e.detail === 0) set(!buttons.sprint, e.currentTarget)
+      }}
+    >
+      B
+    </button>
+  )
+}
+
 // Only touch-first devices get on-screen controls; desktops use the keyboard.
 export function Joystick() {
   return isTouch ? (
     <>
       <Stick />
+      <SprintButton />
       <RollButton />
     </>
   ) : null

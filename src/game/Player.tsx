@@ -1,14 +1,14 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { MathUtils, type Group } from 'three'
-import { actions, bindKeys, keys, stick } from './input'
+import { actions, bindKeys, buttons, keys, stick } from './input'
 import { PillCharacter, PILL_RADIUS } from './PillCharacter'
 import { playerFacing, playerPos, playerRoll, playerVel } from './state'
 
 export const FLOOR_RADIUS = 8
 
 const SPEED = 4 // walking speed, units per second
-const SPRINT = 1.5 // holding Shift multiplies top speed by this (moderate: 4 → 6 units/s)
+const SPRINT = 1.5 // holding Shift (or B on touch) multiplies top speed by this (moderate: 4 → 6 units/s)
 const ACCEL = 12 // damp rate toward the input velocity while a direction is held
 const DECEL = 16 // a little snappier when letting go
 const LIMIT = FLOOR_RADIUS - PILL_RADIUS
@@ -67,7 +67,7 @@ export function Player() {
       // Ease velocity toward the input instead of snapping, so starts and stops feel weighty.
       // Sprint eases in and out through the same damp, so pressing Shift ramps up rather than jumps.
       const rate = len2 > 0 ? ACCEL : DECEL
-      const top = keys.sprint ? SPEED * SPRINT : SPEED
+      const top = keys.sprint || buttons.sprint ? SPEED * SPRINT : SPEED
       v.x = MathUtils.damp(v.x, x * top, rate, dt)
       v.z = MathUtils.damp(v.z, z * top, rate, dt)
       if (len2 === 0 && v.x * v.x + v.z * v.z < 1e-4) v.x = v.z = 0
