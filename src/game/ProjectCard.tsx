@@ -3,7 +3,7 @@ import { useGame } from './store'
 
 // Shows the focused station's project. Opening it is the station's interaction (E / Enter / A).
 export function ProjectCard() {
-  const project = useGame((s) => (s.dialogue ? undefined : s.focus?.card))
+  const project = useGame((s) => (s.dialogue || s.panel ? undefined : s.focus?.card))
   const url = project?.url
 
   // The live region stays mounted so screen readers announce content changes.

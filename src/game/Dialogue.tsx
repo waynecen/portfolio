@@ -93,7 +93,7 @@ export function Dialogue() {
 /** "E Read" chip for focused interactables that don't show a project card. */
 export function Prompt() {
   const focus = useGame((s) => s.focus)
-  const talking = useGame((s) => s.dialogue !== null)
+  const talking = useGame((s) => s.dialogue !== null || s.panel !== null)
   const show = focus && !focus.card && !talking
   return (
     <div className="prompt-region" aria-live="polite">

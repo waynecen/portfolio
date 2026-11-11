@@ -5,7 +5,7 @@ import { resolve } from './collision'
 import { actions, bindKeys, buttons, keys, stick } from './input'
 import { PillCharacter, PILL_RADIUS } from './PillCharacter'
 import { playerFacing, playerPos, playerRoll, playerVel } from './state'
-import { useGame } from './store'
+import { busy } from './interact'
 
 /** Walkable area: a square from -WORLD_HALF to +WORLD_HALF on x and z. The ground plane extends past it. */
 export const WORLD_HALF = 40
@@ -33,8 +33,8 @@ export function Player() {
     const v = playerVel
     const roll = playerRoll
 
-    // Stand still while a dialogue box is open.
-    const talking = useGame.getState().dialogue !== null
+    // Stand still while a dialogue box or panel is open.
+    const talking = busy()
 
     // Start a roll in the direction the character is facing (works from standing still too).
     cooldown.current -= dt

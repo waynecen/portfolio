@@ -1,4 +1,4 @@
-import { advance, closeDialogue, interact } from './interact'
+import { advance, closeDialogue, closePanel, interact } from './interact'
 
 // Keyboard state lives outside React so per-frame reads don't trigger renders.
 export const keys = { forward: false, back: false, left: false, right: false, sprint: false }
@@ -46,7 +46,10 @@ export function bindKeys(): () => void {
       if (e.code === 'Space') {
         // Space advances dialogue when it's open, otherwise rolls.
         if (!advance()) actions.roll = true
-      } else if (e.code === 'Escape') closeDialogue()
+      } else if (e.code === 'Escape') {
+        closeDialogue()
+        closePanel()
+      }
       else interact()
       return
     }

@@ -5,9 +5,11 @@ import { Dialogue, Prompt } from './Dialogue'
 import { Hearts } from './Hearts'
 import { Interactions } from './Interactions'
 import { Joystick } from './Joystick'
+import { MusicPanel, NowPlaying } from './MusicPanel'
 import { Player, WORLD_HALF } from './Player'
 import { ProjectCard } from './ProjectCard'
 import { detectTier, isTouch } from './quality'
+import { RecordPlayer } from './RecordPlayer'
 import { Sign } from './Sign'
 import { Stations } from './Station'
 
@@ -54,6 +56,7 @@ export function Game() {
         </mesh>
         <Stations />
         <Sign x={-1.8} z={-1.4} lines={WELCOME} />
+        <RecordPlayer />
         <Interactions />
         <Player />
         <CameraRig />
@@ -62,6 +65,8 @@ export function Game() {
       <ProjectCard />
       <Prompt />
       <Dialogue />
+      <NowPlaying />
+      <MusicPanel />
       <Joystick />
     </>
   )

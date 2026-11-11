@@ -57,3 +57,18 @@ export function interact(): boolean {
   f.onInteract()
   return true
 }
+
+/** Opens a panel such as the record player. */
+export function openPanel(panel: 'music') {
+  useGame.setState({ panel })
+}
+
+export function closePanel() {
+  if (useGame.getState().panel) useGame.setState({ panel: null })
+}
+
+/** True while dialogue or a panel has the player's attention (movement and focus changes pause). */
+export function busy() {
+  const s = useGame.getState()
+  return s.dialogue !== null || s.panel !== null
+}
