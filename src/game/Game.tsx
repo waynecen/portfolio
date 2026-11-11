@@ -5,11 +5,13 @@ import { Dialogue, Prompt } from './Dialogue'
 import { Hearts } from './Hearts'
 import { Interactions } from './Interactions'
 import { Joystick } from './Joystick'
+import { Minimap, MinimapTracker } from './Minimap'
 import { MusicPanel, NowPlaying } from './MusicPanel'
 import { Player, WORLD_HALF } from './Player'
 import { ProjectCard } from './ProjectCard'
 import { detectTier, isTouch } from './quality'
 import { RecordPlayer } from './RecordPlayer'
+import { Roads } from './Roads'
 import { Sign } from './Sign'
 import { Stations } from './Station'
 
@@ -54,14 +56,17 @@ export function Game() {
           <planeGeometry args={[GROUND_SIZE, GROUND_SIZE]} />
           <meshLambertMaterial color="#8cc084" />
         </mesh>
+        <Roads />
         <Stations />
         <Sign x={-1.8} z={-1.4} lines={WELCOME} />
         <RecordPlayer />
         <Interactions />
+        <MinimapTracker />
         <Player />
         <CameraRig />
       </Canvas>
       <Hearts />
+      <Minimap />
       <ProjectCard />
       <Prompt />
       <Dialogue />

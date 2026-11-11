@@ -4,10 +4,9 @@ import { MathUtils, type Group, type Mesh } from 'three'
 import { addCollider } from './collision'
 import { openPanel, register } from './interact'
 import { level, useMusic } from './music'
+import { RECORD_PLAYER } from './pois'
 
-// About one screen-width to the right of spawn.
-const X = 19
-const Z = 0
+const { x: X, z: Z } = RECORD_PLAYER // position lives in pois.ts, so the road and map icon follow it
 const RANGE = 1.8
 const SPIN = 3.5 // platter speed while playing, rad/s (about 33 rpm)
 const PULSE = 0.08 // how much the cabinet bounces to the beat
