@@ -2,7 +2,7 @@
 
 Every constant that changes how the game looks, moves or performs, grouped by system. Each block shows the code as it appears in the source, with a comment explaining what the value does. Change the value in the linked file, not here. If you add or rename a constant, update this page too.
 
-**Units:** distances are in world units (the floor is 16 units across, and the pill is about 1.2 tall). Times are in seconds. Angles are in radians (π ≈ 3.14 is half a turn).
+**Units:** distances are in world units (the walkable world is 80 units across, one screen is about 19 units wide, and the pill is about 1.2 tall). Times are in seconds. Angles are in radians (π ≈ 3.14 is half a turn).
 
 **Damp rates:** several values are rates passed to `MathUtils.damp`, which eases a value toward a target. Higher is snappier. Roughly, a value covers 63% of the remaining gap in `1 / rate` seconds, so a rate of 10 gets 63% of the way in 0.1 s and is basically there by 0.3 s.
 
@@ -11,12 +11,12 @@ Every constant that changes how the game looks, moves or performs, grouped by sy
 ## Player movement: [src/game/Player.tsx](../src/game/Player.tsx)
 
 ```ts
-export const FLOOR_RADIUS = 8 // radius of the round floor; the floor mesh and the walkable edge both use it
+export const WORLD_HALF = 40   // walkable area is a square from -40 to +40 on x and z; the ground plane is sized from it
 const SPEED = 4               // walking speed, units/s (a full joystick push or any WASD key)
 const SPRINT = 1.5            // holding Shift (or the B button on touch) multiplies top speed by this (4 → 6 units/s); also caps the animation's speed value
 const ACCEL = 12              // damp rate toward the input velocity while a direction is held; lower = slidier, heavier starts
 const DECEL = 16              // damp rate back to a stop after letting go; higher than ACCEL so stops feel crisp
-const LIMIT = FLOOR_RADIUS - PILL_RADIUS // derived, don't edit: how far the centre can go before the body would hang off the edge
+const LIMIT = WORLD_HALF - PILL_RADIUS // derived, don't edit: how far the centre can go before the body would cross the edge
 ```
 
 ### Roll
@@ -134,9 +134,60 @@ The projects themselves aren't constants. They're read from the `#projects artic
 ```ts
 range: 1.4                   // Sign.tsx: how close the player must be to read a sign (every interactable sets its own range)
 const CHARS_PER_SECOND = 40  // Dialogue.tsx: typewriter speed; lines appear instantly with "reduce motion" on
+const PAUSE_SENTENCE = 0.25  // Dialogue.tsx: extra pause (s) after . ! ? so the text reads like speech
+const PAUSE_COMMA = 0.1      // Dialogue.tsx: extra pause (s) after , ; :
 ```
 
+Bubble look is in [style.css](../src/style.css): `.dialogue-cloud` `fill` (cream), `.dialogue` `color` (brown text), `.dialogue-next` `fill` (arrow), and the `dialogue-pop` keyframes (pop-in). The cloud outline is the SVG `path` in Dialogue.tsx; it stretches to fit, so it works at any width.
+
 Anything the player can use calls `register({ x, z, range, prompt, onInteract })` in an effect. Each frame, the nearest one in range gets focus and shows its prompt ("E Read"), or its project card if it has a `card`. To add a sign, place `<Sign x z lines={[…]} />` in [Game.tsx](../src/game/Game.tsx). The welcome text is the `WELCOME` array there.
+
+---
+
+## Collision: [src/game/collision.ts](../src/game/collision.ts)
+
+```ts
+const BASE_RADIUS = 0.5                                  // Station.tsx: pedestal width, also its collision circle
+addCollider({ kind: 'box', x, z, hx: 0.45, hz: 0.1 })    // Sign.tsx: half-width and half-depth of the sign's solid box
+PILL_RADIUS * 0.5                                        // Player.tsx: longest move per substep, so fast rolls can't pass through thin obstacles
+```
+
+The player is a circle of `PILL_RADIUS`. Obstacles are circles or axis-aligned boxes added with `addCollider(…)` in an effect (it returns its own cleanup). Each frame the player is pushed out of anything it overlaps, and the part of its velocity heading into the obstacle is dropped, so it slides along walls. Keep each interactable's `range` larger than its collider plus `PILL_RADIUS` (about 0.85 for a station), or the player won't be able to get close enough to use it.
+
+---
+
+## Record player and music: [src/game/RecordPlayer.tsx](../src/game/RecordPlayer.tsx), [src/game/music.ts](../src/game/music.ts)
+
+```ts
+const X = 19               // RecordPlayer.tsx: position, about one screen to the right of spawn
+const Z = 0
+const RANGE = 1.8          // how close the player must be to use it
+const SPIN = 3.5           // platter speed while playing, rad/s (about 33 rpm); it spins up and winds down
+const PULSE = 0.08         // how much the cabinet bounces to the music's low end (off with reduce motion)
+const DEFAULT_VOLUME = 0.6 // music.ts: starting volume before the visitor changes it (then remembered); 0.6 = two waves
+const WAVE_LEVELS = [0.33, 0.66] // MusicPanel.tsx: volume up to 0.33 shows 1 wave, up to 0.66 shows 2, above that 3; the icon toggles mute (0) and back
+analyser.fftSize = 64      // music.ts: analyser resolution for the pulse; level() averages the lowest 8 bins
+```
+
+**Adding music:** put files in `public/audio/` and list them in [src/game/tracks.ts](../src/game/tracks.ts) (`title`, `artist`, `src`, optional `credit`). Use AAC (.m4a) or Opus at about 96 to 128 kbps. While that list is empty, [placeholderTracks.ts](../src/game/placeholderTracks.ts) generates three 16-second chord loops in the browser. Edit `SONGS` there to change them (MIDI note numbers, 60 = middle C).
+
+Panel and now-playing styles are `.music-*` and `.now-playing` in [style.css](../src/style.css).
+
+---
+
+## Roads and minimap: [src/game/pois.ts](../src/game/pois.ts), [src/game/Roads.tsx](../src/game/Roads.tsx), [src/game/Minimap.tsx](../src/game/Minimap.tsx)
+
+```ts
+export const RECORD_PLAYER = { x: 19, z: 0 } // pois.ts: record player position (its road and map icon follow it)
+export const PLAZA_RADIUS = 1.8 // pois.ts: the round plaza at spawn where every road starts
+const STOP_SHORT = 0.9          // pois.ts: roads end this far from a POI's centre, at its doorstep
+const BEND = 0.12               // pois.ts: how much each road bows sideways (fraction of its length); alternates side
+const WIDTH = 1.3               // Roads.tsx: road width
+const MARGIN = 5                // Minimap.tsx: empty space around the outermost POIs on the map
+const INSET = 1.2               // Minimap.tsx: the player arrow sticks to the map edge this far in when you wander off it
+```
+
+`pois` in pois.ts is the one list of places: start, each project station and the record player. Add an entry, and place its object at the same x/z, to give it a road and a map icon. The map's size and colours are `.minimap` and `.map-*` in [style.css](../src/style.css). Its width is 168px on desktop and 128px on touch.
 
 ---
 
@@ -196,7 +247,7 @@ gl={{ antialias: tier === 'high' }}         // smooth edges only on stronger dev
 <color attach="background" args={['#cfe8d5']} />              // sky / background colour
 <hemisphereLight args={['#ffffff', '#88aa77', 1.2]} />        // sky colour, ground-bounce colour, brightness
 <directionalLight position={[5, 10, 4]} intensity={1.5} />    // the "sun": direction it shines from, and strength
-<circleGeometry args={[FLOOR_RADIUS, 32]} />                  // floor: radius, and 32 edge segments (more = rounder)
+const GROUND_SIZE = (WORLD_HALF + 30) * 2                    // ground plane size; the 30-unit margin keeps the camera from seeing its edge
 <meshLambertMaterial color="#8cc084" />                       // floor colour
 ```
 
