@@ -129,6 +129,17 @@ The projects themselves aren't constants. They're read from the `#projects artic
 
 ---
 
+## Interactions and dialogue: [src/game/interact.ts](../src/game/interact.ts), [src/game/Dialogue.tsx](../src/game/Dialogue.tsx)
+
+```ts
+range: 1.4                   // Sign.tsx: how close the player must be to read a sign (every interactable sets its own range)
+const CHARS_PER_SECOND = 40  // Dialogue.tsx: typewriter speed; lines appear instantly with "reduce motion" on
+```
+
+Anything the player can use calls `register({ x, z, range, prompt, onInteract })` in an effect. Each frame, the nearest one in range gets focus and shows its prompt ("E Read"), or its project card if it has a `card`. To add a sign, place `<Sign x z lines={[…]} />` in [Game.tsx](../src/game/Game.tsx). The welcome text is the `WELCOME` array there.
+
+---
+
 ## Touch controls: [src/game/Joystick.tsx](../src/game/Joystick.tsx)
 
 ```ts
@@ -150,7 +161,7 @@ const codes: Record<string, Dir> = {
   KeyD: 'right', ArrowRight: 'right',
   ShiftLeft: 'sprint', ShiftRight: 'sprint', // hold to sprint
 }
-// Space = roll (in bindKeys); E / Enter = open the nearby project (in bindInteract)
+// In bindKeys: Space = advance dialogue if open, else roll; E / Enter = interact (interact.ts); Esc = close dialogue
 ```
 
 ---

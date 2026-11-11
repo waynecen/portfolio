@@ -27,7 +27,10 @@ npm run preview   # serve the production build
 | A / ← | Move left |
 | D / → | Move right |
 | Shift / **B** button (touch), hold | Sprint |
-| Space / **A** button (touch) | Roll forward in the facing direction |
+| Space | Roll forward in the facing direction (advances dialogue when it's open) |
+| E / Enter | Talk to, read or open whatever is nearby; advance dialogue |
+| Esc | Close dialogue |
+| **A** button (touch) | Interact when something is nearby or a dialogue is open, otherwise roll |
 | **View as page** / **Play the game** (top right) | Switch between the 3D game and the HTML page |
 
 The game starts automatically on devices with WebGL 2. Visitors who prefer reduced motion get the HTML page first and can opt into the game with the toggle. Without WebGL 2, only the HTML page is shown.
