@@ -4,6 +4,7 @@ import { MathUtils, type Group } from 'three'
 import { actions, bindKeys, buttons, keys, stick } from './input'
 import { PillCharacter, PILL_RADIUS } from './PillCharacter'
 import { playerFacing, playerPos, playerRoll, playerVel } from './state'
+import { useGame } from './store'
 
 export const FLOOR_RADIUS = 8
 
@@ -30,8 +31,12 @@ export function Player() {
     const v = playerVel
     const roll = playerRoll
 
+    // Stand still while a dialogue box is open.
+    const talking = useGame.getState().dialogue !== null
+
     // Start a roll in the direction the character is facing (works from standing still too).
     cooldown.current -= dt
+    if (talking) actions.roll = false
     if (actions.roll) {
       actions.roll = false
       if (roll.p < 0 && cooldown.current <= 0) {
@@ -41,8 +46,8 @@ export function Player() {
       }
     }
 
-    let x = +keys.right - +keys.left + stick.x
-    let z = +keys.back - +keys.forward + stick.z
+    let x = talking ? 0 : +keys.right - +keys.left + stick.x
+    let z = talking ? 0 : +keys.back - +keys.forward + stick.z
     const len2 = x * x + z * z
     // Cap at full speed: diagonals don't go faster, a half-pushed stick goes slower.
     if (len2 > 1) {

@@ -1,7 +1,9 @@
 import { Canvas } from '@react-three/fiber'
 import { useEffect, useState } from 'react'
 import { CameraRig, DISTANCE, HEIGHT } from './CameraRig'
+import { Dialogue, Prompt } from './Dialogue'
 import { Hearts } from './Hearts'
+import { Interactions } from './Interactions'
 import { Joystick } from './Joystick'
 import { FLOOR_RADIUS, Player } from './Player'
 import { ProjectCard } from './ProjectCard'
@@ -42,11 +44,14 @@ export function Game() {
           <meshLambertMaterial color="#8cc084" />
         </mesh>
         <Stations />
+        <Interactions />
         <Player />
         <CameraRig />
       </Canvas>
       <Hearts />
       <ProjectCard />
+      <Prompt />
+      <Dialogue />
       <Joystick />
     </>
   )

@@ -1,6 +1,8 @@
 import { useRef, type PointerEvent } from 'react'
 import { actions, buttons, stick } from './input'
+import { interact } from './interact'
 import { isTouch } from './quality'
+import { useGame } from './store'
 
 const TRAVEL = 40 // px the knob can move from center
 const DEAD_ZONE = 0.15
@@ -54,22 +56,31 @@ function Stick() {
   )
 }
 
-// Controller-style face button. Fires on press (not release) so the roll feels instant.
-function RollButton() {
-  const roll = () => {
-    actions.roll = true
+// Controller-style A button: talks to / uses whatever is nearby, otherwise rolls.
+// The roll fires on press so it feels instant. Interactions wait for the click, because on touch
+// only the release grants the user activation that opening a project in a new tab needs.
+function ActionButton() {
+  const pending = useRef(false)
+  const busy = () => {
+    const s = useGame.getState()
+    return s.dialogue !== null || s.focus !== null
   }
   return (
     <button
       type="button"
       className="action-button"
-      aria-label="Roll"
+      aria-label="Action: talk, open or roll"
       onPointerDown={(e) => {
         e.preventDefault() // keep focus and the 300ms tap delay out of the way
-        roll()
+        pending.current = busy()
+        if (!pending.current) actions.roll = true
       }}
       onClick={(e) => {
-        if (e.detail === 0) roll() // keyboard / assistive-tech activation, which has no pointerdown
+        if (e.detail === 0) {
+          // keyboard / assistive-tech activation, which has no pointerdown
+          if (!interact()) actions.roll = true
+        } else if (pending.current) interact()
+        pending.current = false
       }}
     >
       A
@@ -120,7 +131,7 @@ export function Joystick() {
     <>
       <Stick />
       <SprintButton />
-      <RollButton />
+      <ActionButton />
     </>
   ) : null
 }

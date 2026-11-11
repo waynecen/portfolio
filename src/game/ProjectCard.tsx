@@ -1,17 +1,10 @@
-import { useEffect } from 'react'
-import { bindInteract } from './input'
-import { projects } from './projects'
+import { isTouch } from './quality'
 import { useGame } from './store'
 
+// Shows the focused station's project. Opening it is the station's interaction (E / Enter / A).
 export function ProjectCard() {
-  const active = useGame((s) => s.active)
-  const project = active === null ? null : projects[active]
+  const project = useGame((s) => (s.dialogue ? undefined : s.focus?.card))
   const url = project?.url
-
-  useEffect(() => {
-    if (!url) return
-    return bindInteract(() => window.open(url, '_blank', 'noopener'))
-  }, [url])
 
   // The live region stays mounted so screen readers announce content changes.
   return (
@@ -23,7 +16,7 @@ export function ProjectCard() {
           {url && (
             <p className="project-card-action">
               <a href={url} target="_blank" rel="noopener">Open project</a>
-              <span aria-hidden="true"> · press E</span>
+              <span aria-hidden="true"> · press {isTouch ? 'A' : 'E'}</span>
             </p>
           )}
         </article>

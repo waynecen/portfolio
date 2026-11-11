@@ -1,14 +1,29 @@
 import { useFrame } from '@react-three/fiber'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import type { Mesh } from 'three'
-import { stationPos } from './projects'
-import { playerPos } from './state'
-import { useGame } from './store'
+import { register } from './interact'
+import { projects, stationPos } from './projects'
 
 const RANGE = 1.5
 
-function Station({ x, z }: { x: number; z: number }) {
+function Station({ index }: { index: number }) {
   const top = useRef<Mesh>(null)
+  const { x, z } = stationPos[index]
+
+  useEffect(() => {
+    const project = projects[index]
+    return register({
+      x,
+      z,
+      range: RANGE,
+      prompt: 'Open project',
+      card: project,
+      onInteract: () => {
+        if (project.url) window.open(project.url, '_blank', 'noopener')
+      },
+    })
+  }, [index, x, z])
+
   useFrame((_, delta) => {
     if (top.current) top.current.rotation.y += delta * 0.8
   })
@@ -27,31 +42,10 @@ function Station({ x, z }: { x: number; z: number }) {
 }
 
 export function Stations() {
-  const last = useRef<number | null>(null)
-
-  // One proximity check per frame; React only hears about enter/leave.
-  useFrame(() => {
-    let nearest: number | null = null
-    let best = RANGE * RANGE
-    for (let i = 0; i < stationPos.length; i++) {
-      const dx = stationPos[i].x - playerPos.x
-      const dz = stationPos[i].z - playerPos.z
-      const d = dx * dx + dz * dz
-      if (d < best) {
-        best = d
-        nearest = i
-      }
-    }
-    if (nearest !== last.current) {
-      last.current = nearest
-      useGame.setState({ active: nearest })
-    }
-  })
-
   return (
     <>
-      {stationPos.map((p, i) => (
-        <Station key={i} x={p.x} z={p.z} />
+      {stationPos.map((_, i) => (
+        <Station key={i} index={i} />
       ))}
     </>
   )

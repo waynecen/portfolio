@@ -49,8 +49,32 @@ body:not(.playing) #game { visibility: hidden; }
 }
 .action-button:active, .action-button[aria-pressed="true"] { transform: scale(.92); background: #444; box-shadow: inset 0 2px 0 rgb(0 0 0 / .35); }
 .action-button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* Prompt chip and dialogue box share the card's bottom-centre spot; only one shows at a time. */
+.prompt-region, .dialogue-region {
+  position: absolute; left: 16px; right: 16px; bottom: max(16px, env(safe-area-inset-bottom));
+  margin: 0 auto; pointer-events: none; display: flex; justify-content: center;
+}
+.dialogue-region { max-width: 36rem; }
+.prompt {
+  margin: 0; padding: 6px 14px 6px 6px; background: #fff; border: 2px solid var(--ink);
+  font-size: 12px; text-transform: uppercase; letter-spacing: .2em;
+}
+.prompt kbd {
+  display: inline-block; min-width: 24px; margin-right: 8px; padding: 2px 6px; text-align: center;
+  background: var(--ink); color: #fff; font: 600 13px/1.4 system-ui, sans-serif; letter-spacing: 0;
+}
+.dialogue {
+  position: relative; width: 100%; min-height: 104px; padding: 18px 22px 30px; pointer-events: auto; cursor: pointer;
+  background: rgb(24 24 32 / .92); color: #fff; border: 3px solid #fff; outline: 2px solid var(--ink);
+  -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
+}
+.dialogue-text { margin: 0; font-size: 18px; line-height: 1.5; }
+.dialogue-next {
+  position: absolute; right: 14px; bottom: 8px;
+  font-size: 11px; text-transform: uppercase; letter-spacing: .2em; opacity: .75;
+}
 @media (pointer: coarse) {
-  /* Lift the card above the joystick; there's no E key to hint at on touch. */
-  .project-card-region { bottom: calc(max(24px, env(safe-area-inset-bottom)) + 128px); }
-  .project-card-action span { display: none; }
+  /* Lift bottom-centre UI above the joystick and buttons. */
+  .project-card-region, .prompt-region, .dialogue-region { bottom: calc(max(24px, env(safe-area-inset-bottom)) + 128px); }
 }

@@ -1,3 +1,5 @@
+import { advance, closeDialogue, interact } from './interact'
+
 // Keyboard state lives outside React so per-frame reads don't trigger renders.
 export const keys = { forward: false, back: false, left: false, right: false, sprint: false }
 
@@ -31,26 +33,21 @@ function reset() {
   buttons.sprint = false
 }
 
-// Calls `cb` when E or Enter is pressed in the game view (not on a focused control).
-export function bindInteract(cb: () => void): () => void {
-  const onDown = (e: KeyboardEvent) => {
-    if (e.repeat || (e.code !== 'KeyE' && e.code !== 'Enter')) return
-    if (!document.body.classList.contains('playing') || isTyping(e.target)) return
-    if (e.target instanceof HTMLElement && e.target.closest('a, button')) return
-    cb()
-  }
-  window.addEventListener('keydown', onDown)
-  return () => window.removeEventListener('keydown', onDown)
-}
+// Keys that act on the world. Ignored on focused links and buttons so those keep working.
+const ACTION_KEYS = new Set(['Space', 'KeyE', 'Enter', 'Escape'])
 
 export function bindKeys(): () => void {
   const set = (down: boolean) => (e: KeyboardEvent) => {
-    if (e.code === 'Space') {
-      // Leave Space alone on focused controls so it still presses buttons and links.
+    if (ACTION_KEYS.has(e.code)) {
       if (isTyping(e.target) || !document.body.classList.contains('playing')) return
       if (e.target instanceof HTMLElement && e.target.closest('a, button')) return
-      e.preventDefault() // don't scroll the page
-      if (down && !e.repeat) actions.roll = true
+      if (e.code === 'Space') e.preventDefault() // don't scroll the page
+      if (!down || e.repeat) return
+      if (e.code === 'Space') {
+        // Space advances dialogue when it's open, otherwise rolls.
+        if (!advance()) actions.roll = true
+      } else if (e.code === 'Escape') closeDialogue()
+      else interact()
       return
     }
     const dir = codes[e.code]
