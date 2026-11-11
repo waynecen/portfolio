@@ -5,13 +5,14 @@ import { Dialogue, Prompt } from './Dialogue'
 import { Hearts } from './Hearts'
 import { Interactions } from './Interactions'
 import { Joystick } from './Joystick'
-import { FLOOR_RADIUS, Player } from './Player'
+import { Player, WORLD_HALF } from './Player'
 import { ProjectCard } from './ProjectCard'
 import { detectTier, isTouch } from './quality'
 import { Sign } from './Sign'
 import { Stations } from './Station'
 
 const tier = detectTier()
+const GROUND_SIZE = (WORLD_HALF + 30) * 2 // 30 units of margin covers the camera's view at the edges
 
 const WELCOME = [
   'Welcome! This little world is my portfolio.',
@@ -46,8 +47,9 @@ export function Game() {
         <color attach="background" args={['#cfe8d5']} />
         <hemisphereLight args={['#ffffff', '#88aa77', 1.2]} />
         <directionalLight position={[5, 10, 4]} intensity={1.5} />
+        {/* Ground reaches well past the walkable edge, so the camera never sees past it. */}
         <mesh rotation-x={-Math.PI / 2}>
-          <circleGeometry args={[FLOOR_RADIUS, 32]} />
+          <planeGeometry args={[GROUND_SIZE, GROUND_SIZE]} />
           <meshLambertMaterial color="#8cc084" />
         </mesh>
         <Stations />
