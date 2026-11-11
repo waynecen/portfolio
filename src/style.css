@@ -64,15 +64,37 @@ body:not(.playing) #game { visibility: hidden; }
   display: inline-block; min-width: 24px; margin-right: 8px; padding: 2px 6px; text-align: center;
   background: var(--ink); color: #fff; font: 600 13px/1.4 system-ui, sans-serif; letter-spacing: 0;
 }
+/* Cloud speech bubble: an SVG outline stretched behind centred text. */
 .dialogue {
-  position: relative; width: 100%; min-height: 104px; padding: 18px 22px 30px; pointer-events: auto; cursor: pointer;
-  background: rgb(24 24 32 / .92); color: #fff; border: 3px solid #fff; outline: 2px solid var(--ink);
+  position: relative; width: 100%; min-height: 128px; padding: 30px 44px 38px;
+  display: grid; place-items: center; text-align: center; pointer-events: auto; cursor: pointer;
+  color: #7a6449; transform-origin: 50% 100%; isolation: isolate; /* keeps the cloud's z-index:-1 inside the bubble */
+  animation: dialogue-pop .32s cubic-bezier(.34, 1.56, .64, 1) both;
   -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
 }
-.dialogue-text { margin: 0; font-size: 18px; line-height: 1.5; }
+.dialogue-cloud {
+  position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; overflow: visible;
+  fill: #fdf5dc; filter: drop-shadow(0 4px 0 rgb(122 100 73 / .25)) drop-shadow(0 8px 16px rgb(0 0 0 / .18));
+}
+.dialogue-text {
+  margin: 0; max-width: 30ch; font: 600 20px/1.5 ui-rounded, "SF Pro Rounded", "Nunito", "Varela Round", system-ui, sans-serif;
+  /* reserve the full height so the bubble doesn't grow as letters appear */
+  min-height: 3em; text-wrap: balance;
+}
+/* Bobbing "more" arrow, shown once the line has finished typing. */
 .dialogue-next {
-  position: absolute; right: 14px; bottom: 8px;
-  font-size: 11px; text-transform: uppercase; letter-spacing: .2em; opacity: .75;
+  position: absolute; left: 50%; bottom: 10px; width: 20px; height: 12px; margin-left: -10px;
+  fill: #f2b233; opacity: 0; transition: opacity .15s;
+}
+.dialogue[data-done] .dialogue-next { opacity: 1; animation: dialogue-bob .7s ease-in-out infinite alternate; }
+@keyframes dialogue-pop {
+  from { opacity: 0; transform: translateY(16px) scale(.6, .4); }
+  60% { opacity: 1; }
+  to { transform: none; }
+}
+@keyframes dialogue-bob { to { transform: translateY(4px); } }
+@media (prefers-reduced-motion: reduce) {
+  .dialogue, .dialogue[data-done] .dialogue-next { animation: none; }
 }
 @media (pointer: coarse) {
   /* Lift bottom-centre UI above the joystick and buttons. */
