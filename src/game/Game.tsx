@@ -7,10 +7,17 @@ import { Interactions } from './Interactions'
 import { Joystick } from './Joystick'
 import { FLOOR_RADIUS, Player } from './Player'
 import { ProjectCard } from './ProjectCard'
-import { detectTier } from './quality'
+import { detectTier, isTouch } from './quality'
+import { Sign } from './Sign'
 import { Stations } from './Station'
 
 const tier = detectTier()
+
+const WELCOME = [
+  'Welcome! This little world is my portfolio.',
+  'Walk up to a pillar to see a project, then press ' + (isTouch ? 'A' : 'E') + ' to open it.',
+  isTouch ? 'Hold B to sprint, and tap A with nothing nearby to roll.' : 'Hold Shift to sprint, and press Space to roll.',
+]
 
 export function Game() {
   const [visible, setVisible] = useState(!document.hidden)
@@ -44,6 +51,7 @@ export function Game() {
           <meshLambertMaterial color="#8cc084" />
         </mesh>
         <Stations />
+        <Sign x={-1.8} z={-1.4} lines={WELCOME} />
         <Interactions />
         <Player />
         <CameraRig />
