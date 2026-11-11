@@ -1,6 +1,7 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { MathUtils, type Group } from 'three'
+import { resolve } from './collision'
 import { actions, bindKeys, buttons, keys, stick } from './input'
 import { PillCharacter, PILL_RADIUS } from './PillCharacter'
 import { playerFacing, playerPos, playerRoll, playerVel } from './state'
@@ -78,9 +79,15 @@ export function Player() {
       if (len2 === 0 && v.x * v.x + v.z * v.z < 1e-4) v.x = v.z = 0
     }
 
+    // Move in substeps no longer than half the body's radius, so a fast roll can't tunnel through thin obstacles.
     const p = root.position
-    p.x += v.x * dt
-    p.z += v.z * dt
+    const steps = Math.max(1, Math.ceil((Math.sqrt(v.x * v.x + v.z * v.z) * dt) / (PILL_RADIUS * 0.5)))
+    const h = dt / steps
+    for (let i = 0; i < steps; i++) {
+      p.x += v.x * h
+      p.z += v.z * h
+      resolve(p, PILL_RADIUS, v)
+    }
 
     // Keep the pill on the floor, and drop the outward part of its velocity so it slides along the edge.
     const d2 = p.x * p.x + p.z * p.z
