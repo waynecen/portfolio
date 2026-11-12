@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { closePanel } from './interact'
-import { getTracks, next, playTrack, prev, toggle, toggleMute, useMusic } from './music'
+import { getTracks, next, playTrack, prev, setVolume, toggle, toggleMute, useMusic } from './music'
 import { useGame } from './store'
 
 /** The record player's panel: track list, transport and volume. Opened by interacting with the record player. */
@@ -29,7 +29,6 @@ export function MusicPanel() {
     >
       <div className="music-head">
         <h2>Record player</h2>
-        <VolumeButton volume={volume} />
         <button type="button" className="music-close" aria-label="Close" onClick={closePanel}>
           ×
         </button>
@@ -57,6 +56,18 @@ export function MusicPanel() {
         </button>
         <button type="button" aria-label="Next track" onClick={next}>⏭</button>
       </div>
+      <div className="music-volume-row">
+        <VolumeButton volume={volume} />
+        <input
+          type="range"
+          aria-label="Volume"
+          min={0}
+          max={1}
+          step={0.05}
+          value={volume}
+          onChange={(e) => setVolume(Number(e.currentTarget.value))}
+        />
+      </div>
       {current?.credit && <p className="music-credit">{current.credit}</p>}
     </div>
   )
@@ -72,7 +83,7 @@ function wavesFor(volume: number) {
   return i < 0 ? WAVE_LEVELS.length + 1 : i + 1
 }
 
-/** Speaker icon: press to mute, press again to return to the previous level. Waves show the volume. */
+/** Speaker icon beside the slider: press to mute, press again to return to the previous level. Waves show the volume. */
 function VolumeButton({ volume }: { volume: number }) {
   const waves = wavesFor(volume)
   const muted = waves === 0
