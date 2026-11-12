@@ -156,6 +156,7 @@ body:not(.playing) #game { visibility: hidden; }
 }
 .map-ground { fill: #8cc084; }
 .map-road { fill: #d8c08a; stroke: #d8c08a; stroke-width: .05; } /* hairline stroke hides seams between tiles */
+.map-grid { fill: none; stroke: rgb(122 100 73 / .18); stroke-width: .08; }
 .map-home { fill: #fdf5dc; stroke: #7a6449; stroke-width: .25; }
 .map-project { fill: #5b7fbf; stroke: #fff; stroke-width: .25; }
 .map-music circle { fill: #e2574c; }

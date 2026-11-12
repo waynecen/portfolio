@@ -5,11 +5,14 @@ import { pois, roadTiles, type PoiKind } from './pois'
 import { playerFacing, playerPos } from './state'
 
 // The SVG uses world units directly: x → x, z → y (toward the camera = down on the map).
-const MARGIN = 5
-const minX = Math.min(...pois.map((p) => p.x)) - MARGIN
-const maxX = Math.max(...pois.map((p) => p.x)) + MARGIN
-const minZ = Math.min(...pois.map((p) => p.z)) - MARGIN
-const maxZ = Math.max(...pois.map((p) => p.z)) + MARGIN
+// Bounds are the outermost places plus MARGIN tiles, with edges on tile boundaries so the grid
+// lines up with the map's border.
+const MARGIN = 4
+const EDGE = MARGIN * TILE + TILE / 2
+const minX = Math.min(...pois.map((p) => p.x)) - EDGE
+const maxX = Math.max(...pois.map((p) => p.x)) + EDGE
+const minZ = Math.min(...pois.map((p) => p.z)) - EDGE
+const maxZ = Math.max(...pois.map((p) => p.z)) + EDGE
 const INSET = 1.2 // keep the player arrow this far inside the edge when they wander off the map
 
 // Every road tile as a square in one path, so the map shows the same blocky roads as the world.
@@ -57,6 +60,13 @@ export function Minimap() {
     <svg className="minimap" viewBox={`${minX} ${minZ} ${maxX - minX} ${maxZ - minZ}`} role="img" aria-label={summary}>
       <rect className="map-ground" x={minX} y={minZ} width={maxX - minX} height={maxZ - minZ} />
       <path className="map-road" d={roadPath} />
+      {/* One line along each tile edge, drawn over ground and roads alike, like a block grid. */}
+      <defs>
+        <pattern id="map-grid" patternUnits="userSpaceOnUse" x={-TILE / 2} y={-TILE / 2} width={TILE} height={TILE}>
+          <path className="map-grid" d={`M${TILE} 0H0V${TILE}`} />
+        </pattern>
+      </defs>
+      <rect fill="url(#map-grid)" x={minX} y={minZ} width={maxX - minX} height={maxZ - minZ} />
       {pois.map((p, i) => (
         <g key={i} transform={`translate(${p.x} ${p.z})`}>
           <title>{p.label}</title>
