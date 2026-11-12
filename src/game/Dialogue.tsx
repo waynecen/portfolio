@@ -5,7 +5,7 @@ import { useGame } from "./store";
 
 const CHARS_PER_SECOND = 40;
 const PAUSE_SENTENCE = 0.25; // extra seconds after . ! ?
-const PAUSE_COMMA = 0.1; // extra seconds after , ; :
+const PAUSE_COMMA = 0.15; // extra seconds after , ; :
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const KEY = isTouch ? "A" : "E";
 
