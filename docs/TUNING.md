@@ -175,19 +175,17 @@ Panel and now-playing styles are `.music-*` and `.now-playing` in [style.css](..
 
 ---
 
-## Roads and minimap: [src/game/pois.ts](../src/game/pois.ts), [src/game/Roads.tsx](../src/game/Roads.tsx), [src/game/Minimap.tsx](../src/game/Minimap.tsx)
+## Grid, roads and minimap: [src/game/grid.ts](../src/game/grid.ts), [src/game/pois.ts](../src/game/pois.ts), [src/game/Roads.tsx](../src/game/Roads.tsx), [src/game/Minimap.tsx](../src/game/Minimap.tsx)
 
 ```ts
-export const RECORD_PLAYER = { x: 19, z: 0 } // pois.ts: record player position (its road and map icon follow it)
-export const PLAZA_RADIUS = 1.8 // pois.ts: the round plaza at spawn where every road starts
-const STOP_SHORT = 0.9          // pois.ts: roads end this far from a POI's centre, at its doorstep
-const BEND = 0.12               // pois.ts: how much each road bows sideways (fraction of its length); alternates side
-const WIDTH = 1.3               // Roads.tsx: road width
-const MARGIN = 5                // Minimap.tsx: empty space around the outermost POIs on the map
+export const RECORD_PLAYER = { x: 9, z: 0 } // pois.ts: record player position (its road and map icon follow it)
+export const TILE = 1            // grid.ts: size of one grid tile in world units; places, props and roads sit on tile centres
+export const PLAZA = 1           // pois.ts: half-size of the square plaza at spawn in tiles (1 = 3×3)
+const MARGIN = 4                // Minimap.tsx: empty tiles around the outermost POIs on the map
 const INSET = 1.2               // Minimap.tsx: the player arrow sticks to the map edge this far in when you wander off it
 ```
 
-`pois` in pois.ts is the one list of places: start, each project station and the record player. Add an entry, and place its object at the same x/z, to give it a road and a map icon. The map's size and colours are `.minimap` and `.map-*` in [style.css](../src/style.css). Its width is 168px on desktop and 128px on touch.
+`pois` in pois.ts is the one list of places: start, each project station and the record player. Add an entry, and place its object at the same whole-number x/z, to give it a road and a map icon. Roads are one tile wide and run in straight lines with at most one 90° corner. They go along the shorter axis first and stop on the tile next to the place. If that route would cross another place, they take the other corner. The map's size and colours are `.minimap` and `.map-*` in [style.css](../src/style.css). Its width is 168px on desktop and 128px on touch.
 
 ---
 
