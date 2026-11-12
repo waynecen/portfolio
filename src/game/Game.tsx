@@ -58,7 +58,7 @@ export function Game() {
         </mesh>
         <Roads />
         <Stations />
-        <Sign x={-1.8} z={-1.4} lines={WELCOME} />
+        <Sign x={-2} z={-2} lines={WELCOME} />
         <RecordPlayer />
         <Interactions />
         <MinimapTracker />

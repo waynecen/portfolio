@@ -1,6 +1,7 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
-import { pois, roads, type PoiKind } from './pois'
+import { TILE } from './grid'
+import { pois, roadTiles, type PoiKind } from './pois'
 import { playerFacing, playerPos } from './state'
 
 // The SVG uses world units directly: x → x, z → y (toward the camera = down on the map).
@@ -11,7 +12,8 @@ const minZ = Math.min(...pois.map((p) => p.z)) - MARGIN
 const maxZ = Math.max(...pois.map((p) => p.z)) + MARGIN
 const INSET = 1.2 // keep the player arrow this far inside the edge when they wander off the map
 
-const roadPaths = roads.map((r) => 'M' + r.map((p) => `${p.x.toFixed(2)} ${p.z.toFixed(2)}`).join('L'))
+// Every road tile as a square in one path, so the map shows the same blocky roads as the world.
+const roadPath = roadTiles.map(({ i, j }) => `M${i * TILE - TILE / 2} ${j * TILE - TILE / 2}h${TILE}v${TILE}h${-TILE}Z`).join('')
 const summary = 'Map: ' + pois.map((p) => p.label).join(', ')
 
 // The arrow's two transforms, created once by <Minimap> and updated in place by <MinimapTracker>.
@@ -54,9 +56,7 @@ export function Minimap() {
   return (
     <svg className="minimap" viewBox={`${minX} ${minZ} ${maxX - minX} ${maxZ - minZ}`} role="img" aria-label={summary}>
       <rect className="map-ground" x={minX} y={minZ} width={maxX - minX} height={maxZ - minZ} />
-      {roadPaths.map((d, i) => (
-        <path key={i} className="map-road" d={d} />
-      ))}
+      <path className="map-road" d={roadPath} />
       {pois.map((p, i) => (
         <g key={i} transform={`translate(${p.x} ${p.z})`}>
           <title>{p.label}</title>
