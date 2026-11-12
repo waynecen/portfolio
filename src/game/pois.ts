@@ -9,8 +9,8 @@ export type Poi = { kind: PoiKind; x: number; z: number; label: string }
 
 /** Spawn; every road starts from the plaza here. */
 export const HUB = { x: 0, z: 0 }
-/** About one screen-width to the right of spawn. Places sit on tile centres (whole numbers). */
-export const RECORD_PLAYER = { x: 19, z: 0 }
+/** To the right of spawn, just past the ring of project stations. Places sit on tile centres (whole numbers). */
+export const RECORD_PLAYER = { x: 9, z: 0 }
 
 export const pois: Poi[] = [
   { kind: 'home', ...HUB, label: 'Start' },
