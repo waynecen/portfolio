@@ -2,7 +2,7 @@
 
 Every constant that changes how the game looks, moves or performs, grouped by system. Each block shows the code as it appears in the source, with a comment explaining what the value does. Change the value in the linked file, not here. If you add or rename a constant, update this page too.
 
-**Units:** distances are in world units (the walkable world is 80 units across, one screen is about 19 units wide, and the pill is about 1.2 tall). Times are in seconds. Angles are in radians (π ≈ 3.14 is half a turn).
+**Units:** distances are in world units (one tile is one unit, the island is 35 tiles across, one screen is about 19 units wide, and the pill is about 1.2 tall). Times are in seconds. Angles are in radians (π ≈ 3.14 is half a turn).
 
 **Damp rates:** several values are rates passed to `MathUtils.damp`, which eases a value toward a target. Higher is snappier. Roughly, a value covers 63% of the remaining gap in `1 / rate` seconds, so a rate of 10 gets 63% of the way in 0.1 s and is basically there by 0.3 s.
 
@@ -11,12 +11,12 @@ Every constant that changes how the game looks, moves or performs, grouped by sy
 ## Player movement: [src/game/Player.tsx](../src/game/Player.tsx)
 
 ```ts
-export const WORLD_HALF = 40   // walkable area is a square from -40 to +40 on x and z; the ground plane is sized from it
 const SPEED = 4               // walking speed, units/s (a full joystick push or any WASD key)
 const SPRINT = 1.5            // holding Shift (or the B button on touch) multiplies top speed by this (4 → 6 units/s); also caps the animation's speed value
 const ACCEL = 12              // damp rate toward the input velocity while a direction is held; lower = slidier, heavier starts
 const DECEL = 16              // damp rate back to a stop after letting go; higher than ACCEL so stops feel crisp
-const LIMIT = WORLD_HALF - PILL_RADIUS // derived, don't edit: how far the centre can go before the body would cross the edge
+const SHORE = 0.15            // the pill stops this far short of the cliff edge, so its feet stay on the rim
+const EDGE = PILL_RADIUS + SHORE // derived, don't edit: how close the pill's centre gets to a water tile; must stay at most half a tile
 ```
 
 ### Roll
@@ -189,6 +189,26 @@ const INSET = 1.2               // Minimap.tsx: the player arrow sticks to the m
 
 ---
 
+## Island and cliffs: [src/game/Island.tsx](../src/game/Island.tsx)
+
+```ts
+export const ISLAND_RADIUS = 18 // Island.tsx: in tiles; every tile whose centre is closer than this to spawn is land, so the shore steps along tile edges
+const WATER_Y = -1.2            // water surface height, well below the grass; the cliffs fill the drop
+const COURSES = 3               // rows of stone blocks in each cliff face
+const UNDERWATER = 0.4          // the cliff carries on this far under the water so its foot never shows a gap
+const RIM_TOP = 0.04            // the pale capstone rim stands this far above the grass
+const RIM_DEPTH = 0.16          // rim thickness, top to bottom
+const RIM_IN = 0.14             // how far the rim reaches in over the grass
+const RIM_OUT = 0.08            // how far the rim overhangs the cliff face
+const STONE = [...]             // cliff block colours; each block picks one from a fixed hash, so the pattern never changes
+const RIM = ...                 // capstone colour
+const WATER_SIZE = 400          // water plane size; big enough that the camera never sees its edge
+const FOAM = 0.4                // width of the white surf border at the foot of the cliffs; keep under half a tile
+const FOAM_PULSE = 1.2          // how fast the surf fades in and out, rad/s
+```
+
+---
+
 ## Touch controls: [src/game/Joystick.tsx](../src/game/Joystick.tsx)
 
 ```ts
@@ -245,8 +265,6 @@ gl={{ antialias: tier === 'high' }}         // smooth edges only on stronger dev
 <color attach="background" args={['#cfe8d5']} />              // sky / background colour
 <hemisphereLight args={['#ffffff', '#88aa77', 1.2]} />        // sky colour, ground-bounce colour, brightness
 <directionalLight position={[5, 10, 4]} intensity={1.5} />    // the "sun": direction it shines from, and strength
-const GROUND_SIZE = (WORLD_HALF + 30) * 2                    // ground plane size; the 30-unit margin keeps the camera from seeing its edge
-<meshLambertMaterial color="#8cc084" />                       // floor colour
 ```
 
 quality.ts decides the device tier:

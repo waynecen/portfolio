@@ -1,20 +1,20 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { MathUtils, type Group } from 'three'
-import { resolve } from './collision'
+import { pushOutOfBox, resolve } from './collision'
+import { TILE } from './grid'
+import { isLand } from './Island'
 import { actions, bindKeys, buttons, keys, stick } from './input'
 import { PillCharacter, PILL_RADIUS } from './PillCharacter'
 import { playerFacing, playerPos, playerRoll, playerVel } from './state'
 import { busy } from './interact'
 
-/** Walkable area: a square from -WORLD_HALF to +WORLD_HALF on x and z. The ground plane extends past it. */
-export const WORLD_HALF = 40
-
 const SPEED = 4 // walking speed, units per second
 const SPRINT = 1.5 // holding Shift (or B on touch) multiplies top speed by this (moderate: 4 → 6 units/s)
 const ACCEL = 12 // damp rate toward the input velocity while a direction is held
 const DECEL = 16 // a little snappier when letting go
-const LIMIT = WORLD_HALF - PILL_RADIUS
+const SHORE = 0.15 // stop this far short of the cliff edge, so the feet stay on the rim
+const EDGE = PILL_RADIUS + SHORE // how close the pill's centre gets to a water tile; keep at most half a tile
 
 const ROLL_TIME = 0.45 // seconds for one tumble
 const ROLL_SPEED = 9 // burst speed at the start of a roll, eases down toward walk speed
@@ -90,15 +90,13 @@ export function Player() {
       resolve(p, PILL_RADIUS, v)
     }
 
-    // Keep the pill inside the world, dropping the outward part of its velocity so it slides along the edge.
-    if (p.x > LIMIT || p.x < -LIMIT) {
-      p.x = Math.sign(p.x) * LIMIT
-      if (v.x * p.x > 0) v.x = 0
-    }
-    if (p.z > LIMIT || p.z < -LIMIT) {
-      p.z = Math.sign(p.z) * LIMIT
-      if (v.z * p.z > 0) v.z = 0
-    }
+    // Keep the pill on the island: every water tile around it acts as a wall, so it slides along
+    // the stepped shore. EDGE is at most half a tile, so only the 3×3 tiles around it can touch.
+    const ti = Math.round(p.x / TILE)
+    const tj = Math.round(p.z / TILE)
+    for (let di = -1; di <= 1; di++)
+      for (let dj = -1; dj <= 1; dj++)
+        if (!isLand(ti + di, tj + dj)) pushOutOfBox(p, EDGE, v, (ti + di) * TILE, (tj + dj) * TILE, TILE / 2, TILE / 2)
 
     // Relative to walking speed: 1 = walking, 1.5 = sprinting. Capped so the roll burst doesn't spin the legs.
     v.speed = Math.min(SPRINT, Math.sqrt(v.x * v.x + v.z * v.z) / SPEED)
