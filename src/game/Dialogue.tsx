@@ -18,14 +18,15 @@ function delayAfter(ch: string) {
 }
 
 // The bubble's outline: a rounded blob whose edge ripples slowly, like the surface of a liquid.
-// Points sit on a superellipse in a 400×130 box (stretched to fit the text). Each frame they're
-// pushed in or out along the outline's normal by a few slow waves that travel around it, then
+// Points sit on a superellipse in a W×H viewBox, which is stretched to fit the bubble, so a unit
+// is roughly (bubble width / W) px across and (bubble height / H) px down. Each frame the points
+// are pushed in or out along the outline's normal by a few slow waves that travel around it, then
 // joined into a smooth closed curve.
 const W = 400
 const H = 250
 const POINTS = 64
 const SQUARENESS = 3 // superellipse exponent: 2 is an ellipse, higher is boxier
-const RIPPLE = 1.4 // how far the edge moves in or out, viewBox units (about px vertically)
+const RIPPLE = 1.4 // how far the edge moves in or out, in viewBox units
 // [bumps around the outline, speed in radians/s, share of RIPPLE]. Mixed counts and opposite
 // directions keep the motion from ever looking like a single rotating shape.
 const WAVES = [
