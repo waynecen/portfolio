@@ -51,24 +51,29 @@ export function resolve(pos: Vec, r: number, vel: Vec) {
         if (d < 1e-6) push(pos, vel, 0, 1, min) // dead centre: pick a direction
         else push(pos, vel, dx / d, dz / d, min - d)
       } else {
-        // Closest point on the box to the circle's centre.
-        const cx = Math.max(c.x - c.hx, Math.min(pos.x, c.x + c.hx))
-        const cz = Math.max(c.z - c.hz, Math.min(pos.z, c.z + c.hz))
-        const dx = pos.x - cx
-        const dz = pos.z - cz
-        const d2 = dx * dx + dz * dz
-        if (d2 >= r * r) continue
-        if (d2 > 1e-12) {
-          const d = Math.sqrt(d2)
-          push(pos, vel, dx / d, dz / d, r - d)
-        } else {
-          // Centre is inside the box: leave by the nearest face.
-          const ox = c.hx - Math.abs(pos.x - c.x)
-          const oz = c.hz - Math.abs(pos.z - c.z)
-          if (ox < oz) push(pos, vel, pos.x < c.x ? -1 : 1, 0, ox + r)
-          else push(pos, vel, 0, pos.z < c.z ? -1 : 1, oz + r)
-        }
+        pushOutOfBox(pos, r, vel, c.x, c.z, c.hx, c.hz)
       }
     }
+  }
+}
+
+/** Moves a circle of radius `r` at `pos` out of one axis-aligned box (centre x, z; half-sizes hx, hz), in place. */
+export function pushOutOfBox(pos: Vec, r: number, vel: Vec, x: number, z: number, hx: number, hz: number) {
+  // Closest point on the box to the circle's centre.
+  const cx = Math.max(x - hx, Math.min(pos.x, x + hx))
+  const cz = Math.max(z - hz, Math.min(pos.z, z + hz))
+  const dx = pos.x - cx
+  const dz = pos.z - cz
+  const d2 = dx * dx + dz * dz
+  if (d2 >= r * r) return
+  if (d2 > 1e-12) {
+    const d = Math.sqrt(d2)
+    push(pos, vel, dx / d, dz / d, r - d)
+  } else {
+    // Centre is inside the box: leave by the nearest face.
+    const ox = hx - Math.abs(pos.x - x)
+    const oz = hz - Math.abs(pos.z - z)
+    if (ox < oz) push(pos, vel, pos.x < x ? -1 : 1, 0, ox + r)
+    else push(pos, vel, 0, pos.z < z ? -1 : 1, oz + r)
   }
 }
