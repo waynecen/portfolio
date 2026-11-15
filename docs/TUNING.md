@@ -149,6 +149,7 @@ Anything the player can use calls `register({ x, z, range, prompt, onInteract })
 ```ts
 const BASE_RADIUS = 0.5                                  // Station.tsx: pedestal width, also its collision circle
 addCollider({ kind: 'box', x, z, hx: 0.45, hz: 0.1 })    // Sign.tsx: half-width and half-depth of the sign's solid box
+const TRUNK_RADIUS = 0.25                                // Trees.tsx: tree collision circle at scale 1 (scaled with the tree)
 PILL_RADIUS * 0.5                                        // Player.tsx: longest move per substep, so fast rolls can't pass through thin obstacles
 ```
 
@@ -189,7 +190,7 @@ const INSET = 1.2               // Minimap.tsx: the player arrow sticks to the m
 
 ---
 
-## Island and cliffs: [src/game/Island.tsx](../src/game/Island.tsx)
+## Island, cliffs and trees: [src/game/Island.tsx](../src/game/Island.tsx), [src/game/Trees.tsx](../src/game/Trees.tsx)
 
 ```ts
 export const ISLAND_RADIUS = 18 // Island.tsx: in tiles; every tile whose centre is closer than this to spawn is land, so the shore steps along tile edges
@@ -205,7 +206,15 @@ const RIM = ...                 // capstone colour
 const WATER_SIZE = 400          // water plane size; big enough that the camera never sees its edge
 const FOAM = 0.4                // width of the white surf border at the foot of the cliffs; keep under half a tile
 const FOAM_PULSE = 1.2          // how fast the surf fades in and out, rad/s
+const SEED = 7                  // Trees.tsx: change for a different (but still fixed) tree layout
+const MAX_TREES = 70            // upper limit on trees
+const CLEARANCE = 1             // tiles kept free around every road tile, place and the sign
+const SHORE_GAP = 1             // tiles kept free between trees and the cliff edge
+const MIN_SCALE = 0.8           // trees are randomly sized between these
+const MAX_SCALE = 1.3
 ```
+
+Trees sit on tile centres and never touch each other, diagonals included, so there's always a gap to walk through. They're placeholders: a trunk and a cone, drawn as two instanced meshes. The welcome sign's position is `SIGN` in pois.ts so trees can keep clear of it.
 
 ---
 

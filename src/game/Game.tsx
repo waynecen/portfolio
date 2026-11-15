@@ -9,12 +9,14 @@ import { Joystick } from './Joystick'
 import { Minimap, MinimapTracker } from './Minimap'
 import { MusicPanel, NowPlaying } from './MusicPanel'
 import { Player } from './Player'
+import { SIGN } from './pois'
 import { ProjectCard } from './ProjectCard'
 import { detectTier, isTouch } from './quality'
 import { RecordPlayer } from './RecordPlayer'
 import { Roads } from './Roads'
 import { Sign } from './Sign'
 import { Stations } from './Station'
+import { Trees } from './Trees'
 
 const tier = detectTier()
 
@@ -53,8 +55,9 @@ export function Game() {
         <directionalLight position={[5, 10, 4]} intensity={1.5} />
         <Island />
         <Roads />
+        <Trees />
         <Stations />
-        <Sign x={-2} z={-2} lines={WELCOME} />
+        <Sign x={SIGN.x} z={SIGN.z} lines={WELCOME} />
         <RecordPlayer />
         <Interactions />
         <MinimapTracker />

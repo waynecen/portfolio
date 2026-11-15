@@ -11,6 +11,8 @@ export type Poi = { kind: PoiKind; x: number; z: number; label: string }
 export const HUB = { x: 0, z: 0 }
 /** To the right of spawn, just past the ring of project stations. Places sit on tile centres (whole numbers). */
 export const RECORD_PLAYER = { x: 9, z: 0 }
+/** The welcome sign, just off the plaza. Not a place on the map, but trees keep clear of it. */
+export const SIGN = { x: -2, z: -2 }
 
 export const pois: Poi[] = [
   { kind: 'home', ...HUB, label: 'Start' },
