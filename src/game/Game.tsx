@@ -12,7 +12,6 @@ import { Interactions } from './Interactions'
 import { Island } from './Island'
 import { Joystick } from './Joystick'
 import { BED_SPAWN } from './layout'
-import { Minimap, MinimapTracker } from './Minimap'
 import { MusicPanel, NowPlaying } from './MusicPanel'
 import { Player } from './Player'
 import { ProjectCard } from './ProjectCard'
@@ -75,13 +74,11 @@ export function Game() {
         </group>
         <Doors />
         <Interactions />
-        <MinimapTracker />
         <Player />
         <CameraRig />
       </Canvas>
       <Fade />
       <Hearts />
-      {scene === 'world' && <Minimap />}
       <ProjectCard />
       <Prompt />
       <Dialogue />

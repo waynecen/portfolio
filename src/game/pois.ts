@@ -2,8 +2,8 @@ import { tileAt, type Tile } from './grid'
 import { HOUSE } from './layout'
 import { projects, stationPos } from './projects'
 
-// Points of interest: the single list that roads and the minimap are built from.
-// Add a place here (and place its object at the same x/z) to give it a road and a map icon.
+// Points of interest: the single list that roads are built from.
+// Add a place here (and place its object at the same x/z) to give it a road.
 
 export type PoiKind = 'home' | 'project'
 export type Poi = { kind: PoiKind; x: number; z: number; label: string }
@@ -81,7 +81,7 @@ export const roads: Tile[][] = pois
     return path.slice(0, -1) // stop on the doorstep, not under the place itself
   })
 
-/** Every loop and road tile, once each: what Roads.tsx and the minimap draw. */
+/** Every loop and road tile, once each: what Roads.tsx draws. */
 export const roadTiles: Tile[] = (() => {
   const seen = new Map<string, Tile>()
   for (const t of loop) seen.set(key(t), t)
