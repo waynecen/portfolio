@@ -179,15 +179,13 @@ Panel and now-playing styles are `.music-*` and `.now-playing` in [style.css](..
 
 ---
 
-## Grid, roads and minimap: [src/game/grid.ts](../src/game/grid.ts), [src/game/pois.ts](../src/game/pois.ts), [src/game/Roads.tsx](../src/game/Roads.tsx), [src/game/Minimap.tsx](../src/game/Minimap.tsx)
+## Grid and roads: [src/game/grid.ts](../src/game/grid.ts), [src/game/pois.ts](../src/game/pois.ts), [src/game/Roads.tsx](../src/game/Roads.tsx)
 
 ```ts
 export const TILE = 1            // grid.ts: size of one grid tile in world units; places, props and roads sit on tile centres
-const MARGIN = 4                // Minimap.tsx: empty tiles around the outermost POIs on the map
-const INSET = 1.2               // Minimap.tsx: the player arrow sticks to the map edge this far in when you wander off it
 ```
 
-`pois` in pois.ts is the one list of places: home and each project station. Add an entry, and place its object at the same whole-number x/z, to give it a road and a map icon. A path one tile wide runs all the way round the house, and every road leaves it from the loop tile nearest its place. Roads are one tile wide and run in straight lines with at most one 90° corner. They go along the shorter axis first and stop on the tile next to the place. If that route would cross another place or the house, they take the other corner. The map's size and colours are `.minimap` and `.map-*` in [style.css](../src/style.css). Its width is 168px on desktop and 128px on touch.
+There's no map on purpose: the island is found by walking round it. `pois` in pois.ts is the one list of places: home and each project station. Add an entry, and place its object at the same whole-number x/z, to give it a road. A path one tile wide runs all the way round the house, and every road leaves it from the loop tile nearest its place. Roads are one tile wide and run in straight lines with at most one 90° corner. They go along the shorter axis first and stop on the tile next to the place. If that route would cross another place or the house, they take the other corner.
 
 ---
 
