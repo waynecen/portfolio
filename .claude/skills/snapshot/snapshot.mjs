@@ -27,7 +27,7 @@ const errors = []
 const shots = []
 let failed = false
 
-async function page(name, options) {
+async function page(name, options, hour) {
   const context = await browser.newContext(options)
   const p = await context.newPage()
   p.on('pageerror', (e) => errors.push(`${name}: ${e.message}`))
@@ -36,7 +36,7 @@ async function page(name, options) {
     // The browser asks for /favicon.ico on its own; the site doesn't have one yet.
     if (m.type() === 'error' && !url.endsWith('/favicon.ico')) errors.push(`${name}: ${m.text()} ${url}`)
   })
-  await p.goto(URL)
+  await p.goto(hour === undefined ? URL : `${URL}?hour=${hour}`) // pin the clock, so shots compare between runs
   return p
 }
 
@@ -45,6 +45,15 @@ async function shot(p, name) {
   await p.screenshot({ path })
   shots.push(path)
 }
+
+// Hours to shoot the game at, one per time-of-day slot in src/game/sky.ts.
+const HOURS = [
+  [10, 'morning'],
+  [6, 'dawn'],
+  [14, 'afternoon'],
+  [18, 'evening'],
+  [21, 'night'],
+]
 
 const startGame = (p) => p.waitForFunction(() => document.body.classList.contains('playing'), null, { timeout: 20000 })
 
@@ -63,21 +72,22 @@ try {
     await p.context().close()
   }
 
-  // 2. The game on desktop: the room you start in, then the island after walking out of the door.
-  {
-    const p = await page('desktop', { viewport: { width: 1280, height: 720 } })
+  // 2. The game on desktop at each time of day (see src/game/sky.ts): the room you start in, then
+  //    the island after walking out of the door. Mid-morning is the plain look, with no weather.
+  for (const [hour, label] of HOURS) {
+    const p = await page(`desktop ${label}`, { viewport: { width: 1280, height: 720 } }, hour)
     await startGame(p)
     await p.waitForTimeout(1500)
-    await shot(p, 'desktop-house')
+    if (label === 'morning' || label === 'night') await shot(p, `desktop-house-${label}`)
     // From the bed: right to the middle of the room, then down through the door.
     await hold(p, 'KeyD', 750)
     await hold(p, 'KeyS', 1800)
     try {
       await p.waitForSelector('.minimap', { timeout: 3000 }) // the minimap only shows outdoors
       await p.waitForTimeout(800)
-      await shot(p, 'desktop-island')
+      await shot(p, `desktop-island-${label}`)
     } catch {
-      console.error('Could not walk out of the house (the room layout may have changed); skipped desktop-island.')
+      console.error(`Could not walk out of the house (the room layout may have changed); skipped desktop-island-${label}.`)
       failed = true
     }
     await p.context().close()
@@ -85,7 +95,7 @@ try {
 
   // 3. The game on a phone.
   {
-    const p = await page('mobile', { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 })
+    const p = await page('mobile', { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 }, 10)
     await startGame(p)
     await p.waitForTimeout(1500)
     await shot(p, 'mobile-house')

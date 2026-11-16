@@ -23,11 +23,11 @@ The script:
 The shots:
 
 - `desktop-page.png`: the plain HTML page, which is the first view. The script turns on reduced motion so the game doesn't start.
-- `desktop-house.png`: the room the game starts in, at 1280 × 720.
-- `desktop-island.png`: the island after walking out of the front door. It holds D, then S, from the bed spawn. If a layout change blocks that route, update the walk in the script.
+- `desktop-house-morning.png` and `desktop-house-night.png`: the room the game starts in, at 1280 × 720.
+- `desktop-island-<slot>.png` for morning, dawn, afternoon, evening and night: the island after walking out of the front door. It holds D, then S, from the bed spawn. If a layout change blocks that route, update the walk in the script.
 - `mobile-house.png`: the starting room at 390 × 844 with touch controls.
 
-It takes about a minute.
+Each game shot pins the clock with `?hour=` (see `HOURS` in the script), so shots compare between runs whatever the real time. It takes about two minutes.
 
 ## After running
 
