@@ -83,7 +83,7 @@ try {
     await hold(p, 'KeyD', 750)
     await hold(p, 'KeyS', 1800)
     try {
-      await p.waitForSelector('.minimap', { timeout: 3000 }) // the minimap only shows outdoors
+      await p.waitForSelector('body[data-scene="world"]', { timeout: 3000 }) // set by Game.tsx once outdoors
       await p.waitForTimeout(800)
       await shot(p, `desktop-island-${label}`)
     } catch {

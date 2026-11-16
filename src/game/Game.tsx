@@ -34,6 +34,10 @@ export function Game() {
   const isGameView = () => document.body.dataset.view === 'game'
   const [active, setActive] = useState(isGameView)
   const scene = useGame((s) => s.scene)
+  // The area on show, on <body> for CSS and for tools that drive the page (the snapshot skill).
+  useEffect(() => {
+    document.body.dataset.scene = scene
+  }, [scene])
   useEffect(() => {
     setActive(isGameView()) // catch a switch that happened before this effect attached
     const onVisibility = () => setVisible(!document.hidden)
