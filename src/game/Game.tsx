@@ -5,6 +5,7 @@ import { CameraRig, DISTANCE, HEIGHT } from './CameraRig'
 import { Dialogue, Prompt } from './Dialogue'
 import { Doors } from './Doors'
 import { Fade } from './Fade'
+import { Fireflies } from './Fireflies'
 import { Hearts } from './Hearts'
 import { HouseExterior, HouseInterior } from './House'
 import { Interactions } from './Interactions'
@@ -62,6 +63,7 @@ export function Game() {
           <Stations />
           <HouseExterior />
           <Rain />
+          <Fireflies />
         </group>
         <group visible={scene === 'house'}>
           <HouseInterior />

@@ -1,10 +1,12 @@
+import { useFrame } from '@react-three/fiber'
 import { useEffect } from 'react'
-import { Color, CylinderGeometry, ExtrudeGeometry, Shape, type BufferGeometry } from 'three'
+import { Color, CylinderGeometry, ExtrudeGeometry, MeshLambertMaterial, Shape, type BufferGeometry } from 'three'
 import { addCollider, type Collider } from './collision'
 import { block, flat, merge, pick, tint, unindexed } from './geometry'
 import { register, say } from './interact'
 import { DOOR, FRONT_DOOR, HOUSE, INTERIOR, ROOM } from './layout'
 import { isTouch } from './quality'
+import { sky } from './sky'
 
 // The house the game starts in: one room seen from above, with nothing around it (the background
 // is black indoors), and the same house seen from outside at the centre of the island. Built from
@@ -195,7 +197,6 @@ const O = {
   ridge: new Color('#9e4532'),
   door: new Color('#7a4f30'),
   frame: new Color('#5c3b24'),
-  glass: new Color('#8fb8d8'),
 }
 
 const X0 = HOUSE.i0 - 0.5
@@ -241,12 +242,16 @@ function buildExterior(): BufferGeometry {
   box(O.door, fx - DOOR + 0.1, fx + DOOR - 0.1, 0, 0.97, Z1 + 0.05, Z1 + 0.07)
   for (const x of [fx - 1.5, fx + 1.5]) {
     box(O.frame, x - 0.32, x + 0.32, 0.5, 1.1, Z1, Z1 + 0.04)
-    box(O.glass, x - 0.24, x + 0.24, 0.58, 1.02, Z1 + 0.04, Z1 + 0.05)
   }
   return merge(parts)
 }
 
 const exterior = buildExterior()
+
+// The window panes are their own mesh so they can light up from inside at night.
+const GLOW = 1.1 // how bright the windows glow at full night
+const panes = merge([FRONT_DOOR.x - 1.5, FRONT_DOOR.x + 1.5].map((x) => block(x - 0.24, x + 0.24, 0.58, 1.02, Z1 + 0.04, Z1 + 0.05)))
+const paneMaterial = new MeshLambertMaterial({ color: '#8fb8d8', emissive: '#ffc766', emissiveIntensity: 0 })
 
 /** The house from outside, at the centre of the island. Its door leads in (see Doors.tsx). */
 export function HouseExterior() {
@@ -254,9 +259,15 @@ export function HouseExterior() {
     () => addCollider({ kind: 'box', x: (X0 + X1) / 2, z: (Z0 + Z1) / 2, hx: (X1 - X0) / 2, hz: (Z1 - Z0) / 2 }),
     [],
   )
+  useFrame(() => {
+    paneMaterial.emissiveIntensity = GLOW * sky.weather.night
+  })
   return (
-    <mesh geometry={exterior}>
-      <meshLambertMaterial vertexColors flatShading />
-    </mesh>
+    <>
+      <mesh geometry={exterior}>
+        <meshLambertMaterial vertexColors flatShading />
+      </mesh>
+      <mesh geometry={panes} material={paneMaterial} />
+    </>
   )
 }
