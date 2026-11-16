@@ -53,7 +53,7 @@ const NOTE = isTouch
       'The door at the bottom of the room leads outside.',
       'Each pillar out there is a project. Walk up to one to see it, then press E to open it.',
     ]
-const NOTE_AT = { x: 3.1, z: 0 }
+const NOTE_AT = { x: 2.85, z: -3 }
 
 const H = ROOM.hx // inner half-width
 const D = ROOM.hz // inner half-depth
@@ -68,13 +68,13 @@ const SOLIDS: Collider[] = [
   { kind: 'box', x: 0, z: D + WALL + 0.5, hx: DOOR, hz: 0.25 }, // backstop past the doorstep
   { kind: 'box', x: -4, z: -2.53, hx: 0.45, hz: 0.93 }, // bed
   { kind: 'box', x: 0, z: -3.33, hx: 1.2, hz: 0.18 }, // dresser
-  { kind: 'box', x: 3.5, z: 0, hx: 0.95, hz: 0.45 }, // table
-  { kind: 'circle', x: 3.5, z: -1.1, r: 0.22 }, // stools
-  { kind: 'circle', x: 3.5, z: 1.1, r: 0.22 },
+  { kind: 'box', x: 2.95, z: -3, hx: 0.95, hz: 0.45 }, // table
+  { kind: 'circle', x: 1.65, z: -3, r: 0.22 }, // stools
+  { kind: 'circle', x: 3.45, z: -2.1, r: 0.22 },
   { kind: 'circle', x: -5, z: -0.8, r: 0.3 }, // pots
   { kind: 'circle', x: -5, z: 0, r: 0.3 },
   { kind: 'circle', x: -5, z: 0.8, r: 0.3 },
-  { kind: 'box', x: 4, z: 2, hx: 0.4, hz: 0.3 }, // chest
+  { kind: 'box', x: -2.9, z: -3.15, hx: 0.4, hz: 0.3 }, // chest
 ]
 
 // Floor: planks half a tile deep and one tile long, every other row shifted half a tile like
@@ -139,20 +139,20 @@ function buildFurnishings(): BufferGeometry {
   box(C.cap, -1.25, 1.25, 1.0, 1.06, -3.52, -3.12)
   for (const x of [-0.7, 0, 0.7]) parts.push(cylinder(x, -3.33, 0.12, 0.1, 1.06, 1.3, C.jar))
 
-  // Table with a stool either side, and the note on top.
-  box(C.wood, 2.55, 4.45, 0.5, 0.6, -0.45, 0.45)
-  for (const x of [2.65, 4.27]) for (const z of [-0.35, 0.27]) box(C.wood, x, x + 0.08, 0, 0.5, z, z + 0.08)
-  parts.push(cylinder(3.5, -1.1, 0.22, 0.22, 0, 0.35, C.wood))
-  parts.push(cylinder(3.5, 1.1, 0.22, 0.22, 0, 0.35, C.wood))
+  // Table against the back wall, a stool at its end and one in front, and the note on top.
+  box(C.wood, 2, 3.9, 0.5, 0.6, -3.45, -2.55)
+  for (const x of [2.1, 3.72]) for (const z of [-3.35, -2.73]) box(C.wood, x, x + 0.08, 0, 0.5, z, z + 0.08)
+  parts.push(cylinder(1.65, -3, 0.22, 0.22, 0, 0.35, C.wood))
+  parts.push(cylinder(3.45, -2.1, 0.22, 0.22, 0, 0.35, C.wood))
   box(C.paper, NOTE_AT.x - 0.15, NOTE_AT.x + 0.15, 0.6, 0.615, NOTE_AT.z - 0.12, NOTE_AT.z + 0.12)
 
   // Rug inside the door: a border with a lighter field.
   box(C.rugEdge, -1.5, 1.5, 0, 0.012, 0.6, 3.0)
   box(C.rugField, -1.25, 1.25, 0, 0.018, 0.85, 2.75)
 
-  // Chest in the bottom-right corner, with a brass band.
-  box(C.wood, 3.6, 4.4, 0, 0.45, 1.7, 2.3)
-  box(C.brass, 3.58, 4.42, 0.3, 0.36, 1.68, 2.32)
+  // Chest beside the bed, against the back wall, with a brass band.
+  box(C.wood, -3.3, -2.5, 0, 0.45, -3.45, -2.85)
+  box(C.brass, -3.32, -2.48, 0.3, 0.36, -3.47, -2.83)
 
   return merge(parts)
 }
