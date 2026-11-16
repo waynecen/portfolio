@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- The yellow pill character on the page's green. -->
+  <rect width="32" height="32" rx="7" fill="#cfe8d5"/>
+  <rect x="9" y="4" width="14" height="22" rx="7" fill="#e3c25a" stroke="#2b2b2b" stroke-width="1.5"/>
+  <circle cx="13.5" cy="13" r="1.6" fill="#2b2b2b"/>
+  <circle cx="18.5" cy="13" r="1.6" fill="#2b2b2b"/>
+  <ellipse cx="12" cy="27" rx="3" ry="1.8" fill="#e3c25a" stroke="#2b2b2b" stroke-width="1.5"/>
+  <ellipse cx="20" cy="27" rx="3" ry="1.8" fill="#e3c25a" stroke="#2b2b2b" stroke-width="1.5"/>
+</svg>
