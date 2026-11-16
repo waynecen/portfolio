@@ -24,6 +24,18 @@ body:not(.playing) #game { visibility: hidden; }
 .project-card .project-card-action { margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: .2em; }
 .project-card a { color: var(--ink); }
 .project-card-links { display: flex; flex-wrap: wrap; gap: 4px 20px; margin: 0 0 12px; padding: 0; list-style: none; }
+/* Shown over the page while the 3D chunk loads, faded out on the game's first frame (src/main.tsx).
+   Black, like the room the game starts in. Under the view toggle, so the page stays one click away. */
+.loader {
+  position: fixed; inset: 0; z-index: 5; display: grid; place-items: center; background: #000; color: var(--bg);
+  font: 300 12px/1.34 system-ui, sans-serif; text-transform: uppercase; letter-spacing: .2em;
+  opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .4s ease, visibility 0s .4s;
+}
+.loader p { margin: 0; }
+body.loading .loader { opacity: 1; visibility: visible; pointer-events: auto; transition: none; }
+.loader-dots::after { content: "..."; display: inline-block; width: 3ch; text-align: left; animation: loader-dots 1.2s steps(4) infinite; overflow: hidden; vertical-align: bottom; }
+@keyframes loader-dots { from { width: 0; } }
+@media (prefers-reduced-motion: reduce) { .loader { transition: none; } .loader-dots::after { animation: none; } }
 .hud-hearts {
   position: absolute; display: flex; gap: 4px; pointer-events: none;
   top: max(12px, env(safe-area-inset-top)); left: max(12px, env(safe-area-inset-left));

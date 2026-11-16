@@ -59,6 +59,8 @@ export function Game() {
         dpr={tier === 'low' ? [1, 1.25] : [1, 1.5]}
         gl={{ antialias: tier === 'high', powerPreference: 'high-performance' }}
         camera={{ position: [0, HEIGHT, DISTANCE], fov: 35 }}
+        // Tell main.tsx to lift the loader once a frame is on screen (two frames: the scene's first draw lands in between).
+        onCreated={() => requestAnimationFrame(() => requestAnimationFrame(() => dispatchEvent(new Event('gameready'))))}
       >
         <Atmosphere />
         {/* Both areas stay mounted (so nothing is rebuilt on each trip) but only one is drawn. */}
