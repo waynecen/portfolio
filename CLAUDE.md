@@ -18,6 +18,7 @@ React Three Fiber + Vite portfolio: an explorable 3D diorama world. Deployed on 
 - Work on a branch (e.g. `feat/player-movement`); keep `main` for finished work.
 - Never skip hooks, force-push, or rewrite pushed history.
 - Only commit or push when asked.
+- After every push, run the `snapshot` skill (`.claude/skills/snapshot/`) to screenshot the local production build, look at the shots, and report anything off.
 
 ## Performance
 
