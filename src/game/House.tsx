@@ -41,6 +41,7 @@ const NOTE = isTouch
       'Welcome home! This little world is my portfolio.',
       'Drag the joystick on the left to walk. Hold B to sprint.',
       'Tap A to read, talk or use whatever is nearby. With nothing nearby, A makes you roll.',
+      'The record player by the back wall plays music. Tap A beside it to choose a song.',
       'The door at the bottom of the room leads outside.',
       'Each pillar out there is a project. Walk up to one to see it, then tap A to open it.',
     ]
@@ -48,6 +49,7 @@ const NOTE = isTouch
       'Welcome home! This little world is my portfolio.',
       'Walk with WASD or the arrow keys. Hold Shift to sprint, and press Space to roll.',
       'Press E or Enter to read, talk or use whatever is nearby.',
+      'The record player by the back wall plays music. Press E beside it to choose a song.',
       'The door at the bottom of the room leads outside.',
       'Each pillar out there is a project. Walk up to one to see it, then press E to open it.',
     ]

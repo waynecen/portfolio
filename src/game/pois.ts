@@ -5,18 +5,15 @@ import { projects, stationPos } from './projects'
 // Points of interest: the single list that roads and the minimap are built from.
 // Add a place here (and place its object at the same x/z) to give it a road and a map icon.
 
-export type PoiKind = 'home' | 'project' | 'music'
+export type PoiKind = 'home' | 'project'
 export type Poi = { kind: PoiKind; x: number; z: number; label: string }
 
-/** The house at the centre of the map, where the game starts. */
+/** The house at the centre of the map, where the game starts. Places sit on tile centres (whole numbers). */
 export const HUB = { x: 0, z: 0 }
-/** To the right of spawn, just past the ring of project stations. Places sit on tile centres (whole numbers). */
-export const RECORD_PLAYER = { x: 9, z: 0 }
 
 export const pois: Poi[] = [
   { kind: 'home', ...HUB, label: 'Home' },
   ...stationPos.map((p, i) => ({ kind: 'project' as const, x: p.x, z: p.z, label: projects[i].title })),
-  { kind: 'music', ...RECORD_PLAYER, label: 'Record player' },
 ]
 
 const key = (t: Tile) => `${t.i},${t.j}`

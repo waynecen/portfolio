@@ -63,10 +63,10 @@ export function Game() {
           <Trees />
           <Stations />
           <HouseExterior />
-          <RecordPlayer />
         </group>
         <group visible={scene === 'house'}>
           <HouseInterior />
+          <RecordPlayer />
         </group>
         <Doors />
         <Interactions />

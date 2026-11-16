@@ -29,14 +29,6 @@ function Icon({ kind }: { kind: PoiKind }) {
       return <path className="map-home" d="M-1.1 .2L0-1 1.1 .2V1H-1.1Z" />
     case 'project':
       return <path className="map-project" d="M0-1.2L1 0 0 1.2-1 0Z" />
-    case 'music':
-      return (
-        <g className="map-music">
-          <circle r="1.25" />
-          <path d="M-.1 .55V-.75L.6-.55" fill="none" strokeWidth=".22" />
-          <circle cx="-.35" cy=".55" r=".3" />
-        </g>
-      )
   }
 }
 
