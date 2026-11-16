@@ -109,9 +109,13 @@ const footMat = new MeshLambertMaterial({ color: '#d9a536' }) // feet (a darker 
 export const HEIGHT = 12   // how high the camera sits above the floor
 export const DISTANCE = 12 // how far back (toward the viewer) it sits from the player; equal HEIGHT and DISTANCE = a 45° view
 const LAMBDA = 4           // follow rate: higher = camera sticks closer to the player, lower = floatier lag
+const ROOM_MARGIN = 1      // indoors: black kept beside the room's side walls when the screen is wide enough
+const ROOM_SHIFT = -0.5    // indoors: aim this far behind the room's centre so the tall back wall stays in view
 ```
 
 To zoom, change `HEIGHT` and `DISTANCE` together. To make the view more top-down, raise `HEIGHT` relative to `DISTANCE`.
+
+Indoors the camera holds still on the room. On a screen too narrow to show the whole room, it follows the player sideways, but never far enough to show past the walls.
 
 Field of view is set in [Game.tsx](../src/game/Game.tsx): `fov: 35` (degrees). Lower is more zoomed-in and flatter, higher is wider and more distorted.
 
@@ -132,7 +136,7 @@ The projects themselves aren't constants. They're read from the `#projects artic
 ## Interactions and dialogue: [src/game/interact.ts](../src/game/interact.ts), [src/game/Dialogue.tsx](../src/game/Dialogue.tsx)
 
 ```ts
-range: 1.4                   // Sign.tsx: how close the player must be to read a sign (every interactable sets its own range)
+range: 1.4                   // House.tsx: how close the player must be to read the note (every interactable sets its own range)
 const CHARS_PER_SECOND = 40  // Dialogue.tsx: typewriter speed; lines appear instantly with "reduce motion" on
 const PAUSE_SENTENCE = 0.25  // Dialogue.tsx: extra pause (s) after . ! ? so the text reads like speech
 const PAUSE_COMMA = 0.1      // Dialogue.tsx: extra pause (s) after , ; :
@@ -140,7 +144,7 @@ const PAUSE_COMMA = 0.1      // Dialogue.tsx: extra pause (s) after , ; :
 
 Bubble look is in [style.css](../src/style.css): `.dialogue-cloud` `fill` (cream), `.dialogue` `color` (brown text), `.dialogue-next` `fill` (arrow), and the `dialogue-pop` keyframes (pop-in). The cloud outline is the SVG `path` in Dialogue.tsx; it stretches to fit, so it works at any width.
 
-Anything the player can use calls `register({ x, z, range, prompt, onInteract })` in an effect. Each frame, the nearest one in range gets focus and shows its prompt ("E Read"), or its project card if it has a `card`. To add a sign, place `<Sign x z lines={[…]} />` in [Game.tsx](../src/game/Game.tsx). The welcome text is the `WELCOME` array there.
+Anything the player can use calls `register({ x, z, range, prompt, onInteract })` in an effect. Each frame, the nearest one in range gets focus and shows its prompt ("E Read"), or its project card if it has a `card`. To add a sign, place `<Sign x z lines={[…]} />` in [Game.tsx](../src/game/Game.tsx). The welcome and controls text is the `NOTE` array in [House.tsx](../src/game/House.tsx), with a keyboard and a touch version.
 
 ---
 
@@ -181,12 +185,11 @@ Panel and now-playing styles are `.music-*` and `.now-playing` in [style.css](..
 ```ts
 export const RECORD_PLAYER = { x: 9, z: 0 } // pois.ts: record player position (its road and map icon follow it)
 export const TILE = 1            // grid.ts: size of one grid tile in world units; places, props and roads sit on tile centres
-export const PLAZA = 1           // pois.ts: half-size of the square plaza at spawn in tiles (1 = 3×3)
 const MARGIN = 4                // Minimap.tsx: empty tiles around the outermost POIs on the map
 const INSET = 1.2               // Minimap.tsx: the player arrow sticks to the map edge this far in when you wander off it
 ```
 
-`pois` in pois.ts is the one list of places: start, each project station and the record player. Add an entry, and place its object at the same whole-number x/z, to give it a road and a map icon. Roads are one tile wide and run in straight lines with at most one 90° corner. They go along the shorter axis first and stop on the tile next to the place. If that route would cross another place, they take the other corner. The map's size and colours are `.minimap` and `.map-*` in [style.css](../src/style.css). Its width is 168px on desktop and 128px on touch.
+`pois` in pois.ts is the one list of places: home, each project station and the record player. Add an entry, and place its object at the same whole-number x/z, to give it a road and a map icon. A path one tile wide runs all the way round the house, and every road leaves it from the loop tile nearest its place. Roads are one tile wide and run in straight lines with at most one 90° corner. They go along the shorter axis first and stop on the tile next to the place. If that route would cross another place or the house, they take the other corner. The map's size and colours are `.minimap` and `.map-*` in [style.css](../src/style.css). Its width is 168px on desktop and 128px on touch.
 
 ---
 
@@ -208,13 +211,40 @@ const FOAM = 0.4                // width of the white surf border at the foot of
 const FOAM_PULSE = 1.2          // how fast the surf fades in and out, rad/s
 const SEED = 7                  // Trees.tsx: change for a different (but still fixed) tree layout
 const MAX_TREES = 70            // upper limit on trees
-const CLEARANCE = 1             // tiles kept free around every road tile, place and the sign
+const CLEARANCE = 1             // tiles kept free around every road tile, place and the house
 const SHORE_GAP = 1             // tiles kept free between trees and the cliff edge
 const MIN_SCALE = 0.8           // trees are randomly sized between these
 const MAX_SCALE = 1.3
 ```
 
-Trees sit on tile centres and never touch each other, diagonals included, so there's always a gap to walk through. They're placeholders: a trunk and a cone, drawn as two instanced meshes. The welcome sign's position is `SIGN` in pois.ts so trees can keep clear of it.
+Trees sit on tile centres and never touch each other, diagonals included, so there's always a gap to walk through. They're placeholders: a trunk and a cone, drawn as two instanced meshes.
+
+---
+
+## House and doors: [src/game/House.tsx](../src/game/House.tsx), [src/game/layout.ts](../src/game/layout.ts), [src/game/Doors.tsx](../src/game/Doors.tsx), [src/game/scene.ts](../src/game/scene.ts)
+
+```ts
+export const INTERIOR = { x: 0, z: -200 }     // layout.ts: where the room is built, far off the island so nothing outside can reach it
+export const ROOM = { hx: 5.5, hz: 3.5 }      // half-size of the room's floor (11 × 7 tiles); the walls, doors and indoor camera follow it
+export const DOOR = 0.5                       // half-width of the doorway, inside and out
+export const BED_SPAWN = { x: INTERIOR.x - 3, z: INTERIOR.z - 2, heading: 0 } // where every visit starts
+export const HOUSE = { i0: -2, i1: 2, j0: -2, j1: 0 } // tiles the house covers on the island (5 × 3); roads loop round it
+export const OUTSIDE_SPAWN = { x: FRONT_DOOR.x, z: FRONT_DOOR.z + 1.1, heading: 0 } // coming out: in front of the door, facing the camera
+export const INSIDE_SPAWN = { x: INTERIOR.x, z: INTERIOR.z + ROOM.hz - 1, heading: Math.PI } // going in: on the rug, facing into the room
+const WALL = 0.5        // House.tsx: room wall thickness
+const WALL_H = 1.6      // height of the room's back and side walls
+const FRONT_H = 0.35    // height of the front wall; kept low so it never hides the room
+const SEAM = 0.03       // dark gap between floor planks
+const PLANK = [...]     // floor plank colours; each plank picks one from a fixed hash
+const OUT_WALL_H = 1.4  // outside: wall height
+const RISE = 1          // outside: height of the roof's ridge above the walls
+const EAVES = 0.25      // outside: how far the roof overhangs the walls
+const WAY_OUT = ROOM.hz + 0.25     // Doors.tsx: step this far down the room through the doorway to leave
+const PRESS = PILL_RADIUS + 0.1    // walk this close to the front door from outside to go in
+export const FADE = 0.25           // scene.ts: seconds to fade to black, and again to fade back (instant with reduce motion)
+```
+
+Both areas stay loaded and only one is drawn, so trips are instant. Each arrival spot is clear of the doorway it came through, so arriving never sends you straight back; keep it that way if you move a spawn or a door. The fade's look is `.fade` in [style.css](../src/style.css); keep its transition time equal to `FADE`.
 
 ---
 
@@ -271,7 +301,8 @@ Heart size on screen is `.heart { width: 32px }` in [style.css](../src/style.css
 ```tsx
 dpr={tier === 'low' ? [1, 1.25] : [1, 1.5]}  // render resolution cap relative to the screen; the biggest performance lever on phones
 gl={{ antialias: tier === 'high' }}         // smooth edges only on stronger devices
-<color attach="background" args={['#cfe8d5']} />              // sky / background colour
+const SKY = '#cfe8d5'                                         // background outdoors
+const DARK = '#000000'                                        // background indoors, everything past the room's walls
 <hemisphereLight args={['#ffffff', '#88aa77', 1.2]} />        // sky colour, ground-bounce colour, brightness
 <directionalLight position={[5, 10, 4]} intensity={1.5} />    // the "sun": direction it shines from, and strength
 ```
