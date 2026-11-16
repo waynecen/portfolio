@@ -164,8 +164,7 @@ The player is a circle of `PILL_RADIUS`. Obstacles are circles or axis-aligned b
 ## Record player and music: [src/game/RecordPlayer.tsx](../src/game/RecordPlayer.tsx), [src/game/music.ts](../src/game/music.ts)
 
 ```ts
-const X = 19               // RecordPlayer.tsx: position, about one screen to the right of spawn
-const Z = 0
+export const RECORD_PLAYER = { x: INTERIOR.x + 4.8, z: INTERIOR.z - 3.15 } // layout.ts: in the house, against the back wall to the right of the table
 const RANGE = 1.8          // how close the player must be to use it
 const SPIN = 3.5           // platter speed while playing, rad/s (about 33 rpm); it spins up and winds down
 const PULSE = 0.08         // how much the cabinet bounces to the music's low end (off with reduce motion)
@@ -183,13 +182,12 @@ Panel and now-playing styles are `.music-*` and `.now-playing` in [style.css](..
 ## Grid, roads and minimap: [src/game/grid.ts](../src/game/grid.ts), [src/game/pois.ts](../src/game/pois.ts), [src/game/Roads.tsx](../src/game/Roads.tsx), [src/game/Minimap.tsx](../src/game/Minimap.tsx)
 
 ```ts
-export const RECORD_PLAYER = { x: 9, z: 0 } // pois.ts: record player position (its road and map icon follow it)
 export const TILE = 1            // grid.ts: size of one grid tile in world units; places, props and roads sit on tile centres
 const MARGIN = 4                // Minimap.tsx: empty tiles around the outermost POIs on the map
 const INSET = 1.2               // Minimap.tsx: the player arrow sticks to the map edge this far in when you wander off it
 ```
 
-`pois` in pois.ts is the one list of places: home, each project station and the record player. Add an entry, and place its object at the same whole-number x/z, to give it a road and a map icon. A path one tile wide runs all the way round the house, and every road leaves it from the loop tile nearest its place. Roads are one tile wide and run in straight lines with at most one 90° corner. They go along the shorter axis first and stop on the tile next to the place. If that route would cross another place or the house, they take the other corner. The map's size and colours are `.minimap` and `.map-*` in [style.css](../src/style.css). Its width is 168px on desktop and 128px on touch.
+`pois` in pois.ts is the one list of places: home and each project station. Add an entry, and place its object at the same whole-number x/z, to give it a road and a map icon. A path one tile wide runs all the way round the house, and every road leaves it from the loop tile nearest its place. Roads are one tile wide and run in straight lines with at most one 90° corner. They go along the shorter axis first and stop on the tile next to the place. If that route would cross another place or the house, they take the other corner. The map's size and colours are `.minimap` and `.map-*` in [style.css](../src/style.css). Its width is 168px on desktop and 128px on touch.
 
 ---
 
