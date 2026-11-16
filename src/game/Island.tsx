@@ -1,6 +1,5 @@
 import { useFrame } from '@react-three/fiber'
-import { useRef } from 'react'
-import { BoxGeometry, Color, PlaneGeometry, type BufferGeometry, type MeshBasicMaterial } from 'three'
+import { BoxGeometry, Color, MeshBasicMaterial, MeshLambertMaterial, PlaneGeometry, type BufferGeometry } from 'three'
 import { flat, merge, pick, tint, unindexed } from './geometry'
 import { TILE } from './grid'
 
@@ -123,11 +122,13 @@ function build() {
 
 const geometry = build()
 
-export function Island() {
-  const foam = useRef<MeshBasicMaterial>(null)
+/** Shared so Atmosphere.tsx can tint them with the time of day. */
+export const waterMaterial = new MeshLambertMaterial({ color: '#5aa7c7' })
+export const foamMaterial = new MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.5, depthWrite: false })
 
+export function Island() {
   useFrame(({ clock }) => {
-    if (foam.current) foam.current.opacity = 0.45 + 0.2 * Math.sin(clock.elapsedTime * FOAM_PULSE)
+    foamMaterial.opacity = 0.45 + 0.2 * Math.sin(clock.elapsedTime * FOAM_PULSE)
   })
 
   return (
@@ -140,12 +141,9 @@ export function Island() {
       <mesh geometry={geometry.stone}>
         <meshLambertMaterial vertexColors flatShading />
       </mesh>
-      <mesh geometry={geometry.foam}>
-        <meshBasicMaterial ref={foam} color="#ffffff" transparent opacity={0.5} depthWrite={false} />
-      </mesh>
-      <mesh rotation-x={-Math.PI / 2} position-y={WATER_Y}>
+      <mesh geometry={geometry.foam} material={foamMaterial} />
+      <mesh rotation-x={-Math.PI / 2} position-y={WATER_Y} material={waterMaterial}>
         <planeGeometry args={[WATER_SIZE, WATER_SIZE]} />
-        <meshLambertMaterial color="#5aa7c7" />
       </mesh>
     </>
   )

@@ -1,5 +1,6 @@
 import { Canvas } from '@react-three/fiber'
 import { useEffect, useState } from 'react'
+import { Atmosphere } from './Atmosphere'
 import { CameraRig, DISTANCE, HEIGHT } from './CameraRig'
 import { Dialogue, Prompt } from './Dialogue'
 import { Doors } from './Doors'
@@ -23,8 +24,6 @@ import { useGame } from './store'
 import { Trees } from './Trees'
 
 const tier = detectTier()
-const SKY = '#cfe8d5'
-const DARK = '#000000' // indoors, everything past the room's walls
 
 arrive('house', BED_SPAWN) // every visit starts at home
 
@@ -53,9 +52,7 @@ export function Game() {
         gl={{ antialias: tier === 'high', powerPreference: 'high-performance' }}
         camera={{ position: [0, HEIGHT, DISTANCE], fov: 35 }}
       >
-        <color attach="background" args={[scene === 'house' ? DARK : SKY]} />
-        <hemisphereLight args={['#ffffff', '#88aa77', 1.2]} />
-        <directionalLight position={[5, 10, 4]} intensity={1.5} />
+        <Atmosphere />
         {/* Both areas stay mounted (so nothing is rebuilt on each trip) but only one is drawn. */}
         <group visible={scene === 'world'}>
           <Island />
