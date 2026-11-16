@@ -1,19 +1,19 @@
 import { useEffect } from 'react'
-import { Color, CylinderGeometry, type BufferGeometry } from 'three'
+import { Color, CylinderGeometry, ExtrudeGeometry, Shape, type BufferGeometry } from 'three'
 import { addCollider, type Collider } from './collision'
-import { block, flat, merge, pick, tint } from './geometry'
+import { block, flat, merge, pick, tint, unindexed } from './geometry'
 import { register, say } from './interact'
-import { INTERIOR, ROOM } from './layout'
+import { DOOR, FRONT_DOOR, HOUSE, INTERIOR, ROOM } from './layout'
 import { isTouch } from './quality'
 
 // The house the game starts in: one room seen from above, with nothing around it (the background
-// is black indoors). Built from placeholder blocks, all merged into a couple of meshes. Positions
-// below are house-local; the room sits at INTERIOR in the world.
+// is black indoors), and the same house seen from outside at the centre of the island. Built from
+// placeholder blocks, merged into a few meshes. Interior positions are house-local; the room sits
+// at INTERIOR in the world.
 
 const WALL = 0.5 // wall thickness
 const WALL_H = 1.6 // back and side walls
 const FRONT_H = 0.35 // the front wall stays low so it never hides the room
-const DOOR = 0.5 // half-width of the gap in the front wall
 const CAP = 0.08 // the wooden cap along the top of every wall
 const SEAM = 0.03 // dark gap left between floor planks
 
@@ -177,5 +177,84 @@ export function HouseInterior() {
         <meshLambertMaterial vertexColors flatShading />
       </mesh>
     </group>
+  )
+}
+
+// Outside: plaster walls on a stone footing, a pitched red roof running left to right, and a door
+// and two windows on the front. The walls fill the footprint in layout.ts exactly.
+const OUT_WALL_H = 1.4
+const RISE = 1 // height of the roof's ridge above the walls
+const EAVES = 0.25 // how far the roof overhangs the walls
+
+const O = {
+  plaster: new Color('#efe3c6'),
+  footing: new Color('#b9ae98'),
+  roof: new Color('#c0573f'),
+  ridge: new Color('#9e4532'),
+  door: new Color('#7a4f30'),
+  frame: new Color('#5c3b24'),
+  glass: new Color('#8fb8d8'),
+}
+
+const X0 = HOUSE.i0 - 0.5
+const X1 = HOUSE.i1 + 0.5
+const Z0 = HOUSE.j0 - 0.5
+const Z1 = HOUSE.j1 + 0.5
+
+function buildExterior(): BufferGeometry {
+  const parts: BufferGeometry[] = []
+  const box = (c: Color, x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) =>
+    parts.push(tint(unindexed(block(x0, x1, y0, y1, z0, z1)), c))
+
+  box(O.plaster, X0, X1, 0, OUT_WALL_H, Z0, Z1)
+  box(O.footing, X0 - 0.04, X1 + 0.04, 0, 0.25, Z0 - 0.04, Z1 + 0.04)
+
+  // Gable: a triangle on top of the walls, extruded the house's full width.
+  const depth = Z1 - Z0
+  const tri = new Shape()
+  tri.moveTo(-depth / 2, 0)
+  tri.lineTo(depth / 2, 0)
+  tri.lineTo(0, RISE)
+  tri.closePath()
+  const gable = new ExtrudeGeometry(tri, { depth: X1 - X0, bevelEnabled: false })
+    .rotateY(-Math.PI / 2) // shape's x runs along the house's depth; extrusion runs along its width
+    .translate(X1, OUT_WALL_H, (Z0 + Z1) / 2)
+  parts.push(tint(gable, O.plaster))
+
+  // Roof: two slabs meeting at the ridge, overhanging the walls on every side.
+  const half = depth / 2 + EAVES
+  const slope = Math.atan2(RISE, depth / 2)
+  const length = half / Math.cos(slope)
+  for (const s of [-1, 1]) {
+    const slab = block(X0 - EAVES, X1 + EAVES, -0.06, 0.06, -length / 2, length / 2)
+      .rotateX(s * slope)
+      .translate(0, OUT_WALL_H + RISE - (half / 2) * Math.tan(slope) + 0.06, (Z0 + Z1) / 2 + (s * half) / 2)
+    parts.push(tint(unindexed(slab), O.roof))
+  }
+  box(O.ridge, X0 - EAVES, X1 + EAVES, OUT_WALL_H + RISE, OUT_WALL_H + RISE + 0.1, (Z0 + Z1) / 2 - 0.08, (Z0 + Z1) / 2 + 0.08)
+
+  // Front: the door in the middle, a window either side.
+  const fx = FRONT_DOOR.x
+  box(O.frame, fx - DOOR + 0.02, fx + DOOR - 0.02, 0, 1.05, Z1, Z1 + 0.05)
+  box(O.door, fx - DOOR + 0.1, fx + DOOR - 0.1, 0, 0.97, Z1 + 0.05, Z1 + 0.07)
+  for (const x of [fx - 1.5, fx + 1.5]) {
+    box(O.frame, x - 0.32, x + 0.32, 0.5, 1.1, Z1, Z1 + 0.04)
+    box(O.glass, x - 0.24, x + 0.24, 0.58, 1.02, Z1 + 0.04, Z1 + 0.05)
+  }
+  return merge(parts)
+}
+
+const exterior = buildExterior()
+
+/** The house from outside, at the centre of the island. Its door leads in (see Doors.tsx). */
+export function HouseExterior() {
+  useEffect(
+    () => addCollider({ kind: 'box', x: (X0 + X1) / 2, z: (Z0 + Z1) / 2, hx: (X1 - X0) / 2, hz: (Z1 - Z0) / 2 }),
+    [],
+  )
+  return (
+    <mesh geometry={exterior}>
+      <meshLambertMaterial vertexColors flatShading />
+    </mesh>
   )
 }

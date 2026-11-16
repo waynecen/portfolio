@@ -2,9 +2,10 @@ import { Canvas } from '@react-three/fiber'
 import { useEffect, useState } from 'react'
 import { CameraRig, DISTANCE, HEIGHT } from './CameraRig'
 import { Dialogue, Prompt } from './Dialogue'
+import { Doors } from './Doors'
 import { Fade } from './Fade'
 import { Hearts } from './Hearts'
-import { HouseInterior } from './House'
+import { HouseExterior, HouseInterior } from './House'
 import { Interactions } from './Interactions'
 import { Island } from './Island'
 import { Joystick } from './Joystick'
@@ -12,13 +13,11 @@ import { BED_SPAWN } from './layout'
 import { Minimap, MinimapTracker } from './Minimap'
 import { MusicPanel, NowPlaying } from './MusicPanel'
 import { Player } from './Player'
-import { SIGN } from './pois'
 import { ProjectCard } from './ProjectCard'
-import { detectTier, isTouch } from './quality'
+import { detectTier } from './quality'
 import { RecordPlayer } from './RecordPlayer'
 import { Roads } from './Roads'
 import { arrive } from './scene'
-import { Sign } from './Sign'
 import { Stations } from './Station'
 import { useGame } from './store'
 import { Trees } from './Trees'
@@ -28,12 +27,6 @@ const SKY = '#cfe8d5'
 const DARK = '#000000' // indoors, everything past the room's walls
 
 arrive('house', BED_SPAWN) // every visit starts at home
-
-const WELCOME = [
-  'Welcome! This little world is my portfolio.',
-  'Walk up to a pillar to see a project, then press ' + (isTouch ? 'A' : 'E') + ' to open it.',
-  isTouch ? 'Hold B to sprint, and tap A with nothing nearby to roll.' : 'Hold Shift to sprint, and press Space to roll.',
-]
 
 export function Game() {
   const [visible, setVisible] = useState(!document.hidden)
@@ -69,12 +62,13 @@ export function Game() {
           <Roads />
           <Trees />
           <Stations />
-          <Sign x={SIGN.x} z={SIGN.z} lines={WELCOME} />
+          <HouseExterior />
           <RecordPlayer />
         </group>
         <group visible={scene === 'house'}>
           <HouseInterior />
         </group>
+        <Doors />
         <Interactions />
         <MinimapTracker />
         <Player />

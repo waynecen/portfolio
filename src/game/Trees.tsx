@@ -3,7 +3,8 @@ import { ConeGeometry, CylinderGeometry, MeshLambertMaterial, Object3D, type Ins
 import { addCollider } from './collision'
 import { TILE, tileAt } from './grid'
 import { ISLAND_RADIUS, isInland } from './Island'
-import { pois, roadTiles, SIGN } from './pois'
+import { HOUSE } from './layout'
+import { pois, roadTiles } from './pois'
 
 // Placeholder trees: a trunk and a low-poly cone, drawn as two instanced meshes (two draw calls
 // for the whole forest). Placed once at load from a fixed seed, so the layout is the same on
@@ -11,7 +12,7 @@ import { pois, roadTiles, SIGN } from './pois'
 
 const SEED = 7 // change for a different layout
 const MAX_TREES = 70
-const CLEARANCE = 1 // tiles kept free around every road tile, place and the sign
+const CLEARANCE = 1 // tiles kept free around every road tile, place and the house
 const SHORE_GAP = 1 // tiles kept free between the trees and the beach
 const MIN_SCALE = 0.8
 const MAX_SCALE = 1.3
@@ -41,10 +42,11 @@ function place(): Tree[] {
       for (let dj = -CLEARANCE; dj <= CLEARANCE; dj++) blocked.add(key(i + di, j + dj))
   }
   for (const t of roadTiles) keepClear(t.i, t.j)
-  for (const p of [...pois, SIGN]) {
+  for (const p of pois) {
     const t = tileAt(p.x, p.z)
     keepClear(t.i, t.j)
   }
+  for (let i = HOUSE.i0; i <= HOUSE.i1; i++) for (let j = HOUSE.j0; j <= HOUSE.j1; j++) keepClear(i, j)
 
   // Every grass tile far enough from the shore, in a seeded shuffled order.
   const n = Math.ceil(ISLAND_RADIUS)
