@@ -32,9 +32,7 @@ async function page(name, options, hour) {
   const p = await context.newPage()
   p.on('pageerror', (e) => errors.push(`${name}: ${e.message}`))
   p.on('console', (m) => {
-    const url = m.location().url ?? ''
-    // The browser asks for /favicon.ico on its own; the site doesn't have one yet.
-    if (m.type() === 'error' && !url.endsWith('/favicon.ico')) errors.push(`${name}: ${m.text()} ${url}`)
+    if (m.type() === 'error') errors.push(`${name}: ${m.text()} ${m.location().url ?? ''}`)
   })
   await p.goto(hour === undefined ? URL : `${URL}?hour=${hour}`) // pin the clock, so shots compare between runs
   return p
