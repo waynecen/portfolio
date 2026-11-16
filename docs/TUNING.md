@@ -133,6 +133,19 @@ The projects themselves aren't constants. They're read from the `#projects artic
 
 ---
 
+## About sign and Contact mailbox: [src/game/places.ts](../src/game/places.ts), [src/game/Mailbox.tsx](../src/game/Mailbox.tsx)
+
+```ts
+export const ABOUT_AT = { x: -6, z: -2 }   // places.ts: the About sign, left of the house (whole numbers, so a road reaches it)
+export const CONTACT_AT = { x: 6, z: -2 }  // places.ts: the Contact mailbox, right of the house
+const RANGE = 1.4                          // Mailbox.tsx: how close the player must be for the contact card to show
+const RADIUS = 0.3                         // Mailbox.tsx: collision radius
+```
+
+Like the projects, the words come from [index.html](../index.html). Each `<p>` in `#about` is one line the sign reads out. The links in `#contact` are listed on the contact card, and the mailbox opens the first one.
+
+---
+
 ## Interactions and dialogue: [src/game/interact.ts](../src/game/interact.ts), [src/game/Dialogue.tsx](../src/game/Dialogue.tsx)
 
 ```ts
@@ -144,7 +157,7 @@ const PAUSE_COMMA = 0.1      // Dialogue.tsx: extra pause (s) after , ; :
 
 Bubble look is in [style.css](../src/style.css): `.dialogue-cloud` `fill` (cream), `.dialogue` `color` (brown text), `.dialogue-next` `fill` (arrow), and the `dialogue-pop` keyframes (pop-in). The cloud outline is the SVG `path` in Dialogue.tsx; it stretches to fit, so it works at any width.
 
-Anything the player can use calls `register({ x, z, range, prompt, onInteract })` in an effect. Each frame, the nearest one in range gets focus and shows its prompt ("E Read"), or its project card if it has a `card`. To add a sign, place `<Sign x z lines={[…]} />` in [Game.tsx](../src/game/Game.tsx). The welcome and controls text is the `NOTE` array in [House.tsx](../src/game/House.tsx), with a keyboard and a touch version.
+Anything the player can use calls `register({ x, z, range, prompt, onInteract })` in an effect. Each frame, the nearest one in range gets focus and shows its prompt ("E Read"), or its card if it has a `card` (a project, or the contact links; the card's `action` labels what using it opens). To add a sign, place `<Sign x z lines={[…]} />` in [Game.tsx](../src/game/Game.tsx). The welcome and controls text is the `NOTE` array in [House.tsx](../src/game/House.tsx), with a keyboard and a touch version.
 
 ---
 
@@ -185,7 +198,7 @@ Panel and now-playing styles are `.music-*` and `.now-playing` in [style.css](..
 export const TILE = 1            // grid.ts: size of one grid tile in world units; places, props and roads sit on tile centres
 ```
 
-There's no map on purpose: the island is found by walking round it. `pois` in pois.ts is the one list of places: home and each project station. Add an entry, and place its object at the same whole-number x/z, to give it a road. A path one tile wide runs all the way round the house, and every road leaves it from the loop tile nearest its place. Roads are one tile wide and run in straight lines with at most one 90° corner. They go along the shorter axis first and stop on the tile next to the place. If that route would cross another place or the house, they take the other corner.
+There's no map on purpose: the island is found by walking round it. `pois` in pois.ts is the one list of places: home, each project station, the About sign and the Contact mailbox. Add an entry, and place its object at the same whole-number x/z, to give it a road. A path one tile wide runs all the way round the house, and every road leaves it from the loop tile nearest its place. Roads are one tile wide and run in straight lines with at most one 90° corner. They go along the shorter axis first and stop on the tile next to the place. If that route would cross another place or the house, they take the other corner.
 
 ---
 
@@ -345,3 +358,9 @@ With reduced motion, the colours and fog still change, but rain and fireflies ho
 requestIdleCallback(start, { timeout: 1500 }) // start loading the game when the browser is idle, or after 1.5 s at the latest
 setTimeout(start, 200)                        // fallback for browsers without requestIdleCallback (Safari): start after 0.2 s
 ```
+
+While the game loads, a black "Loading the island" screen (`.loader` in [style.css](../src/style.css)) covers the page, so the page doesn't flash up first. It fades out over 0.4 s once the game has drawn a frame: Game.tsx sends a `gameready` event from the canvas's `onCreated`. The view toggle stays above it.
+
+## Link previews and search: [index.html](../index.html), [vite.config.ts](../vite.config.ts)
+
+The Open Graph and Twitter tags in index.html use `%SITE_URL%`, which the build fills in. The build also writes `robots.txt` and `sitemap.xml`. The URL comes from the `SITE_URL` environment variable if it's set; on Vercel it's the production domain (`VERCEL_PROJECT_PRODUCTION_URL`); locally it's `http://localhost:4173`. The preview image is [public/og.jpg](../public/og.jpg), a 1200 × 630 screenshot of the island in the morning with the HUD hidden. Retake it when the island changes a lot. The favicon is [public/favicon.svg](../public/favicon.svg).
