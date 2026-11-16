@@ -299,17 +299,45 @@ Heart size on screen is `.heart { width: 32px }` in [style.css](../src/style.css
 ```tsx
 dpr={tier === 'low' ? [1, 1.25] : [1, 1.5]}  // render resolution cap relative to the screen; the biggest performance lever on phones
 gl={{ antialias: tier === 'high' }}         // smooth edges only on stronger devices
-const SKY = '#cfe8d5'                                         // background outdoors
-const DARK = '#000000'                                        // background indoors, everything past the room's walls
-<hemisphereLight args={['#ffffff', '#88aa77', 1.2]} />        // sky colour, ground-bounce colour, brightness
-<directionalLight position={[5, 10, 4]} intensity={1.5} />    // the "sun": direction it shines from, and strength
 ```
+
+The background, lights and fog come from the time of day; see the next section.
 
 quality.ts decides the device tier:
 
 ```ts
 return mobile || cores <= 4 || mem <= 4 ? 'low' : 'high' // touch devices, ≤4 CPU cores, or ≤4 GB RAM get the 'low' tier
 ```
+
+---
+
+## Time of day and weather: [src/game/sky.ts](../src/game/sky.ts), [src/game/Atmosphere.tsx](../src/game/Atmosphere.tsx), [src/game/Rain.tsx](../src/game/Rain.tsx), [src/game/Fireflies.tsx](../src/game/Fireflies.tsx)
+
+The island follows the visitor's own clock. `SLOTS` in sky.ts splits the day into five parts, each with a fixed look and weather:
+
+| Slot | Starts | Weather |
+|---|---|---|
+| dawn | 05:00 | mist: fog close in, so the far trees fade out |
+| morning | 08:00 | clear (the original look) |
+| afternoon | 12:00 | rain |
+| evening | 17:00 | golden: warm, low sun |
+| night | 20:00 | night: dark blue, fireflies, lit house windows |
+
+Each slot sets the background, fog colour and distances, hemisphere light, sun colour, strength and direction, water and surf colour. Fog distances are measured from the camera; the ground under the player is about 17 away, so `fogNear` below that fogs the player too.
+
+```ts
+export const BLEND = 0.5           // sky.ts: hours each slot takes to blend in from the one before
+const RECHECK = 5                  // Atmosphere.tsx: seconds between reads of the clock
+const ROOM_DAY / ROOM_NIGHT        // Atmosphere.tsx: indoor lights by day and at night (blended by how much it's night)
+const COUNT = tier low ? 300 : 800 // Rain.tsx: streaks; SPEED = 14, LENGTH = 0.45, SLANT = 0.12, OPACITY = 0.5
+const SPREAD_X = 15, SPREAD_Z = 13 // Rain.tsx: area round the player that rain falls in
+const COUNT = 40                   // Fireflies.tsx: fireflies; SIZE = 0.3, WANDER = 0.5, HEIGHT = 0.45, BOB = 0.25
+const GLOW = 1.1                   // House.tsx: window glow at full night
+```
+
+**Seeing a given hour:** add `?hour=21` to the URL. Decimals work, so `?hour=16.75` is 4:45pm. The snapshot skill shoots each slot this way.
+
+With reduced motion, the colours and fog still change, but rain and fireflies hold still.
 
 ---
 
