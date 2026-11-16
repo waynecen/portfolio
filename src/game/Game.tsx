@@ -17,6 +17,7 @@ import { Player } from './Player'
 import { ProjectCard } from './ProjectCard'
 import { detectTier } from './quality'
 import { RecordPlayer } from './RecordPlayer'
+import { Rain } from './Rain'
 import { Roads } from './Roads'
 import { arrive } from './scene'
 import { Stations } from './Station'
@@ -60,6 +61,7 @@ export function Game() {
           <Trees />
           <Stations />
           <HouseExterior />
+          <Rain />
         </group>
         <group visible={scene === 'house'}>
           <HouseInterior />
