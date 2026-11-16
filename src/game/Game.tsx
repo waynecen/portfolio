@@ -12,13 +12,16 @@ import { Interactions } from './Interactions'
 import { Island } from './Island'
 import { Joystick } from './Joystick'
 import { BED_SPAWN } from './layout'
+import { Mailbox } from './Mailbox'
 import { MusicPanel, NowPlaying } from './MusicPanel'
+import { ABOUT_AT, aboutLines } from './places'
 import { Player } from './Player'
 import { ProjectCard } from './ProjectCard'
 import { detectTier } from './quality'
 import { RecordPlayer } from './RecordPlayer'
 import { Rain } from './Rain'
 import { Roads } from './Roads'
+import { Sign } from './Sign'
 import { arrive } from './scene'
 import { Stations } from './Station'
 import { useGame } from './store'
@@ -65,6 +68,8 @@ export function Game() {
           <Trees />
           <Stations />
           <HouseExterior />
+          <Sign x={ABOUT_AT.x} z={ABOUT_AT.z} lines={aboutLines} />
+          <Mailbox />
           <Rain />
           <Fireflies />
         </group>

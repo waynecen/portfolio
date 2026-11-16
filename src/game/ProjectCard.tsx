@@ -1,21 +1,33 @@
 import { isTouch } from './quality'
 import { useGame } from './store'
 
-// Shows the focused station's project. Opening it is the station's interaction (E / Enter / A).
+// Shows the focused interactable's card: a station's project, or the mailbox's contact links.
+// Using the interactable (E / Enter / A) opens the card's url.
 export function ProjectCard() {
-  const project = useGame((s) => (s.dialogue || s.panel ? undefined : s.focus?.card))
-  const url = project?.url
+  const card = useGame((s) => (s.dialogue || s.panel ? undefined : s.focus?.card))
+  const url = card?.url
+  const action = card?.action ?? 'Open project'
 
   // The live region stays mounted so screen readers announce content changes.
   return (
     <div className="project-card-region" aria-live="polite">
-      {project && (
+      {card && (
         <article className="project-card">
-          <h2>{project.title}</h2>
-          {project.description && <p>{project.description}</p>}
+          <h2>{card.title}</h2>
+          {card.description && <p>{card.description}</p>}
+          {card.links && card.links.length > 0 && (
+            <ul className="project-card-links">
+              {card.links.map((l) => (
+                <li key={l.href}>
+                  <a href={l.href} target="_blank" rel="noopener">{l.label}</a>
+                </li>
+              ))}
+            </ul>
+          )}
           {url && (
             <p className="project-card-action">
-              <a href={url} target="_blank" rel="noopener">Open project</a>
+              {/* With a list of links the action is already among them, so here it's only the key hint. */}
+              {card.links ? action : <a href={url} target="_blank" rel="noopener">{action}</a>}
               <span aria-hidden="true"> · press {isTouch ? 'A' : 'E'}</span>
             </p>
           )}

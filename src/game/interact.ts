@@ -1,5 +1,16 @@
-import type { Project } from './projects'
 import { useGame } from './store'
+
+/** What the card at the bottom of the screen shows while an interactable has focus: a project, or the contact links. */
+export type Card = {
+  title: string
+  description: string
+  /** Opened by using the interactable; empty if it opens nothing. */
+  url: string
+  /** Label for that action on the card. Default "Open project". */
+  action?: string
+  /** Extra links listed on the card, each clickable or tappable. */
+  links?: { label: string; href: string }[]
+}
 
 /** Something in the world the player can walk up to and use with E / Enter / A. */
 export type Interactable = {
@@ -10,8 +21,8 @@ export type Interactable = {
   /** Verb shown in the prompt, e.g. "Read". */
   prompt: string
   onInteract: () => void
-  /** A project to show in the project card while this has focus. */
-  card?: Project
+  /** A card to show while this has focus. */
+  card?: Card
 }
 
 // Plain array scanned once per frame by <Interactions>; entries are added and removed by components.

@@ -23,6 +23,7 @@ body:not(.playing) #game { visibility: hidden; }
 .project-card p { margin: 0 0 12px; }
 .project-card .project-card-action { margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: .2em; }
 .project-card a { color: var(--ink); }
+.project-card-links { display: flex; flex-wrap: wrap; gap: 4px 20px; margin: 0 0 12px; padding: 0; list-style: none; }
 .hud-hearts {
   position: absolute; display: flex; gap: 4px; pointer-events: none;
   top: max(12px, env(safe-area-inset-top)); left: max(12px, env(safe-area-inset-left));
