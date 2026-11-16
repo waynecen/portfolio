@@ -1,5 +1,5 @@
-import { MeshLambertMaterial, PlaneGeometry, type BufferGeometry } from 'three'
-import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
+import { MeshLambertMaterial, type BufferGeometry } from 'three'
+import { flat, merge } from './geometry'
 import { TILE } from './grid'
 import { roadTiles } from './pois'
 
@@ -8,12 +8,8 @@ const LIFT = 0.01 // just above the ground; polygonOffset handles the rest of th
 // One square per road or plaza tile, merged into one geometry: one draw call for all paths.
 // Tiles are full-size, so neighbours join into solid straight paths with square corners.
 function build(): BufferGeometry {
-  const parts = roadTiles.map(({ i, j }) =>
-    new PlaneGeometry(TILE, TILE).rotateX(-Math.PI / 2).translate(i * TILE, LIFT, j * TILE),
-  )
-  const merged = mergeGeometries(parts)
-  for (const g of parts) g.dispose()
-  return merged
+  const h = TILE / 2
+  return merge(roadTiles.map(({ i, j }) => flat(i * TILE - h, i * TILE + h, j * TILE - h, j * TILE + h, LIFT)))
 }
 
 const geometry = build()

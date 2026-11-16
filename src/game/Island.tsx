@@ -1,7 +1,7 @@
 import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
-import { BoxGeometry, Color, Float32BufferAttribute, PlaneGeometry, type BufferGeometry, type MeshBasicMaterial } from 'three'
-import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
+import { BoxGeometry, Color, PlaneGeometry, type BufferGeometry, type MeshBasicMaterial } from 'three'
+import { flat, merge, pick, tint, unindexed } from './geometry'
 import { TILE } from './grid'
 
 // A blocky island centred on spawn, built from whole grid tiles: a grass plateau ringed by stone
@@ -42,38 +42,6 @@ export function isInland(i: number, j: number, gap: number): boolean {
   return true
 }
 
-// Flat square at height y covering [x0, x1] × [z0, z1].
-const flat = (x0: number, x1: number, z0: number, z1: number, y: number) =>
-  new PlaneGeometry(x1 - x0, z1 - z0).rotateX(-Math.PI / 2).translate((x0 + x1) / 2, y, (z0 + z1) / 2)
-
-// Paints every vertex of `g` one colour, so pieces of different shades merge into one mesh.
-function tint(g: BufferGeometry, c: Color): BufferGeometry {
-  const n = g.getAttribute('position').count
-  const colors = new Float32Array(n * 3)
-  for (let k = 0; k < n; k++) c.toArray(colors, k * 3)
-  g.setAttribute('color', new Float32BufferAttribute(colors, 3))
-  return g
-}
-
-// Fixed pseudo-random shade per block, so the cliff looks the same on every visit.
-function shade(i: number, j: number, side: number, course: number): Color {
-  const h = (Math.imul(i, 73856093) ^ Math.imul(j, 19349663) ^ Math.imul(side * 4 + course, 83492791)) >>> 0
-  return STONE[h % STONE.length]
-}
-
-// Copy of `g` without an index buffer (disposing `g`), so planes and boxes merge with each other.
-function unindexed(g: BufferGeometry): BufferGeometry {
-  const out = g.toNonIndexed()
-  g.dispose()
-  return out
-}
-
-function merge(parts: BufferGeometry[]): BufferGeometry {
-  const merged = mergeGeometries(parts)
-  for (const g of parts) g.dispose()
-  return merged
-}
-
 const DIRS = [
   [1, 0],
   [-1, 0],
@@ -107,7 +75,7 @@ function build() {
             if (di !== 0) face.rotateY((di * Math.PI) / 2)
             else if (dj < 0) face.rotateY(Math.PI)
             face.translate(x + di * h, cliffBottom + course * (k + 0.5), z + dj * h)
-            stoneParts.push(tint(unindexed(face), shade(i, j, side, k)))
+            stoneParts.push(tint(unindexed(face), pick(STONE, i, j, side * 4 + k)))
           }
           // Capstone rim along the top. At an outside corner it runs on past the tile so the rims
           // of the two sides meet square; at an inside corner the neighbouring tile's rim covers it.
