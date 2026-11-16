@@ -1,6 +1,7 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { TILE } from './grid'
+import { HOUSE } from './layout'
 import { pois, roadTiles, type PoiKind } from './pois'
 import { playerFacing, playerPos } from './state'
 
@@ -60,6 +61,13 @@ export function Minimap() {
     <svg className="minimap" viewBox={`${minX} ${minZ} ${maxX - minX} ${maxZ - minZ}`} role="img" aria-label={summary}>
       <rect className="map-ground" x={minX} y={minZ} width={maxX - minX} height={maxZ - minZ} />
       <path className="map-road" d={roadPath} />
+      <rect
+        className="map-house"
+        x={HOUSE.i0 * TILE - TILE / 2}
+        y={HOUSE.j0 * TILE - TILE / 2}
+        width={(HOUSE.i1 - HOUSE.i0 + 1) * TILE}
+        height={(HOUSE.j1 - HOUSE.j0 + 1) * TILE}
+      />
       {/* One line along each tile edge, drawn over ground and roads alike, like a block grid. */}
       <defs>
         <pattern id="map-grid" patternUnits="userSpaceOnUse" x={-TILE / 2} y={-TILE / 2} width={TILE} height={TILE}>
