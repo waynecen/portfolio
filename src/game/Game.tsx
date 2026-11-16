@@ -4,9 +4,11 @@ import { CameraRig, DISTANCE, HEIGHT } from './CameraRig'
 import { Dialogue, Prompt } from './Dialogue'
 import { Fade } from './Fade'
 import { Hearts } from './Hearts'
+import { HouseInterior } from './House'
 import { Interactions } from './Interactions'
 import { Island } from './Island'
 import { Joystick } from './Joystick'
+import { BED_SPAWN } from './layout'
 import { Minimap, MinimapTracker } from './Minimap'
 import { MusicPanel, NowPlaying } from './MusicPanel'
 import { Player } from './Player'
@@ -15,11 +17,17 @@ import { ProjectCard } from './ProjectCard'
 import { detectTier, isTouch } from './quality'
 import { RecordPlayer } from './RecordPlayer'
 import { Roads } from './Roads'
+import { arrive } from './scene'
 import { Sign } from './Sign'
 import { Stations } from './Station'
+import { useGame } from './store'
 import { Trees } from './Trees'
 
 const tier = detectTier()
+const SKY = '#cfe8d5'
+const DARK = '#000000' // indoors, everything past the room's walls
+
+arrive('house', BED_SPAWN) // every visit starts at home
 
 const WELCOME = [
   'Welcome! This little world is my portfolio.',
@@ -31,6 +39,7 @@ export function Game() {
   const [visible, setVisible] = useState(!document.hidden)
   const isGameView = () => document.body.dataset.view === 'game'
   const [active, setActive] = useState(isGameView)
+  const scene = useGame((s) => s.scene)
   useEffect(() => {
     setActive(isGameView()) // catch a switch that happened before this effect attached
     const onVisibility = () => setVisible(!document.hidden)
@@ -51,15 +60,21 @@ export function Game() {
         gl={{ antialias: tier === 'high', powerPreference: 'high-performance' }}
         camera={{ position: [0, HEIGHT, DISTANCE], fov: 35 }}
       >
-        <color attach="background" args={['#cfe8d5']} />
+        <color attach="background" args={[scene === 'house' ? DARK : SKY]} />
         <hemisphereLight args={['#ffffff', '#88aa77', 1.2]} />
         <directionalLight position={[5, 10, 4]} intensity={1.5} />
-        <Island />
-        <Roads />
-        <Trees />
-        <Stations />
-        <Sign x={SIGN.x} z={SIGN.z} lines={WELCOME} />
-        <RecordPlayer />
+        {/* Both areas stay mounted (so nothing is rebuilt on each trip) but only one is drawn. */}
+        <group visible={scene === 'world'}>
+          <Island />
+          <Roads />
+          <Trees />
+          <Stations />
+          <Sign x={SIGN.x} z={SIGN.z} lines={WELCOME} />
+          <RecordPlayer />
+        </group>
+        <group visible={scene === 'house'}>
+          <HouseInterior />
+        </group>
         <Interactions />
         <MinimapTracker />
         <Player />
@@ -67,7 +82,7 @@ export function Game() {
       </Canvas>
       <Fade />
       <Hearts />
-      <Minimap />
+      {scene === 'world' && <Minimap />}
       <ProjectCard />
       <Prompt />
       <Dialogue />

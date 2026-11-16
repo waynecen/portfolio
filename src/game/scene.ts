@@ -12,7 +12,8 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
 /** Where the player arrives in an area, and the way they face (radians; 0 = toward the camera). */
 export type Spawn = { x: number; z: number; heading: number }
 
-function arrive(scene: Scene, at: Spawn) {
+/** Puts the player in `scene` at `at` straight away, with no fade (e.g. where the game starts). */
+export function arrive(scene: Scene, at: Spawn) {
   teleport.pending = true
   teleport.x = at.x
   teleport.z = at.z
