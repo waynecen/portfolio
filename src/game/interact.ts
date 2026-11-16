@@ -67,8 +67,8 @@ export function closePanel() {
   if (useGame.getState().panel) useGame.setState({ panel: null })
 }
 
-/** True while dialogue or a panel has the player's attention (movement and focus changes pause). */
+/** True while dialogue, a panel or a fade between areas has the player's attention (movement pauses). */
 export function busy() {
   const s = useGame.getState()
-  return s.dialogue !== null || s.panel !== null
+  return s.dialogue !== null || s.panel !== null || s.fading
 }

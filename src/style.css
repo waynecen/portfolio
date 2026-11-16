@@ -147,6 +147,10 @@ body:not(.playing) #game { visibility: hidden; }
   font-size: 11px; cursor: pointer;
 }
 .now-playing-title { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+/* Black fade between areas, over the canvas but under the HUD. Duration matches FADE in scene.ts. */
+.fade { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; transition: opacity .25s ease; }
+.fade-on { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .fade { transition: none; } }
 /* Minimap: top right, under the view toggle. Drawn in world units; see Minimap.tsx. */
 .minimap {
   position: absolute; display: block; width: 168px; height: auto; pointer-events: none;

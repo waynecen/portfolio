@@ -6,8 +6,9 @@ import { TILE } from './grid'
 import { isLand } from './Island'
 import { actions, bindKeys, buttons, keys, stick } from './input'
 import { PillCharacter, PILL_RADIUS } from './PillCharacter'
-import { playerFacing, playerPos, playerRoll, playerVel } from './state'
+import { playerFacing, playerPos, playerRoll, playerVel, teleport } from './state'
 import { busy } from './interact'
+import { useGame } from './store'
 
 const SPEED = 4 // walking speed, units per second
 const SPRINT = 1.5 // holding Shift (or B on touch) multiplies top speed by this (moderate: 4 → 6 units/s)
@@ -32,6 +33,17 @@ export function Player() {
     const dt = Math.min(delta, 0.1)
     const v = playerVel
     const roll = playerRoll
+
+    // Arrive somewhere new (see scene.ts): stand still, facing the way the door points.
+    if (teleport.pending) {
+      teleport.pending = false
+      root.position.x = teleport.x
+      root.position.z = teleport.z
+      v.x = v.z = v.speed = 0
+      roll.p = -1
+      playerFacing.heading = teleport.heading
+      playerFacing.snap = true
+    }
 
     // Stand still while a dialogue box or panel is open.
     const talking = busy()
@@ -90,13 +102,16 @@ export function Player() {
       resolve(p, PILL_RADIUS, v)
     }
 
-    // Keep the pill on the island: every water tile around it acts as a wall, so it slides along
-    // the stepped shore. EDGE is at most half a tile, so only the 3×3 tiles around it can touch.
-    const ti = Math.round(p.x / TILE)
-    const tj = Math.round(p.z / TILE)
-    for (let di = -1; di <= 1; di++)
-      for (let dj = -1; dj <= 1; dj++)
-        if (!isLand(ti + di, tj + dj)) pushOutOfBox(p, EDGE, v, (ti + di) * TILE, (tj + dj) * TILE, TILE / 2, TILE / 2)
+    // Outdoors, keep the pill on the island: every water tile around it acts as a wall, so it slides
+    // along the stepped shore. EDGE is at most half a tile, so only the 3×3 tiles around it can
+    // touch. Indoors, the room's own wall colliders do this job.
+    if (useGame.getState().scene === 'world') {
+      const ti = Math.round(p.x / TILE)
+      const tj = Math.round(p.z / TILE)
+      for (let di = -1; di <= 1; di++)
+        for (let dj = -1; dj <= 1; dj++)
+          if (!isLand(ti + di, tj + dj)) pushOutOfBox(p, EDGE, v, (ti + di) * TILE, (tj + dj) * TILE, TILE / 2, TILE / 2)
+    }
 
     // Relative to walking speed: 1 = walking, 1.5 = sprinting. Capped so the roll burst doesn't spin the legs.
     v.speed = Math.min(SPRINT, Math.sqrt(v.x * v.x + v.z * v.z) / SPEED)

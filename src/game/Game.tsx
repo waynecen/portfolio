@@ -2,6 +2,7 @@ import { Canvas } from '@react-three/fiber'
 import { useEffect, useState } from 'react'
 import { CameraRig, DISTANCE, HEIGHT } from './CameraRig'
 import { Dialogue, Prompt } from './Dialogue'
+import { Fade } from './Fade'
 import { Hearts } from './Hearts'
 import { Interactions } from './Interactions'
 import { Island } from './Island'
@@ -64,6 +65,7 @@ export function Game() {
         <Player />
         <CameraRig />
       </Canvas>
+      <Fade />
       <Hearts />
       <Minimap />
       <ProjectCard />

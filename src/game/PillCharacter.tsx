@@ -67,8 +67,11 @@ export function PillCharacter() {
     // 0 when walking, 1 at full sprint (speed 1.5): drives the extra lean and longer stride.
     const sprint = Math.min(1, Math.max(0, (v.speed - 1) * 2)) * (1 - env)
 
-    // Turn toward the direction of travel, the short way round.
-    if (v.speed > 0.05) {
+    // Turn toward the direction of travel, the short way round, unless told to face somewhere at once.
+    if (playerFacing.snap) {
+      s.heading = playerFacing.heading
+      playerFacing.snap = false
+    } else if (v.speed > 0.05) {
       let diff = Math.atan2(v.x, v.z) - s.heading
       diff = ((((diff + Math.PI) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2)) - Math.PI
       s.heading += diff * (1 - Math.exp(-TURN * dt))
