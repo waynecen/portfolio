@@ -83,8 +83,8 @@ What the game does with the model ([ModelCharacter.tsx](../src/game/ModelCharact
 
 - **Size and position:** scales it to `PLAYER_HEIGHT` (1.2, about the pill's height) and stands it on the ground under the player. Collision stays the pill's circle.
 - **Materials:** swaps them for the Lambert material the island uses, keeping their texture and colour, so it's lit like everything else, including at night.
-- **Animation:** blends idle, walk and run by speed, and speeds the walk up and down with the player.
-- **Turning and rolling:** the rig in [PillCharacter.tsx](../src/game/PillCharacter.tsx) turns it to face its direction and tumbles it through rolls.
+- **Animation:** blends idle, walk and run by speed, and plays walk and run at the speed where the feet keep pace with the ground (from the pace `npm run models` records), so they don't skate.
+- **Turning, leaning and rolling:** the rig in [PillCharacter.tsx](../src/game/PillCharacter.tsx) turns it to face its direction, leans it forward as it moves and tumbles it through rolls.
 
 ## 5. Check it
 

@@ -40,10 +40,15 @@ export const PLAYER_MODEL: string | null = null              // models.ts: path 
 export const PLAYER_HEIGHT = 1.2                              // models.ts: the model is scaled to this height (about the pill's)
 export const CLIPS = { idle: 'Idle', walk: 'Walk', run: 'Run' } // models.ts: clip names in the file; a missing one is skipped
 const BLEND = 10                // ModelCharacter.tsx: how quickly idle, walk and run blend as speed changes (damp rate)
-const WALK_RATE = [0.6, 1.25]   // ModelCharacter.tsx: walk clip playback speed at a slow amble and at full walk
+const WALK_RATE = [0.6, 1.25]   // ModelCharacter.tsx: walk clip playback speed at a slow amble and at full walk, for a clip with no recorded pace
+const MIN_RATE = 0.3            // ModelCharacter.tsx: slowest playback when matching a clip's pace to the ground speed
+const MAX_RATE = 3              // ModelCharacter.tsx: fastest playback; past it the feet slide rather than step comically fast
+const MODEL_LEAN = 0.12         // PillCharacter.tsx: the model's forward lean at full speed, radians (about 7°, 11° sprinting)
 ```
 
-With a model set, the rig below still turns it and tumbles it through rolls (`TURN`, `ROLL_DROP`), but the pill's body shape, walk cycle, lean and feet no longer apply: the model's own clips do the walking. Making a model, the pipeline and the size budget are in [CHARACTER.md](CHARACTER.md).
+Walk and run play at the speed where their feet keep pace with the ground: `npm run models` records each clip's pace (body heights per second) when it strips the root motion, and the game divides the player's speed by it, within `MIN_RATE` and `MAX_RATE`.
+
+With a model set, the rig below still turns it and tumbles it through rolls (`TURN`, `ROLL_DROP`), and leans it into its movement (`MODEL_LEAN`, scaled up by `SPRINT_LEAN`), but the pill's body shape, walk cycle and feet no longer apply: the model's own clips do the walking. Making a model, the pipeline and the size budget are in [CHARACTER.md](CHARACTER.md).
 
 ---
 
