@@ -22,7 +22,15 @@ import { playerRoll, playerVel } from './state'
 // loader code stays out of the game chunk until then.
 
 const BLEND = 10 // how quickly the clip weights follow speed changes
-const WALK_RATE = [0.6, 1.25] // walk clip playback speed: at a slow amble, and at full walk
+const WALK_RATE = [0.6, 1.25] // walk clip playback speed for a clip with no recorded pace: at a slow amble, and at full walk
+// Playback speed limits when matching a clip's pace to the ground speed. A clip far slower than the
+// player moves would otherwise run comically fast; past MAX_RATE the feet slide instead.
+const MIN_RATE = 0.3
+const MAX_RATE = 3
+
+// World units per second a clip covers at normal speed, from the pace npm run models recorded
+// (extras.travel, in body heights per second), or 0 if it has none.
+const paceOf = (a: AnimationAction | null) => ((a?.getClip().userData.travel as number | undefined) ?? 0) * PLAYER_HEIGHT
 
 // The island is lit with Lambert materials; the model's PBR ones would look out of place (and cost
 // more), so each keeps its texture and colour on a Lambert material instead.
@@ -73,7 +81,7 @@ export default function ModelCharacter({ url }: { url: string }) {
     const walk = action(CLIPS.walk)
     const run = action(CLIPS.run)
     if (!idle && !walk) console.warn(`Player model has none of the clips ${CLIPS.idle} / ${CLIPS.walk}; it will stand still.`)
-    return { root, mixer, idle, walk, run, w: { idle: 1, walk: 0, run: 0 } }
+    return { root, mixer, idle, walk, run, walkPace: paceOf(walk), runPace: paceOf(run), w: { idle: 1, walk: 0, run: 0 } }
   }, [gltf])
 
   useEffect(
@@ -97,7 +105,13 @@ export default function ModelCharacter({ url }: { url: string }) {
     idle?.setEffectiveWeight(walk ? w.idle : 1)
     walk?.setEffectiveWeight(w.walk)
     run?.setEffectiveWeight(w.run)
-    if (walk) walk.timeScale = MathUtils.lerp(WALK_RATE[0], WALK_RATE[1], Math.min(1, speed)) * (run ? 1 : Math.max(1, speed))
+    // Each clip plays at the rate where its feet keep pace with the ground, so they don't skate.
+    const ground = speed > 0 ? Math.hypot(playerVel.x, playerVel.z) : 0
+    if (walk)
+      walk.timeScale = rig.walkPace
+        ? MathUtils.clamp(ground / rig.walkPace, MIN_RATE, MAX_RATE)
+        : MathUtils.lerp(WALK_RATE[0], WALK_RATE[1], Math.min(1, speed)) * (run ? 1 : Math.max(1, speed))
+    if (run && rig.runPace) run.timeScale = MathUtils.clamp(ground / rig.runPace, MIN_RATE, MAX_RATE)
     rig.mixer.update(dt)
   })
 
