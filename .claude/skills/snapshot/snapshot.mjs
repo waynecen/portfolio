@@ -38,9 +38,9 @@ async function page(name, options, hour) {
   return p
 }
 
-async function shot(p, name) {
+async function shot(p, name, clip) {
   const path = `${out}/${name}.png`
-  await p.screenshot({ path })
+  await p.screenshot({ path, clip })
   shots.push(path)
 }
 
@@ -84,6 +84,8 @@ try {
       await p.waitForSelector('body[data-scene="world"]', { timeout: 3000 }) // set by Game.tsx once outdoors
       await p.waitForTimeout(800)
       await shot(p, `desktop-island-${label}`)
+      // The player character close up on the doorstep (the camera keeps them mid-screen): the pill, or the 3D model.
+      if (label === 'morning') await shot(p, 'desktop-character', { x: 490, y: 190, width: 300, height: 225 })
     } catch {
       console.error(`Could not walk out of the house (the room layout may have changed); skipped desktop-island-${label}.`)
       failed = true
