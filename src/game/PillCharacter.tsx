@@ -6,7 +6,8 @@ import { playerFacing, playerRoll, playerVel } from './state'
 // Procedural walk: everything is driven by playerVel each frame, no clips or bones.
 // Local +z is "forward"; at yaw 0 the pill faces the camera.
 // Given a `model` (the 3D character, see ModelCharacter.tsx), the rig still turns it and tumbles it
-// through rolls, but the pill's body, feet, bob, squash and lean give way to the model's own clips.
+// through rolls and leans it into its movement, but the pill's body, feet, bob and squash give way
+// to the model's own clips.
 
 export const PILL_RADIUS = 0.35
 const PILL_LENGTH = 0.4 // straight section between the two hemispheres
@@ -18,6 +19,7 @@ const STEP_RATE = 5 * Math.PI // phase speed at full speed (2.5 strides/s)
 const BOB = 0.08 // hop height per step
 const SQUASH = 0.06 // stretch on the way up, squash at footfall
 const LEAN = 0.18 // forward tilt in radians at full speed
+const MODEL_LEAN = 0.12 // the same for the 3D model (about 7°, 11° sprinting), less as its clips have their own posture
 const TURN = 14 // how quickly the pill turns to face its direction
 const STRIDE = 0.14 // how far each foot swings forward/back
 const LIFT = 0.12 // how high a foot lifts mid-swing
@@ -88,6 +90,9 @@ export function PillCharacter({ model }: { model?: ReactNode }) {
     tumble.current.rotation.x = flip * Math.PI * 2
     tumble.current.position.y = CENTER - env * ROLL_DROP
 
+    // Lean into the direction of travel from the feet, more when sprinting, giving the walk weight.
+    lean.current.rotation.x = (model ? MODEL_LEAN : LEAN) * w * MOTION * (1 + SPRINT_LEAN * sprint)
+
     if (!body.current || !footL.current || !footR.current) return // the model animates itself from here on
 
     // Footfalls happen where cos(phase) = 0, so the body is lowest there and highest mid-swing.
@@ -99,8 +104,6 @@ export function PillCharacter({ model }: { model?: ReactNode }) {
     const xz = 1 / Math.sqrt(1 + stretch) // keep volume constant
     body.current.scale.x = xz
     body.current.scale.z = xz
-
-    lean.current.rotation.x = LEAN * w * MOTION * (1 + SPRINT_LEAN * sprint)
 
     // Feet are half a cycle apart: one plants and slides back while the other swings forward.
     const l = footL.current.position
