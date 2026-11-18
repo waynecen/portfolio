@@ -47,6 +47,13 @@ src/game/
   Player.tsx        The player pill and its movement
   input.ts          Keyboard state, kept outside React
   quality.ts        Device tier detection (low / high)
+  models.ts         Which 3D model the player uses (the pill until one is set)
+scripts/models.mjs  Model pipeline: optimizes models-src/*.glb into public/models/ (npm run models)
+models-src/         Raw model exports, gitignored
+docs/
+  ROADMAP.md        What's planned, phase by phase
+  CHARACTER.md      Making the player character in Tripo and adding it
+  TUNING.md         Every gameplay and rendering constant
 ```
 
 ## Performance rules

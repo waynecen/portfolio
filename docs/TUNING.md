@@ -33,6 +33,20 @@ Distance covered by one roll ≈ `ROLL_SPEED × 0.7 × ROLL_TIME`, about 2.8 uni
 
 ---
 
+## Character model: [src/game/models.ts](../src/game/models.ts), [src/game/ModelCharacter.tsx](../src/game/ModelCharacter.tsx)
+
+```ts
+export const PLAYER_MODEL: string | null = null              // models.ts: path of the optimized model under public/, or null for the pill
+export const PLAYER_HEIGHT = 1.2                              // models.ts: the model is scaled to this height (about the pill's)
+export const CLIPS = { idle: 'Idle', walk: 'Walk', run: 'Run' } // models.ts: clip names in the file; a missing one is skipped
+const BLEND = 10                // ModelCharacter.tsx: how quickly idle, walk and run blend as speed changes (damp rate)
+const WALK_RATE = [0.6, 1.25]   // ModelCharacter.tsx: walk clip playback speed at a slow amble and at full walk
+```
+
+With a model set, the rig below still turns it and tumbles it through rolls (`TURN`, `ROLL_DROP`), but the pill's body shape, walk cycle, lean and feet no longer apply: the model's own clips do the walking. Making a model, the pipeline and the size budget are in [CHARACTER.md](CHARACTER.md).
+
+---
+
 ## Character animation: [src/game/PillCharacter.tsx](../src/game/PillCharacter.tsx)
 
 ### Body shape
