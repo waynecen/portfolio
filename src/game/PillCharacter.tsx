@@ -1,10 +1,12 @@
 import { useFrame } from '@react-three/fiber'
-import { useRef } from 'react'
+import { useRef, type ReactNode } from 'react'
 import { MathUtils, MeshLambertMaterial, SphereGeometry, type Group, type Mesh } from 'three'
 import { playerFacing, playerRoll, playerVel } from './state'
 
 // Procedural walk: everything is driven by playerVel each frame, no clips or bones.
 // Local +z is "forward"; at yaw 0 the pill faces the camera.
+// Given a `model` (the 3D character, see ModelCharacter.tsx), the rig still turns it and tumbles it
+// through rolls, but the pill's body, feet, bob, squash and lean give way to the model's own clips.
 
 export const PILL_RADIUS = 0.35
 const PILL_LENGTH = 0.4 // straight section between the two hemispheres
@@ -40,17 +42,18 @@ const eyeMat = new MeshLambertMaterial({ color: '#2b2b2b' })
 const footGeo = new SphereGeometry(0.14, 12, 8)
 const footMat = new MeshLambertMaterial({ color: '#d9a536' })
 
-export function PillCharacter() {
+export function PillCharacter({ model }: { model?: ReactNode }) {
   const yaw = useRef<Group>(null)
   const lean = useRef<Group>(null)
   const tumble = useRef<Group>(null)
   const body = useRef<Group>(null)
   const footL = useRef<Mesh>(null)
   const footR = useRef<Mesh>(null)
-  const s = useRef({ w: 0, phase: 0, heading: 0, t: 0 }).current
+  // Starts facing wherever the player already faces, so swapping the pill for the model doesn't turn it.
+  const s = useRef({ w: 0, phase: 0, heading: playerFacing.heading, t: 0 }).current
 
   useFrame((_, delta) => {
-    if (!yaw.current || !lean.current || !tumble.current || !body.current || !footL.current || !footR.current) return
+    if (!yaw.current || !lean.current || !tumble.current) return
     const dt = Math.min(delta, 0.1)
     const v = playerVel
     s.t += dt
@@ -85,6 +88,8 @@ export function PillCharacter() {
     tumble.current.rotation.x = flip * Math.PI * 2
     tumble.current.position.y = CENTER - env * ROLL_DROP
 
+    if (!body.current || !footL.current || !footR.current) return // the model animates itself from here on
+
     // Footfalls happen where cos(phase) = 0, so the body is lowest there and highest mid-swing.
     const hop = Math.abs(Math.cos(s.phase))
     body.current.position.y = -PILL_HALF + hop * BOB * w * MOTION
@@ -117,18 +122,26 @@ export function PillCharacter() {
       <group ref={lean}>
         {/* Tumble pivots at the body's centre; the body inside pivots at its bottom so squash keeps it planted. */}
         <group ref={tumble} position-y={CENTER}>
-          <group ref={body} position-y={-PILL_HALF}>
-            <mesh position-y={PILL_HALF}>
-              <capsuleGeometry args={[PILL_RADIUS, PILL_LENGTH, 4, 12]} />
-              <meshLambertMaterial color="#f2c14e" />
-            </mesh>
-            <mesh geometry={eyeGeo} material={eyeMat} position={[-0.12, 0.72, 0.32]} />
-            <mesh geometry={eyeGeo} material={eyeMat} position={[0.12, 0.72, 0.32]} />
-          </group>
+          {model ? (
+            <group position-y={-CENTER}>{model}</group> // the model's feet on the ground
+          ) : (
+            <group ref={body} position-y={-PILL_HALF}>
+              <mesh position-y={PILL_HALF}>
+                <capsuleGeometry args={[PILL_RADIUS, PILL_LENGTH, 4, 12]} />
+                <meshLambertMaterial color="#f2c14e" />
+              </mesh>
+              <mesh geometry={eyeGeo} material={eyeMat} position={[-0.12, 0.72, 0.32]} />
+              <mesh geometry={eyeGeo} material={eyeMat} position={[0.12, 0.72, 0.32]} />
+            </group>
+          )}
         </group>
       </group>
-      <mesh ref={footL} geometry={footGeo} material={footMat} position={[FOOT_X, FOOT_Y, FOOT_Z]} scale={[1, 0.55, 1.35]} />
-      <mesh ref={footR} geometry={footGeo} material={footMat} position={[-FOOT_X, FOOT_Y, FOOT_Z]} scale={[1, 0.55, 1.35]} />
+      {!model && (
+        <>
+          <mesh ref={footL} geometry={footGeo} material={footMat} position={[FOOT_X, FOOT_Y, FOOT_Z]} scale={[1, 0.55, 1.35]} />
+          <mesh ref={footR} geometry={footGeo} material={footMat} position={[-FOOT_X, FOOT_Y, FOOT_Z]} scale={[1, 0.55, 1.35]} />
+        </>
+      )}
     </group>
   )
 }

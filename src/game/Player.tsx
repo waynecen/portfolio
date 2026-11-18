@@ -1,9 +1,10 @@
 import { useFrame } from '@react-three/fiber'
-import { useEffect, useRef } from 'react'
+import { lazy, Suspense, useEffect, useRef } from 'react'
 import { MathUtils, type Group } from 'three'
 import { pushOutOfBox, resolve } from './collision'
 import { TILE } from './grid'
 import { isLand } from './Island'
+import { PLAYER_MODEL } from './models'
 import { actions, bindKeys, buttons, keys, stick } from './input'
 import { PillCharacter, PILL_RADIUS } from './PillCharacter'
 import { playerFacing, playerPos, playerRoll, playerVel, teleport } from './state'
@@ -20,6 +21,9 @@ const EDGE = PILL_RADIUS + SHORE // how close the pill's centre gets to a water 
 const ROLL_TIME = 0.45 // seconds for one tumble
 const ROLL_SPEED = 9 // burst speed at the start of a roll, eases down toward walk speed
 const ROLL_COOLDOWN = 0.2 // seconds after a roll before the next can start
+
+// The 3D character's code (and the glTF loader) is fetched only if there's a model to show.
+const ModelCharacter = lazy(() => import('./ModelCharacter'))
 
 export function Player() {
   const ref = useRef<Group>(null)
@@ -121,7 +125,14 @@ export function Player() {
 
   return (
     <group ref={ref}>
-      <PillCharacter />
+      {PLAYER_MODEL ? (
+        // The pill stands in while the model downloads.
+        <Suspense fallback={<PillCharacter />}>
+          <PillCharacter model={<ModelCharacter url={PLAYER_MODEL} />} />
+        </Suspense>
+      ) : (
+        <PillCharacter />
+      )}
     </group>
   )
 }
