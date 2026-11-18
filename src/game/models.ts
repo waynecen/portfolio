@@ -2,7 +2,7 @@
 // downloading) the player is the pill. See docs/CHARACTER.md for making and adding a model.
 
 /** Path under public/ of the optimized model (from `npm run models`), or null for the pill. */
-export const PLAYER_MODEL: string | null = null
+export const PLAYER_MODEL: string | null = '/models/player.glb'
 
 /** The model is scaled to this height in world units: about the pill's, so the camera and collision still fit. */
 export const PLAYER_HEIGHT = 1.2
