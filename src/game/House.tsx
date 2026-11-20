@@ -1,6 +1,6 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect } from 'react'
-import { Color, ExtrudeGeometry, MeshLambertMaterial, Shape, type BufferGeometry } from 'three'
+import { CanvasTexture, Color, ExtrudeGeometry, MeshLambertMaterial, RepeatWrapping, Shape, SRGBColorSpace, type BufferGeometry } from 'three'
 import { addCollider, type Collider } from './collision'
 import { block, flat, merge, pick, tint, unindexed } from './geometry'
 import { DOOR, FRONT_DOOR, HOUSE, INTERIOR, ROOM } from './layout'
@@ -16,11 +16,14 @@ const WALL = 0.5 // wall thickness
 const WALL_H = 1.6 // back and side walls
 const FRONT_H = 0.35 // the front wall stays low so it never hides the room
 const CAP = 0.08 // the wooden cap along the top of every wall
-const SEAM = 0.03 // dark gap left between floor planks
+const SEAM = 0.02 // dark gap left between tatami mats
+const HERI = 0.045 // width of the cloth border along a mat's long sides
+const WEAVE = 9 // rush stripes across each tile of a mat
 
-const PLANK = ['#a8754a', '#9c6b42', '#b07e52'].map((c) => new Color(c)) // floor planks pick one of these
+const MAT = ['#c9c288', '#bfb87b', '#cfc792'].map((c) => new Color(c)) // tatami pick one of these, fresh to sun-faded
 const C = {
-  seams: new Color('#5a3a24'),
+  seams: new Color('#4a4630'),
+  heri: new Color('#2f3a33'),
   plaster: new Color('#e3d3b0'),
   frontWall: new Color('#8a6040'),
   cap: new Color('#6e4a30'),
@@ -39,22 +42,48 @@ const SOLIDS: Collider[] = [
   { kind: 'box', x: 0, z: D + WALL + 0.5, hx: DOOR, hz: 0.25 }, // backstop past the doorstep
 ]
 
-// Floor: planks half a tile deep and one tile long, every other row shifted half a tile like
-// brickwork, over a dark base that shows through the seams.
-function buildFloor(): BufferGeometry {
-  const parts: BufferGeometry[] = []
-  const rows = Math.round((2 * D) / 0.5)
+// Floor: tatami, each mat one tile deep and two long (so they line up with the edit grid), laid
+// in rows shifted by a tile so four corners never meet, with half mats filling the row ends.
+// The mats' faces carry the rush weave texture; their cloth borders and the dark base showing
+// through the seams are a second, plain mesh.
+function buildFloor(): { mats: BufferGeometry; trim: BufferGeometry } {
+  const mats: BufferGeometry[] = []
+  const trim: BufferGeometry[] = []
+  const rows = Math.round(2 * D)
+  const cols = Math.round(2 * H)
   for (let r = 0; r < rows; r++) {
-    const z0 = -D + r * 0.5
-    const shift = (r % 2) * 0.5
-    for (let n = 0, x = -H - shift; x < H; n++, x += 1) {
-      const x0 = Math.max(-H, x) + SEAM / 2
-      const x1 = Math.min(H, x + 1) - SEAM / 2
-      parts.push(tint(flat(x0, x1, z0 + SEAM / 2, z0 + 0.5 - SEAM / 2, 0), pick(PLANK, r, n)))
+    const z0 = -D + r + SEAM / 2
+    const z1 = -D + r + 1 - SEAM / 2
+    for (let c = -(r % 2), n = 0; c < cols; c += 2, n++) {
+      const x0 = -H + Math.max(0, c) + SEAM / 2
+      const x1 = -H + Math.min(cols, c + 2) - SEAM / 2
+      const face = flat(x0, x1, z0 + HERI, z1 - HERI, 0)
+      const uv = face.getAttribute('uv')
+      for (let k = 0; k < uv.count; k++) uv.setX(k, uv.getX(k) * (x1 - x0)) // one weave repeat per tile
+      mats.push(tint(face, pick(MAT, r, n)))
+      trim.push(tint(flat(x0, x1, z0, z0 + HERI, 0.002), C.heri), tint(flat(x0, x1, z1 - HERI, z1, 0.002), C.heri))
     }
   }
-  parts.push(tint(flat(-H, H, -D, D + WALL, -0.005), C.seams)) // base, running out under the doorstep
-  return merge(parts)
+  trim.push(tint(flat(-H, H, -D, D + WALL, -0.005), C.seams)) // base, running out under the doorstep
+  return { mats: merge(mats), trim: merge(trim) }
+}
+
+// The rush weave: fine stripes across the mat, drawn once. Light enough that the mats' vertex
+// colours, which it multiplies, still set their shade.
+function weave() {
+  const canvas = document.createElement('canvas')
+  canvas.width = WEAVE * 4
+  canvas.height = 1
+  const g = canvas.getContext('2d')!
+  for (let x = 0; x < canvas.width; x++) {
+    const v = [255, 240, 212, 232][x % 4]
+    g.fillStyle = `rgb(${v},${v},${v})`
+    g.fillRect(x, 0, 1, 1)
+  }
+  const t = new CanvasTexture(canvas)
+  t.wrapS = RepeatWrapping
+  t.colorSpace = SRGBColorSpace
+  return t
 }
 
 // Walls: every piece a box painted per vertex, merged into one mesh.
@@ -83,6 +112,7 @@ function buildWalls(): BufferGeometry {
 }
 
 const floor = buildFloor()
+const matMaterial = new MeshLambertMaterial({ vertexColors: true, map: weave() })
 const walls = buildWalls()
 
 /** The room the game starts in, without its furniture (Furniture.tsx). Drawn only while the player is indoors; see Game.tsx. */
@@ -94,7 +124,8 @@ export function HouseInterior() {
 
   return (
     <group position={[INTERIOR.x, 0, INTERIOR.z]}>
-      <mesh geometry={floor}>
+      <mesh geometry={floor.mats} material={matMaterial} />
+      <mesh geometry={floor.trim}>
         <meshLambertMaterial vertexColors />
       </mesh>
       <mesh geometry={walls}>
