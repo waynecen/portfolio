@@ -23,14 +23,14 @@ This replaces the earlier feature roadmap. Its unfinished items are folded in be
 
 ## Phase A: Character and feel *(next)*
 
-1. **Tripo player character.** Generate, rig and import an original character to replace the pill. The code is ready: [CHARACTER.md](CHARACTER.md) is the whole process, and the final step is one constant in `src/game/models.ts`.
-2. **Curved world.** Bend the world downward with distance from the camera, so the horizon rolls away, Animal Crossing-style.
+1. **Tripo player character.** *(done: public/models/player.glb)* Generate, rig and import an original character to replace the pill. The code is ready: [CHARACTER.md](CHARACTER.md) is the whole process, and the final step is one constant in `src/game/models.ts`.
+2. **Curved world.** *(done: curve.ts)* Bend the world downward with distance from the camera, so the horizon rolls away, Animal Crossing-style.
    - One shared `onBeforeCompile` patch is added to every material.
    - Lower the camera angle a little (`HEIGHT` and `DISTANCE` in CameraRig.tsx) so more horizon shows.
-3. **Sound effects.**
+3. **Sound effects.** *(done: sfx.ts)*
    - Footsteps by surface (grass, road, wood floor), a roll whoosh, the door, dialogue blips and UI clicks.
    - A small WebAudio synth like `placeholderTracks.ts`, so there are no audio files, sharing the mute with music.
-4. **Particles.** Dust puffs on roll and sprint, a sparkle over whatever has focus, and splashes in the rain. All from preallocated pools.
+4. **Particles.** *(done: Dust.tsx, Sparkle.tsx, splashes in Rain.tsx)* Dust puffs on roll and sprint, a sparkle over whatever has focus, and splashes in the rain. All from preallocated pools.
 5. **Art pass on props.** Stations become small themed dioramas, one per project. The sign, mailbox and record player get models through the same pipeline as the character.
 
 ## Phase B: Light action (Zelda-style)
@@ -63,9 +63,9 @@ Gentle by design: nothing is hard, and nothing blocks a project.
 11. **Catching.**
     - A bug net for fireflies and butterflies, and fishing at the shore with a simple timing bite.
     - Catches fill a **collection book** panel.
-12. **Seasons from the real month.** Blossom in spring, autumn colours, and snow in winter, alongside the time-of-day slots in sky.ts.
+12. **Seasons from the real month.** Blossom in spring, autumn colours, and snow in winter *(winter done: season.ts)*, alongside the time-of-day slots in sky.ts.
 13. **Something new each day.** A message bottle on the beach (a tip or fun fact) and a dig spot that moves, both seeded by the date.
-14. **Shop and decor.** Spend shells on hats for the character and furniture for the house, placed on the room's tile grid.
+14. **Shop and decor.** Spend shells on hats for the character and furniture for the house, placed on the room's tile grid *(moving furniture on the grid done: room.ts, edit.ts)*.
 
 ## Phase D: Secrets and a small dungeon
 

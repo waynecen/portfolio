@@ -11,8 +11,8 @@ Every constant that changes how the game looks, moves or performs, grouped by sy
 ## Player movement: [src/game/Player.tsx](../src/game/Player.tsx)
 
 ```ts
-const SPEED = 4               // walking speed, units/s (a full joystick push or any WASD key)
-const SPRINT = 1.5            // holding Shift (or the B button on touch) multiplies top speed by this (4 → 6 units/s); also caps the animation's speed value
+const SPEED = 2.5             // walking speed, units/s (a full joystick push or any WASD key)
+const SPRINT = 2              // holding Shift (or the B button on touch) multiplies top speed by this (2.5 → 5 units/s); also caps the animation's speed value
 const ACCEL = 12              // damp rate toward the input velocity while a direction is held; lower = slidier, heavier starts
 const DECEL = 16              // damp rate back to a stop after letting go; higher than ACCEL so stops feel crisp
 const SHORE = 0.15            // the pill stops this far short of the cliff edge, so its feet stay on the rim
@@ -25,6 +25,7 @@ const EDGE = PILL_RADIUS + SHORE // derived, don't edit: how close the pill's ce
 const ROLL_TIME = 0.45    // seconds one tumble lasts; movement input is ignored for this long
 const ROLL_SPEED = 9      // burst speed at the start of the roll, units/s
 const ROLL_COOLDOWN = 0.2 // seconds after a roll ends before another can start
+const STEP_LEN = [0.45, 0.7] // units travelled per footstep sound, walking and at full sprint
 ```
 
 Inside the roll, speed eases from `ROLL_SPEED` down to `ROLL_SPEED × 0.4` (the `0.6` in `1 - 0.6 * roll.p`). At 9 that ends at 3.6, just under `SPEED`, so the roll blends straight into walking. If you change `ROLL_SPEED` a lot, adjust that `0.6` too so the end speed stays close to `SPEED`.
@@ -38,17 +39,56 @@ Distance covered by one roll ≈ `ROLL_SPEED × 0.7 × ROLL_TIME`, about 2.8 uni
 ```ts
 export const PLAYER_MODEL: string | null = null              // models.ts: path of the optimized model under public/, or null for the pill
 export const PLAYER_HEIGHT = 1.2                              // models.ts: the model is scaled to this height (about the pill's)
+export const PLAYER_WIDTH = 1.2                              // models.ts: widens the model side to side and front to back at the same height (1 = as modelled)
 export const CLIPS = { idle: 'Idle', walk: 'Walk', run: 'Run' } // models.ts: clip names in the file; a missing one is skipped
 const BLEND = 10                // ModelCharacter.tsx: how quickly idle, walk and run blend as speed changes (damp rate)
 const WALK_RATE = [0.6, 1.25]   // ModelCharacter.tsx: walk clip playback speed at a slow amble and at full walk, for a clip with no recorded pace
 const MIN_RATE = 0.3            // ModelCharacter.tsx: slowest playback when matching a clip's pace to the ground speed
-const MAX_RATE = 3              // ModelCharacter.tsx: fastest playback; past it the feet slide rather than step comically fast
+const MAX_RATE = 3              // ModelCharacter.tsx: fastest walk playback; past it the feet slide rather than step comically fast
+const RUN_MAX_RATE = 2.75       // ModelCharacter.tsx: the same for the run (2.75× keeps pace up to a full sprint, 5 units/s)
+const IDLE_PAUSE = 5            // ModelCharacter.tsx: seconds the model stands still after stopping, and between plays of its idle clip
+const BREATHE = 0.012           // ModelCharacter.tsx: height swell while standing still (two slow breaths per pause)
 const MODEL_LEAN = 0.12         // PillCharacter.tsx: the model's forward lean at full speed, radians (about 7°, 11° sprinting)
 ```
 
-Walk and run play at the speed where their feet keep pace with the ground: `npm run models` records each clip's pace (body heights per second) when it strips the root motion, and the game divides the player's speed by it, within `MIN_RATE` and `MAX_RATE`.
+Walk and run play at the speed where their feet keep pace with the ground: `npm run models` records each clip's pace (body heights per second) when it strips the root motion, and the game divides the player's speed by it, within `MIN_RATE` and `MAX_RATE` (`RUN_MAX_RATE` for the run).
 
 With a model set, the rig below still turns it and tumbles it through rolls (`TURN`, `ROLL_DROP`), and leans it into its movement (`MODEL_LEAN`, scaled up by `SPRINT_LEAN`), but the pill's body shape, walk cycle and feet no longer apply: the model's own clips do the walking. Making a model, the pipeline and the size budget are in [CHARACTER.md](CHARACTER.md).
+
+---
+
+## Around the player: [src/game/PlayerGround.tsx](../src/game/PlayerGround.tsx), [src/game/Dust.tsx](../src/game/Dust.tsx)
+
+```ts
+const SHADOW_SIZE = 0.85   // PlayerGround.tsx: blob shadow diameter, world units (the scene casts no real shadows)
+const SHADOW_OPACITY = 0.35// PlayerGround.tsx: how dark it is; it tightens and lightens a little mid-roll
+const NIGHT_GLOW = 2.5     // PlayerGround.tsx: the warm light on the player at full night outdoors (0 by day)
+const INDOOR_GLOW = 0.4    // PlayerGround.tsx: share of NIGHT_GLOW indoors, where the room is lamp-lit
+const COUNT = 16           // Dust.tsx: puffs in the pool
+const LIFE = 0.45          // Dust.tsx: seconds a puff lasts
+const SIZE = 0.09          // Dust.tsx: a puff's radius at its biggest
+const BURST = 6            // Dust.tsx: puffs when a roll starts
+const TRAIL = 0.12         // Dust.tsx: seconds between puffs while sprinting
+```
+
+```ts
+const SIZE = 0.075  // Sparkle.tsx: the gold glints circling whatever the player can use; also COUNT = 5, HEIGHT = 1.55, RADIUS = 0.32, SPIN = 1.4
+const SPLASH_CHANCE = 0.2 // Rain.tsx: share of raindrops landing near the player that splash; SPLASH_LIFE = 0.28, SPLASH_SIZE = 0.16
+```
+
+Dust only shows outdoors and not in the rain. The light is always there, at 0 by day: adding or removing a light would recompile every material.
+
+## Sound effects: [src/game/sfx.ts](../src/game/sfx.ts)
+
+```ts
+const LEVEL = 0.5 // effects relative to the music volume; the music's mute silences them too
+const STEP_VOLUME = 0.45 // footsteps relative to the other effects
+const ROLL_VOLUME = 0.5  // the roll's whoosh relative to the other effects
+```
+
+Every sound is synthesised in `SOUNDS` (no audio files): footsteps for grass, road and wood, the roll whoosh, the door, dialogue blips and clicks. Change a sound's pitch or length there.
+
+To use real recordings instead, put the files in `public/sfx/` and list them in `FILES` in sfx.ts. Grass footsteps already do: `grass: ['/sfx/grass_L.wav', '/sfx/grass_R.wav']`. With several files a sound takes turns through them in order, so a left and a right step alternate. The names are `grass`, `snow`, `road`, `wood`, `whoosh`, `door`, `blip` and `click`. Any sound left out stays synthesised, and a file that fails to load falls back to it too.
 
 ---
 
@@ -81,7 +121,7 @@ const SPRINT_LEAN = 0.6       // extra forward lean at full sprint (+60%, about 
 const SPRINT_STRIDE = 0.3     // longer foot swing at full sprint (+30%)
 ```
 
-Sprinting also speeds up the steps, because the walk cycle advances in proportion to speed (1.5× faster at full sprint). `SPRINT_LEAN` and `SPRINT_STRIDE` fade in between walking and full sprint, and they're switched off during a roll.
+Sprinting also speeds up the steps, because the walk cycle advances in proportion to speed (2× faster at full sprint). `SPRINT_LEAN` and `SPRINT_STRIDE` fade in between walking and full sprint, and they're switched off during a roll.
 
 **Foot sliding:** a foot stays still on the floor only when its backward slide matches walking speed. That's roughly `SPEED ÷ (STEP_RATE / π) ≈ 2 × STRIDE`. With the defaults the feet slide (cartoony, intentional). To reduce it, raise `STRIDE` or `STEP_RATE`. Raising `STEP_RATE` too high makes the walk look frantic.
 
@@ -122,11 +162,22 @@ const footMat = new MeshLambertMaterial({ color: '#d9a536' }) // feet (a darker 
 
 ---
 
+## Curved world: [src/game/curve.ts](../src/game/curve.ts)
+
+```ts
+export const CURVE = 0.012 // how fast the ground falls away behind the player; 0 turns the curve off
+export const FLAT = 3      // units behind the player before the bend starts, so the ground you walk on (and the room indoors) stays flat
+```
+
+Everything past `FLAT` drops by `CURVE × distance²`, so the island rolls away over a horizon like a small planet. It's a patch to three's shared vertex step, so every material bends alike. Only how things look bends: positions, collisions and interactions are unchanged. A stronger curve or a lower camera shows more sky.
+
+---
+
 ## Camera: [src/game/CameraRig.tsx](../src/game/CameraRig.tsx)
 
 ```ts
-export const HEIGHT = 12   // how high the camera sits above the floor
-export const DISTANCE = 12 // how far back (toward the viewer) it sits from the player; equal HEIGHT and DISTANCE = a 45° view
+export const HEIGHT = 11   // how high the camera sits above the floor
+export const DISTANCE = 13 // how far back (toward the viewer) it sits from the player; a little lower than 45°, so the curved horizon shows
 const LAMBDA = 4           // follow rate: higher = camera sticks closer to the player, lower = floatier lag
 const ROOM_MARGIN = 1      // indoors: black kept beside the room's side walls when the screen is wide enough
 const ROOM_SHIFT = -0.5    // indoors: aim this far behind the room's centre so the tall back wall stays in view
@@ -156,7 +207,7 @@ The projects themselves aren't constants. They're read from the `#projects artic
 
 ```ts
 export const ABOUT_AT = { x: -6, z: -2 }   // places.ts: the About sign, left of the house (whole numbers, so a road reaches it)
-export const CONTACT_AT = { x: 6, z: -2 }  // places.ts: the Contact mailbox, right of the house
+export const CONTACT_AT = { x: -1, z: 3 }  // places.ts: the Contact mailbox, out front, just left of the path from the door
 const RANGE = 1.4                          // Mailbox.tsx: how close the player must be for the contact card to show
 const RADIUS = 0.3                         // Mailbox.tsx: collision radius
 ```
@@ -168,7 +219,7 @@ Like the projects, the words come from [index.html](../index.html). Each `<p>` i
 ## Interactions and dialogue: [src/game/interact.ts](../src/game/interact.ts), [src/game/Dialogue.tsx](../src/game/Dialogue.tsx)
 
 ```ts
-range: 1.4                   // House.tsx: how close the player must be to read the note (every interactable sets its own range)
+range: 1.4                   // Furniture.tsx: how close the player must be to read the note (every interactable sets its own range)
 const CHARS_PER_SECOND = 40  // Dialogue.tsx: typewriter speed; lines appear instantly with "reduce motion" on
 const PAUSE_SENTENCE = 0.25  // Dialogue.tsx: extra pause (s) after . ! ? so the text reads like speech
 const PAUSE_COMMA = 0.1      // Dialogue.tsx: extra pause (s) after , ; :
@@ -176,7 +227,7 @@ const PAUSE_COMMA = 0.1      // Dialogue.tsx: extra pause (s) after , ; :
 
 Bubble look is in [style.css](../src/style.css): `.dialogue-cloud` `fill` (cream), `.dialogue` `color` (brown text), `.dialogue-next` `fill` (arrow), and the `dialogue-pop` keyframes (pop-in). The cloud outline is the SVG `path` in Dialogue.tsx; it stretches to fit, so it works at any width.
 
-Anything the player can use calls `register({ x, z, range, prompt, onInteract })` in an effect. Each frame, the nearest one in range gets focus and shows its prompt ("E Read"), or its card if it has a `card` (a project, or the contact links; the card's `action` labels what using it opens). To add a sign, place `<Sign x z lines={[…]} />` in [Game.tsx](../src/game/Game.tsx). The welcome and controls text is the `NOTE` array in [House.tsx](../src/game/House.tsx), with a keyboard and a touch version.
+Anything the player can use calls `register({ x, z, range, prompt, onInteract })` in an effect. Each frame, the nearest one in range gets focus and shows its prompt ("E Read"), or its card if it has a `card` (a project, or the contact links; the card's `action` labels what using it opens). To add a sign, place `<Sign x z lines={[…]} />` in [Game.tsx](../src/game/Game.tsx). The welcome and controls text is the `NOTE` array in [Furniture.tsx](../src/game/Furniture.tsx), with a keyboard and a touch version.
 
 ---
 
@@ -196,7 +247,7 @@ The player is a circle of `PILL_RADIUS`. Obstacles are circles or axis-aligned b
 ## Record player and music: [src/game/RecordPlayer.tsx](../src/game/RecordPlayer.tsx), [src/game/music.ts](../src/game/music.ts)
 
 ```ts
-export const RECORD_PLAYER = { x: INTERIOR.x + 4.8, z: INTERIOR.z - 3.15 } // layout.ts: in the house, against the back wall to the right of the table
+const BACK = -0.15         // how far towards the back of its tile it stands (where it is comes from room.ts, like the other furniture)
 const RANGE = 1.8          // how close the player must be to use it
 const SPIN = 3.5           // platter speed while playing, rad/s (about 33 rpm); it spins up and winds down
 const PULSE = 0.08         // how much the cabinet bounces to the music's low end (off with reduce motion)
@@ -255,7 +306,7 @@ Trees sit on tile centres and never touch each other, diagonals included, so the
 export const INTERIOR = { x: 0, z: -200 }     // layout.ts: where the room is built, far off the island so nothing outside can reach it
 export const ROOM = { hx: 5.5, hz: 3.5 }      // half-size of the room's floor (11 × 7 tiles); the walls, doors and indoor camera follow it
 export const DOOR = 0.5                       // half-width of the doorway, inside and out
-export const BED_SPAWN = { x: INTERIOR.x - 3, z: INTERIOR.z - 2, heading: 0 } // where every visit starts
+export const BED_SPAWN = { x: INTERIOR.x - 3, z: INTERIOR.z - 2, heading: 0 } // where every visit starts (moved to the nearest clear tile if furniture now stands there)
 export const HOUSE = { i0: -2, i1: 2, j0: -2, j1: 0 } // tiles the house covers on the island (5 × 3); roads loop round it
 export const OUTSIDE_SPAWN = { x: FRONT_DOOR.x, z: FRONT_DOOR.z + 1.1, heading: 0 } // coming out: in front of the door, facing the camera
 export const INSIDE_SPAWN = { x: INTERIOR.x, z: INTERIOR.z + ROOM.hz - 1, heading: Math.PI } // going in: on the rug, facing into the room
@@ -273,6 +324,25 @@ export const FADE = 0.25           // scene.ts: seconds to fade to black, and ag
 ```
 
 Both areas stay loaded and only one is drawn, so trips are instant. Each arrival spot is clear of the doorway it came through, so arriving never sends you straight back; keep it that way if you move a spawn or a door. The fade's look is `.fade` in [style.css](../src/style.css); keep its transition time equal to `FADE`.
+
+## Furniture and edit mode: [src/game/room.ts](../src/game/room.ts), [src/game/Furniture.tsx](../src/game/Furniture.tsx), [src/game/edit.ts](../src/game/edit.ts), [src/game/EditRoom.tsx](../src/game/EditRoom.tsx)
+
+```ts
+export const PIECES = [...]  // room.ts: every movable piece, its name and footprint in tiles (w across, d deep); floor: true for rugs
+const DEFAULT = {...}        // where each piece starts: its top-left tile, house-local (tile i, j is centred on x = i, z = j)
+const DOORWAY = [...]        // tiles just inside the door, always kept clear of furniture
+const SAVE_KEY = 'room-layout-v1' // the visitor's layout is saved in their browser under this; bump it if you change the pieces
+const LIFT = 0.25            // Furniture.tsx: how high a piece floats while being moved
+const BOB = 0.04             // and how much it bobs (off with reduce motion)
+const LINE = 0.04            // EditRoom.tsx: width of the grid lines shown while editing
+const OK / NO / AIM / OVER   // highlight colours: fits, doesn't fit, empty tile, a piece you could pick up
+```
+
+Press F indoors, or the Edit room button, to rearrange the room. The player stands still while you edit. Drag a piece with the mouse or a finger, or move the cursor with the arrows or WASD and press E (or Enter or Space) to pick it up and put it down. Esc puts the piece in hand back where it came from, or ends edit mode; F or Done ends it too. Reset puts everything back where `DEFAULT` has it.
+
+A piece only goes down where it fits. It must stay inside the room and not overlap other furniture (rugs only clash with rugs, so furniture can stand on them). It can't block the doorway, cover the tiles the player stands on, or shut the player off from the door. A saved layout that breaks any of these rules on load (say, after the pieces change) is dropped in favour of `DEFAULT`, and in development the console warns if `DEFAULT` itself breaks one.
+
+**Adding a piece:** add it to `PIECES` and `DEFAULT` in room.ts, then give it a `Build` in Furniture.tsx: its blocks around the footprint's centre, and its colliders relative to that centre. Something to use on it goes in `USES` there. A piece that draws itself (like the record player) calls `usePiece()` instead. Edit bar styles are `.edit-*` in [style.css](../src/style.css).
 
 ---
 
@@ -297,7 +367,8 @@ const codes: Record<string, Dir> = {
   KeyD: 'right', ArrowRight: 'right',
   ShiftLeft: 'sprint', ShiftRight: 'sprint', // hold to sprint
 }
-// In bindKeys: Space = advance dialogue if open, else roll; E / Enter = interact (interact.ts); Esc = close dialogue
+// In bindKeys: Space = advance dialogue if open, else roll; E / Enter = interact (interact.ts); Esc = close dialogue; F = edit the room (indoors)
+// While editing, keys go to editKey() in edit.ts instead
 ```
 
 ---
@@ -366,6 +437,14 @@ const GLOW = 1.1                   // House.tsx: window glow at full night
 ```
 
 **Seeing a given hour:** add `?hour=21` to the URL. Decimals work, so `?hour=16.75` is 4:45pm. The snapshot skill shoots each slot this way.
+
+**Seasons:** [src/game/season.ts](../src/game/season.ts) picks the season from the visitor's month (northern hemisphere: December to February is winter). Only winter changes the island so far:
+- snow on the ground, a snow cap on each tree and a snowed-over roof (`GROUND` in Island.tsx, `capGeometry` in Trees.tsx, `O.roof` in House.tsx)
+- snow falling all day instead of rain, heavier in the afternoon slot ([Snow.tsx](../src/game/Snow.tsx): `LIGHT`, `SPEED`, `SWAY`, `SIZE`)
+- a cooler, paler light with snow bouncing light up from the ground (`chill` and the `WINTER_*` colours in sky.ts)
+- crunchy footsteps (the `snow` sound in sfx.ts), puffs of snow instead of dust, and no fireflies
+
+Add `?season=winter` to the URL to see it (or `spring`, `summer`, `autumn`). The snapshot skill pins every shot to summer, plus one winter shot.
 
 With reduced motion, the colours and fog still change, but rain and fireflies hold still.
 
