@@ -4,6 +4,7 @@ import { Atmosphere } from './Atmosphere'
 import { CameraRig, DISTANCE, HEIGHT } from './CameraRig'
 import { Dialogue, Prompt } from './Dialogue'
 import { Doors } from './Doors'
+import { Dust } from './Dust'
 import { Fade } from './Fade'
 import { Fireflies } from './Fireflies'
 import { Hearts } from './Hearts'
@@ -84,6 +85,7 @@ export function Game() {
         <Doors />
         <Interactions />
         <Player />
+        <Dust />
         <CameraRig />
       </Canvas>
       <Fade />
