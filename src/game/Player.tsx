@@ -8,6 +8,9 @@ import { PLAYER_MODEL } from './models'
 import { actions, bindKeys, buttons, keys, stick } from './input'
 import { PillCharacter, PILL_RADIUS } from './PillCharacter'
 import { PlayerGround } from './PlayerGround'
+import { roadTiles } from './pois'
+import { winter } from './season'
+import { step, whoosh, type Surface } from './sfx'
 import { playerFacing, playerPos, playerRoll, playerVel, teleport } from './state'
 import { busy } from './interact'
 import { useGame } from './store'
@@ -22,6 +25,13 @@ const EDGE = PILL_RADIUS + SHORE // how close the pill's centre gets to a water 
 const ROLL_TIME = 0.45 // seconds for one tumble
 const ROLL_SPEED = 9 // burst speed at the start of a roll, eases down toward walk speed
 const ROLL_COOLDOWN = 0.2 // seconds after a roll before the next can start
+const STEP_LEN = [0.45, 0.7] // units travelled per footstep sound: walking, and at full sprint
+
+const roads = new Set(roadTiles.map((t) => t.i + ',' + t.j))
+function surfaceAt(x: number, z: number): Surface {
+  if (useGame.getState().scene === 'house') return 'wood'
+  return roads.has(Math.round(x / TILE) + ',' + Math.round(z / TILE)) ? 'road' : winter ? 'snow' : 'grass'
+}
 
 // The 3D character's code (and the glTF loader) is fetched only if there's a model to show.
 const ModelCharacter = lazy(() => import('./ModelCharacter'))
@@ -29,6 +39,7 @@ const ModelCharacter = lazy(() => import('./ModelCharacter'))
 export function Player() {
   const ref = useRef<Group>(null)
   const cooldown = useRef(0)
+  const stride = useRef(0) // distance since the last footstep sound
 
   useEffect(() => bindKeys(), [])
 
@@ -62,6 +73,7 @@ export function Player() {
         roll.p = 0
         roll.dirX = Math.sin(playerFacing.heading)
         roll.dirZ = Math.cos(playerFacing.heading)
+        whoosh()
       }
     }
 
@@ -120,6 +132,13 @@ export function Player() {
 
     // Relative to walking speed: 1 = walking, 2 = sprinting. Capped so the roll burst doesn't spin the legs.
     v.speed = Math.min(SPRINT, Math.sqrt(v.x * v.x + v.z * v.z) / SPEED)
+    // Footsteps by distance, so they suit any character and speed. The first lands soon after setting off.
+    const len = STEP_LEN[0] + (STEP_LEN[1] - STEP_LEN[0]) * MathUtils.clamp(v.speed - 1, 0, 1)
+    if (roll.p >= 0 || v.speed < 0.1) stride.current = len * 0.7
+    else if ((stride.current += v.speed * SPEED * dt) >= len) {
+      stride.current -= len
+      step(surfaceAt(p.x, p.z))
+    }
     playerPos.x = p.x
     playerPos.z = p.z
   })

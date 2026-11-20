@@ -1,4 +1,5 @@
 import { advance, closeDialogue, closePanel, interact } from './interact'
+import { unlock } from './sfx'
 
 // Keyboard state lives outside React so per-frame reads don't trigger renders.
 export const keys = { forward: false, back: false, left: false, right: false, sprint: false }
@@ -38,6 +39,7 @@ const ACTION_KEYS = new Set(['Space', 'KeyE', 'Enter', 'Escape'])
 
 export function bindKeys(): () => void {
   const set = (down: boolean) => (e: KeyboardEvent) => {
+    if (down) unlock() // audio may only start after a gesture
     if (ACTION_KEYS.has(e.code)) {
       if (isTyping(e.target) || !document.body.classList.contains('playing')) return
       if (e.target instanceof HTMLElement && e.target.closest('a, button')) return
@@ -62,11 +64,13 @@ export function bindKeys(): () => void {
   const onUp = set(false)
   window.addEventListener('keydown', onDown)
   window.addEventListener('keyup', onUp)
+  window.addEventListener('pointerdown', unlock)
   window.addEventListener('blur', reset)
   window.addEventListener('viewchange', reset)
   return () => {
     window.removeEventListener('keydown', onDown)
     window.removeEventListener('keyup', onUp)
+    window.removeEventListener('pointerdown', unlock)
     window.removeEventListener('blur', reset)
     window.removeEventListener('viewchange', reset)
     reset()

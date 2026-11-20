@@ -1,0 +1,140 @@
+import { useMusic } from './music'
+
+// Sound effects, synthesised in the browser like the placeholder music, unless FILES gives recordings. Each
+// sound is a short buffer rendered the first time it's needed; playing one makes a single buffer
+// source (a few a second at most). They follow the music's volume, so its mute silences them too.
+// Browsers only start audio after a gesture, so unlock() runs on the first key or tap.
+
+const LEVEL = 0.5 // effects relative to the music volume
+const STEP_VOLUME = 0.45 // footsteps relative to the other effects: they repeat constantly, so they sit low
+const ROLL_VOLUME = 0.2 // the roll's whoosh relative to the other effects
+
+// Real recordings: put the files in public/sfx/ and their paths here. A sound with files plays them
+// instead of its synthesised version below (loaded when audio unlocks). List several to take turns,
+// in order: a left and a right footstep alternate like real feet. Keep them short; WAV, OGG or MP3,
+// mono is plenty.
+const FILES: Partial<Record<Sound, string[]>> = {
+  grass: ['/sfx/grass_L.wav', '/sfx/grass_R.wav'],
+}
+
+let ctx: AudioContext | null = null
+let master: GainNode | null = null
+
+/** Creates (or resumes) the audio context. Call from a key or pointer handler. */
+export function unlock() {
+  try {
+    if (!ctx) {
+      ctx = new AudioContext()
+      master = ctx.createGain()
+      master.gain.value = useMusic.getState().volume * LEVEL
+      master.connect(ctx.destination)
+      useMusic.subscribe((s) => {
+        if (master) master.gain.value = s.volume * LEVEL
+      })
+    }
+    if (ctx.state === 'suspended') void ctx.resume()
+    loadFiles()
+  } catch {
+    // no Web Audio: the game is just silent
+  }
+}
+
+// Renders `seconds` of sound from a function of (time, white noise sample).
+function render(seconds: number, f: (t: number, noise: number) => number): AudioBuffer {
+  const c = ctx!
+  const buf = c.createBuffer(1, Math.ceil(seconds * c.sampleRate), c.sampleRate)
+  const d = buf.getChannelData(0)
+  for (let i = 0; i < d.length; i++) d[i] = f(i / c.sampleRate, Math.random() * 2 - 1)
+  return buf
+}
+
+// Low-passed noise: `smooth` near 1 is dull and soft, near 0 is bright and crunchy.
+function lowpass(smooth: number) {
+  let y = 0
+  return (x: number) => (y += (x - y) * (1 - smooth))
+}
+
+const SOUNDS = {
+  grass: () => {
+    const lp = lowpass(0.85)
+    return render(0.09, (t, n) => lp(n) * Math.exp(-t * 45) * 1.6)
+  },
+  snow: () => {
+    // A soft crunch: dull noise with some grains much louder than others.
+    const lp = lowpass(0.75)
+    return render(0.12, (t, n) => lp(n) * (Math.random() < 0.25 ? 2.2 : 0.6) * Math.exp(-t * 32))
+  },
+  road: () => {
+    const lp = lowpass(0.5)
+    return render(0.07, (t, n) => lp(n) * Math.exp(-t * 60) * 0.9)
+  },
+  wood: () => {
+    const lp = lowpass(0.7)
+    return render(0.1, (t, n) => (Math.sin(2 * Math.PI * 150 * t) * 0.8 + lp(n) * 0.5) * Math.exp(-t * 40))
+  },
+  whoosh: () => {
+    let y = 0
+    return render(0.32, (t, n) => {
+      const open = Math.sin((Math.PI * t) / 0.32) // swells then fades, brightening at its peak
+      y += (n - y) * (0.04 + 0.2 * open)
+      return y * open * 2.2
+    })
+  },
+  door: () =>
+    render(0.22, (t, n) => (Math.sin(2 * Math.PI * 95 * t) + n * Math.exp(-t * 200) * 0.6) * Math.exp(-t * 18) * 0.8),
+  blip: () => render(0.05, (t) => Math.sign(Math.sin(2 * Math.PI * 520 * t)) * 0.18 * Math.exp(-t * 50)),
+  click: () => render(0.03, (t) => Math.sin(2 * Math.PI * 1200 * t) * 0.35 * Math.exp(-t * 120)),
+}
+type Sound = keyof typeof SOUNDS
+const buffers: Partial<Record<Sound, AudioBuffer>> = {} // synthesised, rendered on first use
+const recorded: Partial<Record<Sound, AudioBuffer[]>> = {} // from FILES, in their order
+const turn: Partial<Record<Sound, number>> = {} // which recording plays next
+
+let loading = false
+function loadFiles() {
+  if (loading || !ctx) return
+  loading = true
+  const c = ctx
+  for (const [name, urls] of Object.entries(FILES) as [Sound, string[]][]) {
+    // All or nothing, so the order (left, right) holds; if one fails the synthesised sound stays.
+    Promise.all(
+      urls.map((url) =>
+        fetch(url)
+          .then((r) => r.arrayBuffer())
+          .then((data) => c.decodeAudioData(data)),
+      ),
+    )
+      .then((bufs) => (recorded[name] = bufs))
+      .catch(() => console.warn(`Couldn't load the ${name} sounds (${urls.join(', ')}); using the synthesised one.`))
+  }
+}
+
+function play(name: Sound, gain = 1, rate = 1) {
+  if (!ctx || !master || ctx.state !== 'running' || master.gain.value === 0) return
+  const src = ctx.createBufferSource()
+  const files = recorded[name]
+  if (files?.length) {
+    const k = turn[name] ?? 0
+    turn[name] = (k + 1) % files.length
+    src.buffer = files[k]
+  } else src.buffer = buffers[name] ??= SOUNDS[name]()
+  src.playbackRate.value = rate
+  if (gain === 1) src.connect(master)
+  else {
+    const g = ctx.createGain()
+    g.gain.value = gain
+    src.connect(g).connect(master)
+  }
+  src.start()
+}
+
+export type Surface = 'grass' | 'snow' | 'road' | 'wood'
+
+/** One footstep, slightly different every time (and left, right, left with recordings). */
+export const step = (surface: Surface) =>
+  play(surface, STEP_VOLUME * (0.85 + Math.random() * 0.3), 0.9 + Math.random() * 0.2)
+export const whoosh = () => play('whoosh', ROLL_VOLUME, 0.95 + Math.random() * 0.1)
+export const door = () => play('door')
+/** A dialogue letter; `pitch` around 1 gives each line its own voice. */
+export const blip = (pitch: number) => play('blip', 1, pitch * (0.96 + Math.random() * 0.08))
+export const click = () => play('click')

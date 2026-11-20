@@ -1,3 +1,4 @@
+import { click } from './sfx'
 import { useGame } from './store'
 
 /** What the card at the bottom of the screen shows while an interactable has focus: a project, or the contact links. */
@@ -55,8 +56,11 @@ export function advance(): boolean {
   const d = useGame.getState().dialogue
   if (!d) return false
   if (!typer.done) typer.finish()
-  else if (d.index + 1 < d.lines.length) useGame.setState({ dialogue: { lines: d.lines, index: d.index + 1 } })
-  else useGame.setState({ dialogue: null })
+  else {
+    click()
+    if (d.index + 1 < d.lines.length) useGame.setState({ dialogue: { lines: d.lines, index: d.index + 1 } })
+    else useGame.setState({ dialogue: null })
+  }
   return true
 }
 
@@ -65,6 +69,7 @@ export function interact(): boolean {
   if (advance()) return true
   const f = useGame.getState().focus
   if (!f) return false
+  click()
   f.onInteract()
   return true
 }

@@ -1,3 +1,4 @@
+import { door } from './sfx'
 import { cameraSnap, teleport } from './state'
 import { useGame, type Scene } from './store'
 
@@ -25,6 +26,7 @@ export function arrive(scene: Scene, at: Spawn) {
 /** Takes the player to `scene`, placing them at `at`. Ignored while a fade is already running. */
 export function goTo(scene: Scene, at: Spawn) {
   if (useGame.getState().fading) return
+  door()
   if (reduced) {
     arrive(scene, at)
     return

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { advance, typer } from './interact'
+import { blip } from './sfx'
 import { isTouch } from './quality'
 import { useGame } from './store'
 
@@ -143,6 +144,7 @@ export function Dialogue() {
     let n = reduced ? line.length : 0
     let raf = 0
     let due = performance.now()
+    const voice = 1 + (index % 3) * 0.08 // each line pitched a little differently
     const show = () => {
       el.textContent = line.slice(0, n)
       typer.done = n >= line.length
@@ -153,6 +155,7 @@ export function Dialogue() {
       const before = n
       while (n < line.length && t >= due) {
         due += delayAfter(line[n]) * 1000
+        if (n % 2 === 0 && line[n] !== ' ') blip(voice) // a blip every other letter
         n++
       }
       if (n !== before) show()
