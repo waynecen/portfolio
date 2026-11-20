@@ -5,6 +5,7 @@ import { TILE, tileAt } from './grid'
 import { ISLAND_RADIUS, isInland } from './Island'
 import { HOUSE } from './layout'
 import { pois, roadTiles } from './pois'
+import { winter } from './season'
 
 // Placeholder trees: a trunk and a low-poly cone, drawn as two instanced meshes (two draw calls
 // for the whole forest). Placed once at load from a fixed seed, so the layout is the same on
@@ -76,10 +77,14 @@ const trunkGeometry = new CylinderGeometry(0.08, 0.12, 0.5, 6).translate(0, 0.25
 const canopyGeometry = new ConeGeometry(0.5, 1.2, 7).translate(0, 1.05, 0)
 const trunkMaterial = new MeshLambertMaterial({ color: '#8a5a3b', flatShading: true })
 const canopyMaterial = new MeshLambertMaterial({ color: '#3f7d4a', flatShading: true })
+// Winter: a white cone over the canopy's top half, a little wider so no green shows through its rim.
+const capGeometry = new ConeGeometry(0.25, 0.56, 7).translate(0, 1.37, 0)
+const capMaterial = new MeshLambertMaterial({ color: '#f4f7fb', flatShading: true })
 
 export function Trees() {
   const trunks = useRef<InstancedMesh>(null)
   const canopies = useRef<InstancedMesh>(null)
+  const caps = useRef<InstancedMesh>(null)
 
   useLayoutEffect(() => {
     const dummy = new Object3D()
@@ -90,8 +95,9 @@ export function Trees() {
       dummy.updateMatrix()
       trunks.current?.setMatrixAt(n, dummy.matrix)
       canopies.current?.setMatrixAt(n, dummy.matrix)
+      caps.current?.setMatrixAt(n, dummy.matrix)
     })
-    for (const mesh of [trunks.current, canopies.current]) {
+    for (const mesh of [trunks.current, canopies.current, caps.current]) {
       if (!mesh) continue
       mesh.instanceMatrix.needsUpdate = true
       mesh.computeBoundingSphere() // cover every instance, so the forest isn't culled when the origin is off screen
@@ -107,6 +113,7 @@ export function Trees() {
     <>
       <instancedMesh ref={trunks} args={[trunkGeometry, trunkMaterial, trees.length]} />
       <instancedMesh ref={canopies} args={[canopyGeometry, canopyMaterial, trees.length]} />
+      {winter && <instancedMesh ref={caps} args={[capGeometry, capMaterial, trees.length]} />}
     </>
   )
 }

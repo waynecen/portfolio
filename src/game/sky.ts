@@ -1,4 +1,5 @@
 import { Color, Vector3 } from 'three'
+import { winter } from './season'
 
 // Time of day and weather, from the visitor's own clock. The day is split into slots; each has a
 // fixed look and weather and blends in from the previous slot over its first BLEND hours.
@@ -128,7 +129,21 @@ export function sample(hour: number, out: Sky): Sky {
   for (const w in out.weather) out.weather[w as Weather] = 0
   out.weather[prev.weather] += 1 - t
   out.weather[cur.weather] += t
+  if (winter) chill(out)
   return out
+}
+
+// Winter (season.ts): a cooler, paler light, with the snow bouncing light back up from the ground.
+// Less by night, so the dark stays dark.
+const WINTER_AIR = new Color('#dfe7ee')
+const WINTER_BOUNCE = new Color('#c9d4df')
+const WINTER_SUN = new Color('#eef3ff')
+function chill(out: Sky) {
+  const day = 1 - out.weather.night
+  out.background.lerp(WINTER_AIR, 0.45 * day)
+  out.fog.lerp(WINTER_AIR, 0.45 * day)
+  out.hemiGround.lerp(WINTER_BOUNCE, 0.7 * day + 0.2)
+  out.sun.lerp(WINTER_SUN, 0.4 * day)
 }
 
 // ?hour= overrides the clock, for testing and the snapshot skill.

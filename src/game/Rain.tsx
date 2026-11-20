@@ -2,6 +2,7 @@ import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
 import { BufferAttribute, BufferGeometry, LineBasicMaterial, type LineSegments } from 'three'
 import { detectTier } from './quality'
+import { winter } from './season'
 import { sky } from './sky'
 import { playerPos, teleport } from './state'
 import { useGame } from './store'
@@ -9,6 +10,7 @@ import { useGame } from './store'
 // The afternoon shower: thin streaks falling round the player, drawn as one set of line segments.
 // Each streak falls to the ground and starts again at the top somewhere near the player, so the
 // rain follows you without a visible box. It fades in and out with the rain weather in sky.ts.
+// In winter it snows instead.
 
 const COUNT = detectTier() === 'low' ? 300 : 800
 const SPREAD_X = 15 // half-width of the area round the player that rain falls in
@@ -75,6 +77,7 @@ export function Rain() {
     geometry.attributes.position.needsUpdate = true
   })
 
+  if (winter) return null // it snows instead (Snow.tsx)
   // Not culled: the streaks move every frame, so a bounding sphere would always be stale.
   return <lineSegments ref={lines} geometry={geometry} material={material} frustumCulled={false} />
 }

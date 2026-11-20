@@ -20,6 +20,7 @@ import { ProjectCard } from './ProjectCard'
 import { detectTier } from './quality'
 import { RecordPlayer } from './RecordPlayer'
 import { Rain } from './Rain'
+import { Snow } from './Snow'
 import { Roads } from './Roads'
 import { Sign } from './Sign'
 import { arrive } from './scene'
@@ -73,6 +74,7 @@ export function Game() {
           <Sign x={ABOUT_AT.x} z={ABOUT_AT.z} lines={aboutLines} />
           <Mailbox />
           <Rain />
+          <Snow />
           <Fireflies />
         </group>
         <group visible={scene === 'house'}>

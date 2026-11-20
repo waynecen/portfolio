@@ -6,6 +6,7 @@ import { block, flat, merge, pick, tint, unindexed } from './geometry'
 import { register, say } from './interact'
 import { DOOR, FRONT_DOOR, HOUSE, INTERIOR, ROOM } from './layout'
 import { isTouch } from './quality'
+import { winter } from './season'
 import { sky } from './sky'
 
 // The house the game starts in: one room seen from above, with nothing around it (the background
@@ -193,7 +194,7 @@ const EAVES = 0.25 // how far the roof overhangs the walls
 const O = {
   plaster: new Color('#efe3c6'),
   footing: new Color('#b9ae98'),
-  roof: new Color('#c0573f'),
+  roof: new Color(winter ? '#f2f5f9' : '#c0573f'), // snowed over in winter
   ridge: new Color('#9e4532'),
   door: new Color('#7a4f30'),
   frame: new Color('#5c3b24'),

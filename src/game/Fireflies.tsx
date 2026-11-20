@@ -3,6 +3,7 @@ import { useRef } from 'react'
 import { AdditiveBlending, BufferAttribute, BufferGeometry, PointsMaterial, type Points } from 'three'
 import { ISLAND_RADIUS, isInland } from './Island'
 import { inHouse } from './pois'
+import { winter } from './season'
 import { sky } from './sky'
 
 // Night on the island: small warm lights drifting low over the grass, each wandering round its own
@@ -62,6 +63,7 @@ export function Fireflies() {
     if (!reduced) place(clock.elapsedTime)
   })
 
+  if (winter) return null // no fireflies in the cold
   // Not culled: they're spread over the whole island and move every frame.
   return <points ref={points} geometry={geometry} material={material} frustumCulled={false} />
 }

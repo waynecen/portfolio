@@ -2,6 +2,7 @@ import { useFrame } from '@react-three/fiber'
 import { BoxGeometry, Color, MeshBasicMaterial, MeshLambertMaterial, PlaneGeometry, type BufferGeometry } from 'three'
 import { flat, merge, pick, tint, unindexed } from './geometry'
 import { TILE } from './grid'
+import { winter } from './season'
 
 // A blocky island centred on spawn, built from whole grid tiles: a grass plateau ringed by stone
 // cliffs that drop into open water. The shoreline steps along tile edges, so every corner is 90°.
@@ -22,6 +23,7 @@ const FOAM_PULSE = 1.2 // surf fades in and out at this rate (radians/s)
 
 const STONE = ['#c9bfa9', '#bdb29b', '#d3cab6'].map((c) => new Color(c)) // cliff blocks pick one of these
 const RIM = new Color('#e4ddca')
+const GROUND = winter ? '#eef3f8' : '#8cc084' // grass, or snow in winter (season.ts)
 
 const N = Math.ceil(ISLAND_RADIUS) // tile index bound: nothing past ±N is land
 
@@ -133,9 +135,9 @@ export function Island() {
 
   return (
     <>
-      {/* Grass: one square per land tile; its top is the floor at y = 0. */}
+      {/* Grass (or snow): one square per land tile; its top is the floor at y = 0. */}
       <mesh geometry={geometry.grass}>
-        <meshLambertMaterial color="#8cc084" />
+        <meshLambertMaterial color={GROUND} />
       </mesh>
       {/* Cliffs and their capstone rim, every block in one mesh coloured per vertex. */}
       <mesh geometry={geometry.stone}>
