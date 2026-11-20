@@ -1,5 +1,6 @@
 import { fishing, reel } from './fishing'
 import { click } from './sfx'
+import { playerPos } from './state'
 import { useGame, type Panel } from './store'
 
 /** What the card at the bottom of the screen shows while an interactable has focus: a project, or the contact links. */
@@ -43,9 +44,17 @@ export function register(item: Interactable): () => void {
 /** Set by <Dialogue> while a line is typing out, so a press can finish the line instead of skipping it. */
 export const typer = { done: true, finish: () => {} }
 
-/** Opens a dialogue box with these lines, one per press. */
+const SAY_RANGE = 1.5 // with nothing in focus, a dialogue belongs to the spot it opened at, this far round
+
+/**
+ * Opens a dialogue box with these lines, one per press. It belongs to whatever the player is using
+ * (or the spot they're standing on), and closes if they walk away from it.
+ */
 export function say(lines: string[]) {
-  if (lines.length) useGame.setState({ dialogue: { lines, index: 0 } })
+  if (!lines.length) return
+  const f = useGame.getState().focus
+  const at = f ? { x: f.x, z: f.z, range: f.range } : { x: playerPos.x, z: playerPos.z, range: SAY_RANGE }
+  useGame.setState({ dialogue: { lines, index: 0, at } })
 }
 
 export function closeDialogue() {
@@ -59,7 +68,7 @@ export function advance(): boolean {
   if (!typer.done) typer.finish()
   else {
     click()
-    if (d.index + 1 < d.lines.length) useGame.setState({ dialogue: { lines: d.lines, index: d.index + 1 } })
+    if (d.index + 1 < d.lines.length) useGame.setState({ dialogue: { ...d, index: d.index + 1 } })
     else useGame.setState({ dialogue: null })
   }
   return true
@@ -85,8 +94,13 @@ export function closePanel() {
   if (useGame.getState().panel) useGame.setState({ panel: null })
 }
 
-/** True while dialogue, a panel, a fade between areas, edit mode or fishing has the player's attention (movement pauses). */
+/** True while dialogue, a panel, a fade between areas, edit mode or fishing has the player's attention. */
 export function busy() {
+  return useGame.getState().dialogue !== null || held()
+}
+
+/** True while the player can't move: a panel, a fade between areas, edit mode or fishing. Dialogue doesn't hold them. */
+export function held() {
   const s = useGame.getState()
-  return s.dialogue !== null || s.panel !== null || s.fading || s.editing || fishing()
+  return s.panel !== null || s.fading || s.editing || fishing()
 }

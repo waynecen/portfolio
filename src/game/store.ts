@@ -11,8 +11,11 @@ export type Scene = 'house' | 'world'
 type GameState = {
   /** The interactable the player is close enough to use, if any. */
   focus: Interactable | null
-  /** The conversation on screen; the player can't move while it's open. */
-  dialogue: { lines: string[]; index: number } | null
+  /**
+   * The conversation on screen. The player can keep walking; going further than `at.range` (plus a
+   * little) from where it started closes it (Interactions.tsx).
+   */
+  dialogue: { lines: string[]; index: number; at: { x: number; z: number; range: number } } | null
   /** A full-screen panel (the record player, or the bag); the player can't move while one is open. */
   panel: Panel | null
   /** Heart containers shown in the HUD. */

@@ -1,13 +1,24 @@
 import { useFrame } from '@react-three/fiber'
-import { interactables, type Interactable } from './interact'
+import { closeDialogue, interactables, type Interactable } from './interact'
 import { playerPos } from './state'
 import { useGame } from './store'
+
+const LEAVE = 0.6 // a dialogue closes once the player is this much further away than its range
 
 // One proximity scan per frame for every interactable; React only hears about focus changes.
 export function Interactions() {
   useFrame(() => {
     const s = useGame.getState()
-    if (s.dialogue || s.panel || s.editing) return // keep the current focus while talking or in a panel; none while editing
+    // Walking away from a conversation ends it.
+    const d = s.dialogue
+    if (d) {
+      const dx = d.at.x - playerPos.x
+      const dz = d.at.z - playerPos.z
+      const r = d.at.range + LEAVE
+      if (dx * dx + dz * dz > r * r) closeDialogue()
+      return // keep the current focus while talking
+    }
+    if (s.panel || s.editing) return // keep the current focus in a panel; none while editing
     let nearest: Interactable | null = null
     let best = Infinity
     for (let i = 0; i < interactables.length; i++) {

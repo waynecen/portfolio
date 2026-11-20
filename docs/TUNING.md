@@ -223,11 +223,13 @@ range: 1.4 // Furniture.tsx: how close the player must be to read the note (ever
 const CHARS_PER_SECOND = 40 // Dialogue.tsx: typewriter speed; lines appear instantly with "reduce motion" on
 const PAUSE_SENTENCE = 0.25 // Dialogue.tsx: extra pause (s) after . ! ? so the text reads like speech
 const PAUSE_COMMA = 0.1 // Dialogue.tsx: extra pause (s) after , ; :
+const LEAVE = 0.6 // Interactions.tsx: a dialogue closes once the player is this much beyond the range of what started it
+const SAY_RANGE = 1.5 // interact.ts: the range used when nothing was in focus (it belongs to the spot it opened at)
 ```
 
 Bubble look is in [style.css](../src/style.css): `.dialogue-cloud` `fill` (cream), `.dialogue` `color` (brown text), `.dialogue-next` `fill` (arrow), and the `dialogue-pop` keyframes (pop-in). The cloud outline is the SVG `path` in Dialogue.tsx; it stretches to fit, so it works at any width.
 
-Anything the player can use calls `register({ x, z, range, prompt, onInteract })` in an effect. Each frame, the nearest one in range gets focus and shows its prompt ("E Read"), or its card if it has a `card` (a project, or the contact links; the card's `action` labels what using it opens). To add a sign, place `<Sign x z lines={[…]} />` in [Game.tsx](../src/game/Game.tsx). The welcome and controls text is the `NOTE` array in [Furniture.tsx](../src/game/Furniture.tsx), with a keyboard and a touch version.
+Anything the player can use calls `register({ x, z, range, prompt, onInteract })` in an effect. Each frame, the nearest one in range gets focus and shows its prompt ("E Read"), or its card if it has a `card` (a project, or the contact links; the card's `action` labels what using it opens). The player can keep walking while a dialogue is open: walking out of range of whatever started it closes it, so reading a sign never holds you in place. Panels, edit mode, the fade between areas and a fishing line out still hold the player still (`held()` in interact.ts). To add a sign, place `<Sign x z lines={[…]} />` in [Game.tsx](../src/game/Game.tsx). The welcome and controls text is the `NOTE` array in [Furniture.tsx](../src/game/Furniture.tsx), with a keyboard and a touch version.
 
 ---
 

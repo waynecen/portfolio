@@ -14,7 +14,7 @@ import { roadTiles } from './pois'
 import { winter } from './season'
 import { step, whoosh, type Surface } from './sfx'
 import { playerFacing, playerPos, playerRoll, playerVel, teleport } from './state'
-import { busy } from './interact'
+import { held } from './interact'
 import { useGame } from './store'
 
 const SPEED = 2.5 // walking speed, units per second (about 2 body heights a second, so a chibi's steps can keep up)
@@ -64,8 +64,9 @@ export function Player() {
       playerFacing.snap = true
     }
 
-    // Stand still while a dialogue box or panel is open.
-    const talking = busy()
+    // Stand still while a panel is open, fading between areas, editing or fishing. Not for dialogue:
+    // the player can walk off mid-conversation, which closes it (Interactions.tsx).
+    const talking = held()
 
     // Start a roll in the direction the character is facing (works from standing still too).
     cooldown.current -= dt
