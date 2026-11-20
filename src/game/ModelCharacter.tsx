@@ -2,6 +2,7 @@ import { useFrame, useLoader } from '@react-three/fiber'
 import { useEffect, useMemo } from 'react'
 import {
   AnimationMixer,
+  LoopOnce,
   Box3,
   MathUtils,
   MeshLambertMaterial,
@@ -22,6 +23,8 @@ import { playerRoll, playerVel } from './state'
 // loader code stays out of the game chunk until then.
 
 const BLEND = 10 // how quickly the clip weights follow speed changes
+const IDLE_PAUSE = 5 // seconds the model stands still after stopping, and between plays of its idle clip
+const BREATHE = 0.012 // height swell while standing still (two slow breaths per pause), so it never looks frozen
 const WALK_RATE = [0.6, 1.25] // walk clip playback speed for a clip with no recorded pace: at a slow amble, and at full walk
 // Playback speed limits when matching a clip's pace to the ground speed. A clip far slower than the
 // player moves would otherwise run comically fast; past MAX_RATE the feet slide instead.
@@ -82,8 +85,15 @@ export default function ModelCharacter({ url }: { url: string }) {
     const idle = action(CLIPS.idle)
     const walk = action(CLIPS.walk)
     const run = action(CLIPS.run)
+    // The idle plays once, then holds its last pose (the same as its first, as clips loop seamlessly)
+    // for IDLE_PAUSE. It starts held, so the first one plays after standing still for a moment.
+    if (idle) {
+      idle.paused = true
+      idle.setLoop(LoopOnce, 1)
+      idle.clampWhenFinished = true
+    }
     if (!idle && !walk) console.warn(`Player model has none of the clips ${CLIPS.idle} / ${CLIPS.walk}; it will stand still.`)
-    return { root, mixer, idle, walk, run, walkPace: paceOf(walk), runPace: paceOf(run), w: { idle: 1, walk: 0, run: 0 } }
+    return { root, mixer, idle, walk, run, walkPace: paceOf(walk), runPace: paceOf(run), w: { idle: 1, walk: 0, run: 0 }, rest: 0, height: s }
   }, [gltf])
 
   useEffect(
@@ -107,6 +117,20 @@ export default function ModelCharacter({ url }: { url: string }) {
     idle?.setEffectiveWeight(walk ? w.idle : 1)
     walk?.setEffectiveWeight(w.walk)
     run?.setEffectiveWeight(w.run)
+    if (idle) {
+      if (speed > 0.05) {
+        // Moving: hold the idle at its start, so stopping always begins with a still pause.
+        idle.paused = true
+        idle.time = 0
+        rig.rest = 0
+      } else if (idle.paused && (rig.rest += dt) >= IDLE_PAUSE) {
+        idle.reset() // play it from the start
+        rig.rest = 0
+      }
+      // Breathing while held: zero at both ends of the pause, so it joins the clip without a jump.
+      const b = idle.paused ? Math.sin((2 * Math.PI * rig.rest) / IDLE_PAUSE) ** 2 * BREATHE * w.idle : 0
+      rig.root.scale.y = rig.height * (1 + b)
+    }
     // Each clip plays at the rate where its feet keep pace with the ground, so they don't skate.
     const ground = speed > 0 ? Math.hypot(playerVel.x, playerVel.z) : 0
     if (walk)
