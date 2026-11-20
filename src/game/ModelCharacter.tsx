@@ -13,7 +13,7 @@ import {
 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js'
-import { CLIPS, PLAYER_HEIGHT } from './models'
+import { CLIPS, PLAYER_HEIGHT, PLAYER_WIDTH } from './models'
 import { playerRoll, playerVel } from './state'
 
 // The player as a rigged 3D model (made in Tripo; see docs/CHARACTER.md), shown inside
@@ -59,8 +59,9 @@ export default function ModelCharacter({ url }: { url: string }) {
     const size = box.getSize(new Vector3())
     const centre = box.getCenter(new Vector3())
     const s = PLAYER_HEIGHT / (size.y || 1)
-    root.scale.setScalar(s)
-    root.position.set(-centre.x * s, -box.min.y * s, -centre.z * s)
+    const w = s * PLAYER_WIDTH // stockier than modelled, at the same height
+    root.scale.set(w, s, w)
+    root.position.set(-centre.x * w, -box.min.y * s, -centre.z * w)
     root.traverse((o) => {
       const mesh = o as Mesh
       if (!mesh.isMesh) return

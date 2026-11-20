@@ -7,5 +7,8 @@ export const PLAYER_MODEL: string | null = '/models/player.glb'
 /** The model is scaled to this height in world units: about the pill's, so the camera and collision still fit. */
 export const PLAYER_HEIGHT = 1.2
 
+/** Widens the model (side to side and front to back) by this much at the same height: above 1 is stockier. */
+export const PLAYER_WIDTH = 1.2
+
 /** Animation clip names in the model's file. A missing clip is skipped (no run clip: the walk plays faster). */
 export const CLIPS = { idle: 'Idle', walk: 'Walk', run: 'Run' }
