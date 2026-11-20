@@ -424,7 +424,7 @@ Heart size on screen is `.heart { width: 32px }` in [style.css](../src/style.css
 
 ```tsx
 dpr={tier === 'low' ? [1, 1.25] : [1, 1.5]}  // render resolution cap relative to the screen; the biggest performance lever on phones
-gl={{ antialias: tier === 'high' }}         // smooth edges only on stronger devices
+gl={{ antialias: true }}                    // smooth edges on every device: multisampling is cheap even on phone GPUs, and the scene is light
 ```
 
 The background, lights and fog come from the time of day; see the next section.
