@@ -165,8 +165,8 @@ const footMat = new MeshLambertMaterial({ color: '#d9a536' }) // feet (a darker 
 ## Curved world: [src/game/curve.ts](../src/game/curve.ts)
 
 ```ts
-export const CURVE = 0.012 // how fast the ground falls away behind the player; 0 turns the curve off
-export const FLAT = 3 // units behind the player before the bend starts, so the ground you walk on (and the room indoors) stays flat
+export const CURVE = 0.02 // how fast the ground falls away behind the player; 0 turns the curve off
+export const FLAT = 6 // units behind the player before the bend starts, so the ground you walk on (and the room indoors) stays flat
 ```
 
 Everything past `FLAT` drops by `CURVE × distance²`, so the island rolls away over a horizon like a small planet. It's a patch to three's shared vertex step, so every material bends alike. Only how things look bends: positions, collisions and interactions are unchanged. A stronger curve or a lower camera shows more sky.
