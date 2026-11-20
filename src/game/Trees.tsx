@@ -49,11 +49,12 @@ function place(): Tree[] {
   }
   for (let i = HOUSE.i0; i <= HOUSE.i1; i++) for (let j = HOUSE.j0; j <= HOUSE.j1; j++) keepClear(i, j)
 
-  // Every grass tile far enough from the shore, in a seeded shuffled order.
+  // Every grass tile far enough from the shore, in a seeded shuffled order. The shuffle ignores
+  // roads and places, so moving one only changes the trees near it, not the whole forest.
   const n = Math.ceil(ISLAND_RADIUS)
   const candidates: { i: number; j: number }[] = []
   for (let i = -n; i <= n; i++)
-    for (let j = -n; j <= n; j++) if (isInland(i, j, SHORE_GAP) && !blocked.has(key(i, j))) candidates.push({ i, j })
+    for (let j = -n; j <= n; j++) if (isInland(i, j, SHORE_GAP)) candidates.push({ i, j })
   for (let k = candidates.length - 1; k > 0; k--) {
     const r = Math.floor(random() * (k + 1))
     ;[candidates[k], candidates[r]] = [candidates[r], candidates[k]]
