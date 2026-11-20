@@ -27,14 +27,15 @@ const errors = []
 const shots = []
 let failed = false
 
-async function page(name, options, hour) {
+async function page(name, options, hour, season = 'summer') {
   const context = await browser.newContext(options)
   const p = await context.newPage()
   p.on('pageerror', (e) => errors.push(`${name}: ${e.message}`))
   p.on('console', (m) => {
     if (m.type() === 'error') errors.push(`${name}: ${m.text()} ${m.location().url ?? ''}`)
   })
-  await p.goto(hour === undefined ? URL : `${URL}?hour=${hour}`) // pin the clock, so shots compare between runs
+  // Pin the clock and the season, so shots compare between runs whatever the date.
+  await p.goto(hour === undefined ? URL : `${URL}?hour=${hour}&season=${season}`)
   return p
 }
 
@@ -44,13 +45,14 @@ async function shot(p, name, clip) {
   shots.push(path)
 }
 
-// Hours to shoot the game at, one per time-of-day slot in src/game/sky.ts.
+// Hours to shoot the game at, one per time-of-day slot in src/game/sky.ts, then one in winter (season.ts).
 const HOURS = [
   [10, 'morning'],
   [6, 'dawn'],
   [14, 'afternoon'],
   [18, 'evening'],
   [21, 'night'],
+  [14, 'winter', 'winter'], // snowing (season.ts), shot at the hour it snows hardest
 ]
 
 const startGame = (p) => p.waitForFunction(() => document.body.classList.contains('playing'), null, { timeout: 20000 })
@@ -72,8 +74,8 @@ try {
 
   // 2. The game on desktop at each time of day (see src/game/sky.ts): the room you start in, then
   //    the island after walking out of the door. Mid-morning is the plain look, with no weather.
-  for (const [hour, label] of HOURS) {
-    const p = await page(`desktop ${label}`, { viewport: { width: 1280, height: 720 } }, hour)
+  for (const [hour, label, season] of HOURS) {
+    const p = await page(`desktop ${label}`, { viewport: { width: 1280, height: 720 } }, hour, season)
     await startGame(p)
     await p.waitForTimeout(1500)
     if (label === 'morning' || label === 'night') await shot(p, `desktop-house-${label}`)
