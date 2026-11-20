@@ -7,6 +7,7 @@ import { isLand } from './Island'
 import { PLAYER_MODEL } from './models'
 import { actions, bindKeys, buttons, keys, stick } from './input'
 import { PillCharacter, PILL_RADIUS } from './PillCharacter'
+import { PlayerGround } from './PlayerGround'
 import { playerFacing, playerPos, playerRoll, playerVel, teleport } from './state'
 import { busy } from './interact'
 import { useGame } from './store'
@@ -125,6 +126,7 @@ export function Player() {
 
   return (
     <group ref={ref}>
+      <PlayerGround />
       {PLAYER_MODEL ? (
         // The pill stands in while the model downloads.
         <Suspense fallback={<PillCharacter />}>
