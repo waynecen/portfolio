@@ -23,6 +23,7 @@ import { detectTier } from './quality'
 import { RecordPlayer } from './RecordPlayer'
 import { Rain } from './Rain'
 import { Snow } from './Snow'
+import { Sparkle } from './Sparkle'
 import { Roads } from './Roads'
 import { Sign } from './Sign'
 import { arrive } from './scene'
@@ -85,6 +86,7 @@ export function Game() {
         </group>
         <Doors />
         <Interactions />
+        <Sparkle />
         <Player />
         <Dust />
         <CameraRig />
