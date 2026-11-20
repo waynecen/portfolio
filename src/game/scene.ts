@@ -1,5 +1,5 @@
 import { door } from './sfx'
-import { cameraSnap, teleport } from './state'
+import { cameraSnap, playerPos, teleport } from './state'
 import { useGame, type Scene } from './store'
 
 // Moving between areas (the house and the island): fade to black, swap the area and move the
@@ -19,6 +19,11 @@ export function arrive(scene: Scene, at: Spawn) {
   teleport.x = at.x
   teleport.z = at.z
   teleport.heading = at.heading
+  // Move the shared position now too, not only when Player.tsx next runs: the camera cuts to it
+  // this frame, and if its update runs first (frame callbacks re-order when a component remounts,
+  // e.g. on hot reload) it would cut to the old spot and glide across the map.
+  playerPos.x = at.x
+  playerPos.z = at.z
   cameraSnap.pending = true
   useGame.setState({ scene })
 }
