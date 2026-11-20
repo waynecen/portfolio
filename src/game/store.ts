@@ -20,6 +20,8 @@ type GameState = {
   scene: Scene
   /** True while the screen fades through black between areas; the player can't move meanwhile. */
   fading: boolean
+  /** Rearranging the furniture indoors (edit.ts); the player can't move meanwhile. */
+  editing: boolean
 }
 
 export const useGame = create<GameState>(() => ({
@@ -30,4 +32,5 @@ export const useGame = create<GameState>(() => ({
   health: 6,
   scene: 'world',
   fading: false,
+  editing: false,
 }))

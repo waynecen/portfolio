@@ -138,3 +138,5 @@ export const door = () => play('door')
 /** A dialogue letter; `pitch` around 1 gives each line its own voice. */
 export const blip = (pitch: number) => play('blip', 1, pitch * (0.96 + Math.random() * 0.08))
 export const click = () => play('click')
+/** Furniture set down on the floor. */
+export const thud = () => play('wood', 1, 0.7)

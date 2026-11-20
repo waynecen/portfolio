@@ -6,8 +6,11 @@ import './curve' // bends the world away; before anything is drawn
 import { Dialogue, Prompt } from './Dialogue'
 import { Doors } from './Doors'
 import { Dust } from './Dust'
+import { EditHud, EditOverlay, EditPointer } from './EditRoom'
 import { Fade } from './Fade'
 import { Fireflies } from './Fireflies'
+import { clearSpawn } from './room'
+import { Furniture } from './Furniture'
 import { Hearts } from './Hearts'
 import { HouseExterior, HouseInterior } from './House'
 import { Interactions } from './Interactions'
@@ -33,7 +36,7 @@ import { Trees } from './Trees'
 
 const tier = detectTier()
 
-arrive('house', BED_SPAWN) // every visit starts at home
+arrive('house', clearSpawn(BED_SPAWN)) // every visit starts at home (beside the bed, unless furniture's been moved there)
 
 export function Game() {
   const [visible, setVisible] = useState(!document.hidden)
@@ -82,13 +85,16 @@ export function Game() {
         </group>
         <group visible={scene === 'house'}>
           <HouseInterior />
+          <Furniture />
           <RecordPlayer />
+          <EditOverlay />
         </group>
         <Doors />
         <Interactions />
         <Sparkle />
         <Player />
         <Dust />
+        <EditPointer />
         <CameraRig />
       </Canvas>
       <Fade />
@@ -98,6 +104,7 @@ export function Game() {
       <Dialogue />
       <NowPlaying />
       <MusicPanel />
+      <EditHud />
       <Joystick />
     </>
   )

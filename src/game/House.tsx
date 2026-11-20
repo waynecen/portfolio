@@ -1,11 +1,9 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect } from 'react'
-import { Color, CylinderGeometry, ExtrudeGeometry, MeshLambertMaterial, Shape, type BufferGeometry } from 'three'
+import { Color, ExtrudeGeometry, MeshLambertMaterial, Shape, type BufferGeometry } from 'three'
 import { addCollider, type Collider } from './collision'
 import { block, flat, merge, pick, tint, unindexed } from './geometry'
-import { register, say } from './interact'
 import { DOOR, FRONT_DOOR, HOUSE, INTERIOR, ROOM } from './layout'
-import { isTouch } from './quality'
 import { winter } from './season'
 import { sky } from './sky'
 
@@ -26,37 +24,7 @@ const C = {
   plaster: new Color('#e3d3b0'),
   frontWall: new Color('#8a6040'),
   cap: new Color('#6e4a30'),
-  wood: new Color('#8a5a3b'),
-  sheet: new Color('#f4efe4'),
-  blanket: new Color('#6f9bd1'),
-  pot: new Color('#b5653f'),
-  potLip: new Color('#9a5434'),
-  jar: new Color('#d9a441'),
-  rugEdge: new Color('#b85c45'),
-  rugField: new Color('#e2b56c'),
-  paper: new Color('#fffaf0'),
-  brass: new Color('#d9a441'),
 }
-
-/** Lines in the note on the table: the first thing to read, so it covers the controls. */
-const NOTE = isTouch
-  ? [
-      'Welcome home! This little world is my portfolio.',
-      'Drag the joystick on the left to walk. Hold B to sprint.',
-      'Tap A to read, talk or use whatever is nearby. With nothing nearby, A makes you roll.',
-      'The record player by the back wall plays music. Tap A beside it to choose a song.',
-      'The door at the bottom of the room leads outside.',
-      'Each pillar out there is a project. Walk up to one to see it, then tap A to open it.',
-    ]
-  : [
-      'Welcome home! This little world is my portfolio.',
-      'Walk with WASD or the arrow keys. Hold Shift to sprint, and press Space to roll.',
-      'Press E or Enter to read, talk or use whatever is nearby.',
-      'The record player by the back wall plays music. Press E beside it to choose a song.',
-      'The door at the bottom of the room leads outside.',
-      'Each pillar out there is a project. Walk up to one to see it, then press E to open it.',
-    ]
-const NOTE_AT = { x: 2.85, z: -3 }
 
 const H = ROOM.hx // inner half-width
 const D = ROOM.hz // inner half-depth
@@ -69,15 +37,6 @@ const SOLIDS: Collider[] = [
   { kind: 'box', x: -(H + DOOR) / 2, z: D + WALL / 2, hx: (H - DOOR) / 2, hz: WALL / 2 }, // front wall, left of the door
   { kind: 'box', x: (H + DOOR) / 2, z: D + WALL / 2, hx: (H - DOOR) / 2, hz: WALL / 2 }, // front wall, right of the door
   { kind: 'box', x: 0, z: D + WALL + 0.5, hx: DOOR, hz: 0.25 }, // backstop past the doorstep
-  { kind: 'box', x: -4, z: -2.53, hx: 0.45, hz: 0.93 }, // bed
-  { kind: 'box', x: 0, z: -3.33, hx: 1.2, hz: 0.18 }, // dresser
-  { kind: 'box', x: 2.95, z: -3, hx: 0.95, hz: 0.45 }, // table
-  { kind: 'circle', x: 1.65, z: -3, r: 0.22 }, // stools
-  { kind: 'circle', x: 3.45, z: -2.1, r: 0.22 },
-  { kind: 'circle', x: -5, z: -0.8, r: 0.3 }, // pots
-  { kind: 'circle', x: -5, z: 0, r: 0.3 },
-  { kind: 'circle', x: -5, z: 0.8, r: 0.3 },
-  { kind: 'box', x: -2.9, z: -3.15, hx: 0.4, hz: 0.3 }, // chest
 ]
 
 // Floor: planks half a tile deep and one tile long, every other row shifted half a tile like
@@ -98,12 +57,8 @@ function buildFloor(): BufferGeometry {
   return merge(parts)
 }
 
-function cylinder(x: number, z: number, r0: number, r1: number, y0: number, y1: number, color: Color) {
-  return tint(new CylinderGeometry(r1, r0, y1 - y0, 10).translate(x, (y0 + y1) / 2, z), color)
-}
-
-// Walls and furniture: every piece a box or cylinder painted per vertex, merged into one mesh.
-function buildFurnishings(): BufferGeometry {
+// Walls: every piece a box painted per vertex, merged into one mesh.
+function buildWalls(): BufferGeometry {
   const parts: BufferGeometry[] = []
   const box = (c: Color, x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) =>
     parts.push(tint(block(x0, x1, y0, y1, z0, z1), c))
@@ -124,52 +79,16 @@ function buildFurnishings(): BufferGeometry {
   }
   box(C.cap, -DOOR, DOOR, -0.02, 0.005, D, D + WALL) // doorstep
 
-  // Bed in the top-left corner: frame, headboard, mattress, blanket and pillow.
-  box(C.wood, -4.45, -3.55, 0, 0.3, -3.45, -1.6)
-  box(C.wood, -4.45, -3.55, 0, 0.75, -3.45, -3.3)
-  box(C.sheet, -4.4, -3.6, 0.3, 0.42, -3.3, -1.65)
-  box(C.blanket, -4.42, -3.58, 0.3, 0.46, -2.6, -1.62)
-  box(C.sheet, -4.3, -3.7, 0.42, 0.53, -3.25, -2.95)
-
-  // Pots along the left wall.
-  for (const z of [-0.8, 0, 0.8]) {
-    parts.push(cylinder(-5, z, 0.3, 0.22, 0, 0.45, C.pot))
-    parts.push(cylinder(-5, z, 0.2, 0.2, 0.45, 0.52, C.potLip))
-  }
-
-  // Dresser against the back wall, with jars on top.
-  box(C.wood, -1.2, 1.2, 0, 1.0, -3.5, -3.15)
-  box(C.cap, -1.25, 1.25, 1.0, 1.06, -3.52, -3.12)
-  for (const x of [-0.7, 0, 0.7]) parts.push(cylinder(x, -3.33, 0.12, 0.1, 1.06, 1.3, C.jar))
-
-  // Table against the back wall, a stool at its end and one in front, and the note on top.
-  box(C.wood, 2, 3.9, 0.5, 0.6, -3.45, -2.55)
-  for (const x of [2.1, 3.72]) for (const z of [-3.35, -2.73]) box(C.wood, x, x + 0.08, 0, 0.5, z, z + 0.08)
-  parts.push(cylinder(1.65, -3, 0.22, 0.22, 0, 0.35, C.wood))
-  parts.push(cylinder(3.45, -2.1, 0.22, 0.22, 0, 0.35, C.wood))
-  box(C.paper, NOTE_AT.x - 0.15, NOTE_AT.x + 0.15, 0.6, 0.615, NOTE_AT.z - 0.12, NOTE_AT.z + 0.12)
-
-  // Rug inside the door: a border with a lighter field.
-  box(C.rugEdge, -1.5, 1.5, 0, 0.012, 0.6, 3.0)
-  box(C.rugField, -1.25, 1.25, 0, 0.018, 0.85, 2.75)
-
-  // Chest beside the bed, against the back wall, with a brass band.
-  box(C.wood, -3.3, -2.5, 0, 0.45, -3.45, -2.85)
-  box(C.brass, -3.32, -2.48, 0.3, 0.36, -3.47, -2.83)
-
   return merge(parts)
 }
 
 const floor = buildFloor()
-const furnishings = buildFurnishings()
+const walls = buildWalls()
 
-/** The room the game starts in. Drawn only while the player is indoors; see Game.tsx. */
+/** The room the game starts in, without its furniture (Furniture.tsx). Drawn only while the player is indoors; see Game.tsx. */
 export function HouseInterior() {
   useEffect(() => {
     const removers = SOLIDS.map((c) => addCollider({ ...c, x: c.x + INTERIOR.x, z: c.z + INTERIOR.z }))
-    removers.push(
-      register({ x: INTERIOR.x + NOTE_AT.x, z: INTERIOR.z + NOTE_AT.z, range: 1.4, prompt: 'Read', onInteract: () => say(NOTE) }),
-    )
     return () => removers.forEach((remove) => remove())
   }, [])
 
@@ -178,7 +97,7 @@ export function HouseInterior() {
       <mesh geometry={floor}>
         <meshLambertMaterial vertexColors />
       </mesh>
-      <mesh geometry={furnishings}>
+      <mesh geometry={walls}>
         <meshLambertMaterial vertexColors flatShading />
       </mesh>
     </group>

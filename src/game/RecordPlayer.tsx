@@ -1,12 +1,13 @@
 import { useFrame } from '@react-three/fiber'
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import { MathUtils, type Group, type Mesh } from 'three'
-import { addCollider } from './collision'
-import { openPanel, register } from './interact'
+import type { Collider } from './collision'
+import { usePiece } from './Furniture'
+import { openPanel } from './interact'
 import { level, useMusic } from './music'
-import { RECORD_PLAYER } from './layout'
 
-const { x: X, z: Z } = RECORD_PLAYER // in the house; see layout.ts
+// In the house, on its own tile (see room.ts): it can be moved like the rest of the furniture.
+const BACK = -0.15 // how far towards the back of its tile it stands
 const RANGE = 1.8
 const SPIN = 3.5 // platter speed while playing, rad/s (about 33 rpm)
 const PULSE = 0.08 // how much the cabinet bounces to the beat
@@ -15,13 +16,16 @@ const W_Z = 0.6 // cabinet depth
 const W_H = 1.3 // cabinet height, to the top the turntable sits on
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
 
+const SOLID: Collider[] = [{ kind: 'box', x: 0, z: BACK, hx: W_X / 2 + 0.05, hz: W_Z / 2 + 0.05 }]
+const USE = { dx: 0, dz: BACK, range: RANGE, prompt: 'Play music', onInteract: () => openPanel('music') }
+
 export function RecordPlayer() {
   const disc = useRef<Mesh>(null)
   const body = useRef<Group>(null)
+  const spot = useRef<Group>(null)
   const s = useRef({ spin: 0, pulse: 0 }).current
 
-  useEffect(() => register({ x: X, z: Z, range: RANGE, prompt: 'Play music', onInteract: () => openPanel('music') }), [])
-  useEffect(() => addCollider({ kind: 'box', x: X, z: Z, hx: W_X / 2 + 0.05, hz: W_Z / 2 + 0.05 }), [])
+  usePiece('recordPlayer', spot, SOLID, USE)
 
   useFrame((_, delta) => {
     if (!disc.current || !body.current) return
@@ -35,8 +39,8 @@ export function RecordPlayer() {
 
   // An upright cabinet, taller than it is wide: a speaker grille on the front and the turntable on top.
   return (
-    <group position={[X, 0, Z]}>
-      <group ref={body}>
+    <group ref={spot}>
+      <group ref={body} position-z={BACK}>
         {/* Cabinet, its top trim and a brass band near the floor */}
         <mesh position-y={W_H / 2}>
           <boxGeometry args={[W_X, W_H, W_Z]} />

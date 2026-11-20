@@ -1,6 +1,7 @@
 import { useFrame } from '@react-three/fiber'
 import { MathUtils, type PerspectiveCamera } from 'three'
 import { INTERIOR, ROOM } from './layout'
+import { useEdit } from './edit'
 import { cameraSnap, playerPos } from './state'
 import { useGame } from './store'
 
@@ -24,7 +25,9 @@ export function CameraRig() {
       const cam = camera as PerspectiveCamera
       const halfWidth = SLANT * Math.tan(MathUtils.degToRad(cam.fov / 2)) * cam.aspect
       const slack = Math.max(0, ROOM.hx + 0.5 + ROOM_MARGIN - halfWidth)
-      tx = INTERIOR.x + MathUtils.clamp(playerPos.x - INTERIOR.x, -slack, slack)
+      // While editing, it follows the cursor instead, so every tile can be reached.
+      const x = useGame.getState().editing ? useEdit.getState().cursor.i : playerPos.x - INTERIOR.x
+      tx = INTERIOR.x + MathUtils.clamp(x, -slack, slack)
       tz = INTERIOR.z + ROOM_SHIFT
     }
     tz += DISTANCE

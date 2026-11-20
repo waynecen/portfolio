@@ -1,5 +1,7 @@
+import { editKey, toggleEdit } from './edit'
 import { advance, closeDialogue, closePanel, interact } from './interact'
 import { unlock } from './sfx'
+import { useGame } from './store'
 
 // Keyboard state lives outside React so per-frame reads don't trigger renders.
 export const keys = { forward: false, back: false, left: false, right: false, sprint: false }
@@ -35,11 +37,18 @@ function reset() {
 }
 
 // Keys that act on the world. Ignored on focused links and buttons so those keep working.
-const ACTION_KEYS = new Set(['Space', 'KeyE', 'Enter', 'Escape'])
+const ACTION_KEYS = new Set(['Space', 'KeyE', 'Enter', 'Escape', 'KeyF'])
 
 export function bindKeys(): () => void {
   const set = (down: boolean) => (e: KeyboardEvent) => {
     if (down) unlock() // audio may only start after a gesture
+    if (useGame.getState().editing) {
+      // Edit mode has its own keys (edit.ts). Releases still count, so nothing stays held down after.
+      const dir = codes[e.code]
+      if (dir && !down) keys[dir] = false
+      if (down && !isTyping(e.target) && document.body.classList.contains('playing')) editKey(e)
+      return
+    }
     if (ACTION_KEYS.has(e.code)) {
       if (isTyping(e.target) || !document.body.classList.contains('playing')) return
       if (e.target instanceof HTMLElement && e.target.closest('a, button')) return
@@ -51,7 +60,7 @@ export function bindKeys(): () => void {
       } else if (e.code === 'Escape') {
         closeDialogue()
         closePanel()
-      }
+      } else if (e.code === 'KeyF') toggleEdit()
       else interact()
       return
     }

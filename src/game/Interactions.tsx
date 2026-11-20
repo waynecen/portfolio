@@ -7,7 +7,7 @@ import { useGame } from './store'
 export function Interactions() {
   useFrame(() => {
     const s = useGame.getState()
-    if (s.dialogue || s.panel) return // keep the current focus while talking or in a panel
+    if (s.dialogue || s.panel || s.editing) return // keep the current focus while talking or in a panel; none while editing
     let nearest: Interactable | null = null
     let best = Infinity
     for (let i = 0; i < interactables.length; i++) {

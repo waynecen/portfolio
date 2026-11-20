@@ -66,6 +66,7 @@ export function advance(): boolean {
 
 /** The context action: advance dialogue, else use the focused interactable. Returns false if nothing happened. */
 export function interact(): boolean {
+  if (useGame.getState().editing) return false
   if (advance()) return true
   const f = useGame.getState().focus
   if (!f) return false
@@ -83,8 +84,8 @@ export function closePanel() {
   if (useGame.getState().panel) useGame.setState({ panel: null })
 }
 
-/** True while dialogue, a panel or a fade between areas has the player's attention (movement pauses). */
+/** True while dialogue, a panel, a fade between areas or edit mode has the player's attention (movement pauses). */
 export function busy() {
   const s = useGame.getState()
-  return s.dialogue !== null || s.panel !== null || s.fading
+  return s.dialogue !== null || s.panel !== null || s.fading || s.editing
 }
