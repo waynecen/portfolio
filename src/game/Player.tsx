@@ -16,7 +16,7 @@ import { busy } from './interact'
 import { useGame } from './store'
 
 const SPEED = 2.5 // walking speed, units per second (about 2 body heights a second, so a chibi's steps can keep up)
-const SPRINT = 2 // holding Shift (or B on touch) multiplies top speed by this (2.5 → 5 units/s)
+const SPRINT = 2.5 // holding Shift (or B on touch) multiplies top speed by this (2.5 → 6.25 units/s)
 const ACCEL = 12 // damp rate toward the input velocity while a direction is held
 const DECEL = 16 // a little snappier when letting go
 const SHORE = 0.15 // stop this far short of the cliff edge, so the feet stay on the rim
@@ -131,7 +131,7 @@ export function Player() {
             pushOutOfBox(p, EDGE, v, (ti + di) * TILE, (tj + dj) * TILE, TILE / 2, TILE / 2)
     }
 
-    // Relative to walking speed: 1 = walking, 2 = sprinting. Capped so the roll burst doesn't spin the legs.
+    // Relative to walking speed: 1 = walking, 2.5 = sprinting. Capped so the roll burst doesn't spin the legs.
     v.speed = Math.min(SPRINT, Math.sqrt(v.x * v.x + v.z * v.z) / SPEED)
     // Footsteps by distance, so they suit any character and speed. The first lands soon after setting off.
     const len = STEP_LEN[0] + (STEP_LEN[1] - STEP_LEN[0]) * MathUtils.clamp(v.speed - 1, 0, 1)

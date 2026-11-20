@@ -12,7 +12,7 @@ Every constant that changes how the game looks, moves or performs, grouped by sy
 
 ```ts
 const SPEED = 2.5 // walking speed, units/s (a full joystick push or any WASD key)
-const SPRINT = 2 // holding Shift (or the B button on touch) multiplies top speed by this (2.5 → 5 units/s); also caps the animation's speed value
+const SPRINT = 2.5 // holding Shift (or the B button on touch) multiplies top speed by this (2.5 → 6.25 units/s); also caps the animation's speed value
 const ACCEL = 12 // damp rate toward the input velocity while a direction is held; lower = slidier, heavier starts
 const DECEL = 16 // damp rate back to a stop after letting go; higher than ACCEL so stops feel crisp
 const SHORE = 0.15 // the pill stops this far short of the cliff edge, so its feet stay on the rim
@@ -121,7 +121,7 @@ const SPRINT_LEAN = 0.6 // extra forward lean at full sprint (+60%, about 16° i
 const SPRINT_STRIDE = 0.3 // longer foot swing at full sprint (+30%)
 ```
 
-Sprinting also speeds up the steps, because the walk cycle advances in proportion to speed (2× faster at full sprint). `SPRINT_LEAN` and `SPRINT_STRIDE` fade in between walking and full sprint, and they're switched off during a roll.
+Sprinting also speeds up the steps, because the walk cycle advances in proportion to speed (2.5× faster at full sprint). `SPRINT_LEAN` and `SPRINT_STRIDE` fade in between walking and full sprint, and they're switched off during a roll.
 
 **Foot sliding:** a foot stays still on the floor only when its backward slide matches walking speed. That's roughly `SPEED ÷ (STEP_RATE / π) ≈ 2 × STRIDE`. With the defaults the feet slide (cartoony, intentional). To reduce it, raise `STRIDE` or `STEP_RATE`. Raising `STEP_RATE` too high makes the walk look frantic.
 
