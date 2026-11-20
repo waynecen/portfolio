@@ -11,8 +11,8 @@ import { playerFacing, playerPos, playerRoll, playerVel, teleport } from './stat
 import { busy } from './interact'
 import { useGame } from './store'
 
-const SPEED = 4 // walking speed, units per second
-const SPRINT = 1.5 // holding Shift (or B on touch) multiplies top speed by this (moderate: 4 → 6 units/s)
+const SPEED = 2.5 // walking speed, units per second (about 2 body heights a second, so a chibi's steps can keep up)
+const SPRINT = 2 // holding Shift (or B on touch) multiplies top speed by this (2.5 → 5 units/s)
 const ACCEL = 12 // damp rate toward the input velocity while a direction is held
 const DECEL = 16 // a little snappier when letting go
 const SHORE = 0.15 // stop this far short of the cliff edge, so the feet stay on the rim
@@ -117,7 +117,7 @@ export function Player() {
           if (!isLand(ti + di, tj + dj)) pushOutOfBox(p, EDGE, v, (ti + di) * TILE, (tj + dj) * TILE, TILE / 2, TILE / 2)
     }
 
-    // Relative to walking speed: 1 = walking, 1.5 = sprinting. Capped so the roll burst doesn't spin the legs.
+    // Relative to walking speed: 1 = walking, 2 = sprinting. Capped so the roll burst doesn't spin the legs.
     v.speed = Math.min(SPRINT, Math.sqrt(v.x * v.x + v.z * v.z) / SPEED)
     playerPos.x = p.x
     playerPos.z = p.z

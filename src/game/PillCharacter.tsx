@@ -69,7 +69,7 @@ export function PillCharacter({ model }: { model?: ReactNode }) {
     s.w = MathUtils.damp(s.w, Math.min(1, v.speed), 8, dt)
     s.phase += dt * STEP_RATE * v.speed
     const w = s.w * (1 - env)
-    // 0 when walking, 1 at full sprint (speed 1.5): drives the extra lean and longer stride.
+    // 0 when walking, 1 from speed 1.5 up to a full sprint (2): drives the extra lean and longer stride.
     const sprint = Math.min(1, Math.max(0, (v.speed - 1) * 2)) * (1 - env)
 
     // Turn toward the direction of travel, the short way round, unless told to face somewhere at once.

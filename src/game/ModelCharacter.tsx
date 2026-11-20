@@ -27,6 +27,7 @@ const WALK_RATE = [0.6, 1.25] // walk clip playback speed for a clip with no rec
 // player moves would otherwise run comically fast; past MAX_RATE the feet slide instead.
 const MIN_RATE = 0.3
 const MAX_RATE = 3
+const RUN_MAX_RATE = 2.75 // the run looks frantic sooner; 2.75× keeps pace up to a full sprint (5 units/s)
 
 // World units per second a clip covers at normal speed, from the pace npm run models recorded
 // (extras.travel, in body heights per second), or 0 if it has none.
@@ -97,7 +98,7 @@ export default function ModelCharacter({ url }: { url: string }) {
     const { idle, walk, run, w } = rig
     // During a roll the rig tumbles the whole model; it holds its idle pose meanwhile.
     const speed = playerRoll.p >= 0 ? 0 : playerVel.speed
-    // speed 0 → idle, 1 → walk, 1.5 (sprint) → run. Without a run clip, walk covers sprinting too.
+    // speed 0 → idle, 1 → walk, 1.5 and up (sprint) → run. Without a run clip, walk covers sprinting too.
     const toRun = run ? MathUtils.clamp((speed - 1) * 2, 0, 1) : 0
     const toWalk = Math.min(1, speed) * (1 - toRun)
     w.walk = MathUtils.damp(w.walk, toWalk, BLEND, dt)
@@ -112,7 +113,7 @@ export default function ModelCharacter({ url }: { url: string }) {
       walk.timeScale = rig.walkPace
         ? MathUtils.clamp(ground / rig.walkPace, MIN_RATE, MAX_RATE)
         : MathUtils.lerp(WALK_RATE[0], WALK_RATE[1], Math.min(1, speed)) * (run ? 1 : Math.max(1, speed))
-    if (run && rig.runPace) run.timeScale = MathUtils.clamp(ground / rig.runPace, MIN_RATE, MAX_RATE)
+    if (run && rig.runPace) run.timeScale = MathUtils.clamp(ground / rig.runPace, MIN_RATE, RUN_MAX_RATE)
     rig.mixer.update(dt)
   })
 

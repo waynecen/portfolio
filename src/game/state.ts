@@ -1,7 +1,7 @@
 // Per-frame state shared between components, kept outside React (mutated in useFrame).
 export const playerPos = { x: 0, z: 0 }
 
-/** Velocity in units/s, plus speed relative to walking speed (0 = still, 1 = walking, up to 1.5 sprinting). */
+/** Velocity in units/s, plus speed relative to walking speed (0 = still, 1 = walking, up to 2 sprinting). */
 export const playerVel = { x: 0, z: 0, speed: 0 }
 
 /**
