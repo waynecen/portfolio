@@ -79,11 +79,15 @@ try {
     await startGame(p)
     await p.waitForTimeout(1500)
     if (label === 'morning' || label === 'night') await shot(p, `desktop-house-${label}`)
-    // From the bed: right to the middle of the room, then down through the door.
-    await hold(p, 'KeyD', 750)
-    await hold(p, 'KeyS', 1800)
+    // From the bed: down to the front wall, then down and right together, which slides along the
+    // wall into the doorway and out. It needs no exact timing, so a slow frame rate can't miss the door.
+    await hold(p, 'KeyS', 2500)
+    await p.keyboard.down('KeyD')
+    await p.keyboard.down('KeyS')
     try {
-      await p.waitForSelector('body[data-scene="world"]', { timeout: 3000 }) // set by Game.tsx once outdoors
+      await p.waitForSelector('body[data-scene="world"]', { timeout: 6000 }) // set by Game.tsx once outdoors
+      await p.keyboard.up('KeyD')
+      await p.keyboard.up('KeyS')
       await p.waitForTimeout(800)
       await shot(p, `desktop-island-${label}`)
       // The player character close up on the doorstep (the camera keeps them mid-screen): the pill, or the 3D model.
