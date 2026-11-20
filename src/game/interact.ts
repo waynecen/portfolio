@@ -1,5 +1,5 @@
 import { click } from './sfx'
-import { useGame } from './store'
+import { useGame, type Panel } from './store'
 
 /** What the card at the bottom of the screen shows while an interactable has focus: a project, or the contact links. */
 export type Card = {
@@ -76,7 +76,7 @@ export function interact(): boolean {
 }
 
 /** Opens a panel such as the record player. */
-export function openPanel(panel: 'music') {
+export function openPanel(panel: Panel) {
   useGame.setState({ panel })
 }
 

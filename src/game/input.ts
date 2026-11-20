@@ -1,4 +1,5 @@
 import { editKey, toggleEdit } from './edit'
+import { toggleBag } from './inventory'
 import { advance, closeDialogue, closePanel, interact } from './interact'
 import { unlock } from './sfx'
 import { useGame } from './store'
@@ -37,7 +38,7 @@ function reset() {
 }
 
 // Keys that act on the world. Ignored on focused links and buttons so those keep working.
-const ACTION_KEYS = new Set(['Space', 'KeyE', 'Enter', 'Escape', 'KeyF'])
+const ACTION_KEYS = new Set(['Space', 'KeyE', 'Enter', 'Escape', 'KeyF', 'KeyB'])
 
 export function bindKeys(): () => void {
   const set = (down: boolean) => (e: KeyboardEvent) => {
@@ -61,6 +62,7 @@ export function bindKeys(): () => void {
         closeDialogue()
         closePanel()
       } else if (e.code === 'KeyF') toggleEdit()
+      else if (e.code === 'KeyB') toggleBag()
       else interact()
       return
     }

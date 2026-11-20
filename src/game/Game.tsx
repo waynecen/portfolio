@@ -14,12 +14,14 @@ import { Furniture } from './Furniture'
 import { Hearts } from './Hearts'
 import { HouseExterior, HouseInterior } from './House'
 import { Interactions } from './Interactions'
+import { BagButton, InventoryPanel } from './InventoryPanel'
 import { Island } from './Island'
 import { Joystick } from './Joystick'
 import { BED_SPAWN } from './layout'
 import { Mailbox } from './Mailbox'
 import { MusicPanel, NowPlaying } from './MusicPanel'
 import { ABOUT_AT, aboutLines } from './places'
+import { Pickups } from './Pickups'
 import { Player } from './Player'
 import { ProjectCard } from './ProjectCard'
 import { detectTier } from './quality'
@@ -79,6 +81,7 @@ export function Game() {
           <HouseExterior />
           <Sign x={ABOUT_AT.x} z={ABOUT_AT.z} lines={aboutLines} />
           <Mailbox />
+          <Pickups />
           <Rain />
           <Snow />
           <Fireflies />
@@ -104,6 +107,8 @@ export function Game() {
       <Dialogue />
       <NowPlaying />
       <MusicPanel />
+      <InventoryPanel />
+      <BagButton />
       <EditHud />
       <Joystick />
     </>

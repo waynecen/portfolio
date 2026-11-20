@@ -40,6 +40,7 @@ const NOTE = isTouch
       'Tap A to read, talk or use whatever is nearby. With nothing nearby, A makes you roll.',
       'The record player by the back wall plays music. Tap A beside it to choose a song.',
       'Tap Edit room at the top to move the furniture around.',
+      'Little things are hidden around the island. Tap Bag at the top to see what you’ve found.',
       'The door at the bottom of the room leads outside.',
       'Each pillar out there is a project. Walk up to one to see it, then tap A to open it.',
     ]
@@ -49,6 +50,7 @@ const NOTE = isTouch
       'Press E or Enter to read, talk or use whatever is nearby.',
       'The record player by the back wall plays music. Press E beside it to choose a song.',
       'Press F to move the furniture around.',
+      'Little things are hidden around the island. Press B to see what you’ve found.',
       'The door at the bottom of the room leads outside.',
       'Each pillar out there is a project. Walk up to one to see it, then press E to open it.',
     ]

@@ -1,6 +1,9 @@
 import { create } from 'zustand'
 import type { Interactable } from './interact'
 
+/** A panel over the game: the record player's, or the bag (inventory.ts). */
+export type Panel = 'music' | 'inventory'
+
 /** The area the player is in: inside the house, or out on the island. */
 export type Scene = 'house' | 'world'
 
@@ -10,8 +13,8 @@ type GameState = {
   focus: Interactable | null
   /** The conversation on screen; the player can't move while it's open. */
   dialogue: { lines: string[]; index: number } | null
-  /** A full-screen panel (e.g. the record player); the player can't move while one is open. */
-  panel: 'music' | null
+  /** A full-screen panel (the record player, or the bag); the player can't move while one is open. */
+  panel: Panel | null
   /** Heart containers shown in the HUD. */
   maxHearts: number
   /** Current health in half-heart units (0..maxHearts * 2). */

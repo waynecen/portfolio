@@ -89,6 +89,13 @@ const SOUNDS = {
   door: () =>
     render(0.22, (t, n) => (Math.sin(2 * Math.PI * 95 * t) + n * Math.exp(-t * 200) * 0.6) * Math.exp(-t * 18) * 0.8),
   blip: () => render(0.05, (t) => Math.sign(Math.sin(2 * Math.PI * 520 * t)) * 0.18 * Math.exp(-t * 50)),
+  chime: () =>
+    // Two bright notes, rising: something found.
+    render(0.5, (t) => {
+      const note = t < 0.09 ? 880 : 1318.5
+      const since = t < 0.09 ? t : t - 0.09
+      return Math.sin(2 * Math.PI * note * t) * 0.3 * Math.exp(-since * 9) * Math.min(1, since * 400)
+    }),
   click: () => render(0.03, (t) => Math.sin(2 * Math.PI * 1200 * t) * 0.35 * Math.exp(-t * 120)),
 }
 type Sound = keyof typeof SOUNDS
@@ -144,5 +151,7 @@ export const door = () => play('door')
 /** A dialogue letter; `pitch` around 1 gives each line its own voice. */
 export const blip = (pitch: number) => play('blip', 1, pitch * (0.96 + Math.random() * 0.08))
 export const click = () => play('click')
+/** An item picked up. */
+export const chime = () => play('chime')
 /** Furniture set down on the floor. */
 export const thud = () => play('wood', 1, 0.7)
