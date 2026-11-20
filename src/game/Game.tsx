@@ -2,6 +2,7 @@ import { Canvas } from '@react-three/fiber'
 import { useEffect, useState } from 'react'
 import { Atmosphere } from './Atmosphere'
 import { CameraRig, DISTANCE, HEIGHT } from './CameraRig'
+import './curve' // bends the world away; before anything is drawn
 import { Dialogue, Prompt } from './Dialogue'
 import { Doors } from './Doors'
 import { Dust } from './Dust'
