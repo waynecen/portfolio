@@ -258,6 +258,8 @@ analyser.fftSize = 64 // music.ts: analyser resolution for the pulse; level() av
 
 **Adding music:** put files in `public/audio/` and list them in [src/game/tracks.ts](../src/game/tracks.ts) (`title`, `artist`, `src`, optional `credit`). Use AAC (.m4a) or Opus at about 96 to 128 kbps. While that list is empty, [placeholderTracks.ts](../src/game/placeholderTracks.ts) generates three 16-second chord loops in the browser. Edit `SONGS` there to change them (MIDI note numbers, 60 = middle C).
 
+**Leaving the window:** music pauses when the window loses focus or the tab is hidden, and carries on when the visitor comes back, but only if it was playing when they left (`away` and `back` in music.ts). Pressing play, pause or a track in the meantime cancels the resume.
+
 Panel and now-playing styles are `.music-*` and `.now-playing` in [style.css](../src/style.css).
 
 ---

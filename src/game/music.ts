@@ -80,7 +80,8 @@ function start(a: HTMLAudioElement) {
 export function playTrack(i: number) {
   const tracks = getTracks()
   if (!tracks.length) return
-  const n = ((i % tracks.length) + tracks.length) % tracks.length
+  resumeOnFocus = false
+  const n =((i % tracks.length) + tracks.length) % tracks.length
   const a = setup()
   if (n !== useMusic.getState().index || !a.src) {
     a.src = tracks[n].src
@@ -92,7 +93,25 @@ export function playTrack(i: number) {
   start(a)
 }
 
+// Pause while the window is out of focus (another window or app in front, the tab hidden or
+// minimised), and pick up again on coming back, but only if it was playing when the player left.
+let resumeOnFocus = false
+function away() {
+  if (!audio || audio.paused) return
+  resumeOnFocus = true
+  audio.pause()
+}
+function back() {
+  if (!resumeOnFocus || !audio || document.hidden || !document.hasFocus()) return
+  resumeOnFocus = false
+  start(audio)
+}
+window.addEventListener('blur', away)
+window.addEventListener('focus', back)
+document.addEventListener('visibilitychange', () => (document.hidden ? away() : back()))
+
 export function toggle() {
+  resumeOnFocus = false // the player's own choice wins over coming back to the window
   const { index } = useMusic.getState()
   if (index < 0) return playTrack(0)
   const a = setup()
