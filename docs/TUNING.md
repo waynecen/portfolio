@@ -176,8 +176,8 @@ Everything past `FLAT` drops by `CURVE × distance²`, so the island rolls away 
 ## Camera: [src/game/CameraRig.tsx](../src/game/CameraRig.tsx)
 
 ```ts
-export const HEIGHT = 11 // how high the camera sits above the floor
-export const DISTANCE = 13 // how far back (toward the viewer) it sits from the player; a little lower than 45°, so the curved horizon shows
+export const HEIGHT = 8 // how high the camera sits above the floor
+export const DISTANCE = 11 // how far back (toward the viewer) it sits from the player; a little lower than 45°, so the curved horizon shows
 const LAMBDA = 4 // follow rate: higher = camera sticks closer to the player, lower = floatier lag
 const ROOM_MARGIN = 1 // indoors: black kept beside the room's side walls when the screen is wide enough
 const ROOM_SHIFT = -0.5 // indoors: aim this far behind the room's centre so the tall back wall stays in view
