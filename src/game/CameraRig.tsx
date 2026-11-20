@@ -6,7 +6,7 @@ import { cameraSnap, playerPos } from './state'
 import { useGame } from './store'
 
 export const HEIGHT = 8
-export const DISTANCE = 11 // a little lower than 45°, so the curved horizon shows (curve.ts)
+export const DISTANCE = 10 // a little lower than 45°, so the curved horizon shows (curve.ts)
 const LAMBDA = 4 // higher = snappier follow
 const ROOM_MARGIN = 1 // indoors, keep at least this much black beside the walls when the screen is wide enough
 const ROOM_SHIFT = -0.5 // indoors, aim this far behind the room's centre so the tall back wall stays in view
