@@ -69,7 +69,7 @@ Gentle by design: nothing is hard, and nothing blocks a project.
 
 ## Phase D: Secrets and a small dungeon
 
-15. **Hidden pearls.** Ten around the island: dug up, under grass, or behind trees. Finding them all unlocks a record for the record player.
+15. **Hidden pearls.** Ten around the island: dug up, under grass, or behind trees. Finding them all unlocks a record for the record player. *(the bag and six placeholder finds done: inventory.ts, Pickups.tsx, InventoryPanel.tsx)*
 16. **The cave behind the waterfall.**
     - A small dungeon in its own scene, the way the house is.
     - Flip-screen rooms inside, *Link's Awakening*-style.

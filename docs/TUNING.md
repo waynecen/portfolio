@@ -348,6 +348,29 @@ A piece only goes down where it fits. It must stay inside the room and not overl
 
 ---
 
+## Bag and items to find: [src/game/inventory.ts](../src/game/inventory.ts), [src/game/Pickups.tsx](../src/game/Pickups.tsx), [src/game/InventoryPanel.tsx](../src/game/InventoryPanel.tsx)
+
+```ts
+export const ITEMS = [...] // inventory.ts: every item: id, name, description, colour and the tile it waits on (i, j)
+const SAVE_KEY = 'inventory-v1' // localStorage key for what's been found; change it to forget every save
+const RANGE = 1.1  // Pickups.tsx: how close the player must be to pick an item up
+const SIZE = 1.5   // scale on every item's shape, so it shows from across the island
+const FLOAT = 0.45 // how high items float over the grass
+const BOB = 0.06   // and how far they bob
+const SPIN = 1.2   // radians per second they turn; with reduced motion they hold still
+const GLOW = 0.3   // share of its colour each item gives off, so it shows at night
+const SHADE = 3    // tiles behind (north of) a tree that items keep clear of, since the camera looks north
+const COLUMNS = 3  // InventoryPanel.tsx: slots per row; matches .bag-slots in style.css
+```
+
+B (or the Bag chip at the top right, which phones use since their B button sprints) opens the bag: a slot per item, a question mark until it's found, and the chosen item's name and words below. Arrow keys move between slots; B, Esc or × closes it.
+
+An item's `at` is only where it would like to be. If that tile is a road, a place or its neighbours, the house, or near a tree, it moves to the nearest clear tile, so moving roads or reseeding trees never buries one. Picking one up plays `chime` (sfx.ts) and says what it is; the first find also says how to open the bag.
+
+**Adding an item:** add its id to `ItemId` and an entry to `ITEMS`, then give it a shape in `SHAPES` (Pickups.tsx) and an icon in `ICONS` (InventoryPanel.tsx), a small picture on a 24 × 24 grid. Bag styles are `.bag-*` in [style.css](../src/style.css).
+
+---
+
 ## Touch controls: [src/game/Joystick.tsx](../src/game/Joystick.tsx)
 
 ```ts
@@ -369,7 +392,7 @@ const codes: Record<string, Dir> = {
   KeyD: 'right', ArrowRight: 'right',
   ShiftLeft: 'sprint', ShiftRight: 'sprint', // hold to sprint
 }
-// In bindKeys: Space = advance dialogue if open, else roll; E / Enter = interact (interact.ts); Esc = close dialogue; F = edit the room (indoors)
+// In bindKeys: Space = advance dialogue if open, else roll; E / Enter = interact (interact.ts); Esc = close dialogue; F = edit the room (indoors); B = open or close the bag (inventory.ts)
 // While editing, keys go to editKey() in edit.ts instead
 ```
 
