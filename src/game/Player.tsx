@@ -127,7 +127,8 @@ export function Player() {
       const tj = Math.round(p.z / TILE)
       for (let di = -1; di <= 1; di++)
         for (let dj = -1; dj <= 1; dj++)
-          if (!isLand(ti + di, tj + dj)) pushOutOfBox(p, EDGE, v, (ti + di) * TILE, (tj + dj) * TILE, TILE / 2, TILE / 2)
+          if (!isLand(ti + di, tj + dj))
+            pushOutOfBox(p, EDGE, v, (ti + di) * TILE, (tj + dj) * TILE, TILE / 2, TILE / 2)
     }
 
     // Relative to walking speed: 1 = walking, 2 = sprinting. Capped so the roll burst doesn't spin the legs.
