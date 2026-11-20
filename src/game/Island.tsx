@@ -12,6 +12,11 @@ import { winter } from './season'
 export const ISLAND_RADIUS = 18
 const WATER_Y = -1.2 // water surface, well below the grass; the cliff fills the drop
 const WATER_SIZE = 400 // wide enough that the camera never sees past it
+// Squares across the water. The world bends away from the camera (curve.ts) one vertex at a time,
+// so the water needs vertices every few units to bend with the land; as one big square it tilts
+// far below the cliffs and the background shows through. 2.5 units apart, it sags under 0.1 units
+// between them.
+const WATER_SEGMENTS = 160
 const COURSES = 3 // rows of stone blocks in the cliff face, between the rim and the water
 const UNDERWATER = 0.4 // the cliff carries on this far below the water so its foot never shows a gap
 const RIM_TOP = 0.04 // the capstone rim stands this proud of the grass
@@ -145,7 +150,7 @@ export function Island() {
       </mesh>
       <mesh geometry={geometry.foam} material={foamMaterial} />
       <mesh rotation-x={-Math.PI / 2} position-y={WATER_Y} material={waterMaterial}>
-        <planeGeometry args={[WATER_SIZE, WATER_SIZE]} />
+        <planeGeometry args={[WATER_SIZE, WATER_SIZE, WATER_SEGMENTS, WATER_SEGMENTS]} />
       </mesh>
     </>
   )

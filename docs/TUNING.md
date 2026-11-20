@@ -286,6 +286,7 @@ const RIM_OUT = 0.08            // how far the rim overhangs the cliff face
 const STONE = [...]             // cliff block colours; each block picks one from a fixed hash, so the pattern never changes
 const RIM = ...                 // capstone colour
 const WATER_SIZE = 400          // water plane size; big enough that the camera never sees its edge
+const WATER_SEGMENTS = 160      // squares across the water, so it bends with the curved world (curve.ts); one big square tilts below the cliffs and shows the sky through
 const FOAM = 0.4                // width of the white surf border at the foot of the cliffs; keep under half a tile
 const FOAM_PULSE = 1.2          // how fast the surf fades in and out, rad/s
 const SEED = 7                  // Trees.tsx: change for a different (but still fixed) tree layout
