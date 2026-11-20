@@ -370,6 +370,36 @@ An item's `at` is only where it would like to be. If that tile is a road, a plac
 
 **Adding an item:** add its id to `ItemId` and an entry to `ITEMS`, then give it a shape in `SHAPES` (Pickups.tsx) and an icon in `ICONS` (InventoryPanel.tsx), a small picture on a 24 × 24 grid. Bag styles are `.bag-*` in [style.css](../src/style.css).
 
+Below the items, the bag lists every kind of fish (see Fishing). Arrow keys run on from one grid into the other, so keep `ITEMS` a multiple of `COLUMNS`.
+
+---
+
+## Fishing: [src/game/fishing.ts](../src/game/fishing.ts), [src/game/Dock.tsx](../src/game/Dock.tsx)
+
+```ts
+export const DOCK = { x: -9, half: 0.7, z0: 15.5, z1: 19.5 } // fishing.ts: the dock's centre line, half-width, and where it leaves the shore and ends
+export const DOCK_ROOT = { x: -9, z: 15 }  // the land tile it leaves from; a road leads here (a 'dock' place in pois.ts)
+export const BARREL_AT = { x: -8, z: 15.1 } // the barrel of rods
+export const SPOTS = [...]                 // where the ripple can be; it moves to another after each catch
+export const CAST_TIME = 0.55              // seconds for the float to fly out
+const WAIT = [2.5, 6]                      // seconds before a bite, at random between these
+const BITE_TIME = 0.9                      // seconds to reel in once it bites
+export const FISH = [...]                  // every fish: name, words, colour, how often it bites (weight) and its size range in cm
+const SAVE_KEY = 'fish-v1'                 // localStorage key for catches; change it to forget them
+const RANGE = 1.6                          // Dock.tsx: how close to the ripple the player must be to cast
+const RIPPLE_R = 0.6                       // how far each ring of the ripple spreads, and RIPPLE_PERIOD = 2.2 s for one ring
+const POSTS = [17, 18.3, ...]              // z of each pair of posts under the dock; keep them off land tiles
+const ROD_LENGTH = 1.3                     // the rod in the player's hand; HOLD and FISHING_HOLD are how far it tips forward
+```
+
+The road ends at the foot of the dock, beside the barrel. Using the barrel takes a rod (or puts it back); it isn't saved, so every visit starts without one. The ripple off the dock says to fetch a rod until you have one, then casts: the player turns to face it, the float flies out on its line, and after `WAIT` it nibbles, then bites with a splash and the prompt turns gold: **Reel in!** E, Space or A within `BITE_TIME` lands the fish; too late and it gets away, too early and the line comes back empty. Esc reels in quietly. The player stands still while the line is out.
+
+What bites is drawn by `weight`, and its length leans small, so big ones are rarer. Each catch is counted with its best size and shown in the bag.
+
+The dock is a walkway: the water either side of it doesn't stop the player (`dockOpens` in fishing.ts, used by Player.tsx); thin colliders along its open sides and across its end do instead. Footsteps on it are `wood`. The sounds are `plop` (the float landing) and `splash` (a bite) in sfx.ts.
+
+**Moving the dock:** change `DOCK` and `DOCK_ROOT` together, keep `POSTS` over water, and move `BARREL_AT` and `SPOTS` with it. Every spot must be within `RANGE` of somewhere on the deck but not of the shore.
+
 ---
 
 ## Touch controls: [src/game/Joystick.tsx](../src/game/Joystick.tsx)
@@ -398,7 +428,7 @@ const codes: Record<string, Dir> = {
   ShiftLeft: 'sprint',
   ShiftRight: 'sprint', // hold to sprint
 }
-// In bindKeys: Space = advance dialogue if open, else roll; E / Enter = interact (interact.ts); Esc = close dialogue; F = edit the room (indoors); B = open or close the bag (inventory.ts)
+// In bindKeys: Space = advance dialogue if open, else reel in a line that's out (fishing.ts), else roll; E / Enter = interact (interact.ts), or reel in; Esc = close dialogue and reel in; F = edit the room (indoors); B = open or close the bag (inventory.ts)
 // While editing, keys go to editKey() in edit.ts instead
 ```
 

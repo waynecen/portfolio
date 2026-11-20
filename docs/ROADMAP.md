@@ -61,8 +61,8 @@ Gentle by design: nothing is hard, and nothing blocks a project.
     - Two or three original animal neighbours wander, chat, and change their lines with the time of day and weather.
     - One offers a **guided tour**: they walk the roads and introduce each project.
 11. **Catching.**
-    - A bug net for fireflies and butterflies, and fishing at the shore with a simple timing bite.
-    - Catches fill a **collection book** panel.
+    - A bug net for fireflies and butterflies, and fishing at the shore with a simple timing bite *(fishing done: the dock, rods and six fish; fishing.ts, Dock.tsx)*.
+    - Catches fill a **collection book** panel *(fish are listed in the bag for now)*.
 12. **Seasons from the real month.** Blossom in spring, autumn colours, and snow in winter *(winter done: season.ts)*, alongside the time-of-day slots in sky.ts.
 13. **Something new each day.** A message bottle on the beach (a tip or fun fact) and a dig spot that moves, both seeded by the date.
 14. **Shop and decor.** Spend shells on hats for the character and furniture for the house, placed on the room's tile grid *(moving furniture on the grid done: room.ts, edit.ts)*.
