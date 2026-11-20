@@ -48,7 +48,8 @@ Skip this step if the GLB already looks right in the game. Otherwise:
 
    [scripts/models.mjs](../scripts/models.mjs) first prepares the clips:
    - renames them by keyword to `Idle`, `Walk`, `Run`, `Attack` and `Roll` (Tripo names a clip after its motion prompt)
-   - makes them play in place, by removing any forward travel baked into the hips bone (the game moves the player itself)
+   - makes them play in place, by removing any forward travel baked into the hips bone (the game moves the player itself), and records how fast that travel was so the game can match the steps to the ground
+   - makes them loop seamlessly: if the last pose doesn't match the first (Tripo's run was 83° off), it trims the clip to the stretch that loops best, then spreads what difference remains across the clip so the last frame equals the first
 
    Then it runs glTF Transform's `optimize` with these settings:
    - Meshopt compression for geometry and animation (its decoder is small and needs no WebAssembly transcoder)
