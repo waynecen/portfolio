@@ -10,7 +10,7 @@ import { winter } from './season'
 
 /** Island size in tiles: every tile whose centre is closer than this to spawn is land. */
 export const ISLAND_RADIUS = 18
-const WATER_Y = -1.2 // water surface, well below the grass; the cliff fills the drop
+export const WATER_Y = -1.2 // water surface, well below the grass; the cliff fills the drop
 const WATER_SIZE = 400 // wide enough that the camera never sees past it
 // Squares across the water. The world bends away from the camera (curve.ts) one vertex at a time,
 // so the water needs vertices every few units to bend with the land; as one big square it tilts

@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
+import { FISH, useFishing } from './fishing'
 import { closePanel } from './interact'
 import { ITEM, ITEMS, toggleBag, useInventory, type ItemId } from './inventory'
 import { isTouch } from './quality'
 import { useGame } from './store'
 
-// The bag: a slot for every item, filled once it's found, and the chosen item's name and words
-// below. Arrow keys move between slots; B, Escape or × closes it.
+// The bag: a slot for every item, filled once it's found, then one for every kind of fish, filled
+// once one's caught (fishing.ts), and the chosen slot's name and words below. Arrow keys move
+// between slots, across both grids; B, Escape or × closes it.
 
-const COLUMNS = 3 // slots per row; matches .bag-slots in style.css
+const COLUMNS = 3 // slots per row; matches .bag-slots in style.css. Keep ITEMS a multiple of it, so arrows go straight down into the fish.
 
 // A small picture of each item on a 24 × 24 grid, in its colour (`c`).
 const ICONS: Record<ItemId, (c: string) => ReactNode> = {
@@ -45,6 +47,17 @@ const ICONS: Record<ItemId, (c: string) => ReactNode> = {
   ),
 }
 
+/** Every fish gets the same shape, in its own colour. */
+function FishIcon({ color }: { color: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="bag-icon">
+      <path d="M2.5 12c3-5.5 9.5-6.5 13.5-2.5l5.5-4v13l-5.5-4c-4 4-10.5 3-13.5-2.5Z" fill={color} />
+      <path d="M9.5 8.2c.8 2.4.8 5.2 0 7.6" stroke="#000" strokeOpacity=".2" fill="none" />
+      <circle cx="6.5" cy="11" r="1.2" fill="#2b2b2b" />
+    </svg>
+  )
+}
+
 function Icon({ id }: { id: ItemId }) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" className="bag-icon">
@@ -57,20 +70,40 @@ function Icon({ id }: { id: ItemId }) {
 export function InventoryPanel() {
   const open = useGame((s) => s.panel === 'inventory')
   const found = useInventory((s) => s.found)
+  const caught = useFishing((s) => s.caught)
   const [chosen, setChosen] = useState<number>(0)
   const slots = useRef<(HTMLButtonElement | null)[]>([])
+  const total = ITEMS.length + FISH.length // items first, then fish
 
-  // On opening, choose the first item found (or the first slot) and move keyboard focus to it.
+  // On opening, choose the first thing in the bag (or the first slot) and move keyboard focus to it.
   useEffect(() => {
     if (!open) return
-    const first = Math.max(0, ITEMS.findIndex((t) => found.includes(t.id)))
+    const item = ITEMS.findIndex((t) => found.includes(t.id))
+    const fish = FISH.findIndex((f) => caught[f.id])
+    const first = item >= 0 ? item : fish >= 0 ? ITEMS.length + fish : 0
     setChosen(first)
     slots.current[first]?.focus()
   }, [open]) // only on opening, so picking a slot isn't undone
 
   if (!open) return null
-  const item = ITEMS[chosen]
-  const has = found.includes(item.id)
+  const fishCount = FISH.filter((f) => caught[f.id]).length
+
+  // The chosen slot's words.
+  let title: string
+  let words: string
+  if (chosen < ITEMS.length) {
+    const item = ITEMS[chosen]
+    const has = found.includes(item.id)
+    title = has ? item.name : '???'
+    words = has ? item.description : 'Still out there somewhere on the island.'
+  } else {
+    const fish = FISH[chosen - ITEMS.length]
+    const got = caught[fish.id]
+    title = got ? fish.name : '???'
+    words = got
+      ? `${fish.description} Caught ${got.count === 1 ? 'once' : `${got.count} times`}; the biggest was ${got.best} cm.`
+      : 'Not caught yet. Try the ripples off the dock.'
+  }
 
   const onKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Escape' || e.code === 'KeyB') {
@@ -84,10 +117,29 @@ export function InventoryPanel() {
     if (step === undefined) return
     e.preventDefault()
     const n = chosen + step
-    if (n < 0 || n >= ITEMS.length) return
+    if (n < 0 || n >= total) return
     setChosen(n)
     slots.current[n]?.focus()
   }
+
+  const slot = (k: number, label: string, filled: boolean, icon: ReactNode) => (
+    <li key={k}>
+      <button
+        ref={(el) => {
+          slots.current[k] = el
+        }}
+        type="button"
+        className="bag-slot"
+        aria-label={label}
+        aria-pressed={k === chosen}
+        data-empty={filled ? undefined : ''}
+        onClick={() => setChosen(k)}
+        onFocus={() => setChosen(k)}
+      >
+        {filled ? icon : <span aria-hidden="true">?</span>}
+      </button>
+    </li>
+  )
 
   return (
     <div className="bag-panel" role="dialog" aria-label="Bag" onKeyDown={onKeyDown}>
@@ -103,29 +155,24 @@ export function InventoryPanel() {
       <ul className="bag-slots">
         {ITEMS.map((t, k) => {
           const got = found.includes(t.id)
-          return (
-            <li key={t.id}>
-              <button
-                ref={(el) => {
-                  slots.current[k] = el
-                }}
-                type="button"
-                className="bag-slot"
-                aria-label={got ? t.name : 'Not found yet'}
-                aria-pressed={k === chosen}
-                data-empty={got ? undefined : ''}
-                onClick={() => setChosen(k)}
-                onFocus={() => setChosen(k)}
-              >
-                {got ? <Icon id={t.id} /> : <span aria-hidden="true">?</span>}
-              </button>
-            </li>
-          )
+          return slot(k, got ? t.name : 'Not found yet', got, <Icon id={t.id} />)
+        })}
+      </ul>
+      <div className="bag-head bag-subhead">
+        <h3>Fish</h3>
+        <span className="bag-count">
+          {fishCount} of {FISH.length} caught
+        </span>
+      </div>
+      <ul className="bag-slots">
+        {FISH.map((f, n) => {
+          const got = caught[f.id]
+          return slot(ITEMS.length + n, got ? f.name : 'Not caught yet', !!got, <FishIcon color={f.color} />)
         })}
       </ul>
       <div className="bag-detail" aria-live="polite">
-        <h3>{has ? item.name : '???'}</h3>
-        <p>{has ? item.description : 'Still out there somewhere on the island.'}</p>
+        <h3>{title}</h3>
+        <p>{words}</p>
       </div>
     </div>
   )
@@ -133,7 +180,9 @@ export function InventoryPanel() {
 
 /** The Bag chip at the top right, under the view toggle. Hidden while something else has the player's attention. */
 export function BagButton() {
-  const hidden = useGame((s) => s.dialogue !== null || s.panel !== null || s.fading || s.editing)
+  const away = useGame((s) => s.dialogue !== null || s.panel !== null || s.fading || s.editing)
+  const fishing = useFishing((s) => s.phase !== 'idle')
+  const hidden = away || fishing
   const count = useInventory((s) => s.found.length)
   if (hidden) return null
   return (

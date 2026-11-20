@@ -2,6 +2,8 @@ import { useFrame } from '@react-three/fiber'
 import { lazy, Suspense, useEffect, useRef } from 'react'
 import { MathUtils, type Group } from 'three'
 import { pushOutOfBox, resolve } from './collision'
+import { HeldRod } from './Dock'
+import { dockOpens, onDock } from './fishing'
 import { TILE } from './grid'
 import { isLand } from './Island'
 import { PLAYER_MODEL } from './models'
@@ -30,6 +32,7 @@ const STEP_LEN = [0.45, 0.7] // units travelled per footstep sound: walking, and
 const roads = new Set(roadTiles.map((t) => t.i + ',' + t.j))
 function surfaceAt(x: number, z: number): Surface {
   if (useGame.getState().scene === 'house') return 'tatami'
+  if (onDock(x, z)) return 'wood'
   return roads.has(Math.round(x / TILE) + ',' + Math.round(z / TILE)) ? 'road' : winter ? 'snow' : 'grass'
 }
 
@@ -121,13 +124,13 @@ export function Player() {
 
     // Outdoors, keep the pill on the island: every water tile around it acts as a wall, so it slides
     // along the stepped shore. EDGE is at most half a tile, so only the 3×3 tiles around it can
-    // touch. Indoors, the room's own wall colliders do this job.
+    // touch. The water by the dock lets them onto it (fishing.ts). Indoors, the room's own wall colliders do this job.
     if (useGame.getState().scene === 'world') {
       const ti = Math.round(p.x / TILE)
       const tj = Math.round(p.z / TILE)
       for (let di = -1; di <= 1; di++)
         for (let dj = -1; dj <= 1; dj++)
-          if (!isLand(ti + di, tj + dj))
+          if (!isLand(ti + di, tj + dj) && !dockOpens(ti + di, tj + dj, p.x))
             pushOutOfBox(p, EDGE, v, (ti + di) * TILE, (tj + dj) * TILE, TILE / 2, TILE / 2)
     }
 
@@ -147,6 +150,7 @@ export function Player() {
   return (
     <group ref={ref}>
       <PlayerGround />
+      <HeldRod />
       {PLAYER_MODEL ? (
         // The pill stands in while the model downloads.
         <Suspense fallback={<PillCharacter />}>

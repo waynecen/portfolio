@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { useFishing } from './fishing'
 import { advance, typer } from './interact'
 import { blip } from './sfx'
 import { isTouch } from './quality'
@@ -204,12 +205,16 @@ export function Dialogue() {
 export function Prompt() {
   const focus = useGame((s) => s.focus)
   const talking = useGame((s) => s.dialogue !== null || s.panel !== null)
-  const show = focus && !focus.card && !talking
+  // While the line is out (fishing.ts) the prompt is to reel in, urgently once something bites.
+  const phase = useFishing((s) => s.phase)
+  const reel = phase === 'bite' ? 'Reel in!' : phase !== 'idle' ? 'Reel in' : null
+  const label = reel ?? (focus && !focus.card ? focus.prompt : null)
+  const show = label && !talking
   return (
     <div className="prompt-region" aria-live="polite">
       {show && (
-        <p className="prompt">
-          <kbd>{KEY}</kbd> {focus.prompt}
+        <p className="prompt" data-alert={phase === 'bite' ? '' : undefined}>
+          <kbd>{KEY}</kbd> {label}
         </p>
       )}
     </div>

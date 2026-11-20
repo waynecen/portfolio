@@ -1,4 +1,5 @@
 import { editKey, toggleEdit } from './edit'
+import { reel, stopFishing } from './fishing'
 import { toggleBag } from './inventory'
 import { advance, closeDialogue, closePanel, interact } from './interact'
 import { unlock } from './sfx'
@@ -56,11 +57,12 @@ export function bindKeys(): () => void {
       if (e.code === 'Space') e.preventDefault() // don't scroll the page
       if (!down || e.repeat) return
       if (e.code === 'Space') {
-        // Space advances dialogue when it's open, otherwise rolls.
-        if (!advance()) actions.roll = true
+        // Space advances dialogue when it's open, reels in a line that's out, otherwise rolls.
+        if (!advance() && !reel()) actions.roll = true
       } else if (e.code === 'Escape') {
         closeDialogue()
         closePanel()
+        stopFishing()
       } else if (e.code === 'KeyF') toggleEdit()
       else if (e.code === 'KeyB') toggleBag()
       else interact()

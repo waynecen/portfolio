@@ -96,6 +96,16 @@ const SOUNDS = {
       const since = t < 0.09 ? t : t - 0.09
       return Math.sin(2 * Math.PI * note * t) * 0.3 * Math.exp(-since * 9) * Math.min(1, since * 400)
     }),
+  plop: () => {
+    // The float landing: a small drop of pitch, with a little spray.
+    const lp = lowpass(0.6)
+    return render(0.18, (t, n) => (Math.sin(2 * Math.PI * (520 - 1400 * t) * t) * 0.5 + lp(n) * 0.4 * Math.exp(-t * 60)) * Math.exp(-t * 22))
+  },
+  splash: () => {
+    // Something big pulling the float under: a burst of dull spray that washes out.
+    const lp = lowpass(0.55)
+    return render(0.45, (t, n) => lp(n) * 2.2 * Math.min(1, t * 80) * Math.exp(-t * 9))
+  },
   click: () => render(0.03, (t) => Math.sin(2 * Math.PI * 1200 * t) * 0.35 * Math.exp(-t * 120)),
 }
 type Sound = keyof typeof SOUNDS
@@ -141,7 +151,7 @@ function play(name: Sound, gain = 1, rate = 1) {
   src.start()
 }
 
-export type Surface = 'grass' | 'snow' | 'road' | 'tatami'
+export type Surface = 'grass' | 'snow' | 'road' | 'tatami' | 'wood'
 
 /** One footstep, slightly different every time (and left, right, left with recordings). */
 export const step = (surface: Surface) =>
@@ -153,5 +163,9 @@ export const blip = (pitch: number) => play('blip', 1, pitch * (0.96 + Math.rand
 export const click = () => play('click')
 /** An item picked up. */
 export const chime = () => play('chime')
+/** The fishing float landing on the water. */
+export const plop = () => play('plop', 0.8, 0.9 + Math.random() * 0.2)
+/** A fish biting. */
+export const splash = () => play('splash')
 /** Furniture set down on the floor. */
 export const thud = () => play('wood', 1, 0.7)

@@ -73,6 +73,9 @@ body.loading .loader { opacity: 1; visibility: visible; pointer-events: auto; tr
   margin: 0; padding: 6px 14px 6px 6px; background: #fff; border: 2px solid var(--ink);
   font-size: 12px; text-transform: uppercase; letter-spacing: .2em;
 }
+/* Something is biting (fishing.ts): the prompt lights up and shakes. */
+.prompt[data-alert] { background: #f2b233; animation: prompt-shake .12s linear infinite alternate; }
+@keyframes prompt-shake { from { transform: rotate(-2deg); } to { transform: rotate(2deg); } }
 .prompt kbd {
   display: inline-block; min-width: 24px; margin-right: 8px; padding: 2px 6px; text-align: center;
   background: var(--ink); color: #fff; font: 600 13px/1.4 system-ui, sans-serif; letter-spacing: 0;
@@ -107,7 +110,7 @@ body.loading .loader { opacity: 1; visibility: visible; pointer-events: auto; tr
 }
 @keyframes dialogue-bob { to { transform: translateY(4px); } }
 @media (prefers-reduced-motion: reduce) {
-  .dialogue, .dialogue[data-done] .dialogue-next, .music-panel, .bag-panel { animation: none; }
+  .dialogue, .dialogue[data-done] .dialogue-next, .music-panel, .bag-panel, .prompt[data-alert] { animation: none; }
 }
 @media (pointer: coarse) {
   /* Lift bottom-centre UI above the joystick and buttons. */
@@ -229,6 +232,8 @@ body.editing .joystick, body.editing .action-button { display: none; }
 .bag-slot[data-empty] { color: rgb(122 100 73 / .4); }
 .bag-slot[aria-pressed="true"] { border-color: #f2b233; background: rgb(242 178 51 / .2); }
 .bag-icon { width: 60%; height: 60%; }
+.bag-subhead { margin-bottom: 10px; }
+.bag-subhead h3 { margin: 0; font-size: 16px; }
 .bag-detail { min-height: 5.5em; }
 .bag-detail h3 { margin: 0 0 4px; font-size: 16px; }
 .bag-detail p { margin: 0; font-weight: 500; font-size: 14px; }

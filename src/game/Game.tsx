@@ -4,6 +4,7 @@ import { Atmosphere } from './Atmosphere'
 import { CameraRig, DISTANCE, HEIGHT } from './CameraRig'
 import './curve' // bends the world away; before anything is drawn
 import { Dialogue, Prompt } from './Dialogue'
+import { Dock } from './Dock'
 import { Doors } from './Doors'
 import { Dust } from './Dust'
 import { EditHud, EditOverlay, EditPointer } from './EditRoom'
@@ -81,6 +82,7 @@ export function Game() {
           <HouseExterior />
           <Sign x={ABOUT_AT.x} z={ABOUT_AT.z} lines={aboutLines} />
           <Mailbox />
+          <Dock />
           <Pickups />
           <Rain />
           <Snow />
