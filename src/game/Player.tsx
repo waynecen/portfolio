@@ -29,7 +29,7 @@ const STEP_LEN = [0.45, 0.7] // units travelled per footstep sound: walking, and
 
 const roads = new Set(roadTiles.map((t) => t.i + ',' + t.j))
 function surfaceAt(x: number, z: number): Surface {
-  if (useGame.getState().scene === 'house') return 'wood'
+  if (useGame.getState().scene === 'house') return 'tatami'
   return roads.has(Math.round(x / TILE) + ',' + Math.round(z / TILE)) ? 'road' : winter ? 'snow' : 'grass'
 }
 

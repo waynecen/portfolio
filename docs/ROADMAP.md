@@ -28,7 +28,7 @@ This replaces the earlier feature roadmap. Its unfinished items are folded in be
    - One shared `onBeforeCompile` patch is added to every material.
    - Lower the camera angle a little (`HEIGHT` and `DISTANCE` in CameraRig.tsx) so more horizon shows.
 3. **Sound effects.** *(done: sfx.ts)*
-   - Footsteps by surface (grass, road, wood floor), a roll whoosh, the door, dialogue blips and UI clicks.
+   - Footsteps by surface (grass, road, tatami floor), a roll whoosh, the door, dialogue blips and UI clicks.
    - A small WebAudio synth like `placeholderTracks.ts`, so there are no audio files, sharing the mute with music.
 4. **Particles.** *(done: Dust.tsx, Sparkle.tsx, splashes in Rain.tsx)* Dust puffs on roll and sprint, a sparkle over whatever has focus, and splashes in the rain. All from preallocated pools.
 5. **Art pass on props.** Stations become small themed dioramas, one per project. The sign, mailbox and record player get models through the same pipeline as the character.

@@ -86,9 +86,9 @@ const STEP_VOLUME = 0.45 // footsteps relative to the other effects
 const ROLL_VOLUME = 0.5  // the roll's whoosh relative to the other effects
 ```
 
-Every sound is synthesised in `SOUNDS` (no audio files): footsteps for grass, road and wood, the roll whoosh, the door, dialogue blips and clicks. Change a sound's pitch or length there.
+Every sound is synthesised in `SOUNDS` (no audio files): footsteps for grass, snow, road and tatami, the furniture thud (`wood`), the roll whoosh, the door, dialogue blips and clicks. Change a sound's pitch or length there.
 
-To use real recordings instead, put the files in `public/sfx/` and list them in `FILES` in sfx.ts. Grass footsteps already do: `grass: ['/sfx/grass_L.wav', '/sfx/grass_R.wav']`. With several files a sound takes turns through them in order, so a left and a right step alternate. The names are `grass`, `snow`, `road`, `wood`, `whoosh`, `door`, `blip` and `click`. Any sound left out stays synthesised, and a file that fails to load falls back to it too.
+To use real recordings instead, put the files in `public/sfx/` and list them in `FILES` in sfx.ts. Grass and tatami footsteps already do, e.g. `grass: ['/sfx/grass_L.wav', '/sfx/grass_R.wav']`. With several files a sound takes turns through them in order, so a left and a right step alternate. The names are `grass`, `snow`, `road`, `tatami`, `wood`, `whoosh`, `door`, `blip` and `click`. Any sound left out stays synthesised, and a file that fails to load falls back to it too.
 
 ---
 

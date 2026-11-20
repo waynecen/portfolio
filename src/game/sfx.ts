@@ -15,6 +15,7 @@ const ROLL_VOLUME = 0.2 // the roll's whoosh relative to the other effects
 // mono is plenty.
 const FILES: Partial<Record<Sound, string[]>> = {
   grass: ['/sfx/grass_L.wav', '/sfx/grass_R.wav'],
+  tatami: ['/sfx/tatami_L.wav', '/sfx/tatami_R.wav'],
 }
 
 let ctx: AudioContext | null = null
@@ -67,6 +68,11 @@ const SOUNDS = {
   road: () => {
     const lp = lowpass(0.5)
     return render(0.07, (t, n) => lp(n) * Math.exp(-t * 60) * 0.9)
+  },
+  tatami: () => {
+    // A soft, dull brush on woven rush.
+    const lp = lowpass(0.9)
+    return render(0.1, (t, n) => lp(n) * Math.exp(-t * 38) * 2)
   },
   wood: () => {
     const lp = lowpass(0.7)
@@ -128,7 +134,7 @@ function play(name: Sound, gain = 1, rate = 1) {
   src.start()
 }
 
-export type Surface = 'grass' | 'snow' | 'road' | 'wood'
+export type Surface = 'grass' | 'snow' | 'road' | 'tatami'
 
 /** One footstep, slightly different every time (and left, right, left with recordings). */
 export const step = (surface: Surface) =>
