@@ -2,7 +2,7 @@ import { useFrame } from '@react-three/fiber'
 import { BoxGeometry, Color, MeshBasicMaterial, MeshLambertMaterial, PlaneGeometry, type BufferGeometry } from 'three'
 import { flat, merge, pick, tint, unindexed } from './geometry'
 import { TILE } from './grid'
-import { winter } from './season'
+import { autumn, spring, winter } from './season'
 
 // A blocky island centred on spawn, built from whole grid tiles: a grass plateau ringed by stone
 // cliffs that drop into open water. It's two overlapping circles of land: the main island round the
@@ -31,7 +31,8 @@ const FOAM_PULSE = 1.2 // surf fades in and out at this rate (radians/s)
 
 const STONE = ['#c9bfa9', '#bdb29b', '#d3cab6'].map((c) => new Color(c)) // cliff blocks pick one of these
 const RIM = new Color('#e4ddca')
-const GROUND = winter ? '#eef3f8' : '#8cc084' // grass, or snow in winter (season.ts)
+// Grass by the season (season.ts): fresh in spring, golden in autumn, under snow in winter.
+const GROUND = winter ? '#eef3f8' : spring ? '#94cc86' : autumn ? '#a9b56c' : '#8cc084'
 
 /** Tile index bound: nothing past ±BOUND (on either axis) is land. */
 export const BOUND = Math.ceil(Math.max(ISLAND_RADIUS, Math.abs(FOREST.x) + FOREST.r, Math.abs(FOREST.z) + FOREST.r))

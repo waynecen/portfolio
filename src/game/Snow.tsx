@@ -2,7 +2,7 @@ import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
 import { BufferAttribute, BufferGeometry, PointsMaterial, type Points } from 'three'
 import { detectTier } from './quality'
-import { winter } from './season'
+import { autumn, spring, winter } from './season'
 import { sky } from './sky'
 import { playerPos, teleport } from './state'
 import { useGame } from './store'
@@ -11,6 +11,7 @@ import { reducedMotion } from './settings'
 // Winter's snowfall: flakes drifting down round the player, swaying as they fall, drawn as one set
 // of points. Like the rain, each flake starts again at the top somewhere near the player when it
 // lands. It snows lightly all day, and properly when the rain would come (the afternoon slot).
+// In spring the same drift carries a few pink petals, and in autumn a few leaves, all day.
 
 const COUNT = detectTier() === 'low' ? 300 : 700
 const LIGHT = 0.35 // share of the flakes falling outside the snowy afternoon
@@ -26,7 +27,16 @@ const phase = new Float32Array(COUNT) // each flake's own sway
 for (let n = 0; n < COUNT; n++) phase[n] = Math.random() * Math.PI * 2
 const geometry = new BufferGeometry()
 geometry.setAttribute('position', new BufferAttribute(positions, 3))
-const material = new PointsMaterial({ color: '#ffffff', size: SIZE, transparent: true, opacity: 0.9, depthWrite: false })
+const DRIFT = 0.08 // share of the pool drifting in spring and autumn
+const DRIFT_SPEED = 0.55 // petals and leaves fall slower than snow
+const material = new PointsMaterial({
+  color: spring ? '#f6c6d4' : autumn ? '#d9873a' : '#ffffff',
+  size: winter ? SIZE : SIZE * 1.4,
+  transparent: true,
+  opacity: 0.9,
+  depthWrite: false,
+})
+const speed = winter ? SPEED : DRIFT_SPEED
 
 function drop(n: number, y: number) {
   positions[n * 3] = playerPos.x + (Math.random() * 2 - 1) * SPREAD_X
@@ -45,7 +55,7 @@ export function Snow() {
       return
     }
     // Fewer flakes on a light day: only the first part of the pool is drawn.
-    geometry.setDrawRange(0, Math.round(COUNT * (LIGHT + (1 - LIGHT) * sky.weather.rain)))
+    geometry.setDrawRange(0, Math.round(COUNT * (winter ? LIGHT + (1 - LIGHT) * sky.weather.rain : DRIFT)))
 
     if (!started.current) {
       for (let n = 0; n < COUNT; n++) drop(n, Math.random() * TOP)
@@ -55,7 +65,7 @@ export function Snow() {
       const t = clock.elapsedTime
       for (let n = 0; n < COUNT; n++) {
         const k = n * 3
-        const y = positions[k + 1] - SPEED * dt
+        const y = positions[k + 1] - speed * dt
         if (y < 0) {
           drop(n, y + TOP)
           continue
@@ -68,7 +78,7 @@ export function Snow() {
     geometry.attributes.position.needsUpdate = true
   })
 
-  if (!winter) return null
+  if (!winter && !spring && !autumn) return null
   // Not culled: the flakes move every frame, so a bounding sphere would always be stale.
   return <points ref={points} geometry={geometry} material={material} frustumCulled={false} />
 }

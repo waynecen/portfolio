@@ -1,12 +1,12 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useLayoutEffect, useRef } from 'react'
-import { ConeGeometry, CylinderGeometry, MeshLambertMaterial, Object3D, Vector2, type InstancedMesh } from 'three'
+import { Color, ConeGeometry, CylinderGeometry, MeshLambertMaterial, Object3D, Vector2, type InstancedMesh } from 'three'
 import { addCollider } from './collision'
 import { TILE, tileAt } from './grid'
 import { FOREST, ISLAND_RADIUS, isInland } from './Island'
 import { HOUSE } from './layout'
 import { pois, roadTiles } from './pois'
-import { winter } from './season'
+import { autumn, spring, winter } from './season'
 import { playerPos } from './state'
 
 // Placeholder trees: a trunk and a low-poly cone, drawn as instanced meshes (a draw call or two
@@ -143,7 +143,20 @@ function seeThrough(m: MeshLambertMaterial) {
 const trunkGeometry = new CylinderGeometry(0.08, 0.12, 0.5, 6).translate(0, 0.25, 0)
 const canopyGeometry = new ConeGeometry(0.5, 1.2, 7).translate(0, 1.05, 0)
 const trunkMaterial = seeThrough(new MeshLambertMaterial({ color: '#8a5a3b', flatShading: true }))
-const canopyMaterial = seeThrough(new MeshLambertMaterial({ color: '#3f7d4a', flatShading: true }))
+// White, so each tree's own colour shows (canopyColor): green, blossom in spring, turning in autumn.
+const canopyMaterial = seeThrough(new MeshLambertMaterial({ color: '#ffffff', flatShading: true }))
+const GREEN = new Color('#3f7d4a')
+const SPRING_GREEN = new Color('#4f9a55')
+const BLOSSOM = [new Color('#f0a9c0'), new Color('#f6c6d4')]
+const BLOSSOMING = 0.35 // share of trees in blossom in spring
+const AUTUMN = ['#d9873a', '#c4632f', '#e3b04b', '#b5452f', '#8a9a3a'].map((c) => new Color(c))
+/** Tree n's canopy colour this season, fixed per tree so it's the same on every visit. */
+function canopyColor(n: number): Color {
+  const h = ((n * 2654435761) >>> 0) / 4294967296 // a fixed, spread-out number in [0, 1) per tree
+  if (spring) return h < BLOSSOMING ? BLOSSOM[n % 2] : SPRING_GREEN
+  if (autumn) return AUTUMN[Math.floor(h * AUTUMN.length)]
+  return GREEN
+}
 // Winter: a white cone over the canopy's top half, a little wider so no green shows through its rim.
 const capGeometry = new ConeGeometry(0.25, 0.56, 7).translate(0, 1.37, 0)
 const capMaterial = seeThrough(new MeshLambertMaterial({ color: '#f4f7fb', flatShading: true }))
@@ -162,11 +175,13 @@ export function Trees() {
       dummy.updateMatrix()
       trunks.current?.setMatrixAt(n, dummy.matrix)
       canopies.current?.setMatrixAt(n, dummy.matrix)
+      canopies.current?.setColorAt(n, canopyColor(n))
       caps.current?.setMatrixAt(n, dummy.matrix)
     })
     for (const mesh of [trunks.current, canopies.current, caps.current]) {
       if (!mesh) continue
       mesh.instanceMatrix.needsUpdate = true
+      if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true
       mesh.computeBoundingSphere() // cover every instance, so the forest isn't culled when the origin is off screen
     }
   }, [])
