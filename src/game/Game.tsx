@@ -1,5 +1,5 @@
 import { Canvas, useFrame } from '@react-three/fiber'
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState, type ComponentType, type ReactNode } from 'react'
 import { Atmosphere } from './world/Atmosphere'
 import { CameraRig, DISTANCE, HEIGHT } from './core/CameraRig'
 import './core/curve' // bends the world away; before anything is drawn
@@ -8,12 +8,10 @@ import { CitySquare } from './world/CitySquare'
 import { Dock } from './life/Dock'
 import { Doors } from './core/Doors'
 import { Dust } from './player/Dust'
-import { EditHud, EditOverlay, EditPointer } from './house/EditRoom'
 import { Fade } from './core/Fade'
 import { bindFocus } from './core/focus'
 import { pollGamepad } from './core/gamepad'
 import { Butterflies } from './life/Butterflies'
-import { Cave } from './secrets/CaveRooms'
 import { DailyFinds } from './life/DailyFinds'
 import { Festive } from './secrets/Festive'
 import { Fireflies } from './life/Fireflies'
@@ -36,8 +34,6 @@ import { MusicPanel, NowPlaying } from './house/MusicPanel'
 import { ABOUT_AT, aboutLines } from './portfolio/places'
 import { NoticeBoard } from './world/NoticeBoard'
 import { Pearls } from './secrets/HiddenPearls'
-import { Islet } from './secrets/IsletScene'
-import { PhotoCapture, PhotoHud } from './ui/PhotoHud'
 import { Pickups } from './life/Pickups'
 import { Player } from './player/Player'
 import { ProjectCard } from './portfolio/ProjectCard'
@@ -46,7 +42,6 @@ import { RecordPlayer } from './house/RecordPlayer'
 import { Rain } from './world/Rain'
 import { ReelBar } from './life/ReelBar'
 import { Slimes } from './combat/Slimes'
-import { ShopPanel } from './life/ShopPanel'
 import { Snow } from './world/Snow'
 import { Sparkle } from './ui/Sparkle'
 import { Roads } from './world/Roads'
@@ -63,6 +58,19 @@ import { Waterfall } from './secrets/Waterfall'
 import { WelcomeBack } from './ui/WelcomeBack'
 
 const tier = detectTier()
+
+// Parts most visits never reach load on their own, after the first frame: the cave and the islet,
+// edit mode, the shop and photo mode. Each waits behind its own Suspense, so nothing else waits for it.
+const later = <T,>(load: () => Promise<T>, pick: (m: T) => ComponentType) => lazy(() => load().then((m) => ({ default: pick(m) })))
+const Cave = later(() => import('./secrets/CaveRooms'), (m) => m.Cave)
+const Islet = later(() => import('./secrets/IsletScene'), (m) => m.Islet)
+const EditOverlay = later(() => import('./house/EditRoom'), (m) => m.EditOverlay)
+const EditPointer = later(() => import('./house/EditRoom'), (m) => m.EditPointer)
+const EditHud = later(() => import('./house/EditRoom'), (m) => m.EditHud)
+const ShopPanel = later(() => import('./life/ShopPanel'), (m) => m.ShopPanel)
+const PhotoHud = later(() => import('./ui/PhotoHud'), (m) => m.PhotoHud)
+const PhotoCapture = later(() => import('./ui/PhotoHud'), (m) => m.PhotoCapture)
+const Later = ({ children }: { children: ReactNode }) => <Suspense fallback={null}>{children}</Suspense>
 
 /** A controller, read every frame (gamepad.ts), and focus kept inside open panels (focus.ts). */
 function Controls() {
@@ -124,7 +132,9 @@ export function Game() {
           <CitySquare />
           <Dock />
           <Waterfall />
-          <Islet />
+          <Later>
+            <Islet />
+          </Later>
           <Pickups />
           <Pearls />
           <Leaves />
@@ -145,19 +155,27 @@ export function Game() {
           <HouseInterior />
           <Furniture />
           <RecordPlayer />
-          <EditOverlay />
+          <Later>
+            <EditOverlay />
+          </Later>
         </group>
         <group visible={scene === 'cave'}>
-          <Cave />
+          <Later>
+            <Cave />
+          </Later>
         </group>
         <Doors />
         <Interactions />
         <Sparkle />
         <Player />
         <Dust />
-        <EditPointer />
+        <Later>
+            <EditPointer />
+          </Later>
         <CameraRig />
-        <PhotoCapture />
+        <Later>
+            <PhotoCapture />
+          </Later>
         <Controls />
       </Canvas>
       <Fade />
@@ -173,15 +191,21 @@ export function Game() {
       <InventoryPanel />
       <LogPanel />
       <SettingsPanel />
-      <ShopPanel />
+      <Later>
+            <ShopPanel />
+          </Later>
       <WelcomeBack />
       <BagButton />
       <RodButton />
-      <EditHud />
+      <Later>
+            <EditHud />
+          </Later>
       <Joystick />
       <MenuPanel />
       <StartButton />
-      <PhotoHud />
+      <Later>
+            <PhotoHud />
+          </Later>
     </>
   )
 }

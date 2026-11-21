@@ -27,8 +27,23 @@ function site(): Plugin {
   }
 }
 
-// The 3D code is split off automatically by the dynamic import in main.tsx.
+// The 3D code is split off automatically by the dynamic import in main.tsx. Within it, three.js and
+// React (with R3F) get chunks of their own: they change only with an upgrade, so a returning
+// visitor's browser keeps them while the game's own code changes from deploy to deploy.
 export default defineConfig({
   plugins: [react(), site()],
-  build: { target: 'es2022', chunkSizeWarningLimit: 1100 },
+  build: {
+    target: 'es2022',
+    chunkSizeWarningLimit: 850, // three.js alone is about 820 KB; R3F registers all of it, so it can't be tree-shaken
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            { name: 'three', test: /node_modules[\\/]three[\\/]/, priority: 2 },
+            { name: 'react', test: /node_modules[\\/](react|react-dom|react-reconciler|scheduler|@react-three|its-fine|suspend-react|react-use-measure|zustand)[\\/]/, priority: 1 },
+          ],
+        },
+      },
+    },
+  },
 })
