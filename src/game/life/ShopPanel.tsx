@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
+import { useEffect, useState } from 'react'
 import { useShells } from '../combat/drops'
-import { closePanel } from '../core/interact'
 import { useOwned } from '../house/room'
 import { buyHat, buyMap, buyPiece, canAfford, DECOR, HATS, MAP_PRICE, useHats, useTreasureMap, wearHat } from './shop'
 import { useGame } from '../core/store'
+import { Panel } from '../ui/Panel'
 
 // Pip's shop (shop.ts): hats to wear and furniture for the house, paid for in shells. Opened by
 // talking to Pip at the stall east of the house; Escape or × closes it.
@@ -15,34 +15,17 @@ export function ShopPanel() {
   const owned = useOwned((s) => s.owned)
   const map = useTreasureMap((s) => s.owned)
   const [note, setNote] = useState('Hats and things for the house. What’ll it be?')
-  const first = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     if (!open) return
     setNote('Hats and things for the house. What’ll it be?')
-    first.current?.focus()
   }, [open])
 
   if (!open) return null
-  const onKeyDown = (e: KeyboardEvent) => {
-    if (e.key !== 'Escape') return
-    e.preventDefault()
-    e.stopPropagation()
-    closePanel()
-  }
   const short = (price: number) => `${price - shells} more ${price - shells === 1 ? 'shell' : 'shells'} needed.`
 
   return (
-    <div className="bag-panel shop-panel" role="dialog" aria-label="Pip’s shop" onKeyDown={onKeyDown}>
-      <div className="bag-head">
-        <h2>Pip’s shop</h2>
-        <span className="bag-count">
-          {shells} {shells === 1 ? 'shell' : 'shells'}
-        </span>
-        <button type="button" className="bag-close" aria-label="Close" onClick={closePanel}>
-          ×
-        </button>
-      </div>
+    <Panel title="Pip’s shop" count={`${shells} ${shells === 1 ? 'shell' : 'shells'}`} className="shop-panel">
       <p className="shop-note" aria-live="polite">
         {note}
       </p>
@@ -50,7 +33,7 @@ export function ShopPanel() {
         <h3>Hats</h3>
       </div>
       <ul className="shop-list">
-        {HATS.map((h, k) => {
+        {HATS.map((h) => {
           const have = hats.owned.includes(h.id)
           const on = hats.worn === h.id
           return (
@@ -58,7 +41,6 @@ export function ShopPanel() {
               <span className="shop-swatch" style={{ background: h.color }} aria-hidden="true" />
               <span className="shop-name">{h.name}</span>
               <button
-                ref={k === 0 ? first : undefined}
                 type="button"
                 onClick={() => {
                   if (have) wearHat(on ? null : h.id)
@@ -115,6 +97,6 @@ export function ShopPanel() {
         </li>
       </ul>
       <p className="settings-note">Shells turn up in tall grass, pots and the odd slime, and buried in the day’s dig spot.</p>
-    </div>
+    </Panel>
   )
 }

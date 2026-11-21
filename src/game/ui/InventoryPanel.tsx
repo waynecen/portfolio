@@ -3,7 +3,7 @@ import { BUGS, useBugs } from '../life/bugs'
 import { useCave } from '../secrets/cave'
 import { useShells } from '../combat/drops'
 import { FISH, putAwayRod, SPOTS, useFishing } from '../life/fishing'
-import { closePanel, toggleLog } from '../core/interact'
+import { toggleLog } from '../core/interact'
 import { ITEM, ITEMS, toggleBag, useInventory, type ItemId } from '../life/inventory'
 import { PEARLS, usePearls } from '../secrets/pearls'
 import { isTouch } from '../core/quality'
@@ -11,6 +11,7 @@ import { PLACES, useSeen } from '../portfolio/seen'
 import { useTreasureMap } from '../life/shop'
 import { useGame } from '../core/store'
 import { keyName } from '../core/keymap'
+import { Panel } from './Panel'
 
 // The bag: a slot for every item, filled once it's found, then one for every kind of fish, filled
 // once one's caught (fishing.ts), and the chosen slot's name and words below. Arrow keys move
@@ -141,21 +142,17 @@ export function InventoryPanel() {
       : 'Not caught yet. Try the ripples off the dock.'
   }
 
-  const onKeyDown = (e: KeyboardEvent) => {
-    if (e.key === 'Escape' || e.code === 'KeyB') {
-      e.preventDefault()
-      e.stopPropagation()
-      if (e.code === 'KeyB') toggleBag()
-      else closePanel()
-      return
-    }
+  // The arrow keys walk the grid.
+  const onKey = (e: KeyboardEvent) => {
     const step = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -COLUMNS, ArrowDown: COLUMNS }[e.key]
-    if (step === undefined) return
+    if (step === undefined) return false
     e.preventDefault()
     const n = chosen + step
-    if (n < 0 || n >= total) return
-    setChosen(n)
-    slots.current[n]?.focus()
+    if (n >= 0 && n < total) {
+      setChosen(n)
+      slots.current[n]?.focus()
+    }
+    return true
   }
 
   const slot = (k: number, label: string, filled: boolean, icon: ReactNode) => (
@@ -178,19 +175,17 @@ export function InventoryPanel() {
   )
 
   return (
-    <div className="bag-panel" role="dialog" aria-label="Bag" onKeyDown={onKeyDown}>
-      <div className="bag-head">
-        <h2>Bag</h2>
-        <span className="bag-count">
-          {found.length} of {ITEMS.length} found · {shells} {shells === 1 ? 'shell' : 'shells'}
-        </span>
+    <Panel
+      title="Bag"
+      count={`${found.length} of ${ITEMS.length} found · ${shells} ${shells === 1 ? 'shell' : 'shells'}`}
+      toggle="bag"
+      onKey={onKey}
+      extra={
         <button type="button" className="bag-log" onClick={toggleLog}>
           {!isTouch && <kbd>{keyName('log')}</kbd>} Log
         </button>
-        <button type="button" className="bag-close" aria-label="Close" onClick={closePanel}>
-          ×
-        </button>
-      </div>
+      }
+    >
       {/* Places seen (seen.ts): every project, the About sign and the Contact mailbox, ticked once looked at. */}
       <div className="bag-head bag-subhead">
         <h3>Places</h3>
@@ -265,7 +260,7 @@ export function InventoryPanel() {
         <h3>{title}</h3>
         <p>{words}</p>
       </div>
-    </div>
+    </Panel>
   )
 }
 

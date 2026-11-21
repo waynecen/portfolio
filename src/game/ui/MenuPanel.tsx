@@ -1,10 +1,10 @@
-import { useEffect, useRef } from 'react'
 import { toggleEdit } from '../house/edit'
 import { closePanel, openPanel, toggleMenu } from '../core/interact'
 import { ITEMS, useInventory } from '../life/inventory'
 import { togglePhoto } from './photo'
 import { isTouch } from '../core/quality'
 import { useGame } from '../core/store'
+import { Panel } from './Panel'
 
 // Touch screens: a Start button at the bottom, between the joystick and the A and B buttons, opens
 // this menu, which holds what the keyboard reaches with keys (the bag, the log, the
@@ -32,12 +32,6 @@ export function MenuPanel() {
   const open = useGame((s) => s.panel === 'menu')
   const scene = useGame((s) => s.scene)
   const found = useInventory((s) => s.found.length)
-  const first = useRef<HTMLButtonElement>(null)
-
-  useEffect(() => {
-    if (open) first.current?.focus()
-  }, [open])
-
   if (!open) return null
   // Close the menu first, then act, so the action isn't blocked by the menu being open.
   const then = (act: () => unknown) => () => {
@@ -46,17 +40,10 @@ export function MenuPanel() {
   }
 
   return (
-    <div className="bag-panel menu-panel" role="dialog" aria-label="Menu">
-      <div className="bag-head">
-        <h2>Menu</h2>
-        <span className="bag-count" />
-        <button type="button" className="bag-close" aria-label="Close" onClick={closePanel}>
-          ×
-        </button>
-      </div>
+    <Panel title="Menu" className="menu-panel">
       <ul className="menu-list">
         <li>
-          <button ref={first} type="button" onClick={() => openPanel('inventory')}>
+          <button type="button" onClick={() => openPanel('inventory')}>
             <Icon name="bag" />
             Bag <span className="bag-toggle-count">{found} of {ITEMS.length}</span>
           </button>
@@ -88,7 +75,7 @@ export function MenuPanel() {
           </li>
         )}
       </ul>
-    </div>
+    </Panel>
   )
 }
 

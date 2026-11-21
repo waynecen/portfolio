@@ -1,12 +1,13 @@
-import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
+import { useEffect, useState, type KeyboardEvent } from 'react'
 import { closePanel, toggleSettings } from '../core/interact'
-import { ACTIONS, actionFor, codeName, keyName, keysFor, rebind, RESERVED, resetKeys, useKeymap, type Action } from '../core/keymap'
+import { ACTIONS, codeName, keyName, keysFor, rebind, RESERVED, resetKeys, useKeymap, type Action } from '../core/keymap'
 import { setVolume, useMusic } from '../core/music'
 import { isTouch } from '../core/quality'
 import { SECRETS, setSecret, useSecrets } from '../secrets/secrets'
 import { startOver } from '../core/save'
 import { setSetting, useSettings, type Motion } from '../core/settings'
 import { useGame } from '../core/store'
+import { Panel } from './Panel'
 
 // The settings: music and effects volumes, how much things move, larger text and the fishing
 // assist (settings.ts), the keys (keymap.ts) and starting over (save.ts). Opened with O or the gear
@@ -17,50 +18,33 @@ export function SettingsPanel() {
   const music = useMusic((s) => s.volume)
   const s = useSettings()
   const secrets = useSecrets()
-  const first = useRef<HTMLInputElement>(null)
   useKeymap() // re-render when a key changes
   const [waiting, setWaiting] = useState<Action | null>(null) // the action whose new key is awaited
   const [sure, setSure] = useState(false) // "Start over" asks once more before forgetting everything
 
   useEffect(() => {
-    if (open) first.current?.focus()
-    else {
-      setWaiting(null)
-      setSure(false)
-    }
+    if (open) return
+    setWaiting(null)
+    setSure(false)
   }, [open])
 
   if (!open) return null
 
-  const onKeyDown = (e: KeyboardEvent) => {
-    if (waiting) {
-      // The next key goes to the action waiting for it. Escape gives up; Tab can't be taken.
-      e.preventDefault()
-      e.stopPropagation()
-      if (e.code !== 'Escape' && !RESERVED.has(e.code)) rebind(waiting, e.code)
-      setWaiting(null)
-      return
-    }
-    if (e.key !== 'Escape' && actionFor(e.code) !== 'settings') return
+  // While a key is awaited, the next one goes to that action. Escape gives up; Tab can't be taken.
+  const onKey = (e: KeyboardEvent) => {
+    if (!waiting) return false
     e.preventDefault()
     e.stopPropagation()
-    if (e.key === 'Escape') closePanel()
-    else toggleSettings()
+    if (e.code !== 'Escape' && !RESERVED.has(e.code)) rebind(waiting, e.code)
+    setWaiting(null)
+    return true
   }
 
   return (
-    <div className="bag-panel" role="dialog" aria-label="Settings" onKeyDown={onKeyDown}>
-      <div className="bag-head">
-        <h2>Settings</h2>
-        <span className="bag-count" />
-        <button type="button" className="bag-close" aria-label="Close" onClick={closePanel}>
-          ×
-        </button>
-      </div>
+    <Panel title="Settings" toggle="settings" onKey={onKey}>
       <label className="settings-row">
         Music
         <input
-          ref={first}
           type="range"
           min={0}
           max={1}
@@ -177,7 +161,7 @@ export function SettingsPanel() {
           ? 'Everything found, caught, bought and moved is forgotten, and the island starts fresh. Settings and keys stay.'
           : 'What you’ve found and done is kept in this browser, ready for next time.'}
       </p>
-    </div>
+    </Panel>
   )
 }
 
