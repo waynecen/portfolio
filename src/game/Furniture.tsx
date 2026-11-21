@@ -39,7 +39,7 @@ const NOTE = isTouch
       'Drag the joystick on the left to walk. Hold B to sprint.',
       'Tap A to read, talk or use whatever is nearby. With nothing nearby, A makes you roll.',
       'The record player by the back wall plays music. Tap A beside it to choose a song.',
-      'Tap Edit room at the top to move the furniture around.',
+      'To move the furniture around, open the menu at the bottom and tap Edit room.',
       'Little things are hidden around the island. Tap the menu button at the bottom, then Bag, to see what you’ve found.',
       'The door at the bottom of the room leads outside.',
       'Each pillar out there is a project. Walk up to one to see it, then tap A to open it.',
