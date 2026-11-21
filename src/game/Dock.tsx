@@ -40,6 +40,7 @@ const BEAM = new Color('#6e4a2e')
 const POST = new Color('#7a5434')
 
 const RANGE = 1.6 // how close to the ripple the player must be to cast; it's out in the water
+const REEL_SWAY = 0.5 // while reeling, how far either way the float is pulled at the needle's ends
 const BARREL_RANGE = 1.3
 const RINGS = 3 // rings in the ripple, spreading one after another
 const RIPPLE_R = 0.6 // how far a ring spreads, idle
@@ -161,6 +162,12 @@ export function Dock() {
         if (phase === 'wait' && line.biteAt - line.t < 1.2 && Math.sin(line.t * 9) > 0.6) y -= 0.035 // nibbles
         if (phase === 'bite') y = WATER_Y - 0.05 + Math.sin(t * 40) * 0.02
         floatPos.set(at.x + (phase === 'bite' ? Math.sin(t * 31) * 0.03 : 0), y, at.z)
+        if (phase === 'reel') {
+          // Reeling: the float is under, pulled side to side with the needle, across the line of the cast.
+          const h = playerFacing.heading
+          const side = line.needle * REEL_SWAY
+          floatPos.set(at.x + Math.cos(h) * side, WATER_Y - 0.06 + Math.sin(t * 25) * 0.015, at.z - Math.sin(h) * side)
+        }
       }
       f.position.copy(floatPos)
     }
@@ -179,8 +186,9 @@ export function Dock() {
     const g = ripple.current
     if (g) {
       g.visible = phase !== 'cast'
-      const radius = phase === 'idle' ? RIPPLE_R : phase === 'bite' ? 0.75 : 0.3
-      const period = phase === 'bite' ? 0.5 : phase === 'idle' ? RIPPLE_PERIOD : 2.8
+      const thrashing = phase === 'bite' || phase === 'reel'
+      const radius = phase === 'idle' ? RIPPLE_R : thrashing ? 0.75 : 0.3
+      const period = thrashing ? 0.5 : phase === 'idle' ? RIPPLE_PERIOD : 2.8
       for (let k = 0; k < RINGS; k++) {
         const m = rings.current[k]
         if (!m) continue
@@ -249,7 +257,9 @@ export function HeldRod() {
     let tilt = phase === 'idle' ? HOLD : FISHING_HOLD
     if (phase === 'bite') tilt += Math.sin(clock.elapsedTime * 35) * 0.06 // the rod tugs
     if (phase === 'cast') tilt = FISHING_HOLD - Math.sin(Math.PI * Math.min(1, line.t / CAST_TIME)) * 0.5 // flicked forward
+    if (phase === 'reel') tilt = FISHING_HOLD - 0.25 + Math.sin(clock.elapsedTime * 30) * 0.03 // held up against the pull
     p.rotation.x = tilt
+    p.rotation.z = phase === 'reel' ? -line.needle * 0.45 : 0 // leaning with the fish
     tip.current.getWorldPosition(rodTip)
   })
 

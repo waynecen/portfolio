@@ -1,7 +1,8 @@
 import { create } from 'zustand'
 import { say, sayFirst } from './interact'
 import { isTouch } from './quality'
-import { click, landed, plop, splash, whoosh } from './sfx'
+import { keys, stick } from './input'
+import { click, landed, plop, reelClick, splash, whoosh } from './sfx'
 import { cameraZoom, playerFacing, playerPos } from './state'
 import { useGame } from './store'
 import { reducedMotion, useSettings } from './settings'
@@ -47,6 +48,21 @@ const BITE_TIME = 0.9 // seconds to react once it bites
 const ASSIST_BITE_TIME = 1.8 // with the fishing assist on (settings.ts)
 const LAND_PAUSE = 0.35 // seconds between landing a fish and the words about it
 
+// Reeling it in (ReelBar.tsx draws it): the fish tugs a needle along a bar, and holding left and
+// right pushes back. Keep the needle in the green zone to fill the catch meter; outside it, the
+// meter drains. Fill it to land the fish; let it drain, or let the needle hit an end, and it's gone.
+// Needle units: -1 and 1 are the bar's ends.
+const ZONE = 0.3 // half-width of the green zone
+const ASSIST_ZONE = 0.45 // with the fishing assist on
+const PUSH = 3.4 // how hard holding left or right pushes the needle (units/s²)
+const PULL = [1.8, 4.4] // how hard the fish tugs: the weakest fish, and the strongest (units/s²)
+const ASSIST_PULL = 0.7 // the fish's tug with the assist on, as a share
+const TUG_EVERY = [0.35, 1.05] // seconds between the fish changing direction, at random between these
+const DAMP = 2.4 // how quickly the needle's swing dies away
+const START = 0.25 // the catch meter's level on hooking
+const FILL = [0.26, 0.12] // meter filled per second in the zone: the weakest fish, and the strongest
+const DRAIN = 0.28 // meter drained per second outside it
+
 export type FishId = 'minnow' | 'mackerel' | 'tang' | 'puffer' | 'snapper' | 'carp'
 
 export type Fish = {
@@ -58,16 +74,18 @@ export type Fish = {
   weight: number
   /** Length range in cm. */
   size: [number, number]
+  /** How hard it fights on the line, 0 (barely) to 1 (all it's got). */
+  fight: number
 }
 
 /** Every fish, in the order the bag lists them. Placeholders: change names, words and odds freely. */
 export const FISH: Fish[] = [
-  { id: 'minnow', name: 'Silver minnow', description: 'Small, quick and everywhere. Hardly worth the bait.', color: '#c4ccd4', weight: 30, size: [5, 12] },
-  { id: 'mackerel', name: 'Mackerel', description: 'Striped like the ripples it swims under.', color: '#5f8fa8', weight: 25, size: [20, 40] },
-  { id: 'tang', name: 'Blue tang', description: 'Far brighter than anything this far north should be.', color: '#3f7fd9', weight: 18, size: [12, 25] },
-  { id: 'puffer', name: 'Pufferfish', description: 'Puffed up in a huff the moment it left the water.', color: '#e0c25a', weight: 12, size: [10, 30] },
-  { id: 'snapper', name: 'Red snapper', description: 'Put up a real fight. Your arms are still shaking.', color: '#d9624a', weight: 10, size: [30, 70] },
-  { id: 'carp', name: 'Golden carp', description: 'They say it grants a wish. It didn’t say which.', color: '#f2b233', weight: 5, size: [40, 90] },
+  { id: 'minnow', name: 'Silver minnow', description: 'Small, quick and everywhere. Hardly worth the bait.', color: '#c4ccd4', weight: 30, size: [5, 12], fight: 0 },
+  { id: 'mackerel', name: 'Mackerel', description: 'Striped like the ripples it swims under.', color: '#5f8fa8', weight: 25, size: [20, 40], fight: 0.3 },
+  { id: 'tang', name: 'Blue tang', description: 'Far brighter than anything this far north should be.', color: '#3f7fd9', weight: 18, size: [12, 25], fight: 0.35 },
+  { id: 'puffer', name: 'Pufferfish', description: 'Puffed up in a huff the moment it left the water.', color: '#e0c25a', weight: 12, size: [10, 30], fight: 0.55 },
+  { id: 'snapper', name: 'Red snapper', description: 'Put up a real fight. Your arms are still shaking.', color: '#d9624a', weight: 10, size: [30, 70], fight: 0.8 },
+  { id: 'carp', name: 'Golden carp', description: 'They say it grants a wish. It didn’t say which.', color: '#f2b233', weight: 5, size: [40, 90], fight: 1 },
 ]
 export const FISH_BY_ID = Object.fromEntries(FISH.map((f) => [f.id, f])) as Record<FishId, Fish>
 
@@ -89,8 +107,8 @@ function load(): Partial<Record<FishId, FishRecord>> {
   }
 }
 
-/** idle: not fishing. cast: the float is flying out. wait: waiting for a bite. bite: pull now! */
-export type Phase = 'idle' | 'cast' | 'wait' | 'bite'
+/** idle: not fishing. cast: the float is flying out. wait: waiting for a bite. bite: hook it now! reel: bringing it in. */
+export type Phase = 'idle' | 'cast' | 'wait' | 'bite' | 'reel'
 
 type FishingState = {
   /** Holding a rod from the barrel. Not saved: it goes back in the barrel between visits. */
@@ -104,8 +122,14 @@ type FishingState = {
 
 export const useFishing = create<FishingState>(() => ({ rod: false, phase: 'idle', spot: 0, caught: load() }))
 
-/** Per-frame timing, outside React: seconds into the current phase, and when the bite comes. */
-export const line = { t: 0, biteAt: 0 }
+/**
+ * Per-frame state, outside React: seconds into the current phase and when the bite comes; and while
+ * reeling, the fish on the line, the needle (-1..1) and its speed, the fish's tug, and the catch meter (0..1).
+ */
+export const line = { t: 0, biteAt: 0, fish: null as Fish | null, needle: 0, speed: 0, tug: 0, tugTo: 0, tugIn: 0, meter: 0, tick: 0 }
+
+/** Half-width of the green zone right now (wider with the assist). */
+export const reelZone = () => (useSettings.getState().fishAssist ? ASSIST_ZONE : ZONE)
 
 const setPhase = (phase: Phase) => {
   line.t = 0
@@ -175,19 +199,65 @@ export function tick(dt: number) {
   } else if (phase === 'bite' && line.t >= (useSettings.getState().fishAssist ? ASSIST_BITE_TIME : BITE_TIME)) {
     setPhase('idle')
     say(['It got away…'])
+  } else if (phase === 'reel') reeling(dt)
+}
+
+function reeling(dt: number) {
+  const fish = line.fish!
+  const assist = useSettings.getState().fishAssist
+  // The fish picks a new direction and strength every so often, and its tug eases toward it.
+  line.tugIn -= dt
+  if (line.tugIn <= 0) {
+    const strength = (PULL[0] + fish.fight * (PULL[1] - PULL[0])) * (assist ? ASSIST_PULL : 1)
+    line.tugTo = (Math.random() * 2 - 1) * strength
+    line.tugIn = TUG_EVERY[0] + Math.random() * (TUG_EVERY[1] - TUG_EVERY[0])
+  }
+  line.tug += (line.tugTo - line.tug) * (1 - Math.exp(-6 * dt))
+  // The player pushes back with left and right (keys, arrows or the joystick).
+  const push = Math.max(-1, Math.min(1, +keys.right - +keys.left + stick.x))
+  line.speed = (line.speed + (line.tug + push * PUSH) * dt) * Math.exp(-DAMP * dt)
+  line.needle += line.speed * dt
+  if (Math.abs(line.needle) >= 1) {
+    line.needle = Math.sign(line.needle)
+    setPhase('idle')
+    splash()
+    say(['Snap! The line went too far and it got away.'])
+    return
+  }
+  // In the zone the meter fills (slower for a strong fish), with a reel click now and then; outside it drains.
+  if (Math.abs(line.needle) < reelZone()) {
+    line.meter += (FILL[0] + fish.fight * (FILL[1] - FILL[0])) * dt
+    line.tick -= dt
+    if (line.tick <= 0) {
+      line.tick = 0.14
+      reelClick()
+    }
+  } else line.meter -= DRAIN * dt
+  if (line.meter >= 1) {
+    setPhase('idle')
+    land(fish)
+  } else if (line.meter <= 0) {
+    setPhase('idle')
+    say(['It slipped off the hook…'])
   }
 }
 
-/** E, Space or A while fishing: reels in, landing the fish if it's biting. False if not fishing. */
+/** E, Space or A while fishing: hooks a biting fish (then it's reeled in with left and right), or reels in an empty line. False if not fishing. */
 export function reel(): boolean {
   const { phase } = useFishing.getState()
   if (phase === 'idle') return false
-  setPhase('idle')
-  if (phase === 'bite') land()
-  else {
+  if (phase === 'reel') return true // already reeling: left and right do the work
+  if (phase === 'bite') {
+    line.fish = pick()
+    line.needle = line.speed = line.tug = line.tugTo = line.tugIn = line.tick = 0
+    line.meter = START
     click()
-    if (phase === 'wait') say(['You reel the line back in. Nothing on it.'])
+    setPhase('reel')
+    return true
   }
+  setPhase('idle')
+  click()
+  if (phase === 'wait') say(['You reel the line back in. Nothing on it.'])
   return true
 }
 
@@ -205,8 +275,7 @@ function pick(): Fish {
   return FISH[0]
 }
 
-function land() {
-  const fish = pick()
+function land(fish: Fish) {
   const size = Math.round(fish.size[0] + Math.random() ** 2 * (fish.size[1] - fish.size[0])) // big ones are rarer
   const { caught, spot } = useFishing.getState()
   const before = caught[fish.id]

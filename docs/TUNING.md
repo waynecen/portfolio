@@ -421,8 +421,16 @@ export const BARREL_AT = { x: -8, z: 15.1 } // the barrel of rods
 export const SPOTS = [...]                 // where the ripple can be; it moves to another after each catch
 export const CAST_TIME = 0.55              // seconds for the float to fly out
 const WAIT = [2.5, 6]                      // seconds before a bite, at random between these
-const BITE_TIME = 0.9                      // seconds to reel in once it bites
+const BITE_TIME = 0.9                      // seconds to hook it once it bites (ASSIST_BITE_TIME = 1.8 with the assist)
 const LAND_PAUSE = 0.35                    // seconds between landing a fish and the words about it, so the moment lands first
+const ZONE = 0.3                           // reeling: half-width of the green zone, in needle units (the bar runs -1..1); ASSIST_ZONE = 0.45
+const PUSH = 3.4                           // how hard holding left or right pushes the needle (units/s²)
+const PULL = [1.8, 4.4]                    // how hard the fish tugs: the weakest fish and the strongest (scaled by its fight); ASSIST_PULL = 0.7 of that
+const TUG_EVERY = [0.35, 1.05]             // seconds between the fish changing direction
+const DAMP = 2.4                           // how quickly the needle's swing dies away
+const START = 0.25                         // the catch meter on hooking
+const FILL = [0.26, 0.12]                  // meter filled per second in the zone: the weakest fish and the strongest
+const DRAIN = 0.28                         // meter drained per second outside it
 export const FISH = [...]                  // every fish: name, words, colour, how often it bites (weight) and its size range in cm
 const SAVE_KEY = 'fish-v1'                 // localStorage key for catches; change it to forget them
 const RANGE = 1.6                          // Dock.tsx: how close to the ripple the player must be to cast
@@ -431,7 +439,9 @@ const POSTS = [17, 18.3, ...]              // z of each pair of posts under the 
 const ROD_LENGTH = 1.3                     // the rod in the player's hand; HOLD and FISHING_HOLD are how far it tips forward
 ```
 
-The road ends at the foot of the dock, beside the barrel. Using the barrel takes a rod (or puts it back), and so does B on the keyboard, which reels in first if the line is out. On phones the B button stays sprint; the **Put away rod** chip at the top right (`RodButton` in InventoryPanel.tsx, `.rod-toggle` in style.css) does it instead, on every device. It shows while a rod is in hand, except by the ripple, while the line is out, and while dialogue, a panel, a fade or edit mode is up. The rod isn't saved, so every visit starts without one. The ripple off the dock says to fetch a rod until you have one, then casts: the player turns to face it, the float flies out on its line, and after `WAIT` it nibbles, then bites with a splash and the prompt turns gold: **Reel in!** E, Space or A within `BITE_TIME` lands the fish; too late and it gets away, too early and the line comes back empty. Esc reels in quietly. The player stands still while the line is out.
+The road ends at the foot of the dock, beside the barrel. Using the barrel takes a rod (or puts it back), and so does B on the keyboard, which reels in first if the line is out. On phones the B button stays sprint; the **Put away rod** chip at the top right (`RodButton` in InventoryPanel.tsx, `.rod-toggle` in style.css) does it instead, on every device. It shows while a rod is in hand, except by the ripple, while the line is out, and while dialogue, a panel, a fade or edit mode is up. The rod isn't saved, so every visit starts without one. The ripple off the dock says to fetch a rod until you have one, then casts: the player turns to face it, the float flies out on its line, and after `WAIT` it nibbles, then bites with a splash and the prompt turns gold: **Hook it!** E, Space or A within `BITE_TIME` hooks it; too late and it gets away, too early and the line comes back empty. Esc reels in quietly. The player stands still while the line is out.
+
+**Reeling it in** ([ReelBar.tsx](../src/game/ReelBar.tsx)): once hooked, a bar appears with a green zone in the middle and a needle the fish tugs back and forth, changing direction every `TUG_EVERY` seconds. Holding left and right (A and D, the arrow keys or the joystick) pushes back. While the needle is in the green, the catch meter fills (with a soft reel click) and it drains outside; fill it to land the fish. Let it drain, or let the needle reach an end of the bar (the line snaps), and the fish gets away. Each fish has a `fight` from 0 (the minnow) to 1 (the golden carp): it tugs harder and the meter fills more slowly. The assist widens the zone and softens the tugs. Tuned in a simulation: doing nothing lands a minnow about 4 times in 10 and a carp almost never; a slow but attentive player lands nearly everything, and a quick one lands the carp in about 7 seconds. The float and rod follow the needle while reeling.
 
 What bites is drawn by `weight`, and its length leans small, so big ones are rarer. Each catch is counted with its best size and shown in the bag.
 

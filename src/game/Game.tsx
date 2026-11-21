@@ -33,6 +33,7 @@ import { ProjectCard } from './ProjectCard'
 import { detectTier } from './quality'
 import { RecordPlayer } from './RecordPlayer'
 import { Rain } from './Rain'
+import { ReelBar } from './ReelBar'
 import { Snow } from './Snow'
 import { Sparkle } from './Sparkle'
 import { Roads } from './Roads'
@@ -126,6 +127,7 @@ export function Game() {
       <SettingsButton />
       <ProjectCard />
       <Prompt />
+      <ReelBar />
       <Dialogue />
       <NowPlaying />
       <MusicPanel />

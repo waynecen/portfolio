@@ -208,8 +208,9 @@ export function Prompt() {
   // While the line is out (fishing.ts) the prompt is to reel in, urgently once something bites.
   const phase = useFishing((s) => s.phase)
   const assist = useSettings((s) => s.fishAssist)
-  const reel = phase === 'bite' ? 'Reel in!' : phase !== 'idle' ? 'Reel in' : null
-  const label = reel ?? (focus && !focus.card ? focus.prompt : null)
+  // While reeling, the reel bar has its own instructions (ReelBar.tsx), so no prompt.
+  const reel = phase === 'bite' ? 'Hook it!' : phase === 'reel' ? null : phase !== 'idle' ? 'Reel in' : null
+  const label = phase === 'reel' ? null : (reel ?? (focus && !focus.card ? focus.prompt : null))
   const show = label && !talking
   return (
     <div className="prompt-region" aria-live="polite">

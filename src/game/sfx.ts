@@ -187,6 +187,8 @@ export const blip = (pitch: number) => play('blip', 1, pitch * (0.96 + Math.rand
 export const click = () => play('click')
 /** An item picked up. */
 export const chime = () => play('chime')
+/** The reel turning while the needle's in the green (fishing.ts): a soft, quick tick. */
+export const reelClick = () => play('click', 0.25, 1.5 + Math.random() * 0.2)
 /** A fish landed: a fanfare for a kind never caught before, a short blip for one you have. */
 export const landed = (first: boolean) => (first ? play('fanfare') : play('catch', 1, 0.95 + Math.random() * 0.1))
 /** The fishing float landing on the water. */
