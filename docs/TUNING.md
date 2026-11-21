@@ -598,7 +598,7 @@ Polled once a frame (`<Controls>` in Game.tsx). Left stick or d-pad walks; a tri
 const PAN_SPEED = 6          // units/s the camera slides with the walk keys or a stick
 const PAN_MAX = 9            // how far from the player it can slide
 export const ZOOM_MIN = 0.45 // nearest, as a share of the usual distance; ZOOM_MAX = 1.5 farthest
-const ZOOM_STEP = 0.1        // one press of Q or E (or - and =), or one notch of the wheel
+const ZOOM_STEP = 0.1        // one press of Q or E (or - and =), or one notch of the wheel; the Distance slider sets it directly
 export const POSES = [...]   // Say cheese, Turn left, Turn right, Look out to sea, Jump! (a heading and a lift off the ground)
 ```
 
