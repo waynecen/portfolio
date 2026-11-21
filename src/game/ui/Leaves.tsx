@@ -101,7 +101,6 @@ export function Leaves() {
       if (swept[n] < 0 && outdoors && (p.x - playerPos.x) ** 2 + (p.z - playerPos.z) ** 2 < SWEEP * SWEEP) {
         swept[n] = 0
         step('grass')
-        step('grass')
         if (--left === 0) chime()
       }
       if (swept[n] >= 0 && swept[n] < FLY) swept[n] = Math.min(FLY, swept[n] + Math.min(delta, 0.1))

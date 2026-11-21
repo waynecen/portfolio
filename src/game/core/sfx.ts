@@ -19,6 +19,14 @@ const FILES: Partial<Record<Sound, string[]>> = {
   tatami: ['/sfx/tatami_L.wav', '/sfx/tatami_R.wav'],
 }
 
+// A recording's tone, shaped on the way out. The grass recordings are bright (most of their energy is
+// at 2-4 kHz, hardly any below 500 Hz), which repeated several times a second sounds tinny rather than
+// soft, so they're darkened and given some body.
+const TONE: Partial<Record<Sound, { lowpass: number; bass: number }>> = {
+  grass: { lowpass: 1800, bass: 9 }, // Hz above which it rolls off; dB added below 300 Hz
+}
+const STEP_PITCH = 0.03 // a recorded step's pitch varies by up to this share either way (synthesised ones by 0.1)
+
 let ctx: AudioContext | null = null
 let master: GainNode | null = null
 
@@ -150,6 +158,28 @@ type Sound = keyof typeof SOUNDS
 const buffers: Partial<Record<Sound, AudioBuffer>> = {} // synthesised, rendered on first use
 const recorded: Partial<Record<Sound, AudioBuffer[]>> = {} // from FILES, in their order
 const turn: Partial<Record<Sound, number>> = {} // which recording plays next
+const failed: Partial<Record<Sound, boolean>> = {} // recordings that didn't load: the synthesised sound plays
+const tones: Partial<Record<Sound, AudioNode>> = {} // each TONE's filters, made once and shared by every play
+
+// Where a sound goes: through its TONE filters if it has them, else straight to the master.
+function out(name: Sound): AudioNode {
+  const tone = TONE[name]
+  if (!tone || !recorded[name]) return master!
+  let node = tones[name]
+  if (!node) {
+    const lp = ctx!.createBiquadFilter()
+    lp.type = 'lowpass'
+    lp.frequency.value = tone.lowpass
+    lp.Q.value = 0.5 // gentle, with no ring at the corner
+    const bass = ctx!.createBiquadFilter()
+    bass.type = 'lowshelf'
+    bass.frequency.value = 300
+    bass.gain.value = tone.bass
+    lp.connect(bass).connect(master!)
+    node = tones[name] = lp
+  }
+  return node
+}
 
 let loading = false
 function loadFiles() {
@@ -166,25 +196,31 @@ function loadFiles() {
       ),
     )
       .then((bufs) => (recorded[name] = bufs))
-      .catch(() => console.warn(`Couldn't load the ${name} sounds (${urls.join(', ')}); using the synthesised one.`))
+      .catch(() => {
+        failed[name] = true
+        console.warn(`Couldn't load the ${name} sounds (${urls.join(', ')}); using the synthesised one.`)
+      })
   }
 }
 
 function play(name: Sound, gain = 1, rate = 1) {
   if (!ctx || !master || ctx.state !== 'running' || master.gain.value === 0) return
-  const src = ctx.createBufferSource()
   const files = recorded[name]
+  // A sound with recordings stays quiet while they load, rather than mixing in its synthesised stand-in.
+  if (FILES[name] && !files && !failed[name]) return
+  const src = ctx.createBufferSource()
   if (files?.length) {
     const k = turn[name] ?? 0
     turn[name] = (k + 1) % files.length
     src.buffer = files[k]
   } else src.buffer = buffers[name] ??= SOUNDS[name]()
   src.playbackRate.value = rate
-  if (gain === 1) src.connect(master)
+  const to = out(name)
+  if (gain === 1) src.connect(to)
   else {
     const g = ctx.createGain()
     g.gain.value = gain
-    src.connect(g).connect(master)
+    src.connect(g).connect(to)
   }
   src.start()
 }
@@ -193,8 +229,10 @@ export type Surface = 'grass' | 'snow' | 'road' | 'tatami' | 'wood'
 
 /** One footstep, slightly different every time (and left, right, left with recordings). */
 export const step = (surface: Surface, wet = false) => {
-  play(surface, STEP_VOLUME * (0.85 + Math.random() * 0.3), 0.9 + Math.random() * 0.2)
-  if (wet) play('wet', STEP_VOLUME * WET_VOLUME * (0.8 + Math.random() * 0.4), 0.85 + Math.random() * 0.3)
+  const pitch = recorded[surface] ? STEP_PITCH : 0.1
+  play(surface, STEP_VOLUME * (0.85 + Math.random() * 0.3), 1 - pitch + Math.random() * 2 * pitch)
+  // Recorded steps play alone: the synthesised splash over them sounds like a second, different step.
+  if (wet && !FILES[surface]) play('wet', STEP_VOLUME * WET_VOLUME * (0.8 + Math.random() * 0.4), 0.85 + Math.random() * 0.3)
 }
 export const whoosh = () => play('whoosh', ROLL_VOLUME, 0.95 + Math.random() * 0.1)
 export const door = () => play('door')
