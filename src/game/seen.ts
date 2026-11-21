@@ -1,5 +1,6 @@
 import { create } from 'zustand'
-import { projects } from './projects'
+import { ABOUT_AT, CONTACT_AT } from './places'
+import { projects, stationPos } from './projects'
 
 // Places the visitor has looked at: each project, the About sign and the Contact mailbox. Kept in
 // this browser, shown in the bag ("2 of 3 projects seen"), and unseen project stations glow
@@ -7,13 +8,14 @@ import { projects } from './projects'
 // is with its `seen` id (interact.ts); it counts once its card has shown, or once it's been used if
 // it has no card.
 
-export type Place = { id: string; name: string; kind: 'project' | 'about' | 'contact' }
+/** A place worth seeing, and where it stands on the island (the guide points there: guide.ts). */
+export type Place = { id: string; name: string; kind: 'project' | 'about' | 'contact'; x: number; z: number }
 
 /** Every place worth seeing, in the order the bag lists them. */
 export const PLACES: Place[] = [
-  ...projects.map((p) => ({ id: projectPlace(p.title), name: p.title, kind: 'project' as const })),
-  { id: 'about', name: 'About', kind: 'about' },
-  { id: 'contact', name: 'Contact', kind: 'contact' },
+  ...projects.map((p, i) => ({ id: projectPlace(p.title), name: p.title, kind: 'project' as const, ...stationPos[i] })),
+  { id: 'about', name: 'About', kind: 'about', ...ABOUT_AT },
+  { id: 'contact', name: 'Contact', kind: 'contact', ...CONTACT_AT },
 ]
 
 /** The place id of a project, by its title (from the HTML page). */

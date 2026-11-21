@@ -205,6 +205,8 @@ The projects themselves aren't constants. They're read from the `#projects artic
 
 **Places seen** ([seen.ts](../src/game/seen.ts)): every project, the About sign and the Contact mailbox is a place (`PLACES`). A place counts as seen once its card has shown (a project, the mailbox) or once it's been used (the sign, which has no card); an interactable names its place with `seen` when it registers. The list is saved in this browser and shown at the top of the bag ("2 of 3 projects seen"), and a project's gem glows until it's been seen. A project's place id is its title, so renaming one in index.html makes it unseen again.
 
+**Where to?** ([guide.ts](../src/game/guide.ts), [GuideWind.tsx](../src/game/GuideWind.tsx)): G, or the Where to? chip at the top left, points the way to the nearest unseen project (then the About sign and the mailbox). The camera glides over to it and back (`PEEK = 2` seconds, gliding included; walking off ends it early) while wind streaks fly from the player toward it (`COUNT = 12` streaks over `STREAKS_FOR = 1.4` s, each `LIFE = 1` s at `SPEED = 4.5`, up to `LENGTH = 0.6` long). Indoors the streaks point to the door and the camera stays put. With everything seen, it says so and suggests the forest and the dock. The chip's style is `.guide-toggle` in style.css; the now-playing label sits under it.
+
 ---
 
 ## About sign and Contact mailbox: [src/game/places.ts](../src/game/places.ts), [src/game/Mailbox.tsx](../src/game/Mailbox.tsx)
@@ -448,7 +450,7 @@ const codes: Record<string, Dir> = {
   ShiftLeft: 'sprint',
   ShiftRight: 'sprint', // hold to sprint
 }
-// In bindKeys: Space = advance dialogue if open, else reel in a line that's out (fishing.ts), else roll; E / Enter = interact (interact.ts), or reel in; Esc = close dialogue and reel in; F = edit the room (indoors); B = put away the rod if one is in hand (fishing.ts), else open or close the bag (inventory.ts)
+// In bindKeys: Space = advance dialogue if open, else reel in a line that's out (fishing.ts), else roll; E / Enter = interact (interact.ts), or reel in; Esc = close dialogue and reel in; F = edit the room (indoors); G = point the way to an unseen place (guide.ts); B = put away the rod if one is in hand (fishing.ts), else open or close the bag (inventory.ts)
 // While editing, keys go to editKey() in edit.ts instead
 ```
 

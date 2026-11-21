@@ -10,6 +10,7 @@ import { Dust } from './Dust'
 import { EditHud, EditOverlay, EditPointer } from './EditRoom'
 import { Fade } from './Fade'
 import { Fireflies } from './Fireflies'
+import { GuideButton, GuideWind } from './GuideWind'
 import { clearSpawn } from './room'
 import { Furniture } from './Furniture'
 import { Hearts } from './Hearts'
@@ -102,6 +103,7 @@ export function Game() {
         <Doors />
         <Interactions />
         <Sparkle />
+        <GuideWind />
         <Player />
         <Dust />
         <EditPointer />
@@ -109,6 +111,7 @@ export function Game() {
       </Canvas>
       <Fade />
       <Hearts />
+      <GuideButton />
       <ProjectCard />
       <Prompt />
       <Dialogue />

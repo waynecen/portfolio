@@ -2,6 +2,7 @@ import { useFrame } from '@react-three/fiber'
 import { MathUtils, type PerspectiveCamera } from 'three'
 import { INTERIOR, ROOM } from './layout'
 import { useEdit } from './edit'
+import { guide } from './guide'
 import { cameraSnap, playerPos } from './state'
 import { useGame } from './store'
 
@@ -29,6 +30,10 @@ export function CameraRig() {
       const x = useGame.getState().editing ? useEdit.getState().cursor.i : playerPos.x - INTERIOR.x
       tx = INTERIOR.x + MathUtils.clamp(x, -slack, slack)
       tz = INTERIOR.z + ROOM_SHIFT
+    } else if (guide.peek) {
+      // "Point me somewhere" (guide.ts): glide over to the place for a moment, then back.
+      tx = guide.x
+      tz = guide.z
     }
     tz += DISTANCE
     if (cameraSnap.pending) {
