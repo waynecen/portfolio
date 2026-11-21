@@ -24,6 +24,7 @@ import { Leaves } from './Leaves'
 import { LogPanel } from './LogPanel'
 import { BED_SPAWN } from './layout'
 import { Mailbox } from './Mailbox'
+import { MenuPanel, StartButton } from './MenuPanel'
 import { MusicPanel, NowPlaying } from './MusicPanel'
 import { ABOUT_AT, aboutLines } from './places'
 import { NoticeBoard } from './NoticeBoard'
@@ -139,6 +140,8 @@ export function Game() {
       <RodButton />
       <EditHud />
       <Joystick />
+      <MenuPanel />
+      <StartButton />
     </>
   )
 }

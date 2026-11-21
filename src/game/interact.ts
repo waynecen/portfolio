@@ -123,6 +123,14 @@ export function toggleSettings() {
   }
 }
 
+/** The Start button on touch screens: opens the menu (MenuPanel.tsx), or closes whatever panel is open. */
+export function toggleMenu() {
+  const s = useGame.getState()
+  click()
+  if (s.panel) closePanel()
+  else if (!busy()) openPanel('menu')
+}
+
 /** Opens a panel such as the record player. */
 export function openPanel(panel: Panel) {
   useGame.setState({ panel })

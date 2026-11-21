@@ -457,6 +457,8 @@ The dock is a walkway: the water either side of it doesn't stop the player (`doc
 
 ## Touch controls: [src/game/Joystick.tsx](../src/game/Joystick.tsx)
 
+On touch screens the **Start button** (`StartButton` in [MenuPanel.tsx](../src/game/MenuPanel.tsx), `.start-button` in style.css) sits at the bottom, 12px right of the joystick and low enough to clear the B button. It opens the **menu**: Bag, Where to?, Log, Settings, Edit room (indoors) and Put away rod (with a rod in hand). While any panel is open it shows × and closes it. The top chips that do these things on a computer (Bag, the settings gear, Where to?, Edit room, Put away rod) are hidden on touch screens, so a phone's top edge only has the hearts, the now-playing label and View as page. Messages written for touch point to the menu.
+
 ```ts
 const TRAVEL = 40 // pixels the knob can move from centre; dragging this far = full speed
 const DEAD_ZONE = 0.15 // the first 15% of travel does nothing, so a resting thumb doesn't creep

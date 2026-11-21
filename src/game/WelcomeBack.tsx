@@ -28,7 +28,7 @@ function awayLines(): string[] {
   // After a long gap, a reminder of where things are, if there's anything left to see.
   const { seen } = useSeen.getState()
   if (d >= 7 && PLACES.some((p) => p.kind === 'project' && !seen.includes(p.id)))
-    lines.push(`${isTouch ? 'Tap Where to?' : 'Press G'} to find a project you haven’t seen yet.`)
+    lines.push(`${isTouch ? 'Open the menu and tap Where to?' : 'Press G'} to find a project you haven’t seen yet.`)
   return lines
 }
 

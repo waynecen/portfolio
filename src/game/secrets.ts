@@ -74,7 +74,7 @@ export function findSecret(id: SecretId) {
   const secret = SECRETS.find((x) => x.id === id)!
   say([
     `You found the ${secret.name.toLowerCase()}! Something feels different: ${secret.effect.toLowerCase()}.`,
-    `${isTouch ? 'Tap the gear by the hearts' : 'Press O for the settings'} to switch it off again.`,
+    `${isTouch ? 'Open the menu and tap Settings' : 'Press O for the settings'} to switch it off again.`,
   ])
 }
 
