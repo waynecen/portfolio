@@ -13,6 +13,12 @@ import { autumn, spring, winter } from './season'
 export const ISLAND_RADIUS = 18
 /** The forest's land: every tile whose centre is closer than `r` to (x, z) is land too. */
 export const FOREST = { x: -17, z: -15, r: 12 }
+/**
+ * A small islet out to sea, south of the dock, reached by rowing the boat there (Islet.tsx). It
+ * lies past BOUND, so nothing that scatters itself over the island (trees, grass, pearls, daily
+ * finds) lands on it by accident; what's on it is placed by hand.
+ */
+export const ISLET = { x: -10, z: 35, r: 4.5 }
 export const WATER_Y = -1.2 // water surface, well below the grass; the cliff fills the drop
 const WATER_SIZE = 400 // wide enough that the camera never sees past it
 // Squares across the water. The world bends away from the camera (curve.ts) one vertex at a time,
@@ -44,6 +50,9 @@ const land = new Set<string>()
 for (let i = -N; i <= N; i++)
   for (let j = -N; j <= N; j++)
     if (Math.hypot(i, j) < ISLAND_RADIUS || Math.hypot(i - FOREST.x, j - FOREST.z) < FOREST.r) land.add(key(i, j))
+for (let i = Math.floor(ISLET.x - ISLET.r); i <= Math.ceil(ISLET.x + ISLET.r); i++)
+  for (let j = Math.floor(ISLET.z - ISLET.r); j <= Math.ceil(ISLET.z + ISLET.r); j++)
+    if (Math.hypot(i - ISLET.x, j - ISLET.z) < ISLET.r) land.add(key(i, j))
 
 /** True if tile (i, j) is land. */
 export function isLand(i: number, j: number): boolean {
@@ -75,58 +84,63 @@ function build() {
   const stoneParts: BufferGeometry[] = []
   const foamParts: BufferGeometry[] = []
 
-  for (let i = -N - 1; i <= N + 1; i++)
-    for (let j = -N - 1; j <= N + 1; j++) {
-      const x = i * TILE
-      const z = j * TILE
-      if (isLand(i, j)) {
-        grassParts.push(flat(x - h, x + h, z - h, z + h, 0))
-        DIRS.forEach(([di, dj], side) => {
-          if (isLand(i + di, j + dj)) return
-          // Cliff face down into the water on this side: a few courses of block-shaded stone.
-          for (let k = 0; k < COURSES; k++) {
-            const face = new PlaneGeometry(TILE, course)
-            if (di !== 0) face.rotateY((di * Math.PI) / 2)
-            else if (dj < 0) face.rotateY(Math.PI)
-            face.translate(x + di * h, cliffBottom + course * (k + 0.5), z + dj * h)
-            stoneParts.push(tint(unindexed(face), pick(STONE, i, j, side * 4 + k)))
-          }
-          // Capstone rim along the top. At an outside corner it runs on past the tile so the rims
-          // of the two sides meet square; at an inside corner the neighbouring tile's rim covers it.
-          const along = di !== 0 ? [0, 1] : [1, 0]
-          const before = isLand(i - along[0], j - along[1]) ? 0 : RIM_OUT
-          const after = isLand(i + along[0], j + along[1]) ? 0 : RIM_OUT
-          const length = TILE + before + after
-          const shift = (after - before) / 2
-          const across = RIM_IN + RIM_OUT
-          const rim =
-            di !== 0
-              ? new BoxGeometry(across, RIM_DEPTH, length).translate(x + di * rimOffset, rimMid, z + shift)
-              : new BoxGeometry(length, RIM_DEPTH, across).translate(x + shift, rimMid, z + dj * rimOffset)
-          stoneParts.push(tint(unindexed(rim), RIM))
-        })
-      } else {
-        // Water tile: surf along each edge (and corner) that touches land. The tile is cut into a
-        // 3×3 of border strips and corners so pieces never overlap and double up the opacity.
-        const L = (di: number, dj: number) => isLand(i + di, j + dj)
-        const spans = [
-          [-h, -h + FOAM],
-          [-h + FOAM, h - FOAM],
-          [h - FOAM, h],
-        ]
-        for (let a = 0; a < 3; a++)
-          for (let b = 0; b < 3; b++) {
-            const di = a - 1
-            const dj = b - 1
-            if (di === 0 && dj === 0) continue
-            // Edge strip: foam if the tile across that edge is land. Corner: if any of the three
-            // tiles touching that corner is land.
-            const foam = di === 0 || dj === 0 ? L(di, dj) : L(di, 0) || L(0, dj) || L(di, dj)
-            if (foam)
-              foamParts.push(flat(x + spans[a][0], x + spans[a][1], z + spans[b][0], z + spans[b][1], WATER_Y + 0.01))
-          }
-      }
+  // The island's square, then the islet's, the rows past the island's edge only so no tile is built twice.
+  const tiles: [number, number][] = []
+  for (let i = -N - 1; i <= N + 1; i++) for (let j = -N - 1; j <= N + 1; j++) tiles.push([i, j])
+  for (let i = Math.floor(ISLET.x - ISLET.r) - 1; i <= Math.ceil(ISLET.x + ISLET.r) + 1; i++)
+    for (let j = N + 2; j <= Math.ceil(ISLET.z + ISLET.r) + 1; j++) tiles.push([i, j])
+
+  for (const [i, j] of tiles) {
+    const x = i * TILE
+    const z = j * TILE
+    if (isLand(i, j)) {
+      grassParts.push(flat(x - h, x + h, z - h, z + h, 0))
+      DIRS.forEach(([di, dj], side) => {
+        if (isLand(i + di, j + dj)) return
+        // Cliff face down into the water on this side: a few courses of block-shaded stone.
+        for (let k = 0; k < COURSES; k++) {
+          const face = new PlaneGeometry(TILE, course)
+          if (di !== 0) face.rotateY((di * Math.PI) / 2)
+          else if (dj < 0) face.rotateY(Math.PI)
+          face.translate(x + di * h, cliffBottom + course * (k + 0.5), z + dj * h)
+          stoneParts.push(tint(unindexed(face), pick(STONE, i, j, side * 4 + k)))
+        }
+        // Capstone rim along the top. At an outside corner it runs on past the tile so the rims
+        // of the two sides meet square; at an inside corner the neighbouring tile's rim covers it.
+        const along = di !== 0 ? [0, 1] : [1, 0]
+        const before = isLand(i - along[0], j - along[1]) ? 0 : RIM_OUT
+        const after = isLand(i + along[0], j + along[1]) ? 0 : RIM_OUT
+        const length = TILE + before + after
+        const shift = (after - before) / 2
+        const across = RIM_IN + RIM_OUT
+        const rim =
+          di !== 0
+            ? new BoxGeometry(across, RIM_DEPTH, length).translate(x + di * rimOffset, rimMid, z + shift)
+            : new BoxGeometry(length, RIM_DEPTH, across).translate(x + shift, rimMid, z + dj * rimOffset)
+        stoneParts.push(tint(unindexed(rim), RIM))
+      })
+    } else {
+      // Water tile: surf along each edge (and corner) that touches land. The tile is cut into a
+      // 3×3 of border strips and corners so pieces never overlap and double up the opacity.
+      const L = (di: number, dj: number) => isLand(i + di, j + dj)
+      const spans = [
+        [-h, -h + FOAM],
+        [-h + FOAM, h - FOAM],
+        [h - FOAM, h],
+      ]
+      for (let a = 0; a < 3; a++)
+        for (let b = 0; b < 3; b++) {
+          const di = a - 1
+          const dj = b - 1
+          if (di === 0 && dj === 0) continue
+          // Edge strip: foam if the tile across that edge is land. Corner: if any of the three
+          // tiles touching that corner is land.
+          const foam = di === 0 || dj === 0 ? L(di, dj) : L(di, 0) || L(0, dj) || L(di, dj)
+          if (foam)
+            foamParts.push(flat(x + spans[a][0], x + spans[a][1], z + spans[b][0], z + spans[b][1], WATER_Y + 0.01))
+        }
     }
+  }
 
   return {
     grass: merge(grassParts),

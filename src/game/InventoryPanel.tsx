@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import { BUGS, useBugs } from './bugs'
+import { useCave } from './cave'
 import { useShells } from './drops'
 import { FISH, putAwayRod, SPOTS, useFishing } from './fishing'
 import { closePanel, toggleLog } from './interact'
@@ -95,7 +96,9 @@ export function InventoryPanel() {
   const pearls = usePearls((s) => s.found.length)
   const map = useTreasureMap((s) => s.owned)
   // Things that open the way or show it, as chips under the pearls.
-  const treasures = [map && 'Treasure map'].filter(Boolean) as string[]
+  const key = useCave((s) => s.key === 'held')
+  const oar = useCave((s) => s.oar)
+  const treasures = [map && 'Treasure map', key && 'Small key', oar && 'Oar'].filter(Boolean) as string[]
   const [chosen, setChosen] = useState<number>(0)
   const slots = useRef<(HTMLButtonElement | null)[]>([])
   const total = ITEMS.length + FISH.length + BUGS.length // items first, then fish, then bugs

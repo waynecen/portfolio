@@ -1,3 +1,4 @@
+import { ISLET } from './Island'
 import type { Spawn } from './scene'
 
 // Where the house sits, inside and out. One set of numbers shared by the house models, the doors,
@@ -65,3 +66,8 @@ export function caveRoom(x: number, z: number) {
 
 /** Going in: just inside the first room's doorway, facing in. */
 export const CAVE_SPAWN: Spawn = { x: CAVE.x, z: CAVE.z + ROOM.hz - 1, heading: Math.PI }
+
+/** The islet's boat, pulled up in the water off its north shore (islet.ts, IsletScene.tsx). */
+export const ISLET_BOAT = { x: ISLET.x, z: ISLET.z - ISLET.r - 0.5 }
+/** Where rowing out lands the player: on the islet's north shore, facing in. */
+export const ISLET_SPAWN: Spawn = { x: ISLET.x, z: ISLET.z - ISLET.r + 0.9, heading: 0 }

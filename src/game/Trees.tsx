@@ -3,7 +3,7 @@ import { useEffect, useLayoutEffect, useRef } from 'react'
 import { Color, ConeGeometry, CylinderGeometry, MeshLambertMaterial, Object3D, Vector2, type InstancedMesh } from 'three'
 import { addCollider } from './collision'
 import { TILE, tileAt } from './grid'
-import { FOREST, ISLAND_RADIUS, isInland } from './Island'
+import { FOREST, ISLAND_RADIUS, ISLET, isInland } from './Island'
 import { HOUSE, OUTCROP } from './layout'
 import { pois, roadTiles } from './pois'
 import { autumn, spring, winter } from './season'
@@ -115,6 +115,15 @@ function place(): Tree[] {
 
 export const trees = place()
 
+// The islet's few trees, placed by hand (it lies past where trees scatter themselves). Kept out of
+// `trees` so nothing that hides beside a tree (pearls.ts) goes looking out there.
+const ISLET_TREES: Tree[] = [
+  { x: ISLET.x - 3, z: ISLET.z - 1, scale: 1.1, turn: 0.4 },
+  { x: ISLET.x + 3, z: ISLET.z, scale: 0.9, turn: 2.1 },
+  { x: ISLET.x - 1, z: ISLET.z + 3, scale: 1.25, turn: 4 },
+]
+const drawn = [...trees, ...ISLET_TREES]
+
 // See-through: each tree works out in its vertex shader how far it stands in front of the player
 // (toward the camera, and to the side), and its pixels drop out in a fine, fixed noise pattern in
 // proportion. Cheaper than sorting transparent trees, and nothing is allocated per frame.
@@ -169,7 +178,7 @@ export function Trees() {
 
   useLayoutEffect(() => {
     const dummy = new Object3D()
-    trees.forEach((t, n) => {
+    drawn.forEach((t, n) => {
       dummy.position.set(t.x, 0, t.z)
       dummy.rotation.y = t.turn
       dummy.scale.setScalar(t.scale)
@@ -188,7 +197,7 @@ export function Trees() {
   }, [])
 
   useEffect(() => {
-    const removers = trees.map((t) => addCollider({ kind: 'circle', x: t.x, z: t.z, r: Math.min(MAX_TRUNK, TRUNK_RADIUS * t.scale) }))
+    const removers = drawn.map((t) => addCollider({ kind: 'circle', x: t.x, z: t.z, r: Math.min(MAX_TRUNK, TRUNK_RADIUS * t.scale) }))
     return () => removers.forEach((remove) => remove())
   }, [])
 
@@ -198,9 +207,9 @@ export function Trees() {
 
   return (
     <>
-      <instancedMesh ref={trunks} args={[trunkGeometry, trunkMaterial, trees.length]} />
-      <instancedMesh ref={canopies} args={[canopyGeometry, canopyMaterial, trees.length]} />
-      {winter && <instancedMesh ref={caps} args={[capGeometry, capMaterial, trees.length]} />}
+      <instancedMesh ref={trunks} args={[trunkGeometry, trunkMaterial, drawn.length]} />
+      <instancedMesh ref={canopies} args={[canopyGeometry, canopyMaterial, drawn.length]} />
+      {winter && <instancedMesh ref={caps} args={[capGeometry, capMaterial, drawn.length]} />}
     </>
   )
 }

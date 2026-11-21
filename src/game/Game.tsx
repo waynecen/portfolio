@@ -34,6 +34,7 @@ import { MusicPanel, NowPlaying } from './MusicPanel'
 import { ABOUT_AT, aboutLines } from './places'
 import { NoticeBoard } from './NoticeBoard'
 import { Pearls } from './HiddenPearls'
+import { Islet } from './IsletScene'
 import { Pickups } from './Pickups'
 import { Player } from './Player'
 import { ProjectCard } from './ProjectCard'
@@ -112,6 +113,7 @@ export function Game() {
           <Signposts />
           <Dock />
           <Waterfall />
+          <Islet />
           <Pickups />
           <Pearls />
           <Leaves />

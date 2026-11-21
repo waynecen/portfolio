@@ -3,6 +3,7 @@ import { centreOf, I, J, ROOM_OF } from './cave'
 import { tileAt } from './grid'
 import { say, sayFirst } from './interact'
 import { isInland } from './Island'
+import { PEARL_AT } from './islet'
 import { addTrack } from './music'
 import { placeholderBonus } from './placeholderTracks'
 import { built, pois, roadTiles } from './pois'
@@ -91,6 +92,8 @@ function place(): Pearl[] {
   // One in the cave behind the waterfall, in a corner of the last room (cave.ts).
   const hoard = centreOf(ROOM_OF.hoard)
   out.push({ id: 'cave', hide: 'open', x: hoard.x + I - 0.5, z: hoard.z - J + 0.5, where: 'cave' })
+  // And one buried on the islet, out past the dock (islet.ts).
+  out.push({ id: 'islet', hide: 'dig', x: PEARL_AT.x, z: PEARL_AT.z })
   return out
 }
 

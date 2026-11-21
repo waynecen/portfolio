@@ -1,5 +1,6 @@
 import { busy, say } from './interact'
-import { CAVE, INTERIOR, ROOM } from './layout'
+import { ISLET } from './Island'
+import { CAVE, INTERIOR, ISLET_BOAT, ROOM } from './layout'
 import { PLACES, useSeen } from './seen'
 import { whoosh } from './sfx'
 import { playerPos } from './state'
@@ -8,7 +9,7 @@ import { useGame } from './store'
 // "Point me somewhere" (G, or the Where to? chip): shows the way to the nearest place the visitor
 // hasn't seen yet (seen.ts). Outdoors the camera glides over to it, holds a moment and glides back
 // (CameraRig.tsx), while a few wind streaks drift from the player toward it (GuideWind.tsx). Indoors,
-// the streaks point to the door, and in the cave to the way out. Walking off ends the look early. Nothing is marked on the map.
+// the streaks point to the door, in the cave to the way out, and on the islet to the boat back. Walking off ends the look early. Nothing is marked on the map.
 
 export const PEEK = 2 // seconds the camera spends over at the place, gliding there included, before coming back
 export const STREAKS_FOR = 1.4 // seconds the wind streaks keep coming
@@ -24,6 +25,7 @@ export function pointMe() {
   let target: { x: number; z: number } | null
   if (scene === 'house') target = { x: INTERIOR.x, z: INTERIOR.z + ROOM.hz } // the front door
   else if (scene === 'cave') target = { x: CAVE.x, z: CAVE.z + ROOM.hz } // the way out
+  else if (Math.hypot(playerPos.x - ISLET.x, playerPos.z - ISLET.z) < ISLET.r + 1) target = ISLET_BOAT // the boat home
   else {
     // Projects first: they're what the island is for. Then the About sign and the mailbox.
     const { seen } = useSeen.getState()
