@@ -9,13 +9,15 @@ Shared state and plumbing: the store, scenes, input (keys, controller, focus), c
 ```ts
 const LEVEL = 0.5 // effects at full on the settings' Sound effects slider (settings.ts), apart from the music's volume and mute
 const STEP_VOLUME = 0.45 // footsteps relative to the other effects
-const ROLL_VOLUME = 0.5 // the roll's whoosh relative to the other effects
-const WET_VOLUME = 0.7 // the splash layered under each footstep in the rain, relative to the step (Player.tsx: from WET_RAIN = 0.5 rain, outdoors, not in winter)
+const ROLL_VOLUME = 0.2 // the roll's whoosh relative to the other effects
+const WET_VOLUME = 0.7 // the splash layered under each synthesised footstep in the rain, relative to the step (Player.tsx: from WET_RAIN = 0.5 rain, outdoors, not in winter)
+const TONE = { grass: { lowpass: 1800, bass: 9 } } // a recording's filters: Hz it rolls off above, dB added below 300 Hz
+const STEP_PITCH = 0.03 // a recorded step's pitch varies by up to this share either way (synthesised ones by 0.1)
 ```
 
 Every sound is synthesised in `SOUNDS` (no audio files): footsteps for grass, snow, road and tatami, the furniture thud (`wood`), the roll whoosh, the door, dialogue blips and clicks. Change a sound's pitch or length there.
 
-To use real recordings instead, put the files in `public/sfx/` and list them in `FILES` in sfx.ts. Grass and tatami footsteps already do, e.g. `grass: ['/sfx/grass_L.wav', '/sfx/grass_R.wav']`. With several files a sound takes turns through them in order, so a left and a right step alternate. The names are `grass`, `snow`, `road`, `tatami`, `wood`, `whoosh`, `door`, `blip` and `click`. Any sound left out stays synthesised, and a file that fails to load falls back to it too.
+To use real recordings instead, put the files in `public/sfx/` and list them in `FILES` in sfx.ts. Grass and tatami footsteps already do, e.g. `grass: ['/sfx/grass_L.wav', '/sfx/grass_R.wav']`. With several files a sound takes turns through them in order, so a left and a right step alternate. The names are `grass`, `snow`, `road`, `tatami`, `wood`, `whoosh`, `door`, `blip` and `click`. Any sound left out stays synthesised, and a file that fails to load falls back to it too. A sound with files plays nothing until they've loaded, rather than its synthesised stand-in, and recorded steps play alone, with no rain splash over them. So on grass you hear only `grass_L` and `grass_R`, taking turns. The grass recordings are bright (most of their energy is at 2–4 kHz), which sounds tinny at walking pace, so `TONE` darkens them and adds some low end. Its filters are made once and shared.
 
 ---
 
