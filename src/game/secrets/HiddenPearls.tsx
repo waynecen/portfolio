@@ -5,7 +5,7 @@ import { burst } from '../player/Dust'
 import { register } from '../core/interact'
 import { findPearl, hiddenBy, PEARLS, usePearls, type Pearl } from './pearls'
 import { reducedMotion } from '../core/settings'
-import { useTreasureMap } from '../shop'
+import { useTreasureMap } from '../life/shop'
 import { playerPos } from '../core/state'
 
 // The pearls still to find (pearls.ts). One lying in the open (or behind a tree, or in grass that's

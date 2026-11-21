@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { toggleEdit } from './house/edit'
 import { closePanel, openPanel, toggleMenu } from './core/interact'
-import { ITEMS, useInventory } from './inventory'
+import { ITEMS, useInventory } from './life/inventory'
 import { togglePhoto } from './photo'
 import { isTouch } from './core/quality'
 import { useGame } from './core/store'

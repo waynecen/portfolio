@@ -1,5 +1,5 @@
-import { useFishing } from '../fishing'
-import { ITEMS, useInventory } from '../inventory'
+import { useFishing } from '../life/fishing'
+import { ITEMS, useInventory } from '../life/inventory'
 import { isTouch } from '../core/quality'
 import { SECRETS, useSecrets } from '../secrets/secrets'
 import { PLACES, useSeen } from '../seen'

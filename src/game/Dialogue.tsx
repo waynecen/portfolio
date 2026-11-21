@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { useFishing } from './fishing'
+import { useFishing } from './life/fishing'
 import { advance, typer } from './core/interact'
 import { keyName } from './core/keymap'
 import { blip } from './core/sfx'

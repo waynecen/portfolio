@@ -1,11 +1,11 @@
 import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
 import { AdditiveBlending, BufferAttribute, BufferGeometry, PointsMaterial, type Points } from 'three'
-import { BOUND, isInland } from './world/Island'
-import { inHouse } from './world/pois'
-import { winter } from './world/season'
-import { sky } from './world/sky'
-import { reducedMotion } from './core/settings'
+import { BOUND, isInland } from '../world/Island'
+import { inHouse } from '../world/pois'
+import { winter } from '../world/season'
+import { sky } from '../world/sky'
+import { reducedMotion } from '../core/settings'
 
 // Night on the island: small warm lights drifting low over the grass, each wandering round its own
 // spot and twinkling on and off. One set of points, faded in and out with the night weather.

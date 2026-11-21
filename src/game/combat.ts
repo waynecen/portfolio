@@ -1,4 +1,4 @@
-import { useFishing } from './fishing'
+import { useFishing } from './life/fishing'
 import { busy, sayFirst } from './core/interact'
 import { isTouch } from './core/quality'
 import { hit as hitSound, whoosh } from './core/sfx'

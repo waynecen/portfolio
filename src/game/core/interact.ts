@@ -1,4 +1,4 @@
-import { fishing, reel } from '../fishing'
+import { fishing, reel } from '../life/fishing'
 import { firstTime, record } from './log'
 import { markSeen } from '../seen'
 import { click } from './sfx'

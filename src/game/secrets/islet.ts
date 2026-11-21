@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { useCave } from './cave'
 import { addShells } from '../drops'
-import { DOCK } from '../fishing'
+import { DOCK } from '../life/fishing'
 import { say, sayFirst } from '../core/interact'
 import { ISLET } from '../world/Island'
 import { ISLET_BOAT, ISLET_SPAWN } from '../world/layout'

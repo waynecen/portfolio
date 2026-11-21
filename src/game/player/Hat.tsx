@@ -2,7 +2,7 @@ import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
 import { type Group } from 'three'
 import { PLAYER_HEIGHT } from './models'
-import { HATS, useHats, type HatId } from '../shop'
+import { HATS, useHats, type HatId } from '../life/shop'
 import { playerFacing, playerRoll } from '../core/state'
 
 // The hat the player is wearing, if any (bought at Pip's shop, shop.ts), sat on top of the head.

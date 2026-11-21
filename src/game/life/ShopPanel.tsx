@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
-import { useShells } from './drops'
-import { closePanel } from './core/interact'
-import { useOwned } from './house/room'
+import { useShells } from '../drops'
+import { closePanel } from '../core/interact'
+import { useOwned } from '../house/room'
 import { buyHat, buyMap, buyPiece, canAfford, DECOR, HATS, MAP_PRICE, useHats, useTreasureMap, wearHat } from './shop'
-import { useGame } from './core/store'
+import { useGame } from '../core/store'
 
 // Pip's shop (shop.ts): hats to wear and furniture for the house, paid for in shells. Opened by
 // talking to Pip at the stall east of the house; Escape or × closes it.

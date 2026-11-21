@@ -1,6 +1,6 @@
 import { useRef, type PointerEvent } from 'react'
 import { pressAttack, releaseAttack } from './combat'
-import { putAwayRod, useFishing } from './fishing'
+import { putAwayRod, useFishing } from './life/fishing'
 import { actions, buttons, stick } from './core/input'
 import { interact } from './core/interact'
 import { isTouch } from './core/quality'
