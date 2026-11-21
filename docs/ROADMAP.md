@@ -92,6 +92,25 @@ Gentle by design: nothing is hard, and nothing blocks a project.
 23. **Guestbook.** A bulletin board where visitors leave a short note (needs a small backend, such as Vercel KV).
 24. **Library.** A building that lists blog posts or notes, mirrored from the page.
 
+## Phase G: Small touches that respect the visitor
+
+Ten ideas taken from how acclaimed games look after their players, chosen for a visitor with a few minutes, often on a phone, who should leave having seen the projects. The research behind them, with sources, is in [reports/Player experience details in AAA games.md](../reports/Player%20experience%20details%20in%20AAA%20games.md). Most are an afternoon each, and items 25 and 26 lead into the guided tour (C10), persistence (E18) and accessibility (E19).
+
+25. **Places you've seen.** Remember which projects, the About sign and the Contact mailbox a visitor has looked at, show "2 of 3 projects seen" in the bag, and let unseen project stations glow softly. *(Animal Crossing's Critterpedia marks, Metroid Dread's glowing unexplored areas)*
+26. **"Point me somewhere".** One key, and a chip on phones, turns the camera toward the nearest unseen project while wind lines or a bird drift that way. *(The Last of Us Part II's navigation button, Ghost of Tsushima's Guiding Wind)*
+27. **Something to do while it loads.** The loading screen gets a small toy, or the island's map, while the 3D chunk downloads. *(Splatoon 3's lobby, Tears of the Kingdom's map on loading screens)*
+28. **Welcome back.** A greeting that changes with the days since the last visit, and a little capped, sweepable mess (leaves or weeds) that never costs anything. *(Animal Crossing's absence reactions)*
+29. **Calendar moments.** The site's anniversary, a few holidays, and one gentle gag that reads the clock, such as a sign at 3am asking whether you shouldn't be asleep. *(K.K. Slider's birthday song, Psycho Mantis)*
+30. **Settings with honest assists.** Separate music and effects volumes, reduced motion, text size, and a fishing assist (a longer bite window) with a visible marker while it's on. *(The Last of Us Part II's presets, God of War Ragnarök's highlighted changes, Mario Kart's blinking antenna, Hades' God Mode)*
+31. **Feedback with rules.** A brief freeze and zoom on a catch, a jingle per kind of find, wetter footsteps in the rain, each with a written list of when it must not fire. *(Smash's Finish Zoom, Metroid's item fanfare, Animal Crossing's rain sounds)*
+32. **A dialogue log, and first-time messages only once.** Explanations such as the rod's play in full the first time and shorten after. *(Tears of the Kingdom's dialogue log and shrine banner)*
+33. **Silly secrets.** Three or four hidden trinkets, each switching on a harmless world effect: confetti steps, low gravity, a big head, black and white. *(Halo's skulls)*
+34. **Lines that react and hide real tips.** Signs and, later, villagers say different things by weather, hour or what you're carrying, with real tips tucked into the jokes. *(Smash's Palutena's Guidance, Valorant's agent voice lines)*
+
+Left out on purpose: a like-only guestbook (needs a backend; see F23), reshaping the island's terrain for Breath of the Wild's triangle rule (use it for new land instead), and a fake-crash gag (on a portfolio, a recruiter might believe it).
+
 ## Suggested order
 
 A1 → A2 → A3 and A4 → B6–B9 → C10 → E18. Everything after that can follow appetite.
+
+For Phase G: 25 → 26 → 32 → 31 → 28 → 29 → 30 → 27 → 33 → 34. The first four do the most for a first visit.
