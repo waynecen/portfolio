@@ -8,6 +8,7 @@ import { INTERIOR } from '../world/layout'
 import { isTouch } from '../core/quality'
 import { useGame } from '../core/store'
 import { keyName } from '../core/keymap'
+import { Chip } from '../ui/Chip'
 
 // What edit mode shows: in the room, the tile grid and a highlight on the tiles the cursor or
 // the piece in hand covers; on screen, the button that starts it and the bar that ends it.
@@ -148,9 +149,9 @@ export function EditHud() {
   if (scene !== 'house' || (busy && !editing)) return null
   if (!editing) {
     return (
-      <button type="button" className="edit-toggle" onClick={toggleEdit}>
-        {!isTouch && <kbd>{keyName('edit')}</kbd>} Edit room
-      </button>
+      <Chip action="edit" className="edit-toggle" onClick={toggleEdit}>
+        Edit room
+      </Chip>
     )
   }
   const hint = held

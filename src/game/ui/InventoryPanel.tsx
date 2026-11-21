@@ -12,6 +12,7 @@ import { useTreasureMap } from '../life/shop'
 import { useGame } from '../core/store'
 import { keyName } from '../core/keymap'
 import { Panel } from './Panel'
+import { Chip } from './Chip'
 
 // The bag: a slot for every item, filled once it's found, then one for every kind of fish, filled
 // once one's caught (fishing.ts), and the chosen slot's name and words below. Arrow keys move
@@ -264,7 +265,7 @@ export function InventoryPanel() {
   )
 }
 
-/** The Bag chip at the top right, under the view toggle. Hidden while something else has the player's attention. */
+/** The Bag chip at the top right. Hidden while something else has the player's attention. */
 export function BagButton() {
   const away = useGame((s) => s.dialogue !== null || s.panel !== null || s.fading || s.editing)
   const fishing = useFishing((s) => s.phase !== 'idle')
@@ -272,9 +273,9 @@ export function BagButton() {
   const count = useInventory((s) => s.found.length)
   if (hidden) return null
   return (
-    <button type="button" className="bag-toggle" onClick={toggleBag} aria-label={`Bag, ${count} of ${ITEMS.length} found`}>
-      {!isTouch && <kbd>{keyName('bag')}</kbd>} Bag <span className="bag-toggle-count">{count}</span>
-    </button>
+    <Chip action="bag" className="bag-toggle" onClick={toggleBag} label={`Bag, ${count} of ${ITEMS.length} found`}>
+      Bag <span className="bag-toggle-count">{count}</span>
+    </Chip>
   )
 }
 
@@ -291,8 +292,8 @@ export function RodButton() {
   const atSpot = useGame((s) => s.focus !== null && s.focus.x === spot.x && s.focus.z === spot.z)
   if (!rod || away || fishing || atSpot) return null
   return (
-    <button type="button" className="rod-toggle" onClick={putAwayRod}>
-      {!isTouch && <kbd>{keyName('bag')}</kbd>} Put away rod
-    </button>
+    <Chip action="bag" className="rod-toggle" onClick={putAwayRod}>
+      Put away rod
+    </Chip>
   )
 }
