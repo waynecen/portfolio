@@ -38,7 +38,7 @@ This replaces the earlier feature roadmap. Its unfinished items are folded in be
 Gentle by design: nothing is hard, and nothing blocks a project.
 
 6. **Sword.** *(done: combat.ts, Sword.tsx)*
-   - An Attack input: J or X, and a tap of the touch **B** button (sprint moves to holding B).
+   - An Attack input: J, X or a left click, and a tap of the touch **B** button (sprint moves to holding B). A right click puts the rod away, like B.
    - Hold to charge a spin attack.
    - Hits are tested in an arc against a `hittables` list, the same pattern as `interactables` in interact.ts.
 7. **Cuttable grass and pots.** *(done: Grass.tsx, drops.ts; pots break but can't be thrown yet)*

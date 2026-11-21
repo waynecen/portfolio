@@ -218,7 +218,7 @@ The projects themselves aren't constants. They're read from the `#projects artic
 
 **Secrets** ([secrets.ts](../src/game/secrets.ts), [Trinkets.tsx](../src/game/Trinkets.tsx)): three odd trinkets (`SECRETS`), small spinning stars in quiet corners: deep in the forest, the far east tip, and behind the house where the camera can't see. Picking one up switches on its harmless effect, and the settings panel's Secrets section switches each found one on and off (`secrets-v1`). **Confetti steps** colours the dust and leaves a trail at walking pace (`CONFETTI_STEP = 0.3` in Dust.tsx), indoors too. **Tiny you** shrinks the character to `TINY = 0.55` (Player.tsx); collisions are unchanged. **Black and white** puts a greyscale filter on the game (`body.secret-mono` in style.css). Each trinket's `at` is only where it would like to be; it moves to the nearest grass tile off the roads and clear of trees.
 
-**The notice board** ([notice.ts](../src/game/notice.ts), [NoticeBoard.tsx](../src/game/NoticeBoard.tsx)): stands in front of the house at `NOTICE_AT` (layout.ts), with a road to it. Each read pins up a different notice, taking turns among those that apply right now (`NOTICES`, each with a `when`): projects still unseen, a rod in hand, rain, night, things still to find, secrets still hidden, and a fallback. Every notice is a joke with a real tip in it (Where to?, B to put the rod away, the bag, the log), worded for keyboard or touch. Villagers can reuse the same pattern.
+**The notice board** ([notice.ts](../src/game/notice.ts), [NoticeBoard.tsx](../src/game/NoticeBoard.tsx)): stands on the city square's corner nearest the shop, at `NOTICE_AT` (layout.ts). Each read pins up a different notice, taking turns among those that apply right now (`NOTICES`, each with a `when`): projects still unseen, a rod in hand, rain, night, things still to find, secrets still hidden, and a fallback. Every notice is a joke with a real tip in it (Where to?, right-click or B to put the rod away, the bag, the log), worded for keyboard or touch. Villagers can reuse the same pattern.
 
 ---
 
@@ -471,7 +471,7 @@ const INVULN = 1.2      // health.ts: seconds of flicker after a bump, when noth
 const DROP_LIFE = 20    // drops.ts: seconds a drop waits (blinking for the last 4); MAX = 16 at once; GRAB = 0.55 to pick one up
 ```
 
-J or X swings the sword in an arc in front of the player, slowing them while it does; holding the key after the swing charges it, and letting go once the blade glows spins it all the way round, twice as strong. On touch screens a quick tap of B (under `TAP = 0.22` s, Joystick.tsx) swings; holding B still sprints. With the fishing rod in hand the sword stays put. Anything that can be struck registers with `addHittable` (the same pattern as `register` for interactables).
+J, X or the left mouse button swings the sword in an arc in front of the player, slowing them while it does; holding the key (or button) after the swing charges it, and letting go once the blade glows spins it all the way round, twice as strong. On touch screens a quick tap of B (under `TAP = 0.22` s, Joystick.tsx) swings; holding B still sprints. With the fishing rod in hand the sword stays put. Anything that can be struck registers with `addHittable` (the same pattern as `register` for interactables).
 
 Tall grass and a few clay pots (beside the house and by the dock) can be cut and broken, leaving a shell or, if the player is missing some, a heart. Shells are kept in this browser (`shells-v1`), counted in the bag's header and shown at the top for a moment when picked up; they're for the shop, later (ROADMAP C14). Pots can't be picked up and thrown yet.
 
@@ -530,6 +530,18 @@ const CHEST_SHELLS = 20 // islet.ts: shells in the islet's sea chest
 
 **The islet.** With the oar, the boat at the dock rows out to the islet (a fade), and the boat on the islet's shore rows back. On it: three trees, a carved sign, a sea chest of shells (`islet-v1`) and the last pearl. Pressing G there points to the boat.
 
+## City square: [src/game/CitySquare.tsx](../src/game/CitySquare.tsx), [src/game/layout.ts](../src/game/layout.ts)
+
+```ts
+export const SQUARE = { i0: 9, i1: 15, j0: -3, j1: 3 } // layout.ts: the paved square east of the house, by the shop; FOUNTAIN is its middle
+export const NOTICE_AT = { x: 10, z: -2 } // layout.ts: the notice board, on the square's corner nearest the shop
+const BASIN_R = 1.15   // CitySquare.tsx: the fountain's basin (and its collider); BASIN_H = 0.42 tall
+const DROPS = 10       // droplets falling from the top bowl, each DROP_TIME = 0.7 s
+const LAMP_GLOW = 1.4  // the corner lamps' glow at night (× sky.weather.night)
+```
+
+The square is a place in pois.ts, so a road leads to it; the road stops where the paving starts, and no other road crosses it. Nothing scatters onto it (`built()` in pois.ts) and trees keep a tile back. Footsteps on it sound like the road. Benches face the fountain on three sides, with a lamp post at each corner. **Make a wish** at the fountain: it costs one shell and fills every heart.
+
 ---
 
 ## Touch controls: [src/game/Joystick.tsx](../src/game/Joystick.tsx)
@@ -561,6 +573,7 @@ const codes: Record<string, Dir> = {
   ShiftRight: 'sprint', // hold to sprint
 }
 // J or X = the sword: down swings, held after a swing charges, up lets a charged spin go (combat.ts)
+// The mouse, over the game (not the HUD): left button = the sword, like J; right button = put the rod away, like B (the browser's menu is kept off the game)
 // In bindKeys: Space = advance dialogue if open, else reel in a line that's out (fishing.ts), else roll; E / Enter = interact (interact.ts), or reel in; Esc = close dialogue and reel in; F = edit the room (indoors); G = point the way to an unseen place (guide.ts); L = open or close the dialogue log (log.ts); B = put away the rod if one is in hand (fishing.ts), else open or close the bag (inventory.ts)
 // While editing, keys go to editKey() in edit.ts instead
 ```
