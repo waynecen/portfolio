@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
+import { BUGS, useBugs } from './bugs'
 import { useShells } from './drops'
 import { FISH, putAwayRod, SPOTS, useFishing } from './fishing'
 import { closePanel, toggleLog } from './interact'
@@ -52,6 +53,16 @@ const ICONS: Record<ItemId, (c: string) => ReactNode> = {
   ),
 }
 
+/** Every bug gets the same shape, wings spread, in its own colour. */
+function BugIcon({ color }: { color: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="bag-icon">
+      <path d="M12 12C9 5 3.5 4 3.5 8.5S8 15 12 12Zm0 0c3-7 8.5-8 8.5-3.5S16 15 12 12Zm0 0c-2.5 2-6 3-6 6s4-1 6-6Zm0 0c2.5 2 6 3 6 6s-4-1-6-6Z" fill={color} stroke="#7a6449" strokeOpacity=".5" />
+      <path d="M12 7.5v10" stroke="#3b3027" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  )
+}
+
 /** Every fish gets the same shape, in its own colour. */
 function FishIcon({ color }: { color: string }) {
   return (
@@ -76,11 +87,12 @@ export function InventoryPanel() {
   const open = useGame((s) => s.panel === 'inventory')
   const found = useInventory((s) => s.found)
   const caught = useFishing((s) => s.caught)
+  const bugs = useBugs((s) => s.caught)
   const seen = useSeen((s) => s.seen)
   const shells = useShells((s) => s.shells)
   const [chosen, setChosen] = useState<number>(0)
   const slots = useRef<(HTMLButtonElement | null)[]>([])
-  const total = ITEMS.length + FISH.length // items first, then fish
+  const total = ITEMS.length + FISH.length + BUGS.length // items first, then fish, then bugs
 
   // On opening, choose the first thing in the bag (or the first slot) and move keyboard focus to it.
   useEffect(() => {
@@ -103,6 +115,13 @@ export function InventoryPanel() {
     const has = found.includes(item.id)
     title = has ? item.name : '???'
     words = has ? item.description : 'Still out there somewhere on the island.'
+  } else if (chosen >= ITEMS.length + FISH.length) {
+    const bug = BUGS[chosen - ITEMS.length - FISH.length]
+    const got = bugs[bug.id]
+    title = got ? bug.name : '???'
+    words = got
+      ? `${bug.description} Caught ${got === 1 ? 'once' : `${got} times`}.`
+      : 'Not caught yet. Butterflies come out on dry days; fireflies at night.'
   } else {
     const fish = FISH[chosen - ITEMS.length]
     const got = caught[fish.id]
@@ -197,6 +216,18 @@ export function InventoryPanel() {
         {FISH.map((f, n) => {
           const got = caught[f.id]
           return slot(ITEMS.length + n, got ? f.name : 'Not caught yet', !!got, <FishIcon color={f.color} />)
+        })}
+      </ul>
+      <div className="bag-head bag-subhead">
+        <h3>Bugs</h3>
+        <span className="bag-count">
+          {BUGS.filter((b) => bugs[b.id]).length} of {BUGS.length} caught
+        </span>
+      </div>
+      <ul className="bag-slots">
+        {BUGS.map((b, n) => {
+          const got = !!bugs[b.id]
+          return slot(ITEMS.length + FISH.length + n, got ? b.name : 'Not caught yet', got, <BugIcon color={b.color} />)
         })}
       </ul>
       <div className="bag-detail" aria-live="polite">

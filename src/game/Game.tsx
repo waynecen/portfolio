@@ -9,6 +9,7 @@ import { Doors } from './Doors'
 import { Dust } from './Dust'
 import { EditHud, EditOverlay, EditPointer } from './EditRoom'
 import { Fade } from './Fade'
+import { Butterflies } from './Butterflies'
 import { DailyFinds } from './DailyFinds'
 import { Festive } from './Festive'
 import { Fireflies } from './Fireflies'
@@ -111,6 +112,7 @@ export function Game() {
           <Pots />
           <Slimes />
           <GroundDrops />
+          <Butterflies />
           <DailyFinds />
           <Rain />
           <Snow />

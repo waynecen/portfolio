@@ -26,6 +26,8 @@ while (spots.length < COUNT) {
   spots.push({ x: i + Math.random() - 0.5, z: j + Math.random() - 0.5, phase: Math.random() * 100, speed: 0.6 + Math.random() * 0.6 })
 }
 
+const AWAY = 30 // seconds a caught firefly stays gone (Butterflies.tsx catches them)
+const goneUntil = new Float32Array(COUNT) // clock time each caught one comes back
 const positions = new Float32Array(COUNT * 3)
 const colors = new Float32Array(COUNT * 3) // brightness per firefly; additive, so dark = invisible
 const geometry = new BufferGeometry()
@@ -43,7 +45,7 @@ function place(t: number) {
     positions[k * 3] = s.x + Math.sin(a * 0.7) * WANDER
     positions[k * 3 + 1] = HEIGHT + Math.sin(a * 1.3) * BOB
     positions[k * 3 + 2] = s.z + Math.cos(a * 0.5) * WANDER
-    const glow = reducedMotion() ? 1 : 0.25 + 0.75 * Math.max(0, Math.sin(a * 1.9))
+    const glow = performance.now() / 1000 < goneUntil[k] ? 0 : reducedMotion() ? 1 : 0.25 + 0.75 * Math.max(0, Math.sin(a * 1.9))
     colors[k * 3] = colors[k * 3 + 1] = colors[k * 3 + 2] = glow
   }
   geometry.attributes.position.needsUpdate = true
@@ -60,10 +62,32 @@ export function Fireflies() {
     points.current.visible = night > 0
     if (night <= 0) return
     material.opacity = night
-    if (!reducedMotion()) place(clock.elapsedTime)
+    place(reducedMotion() ? 0 : clock.elapsedTime) // held still with reduced motion, but caught ones still go dark
   })
 
   if (winter) return null // no fireflies in the cold
   // Not culled: they're spread over the whole island and move every frame.
   return <points ref={points} geometry={geometry} material={material} frustumCulled={false} />
+}
+
+/** The nearest firefly within `range` of (x, z) that's lit and not caught, or -1 (none, or it's day). */
+export function fireflyNear(x: number, z: number, range: number): number {
+  if (winter || sky.weather.night < 0.5) return -1
+  const now = performance.now() / 1000
+  let best = range * range
+  let found = -1
+  for (let k = 0; k < COUNT; k++) {
+    if (now < goneUntil[k]) continue
+    const d = (positions[k * 3] - x) ** 2 + (positions[k * 3 + 2] - z) ** 2
+    if (d < best) {
+      best = d
+      found = k
+    }
+  }
+  return found
+}
+
+/** Firefly k was caught (or startled): it's dark for a while. */
+export function catchFirefly(k: number) {
+  goneUntil[k] = performance.now() / 1000 + AWAY
 }
