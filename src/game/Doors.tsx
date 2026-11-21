@@ -1,11 +1,11 @@
 import { useFrame } from '@react-three/fiber'
-import { DOOR, FRONT_DOOR, INSIDE_SPAWN, INTERIOR, OUTSIDE_SPAWN, ROOM } from './layout'
+import { CAVE, CAVE_MOUTH, CAVE_SPAWN, DOOR, FRONT_DOOR, INSIDE_SPAWN, INTERIOR, OUTSIDE_SPAWN, ROOM, WATERFALL_SPAWN } from './layout'
 import { PILL_RADIUS } from './PillCharacter'
 import { goTo } from './scene'
 import { playerPos, teleport } from './state'
 import { useGame } from './store'
 
-// Walk-through doors between the house and the island. Each frame, if the player has stepped into
+// Walk-through doors between the house and the island, and between the island and the cave behind the waterfall. Each frame, if the player has stepped into
 // the current area's doorway, fade to the other area. Both arrival spots sit well clear of the
 // doorways, so arriving never sends you straight back.
 
@@ -19,9 +19,16 @@ export function Doors() {
     if (s.scene === 'house') {
       const dz = playerPos.z - INTERIOR.z
       if (Math.abs(playerPos.x - INTERIOR.x) < DOOR && dz > WAY_OUT && dz < ROOM.hz + 1) goTo('world', OUTSIDE_SPAWN)
+    } else if (s.scene === 'cave') {
+      // Out through the first room's front, the way in.
+      const dz = playerPos.z - CAVE.z
+      if (Math.abs(playerPos.x - CAVE.x) < DOOR && dz > WAY_OUT && dz < ROOM.hz + 1.5) goTo('world', WATERFALL_SPAWN)
     } else {
       const dz = playerPos.z - FRONT_DOOR.z
       if (Math.abs(playerPos.x - FRONT_DOOR.x) < DOOR - 0.05 && dz > 0 && dz < PRESS) goTo('house', INSIDE_SPAWN)
+      // Into the cave: through the waterfall and into the mouth.
+      const mz = CAVE_MOUTH.z - playerPos.z
+      if (Math.abs(playerPos.x - CAVE_MOUTH.x) < DOOR && mz > 0.25 && mz < 1) goTo('cave', CAVE_SPAWN)
     }
   })
   return null

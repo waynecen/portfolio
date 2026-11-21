@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { centreOf, I, J, ROOM_OF } from './cave'
 import { tileAt } from './grid'
 import { say, sayFirst } from './interact'
 import { isInland } from './Island'
@@ -12,13 +13,14 @@ import { inForest, trees } from './Trees'
 
 // Hidden pearls (HiddenPearls.tsx draws them): buried under a patch of disturbed earth, under a tuft of
 // tall grass that has to be cut first (Grass.tsx), or tucked behind a tree, where the canopy hides
-// them from the camera until the player walks round. Finding every one adds a record to the record
+// them from the camera until the player walks round, and one waits deep in the cave. Finding every one adds a record to the record
 // player at home. Placed once from a fixed seed, so they're in the same spots on every visit; what's
 // been found is kept in this browser.
 
 /** How a pearl is hidden. In winter the grass is under snow, so a grass pearl is buried instead. */
 export type Hide = 'dig' | 'grass' | 'tree' | 'open'
-export type Pearl = { id: string; hide: Hide; x: number; z: number }
+/** `where`: the area it's in (the island unless it says). */
+export type Pearl = { id: string; hide: Hide; x: number; z: number; where?: 'cave' }
 
 const SEED = 41 // change for different spots
 const DIG = 3 // buried pearls
@@ -86,6 +88,9 @@ function place(): Pearl[] {
     const t = behind(forest)
     if (t) out.push({ id: `tree-${n}`, hide: 'tree', x: t.i, z: t.j })
   }
+  // One in the cave behind the waterfall, in a corner of the last room (cave.ts).
+  const hoard = centreOf(ROOM_OF.hoard)
+  out.push({ id: 'cave', hide: 'open', x: hoard.x + I - 0.5, z: hoard.z - J + 0.5, where: 'cave' })
   return out
 }
 

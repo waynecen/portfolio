@@ -4,8 +4,8 @@ import type { Interactable } from './interact'
 /** A panel over the game: the record player's, the bag (inventory.ts), the dialogue log (log.ts), the settings (settings.ts), or the touch screen's menu (MenuPanel.tsx). */
 export type Panel = 'music' | 'inventory' | 'log' | 'settings' | 'menu' | 'shop'
 
-/** The area the player is in: inside the house, or out on the island. */
-export type Scene = 'house' | 'world'
+/** The area the player is in: inside the house, out on the island, or in the cave behind the waterfall. */
+export type Scene = 'house' | 'world' | 'cave'
 
 // Low-frequency game state for React UI. Only written when the value changes.
 type GameState = {

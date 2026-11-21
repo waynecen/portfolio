@@ -10,6 +10,7 @@ import { Dust } from './Dust'
 import { EditHud, EditOverlay, EditPointer } from './EditRoom'
 import { Fade } from './Fade'
 import { Butterflies } from './Butterflies'
+import { Cave } from './CaveRooms'
 import { DailyFinds } from './DailyFinds'
 import { Festive } from './Festive'
 import { Fireflies } from './Fireflies'
@@ -54,6 +55,7 @@ import { useGame } from './store'
 import { Trees } from './Trees'
 import { Trinkets } from './Trinkets'
 import { Villagers } from './Villagers'
+import { Waterfall } from './Waterfall'
 import { WelcomeBack } from './WelcomeBack'
 
 const tier = detectTier()
@@ -109,6 +111,7 @@ export function Game() {
           <NoticeBoard />
           <Signposts />
           <Dock />
+          <Waterfall />
           <Pickups />
           <Pearls />
           <Leaves />
@@ -130,6 +133,9 @@ export function Game() {
           <Furniture />
           <RecordPlayer />
           <EditOverlay />
+        </group>
+        <group visible={scene === 'cave'}>
+          <Cave />
         </group>
         <Doors />
         <Interactions />

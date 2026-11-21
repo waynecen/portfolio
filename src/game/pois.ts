@@ -1,14 +1,14 @@
 import { tileAt, type Tile } from './grid'
 import { DOCK_ROOT } from './fishing'
 import { FOREST, isInland } from './Island'
-import { HOUSE, NOTICE_AT, SHOP_AT } from './layout'
+import { CAVE_MOUTH, HOUSE, NOTICE_AT, OUTCROP, SHOP_AT } from './layout'
 import { ABOUT_AT, CONTACT_AT } from './places'
 import { projects, stationPos } from './projects'
 
 // Points of interest: the single list that roads are built from.
 // Add a place here (and place its object at the same x/z) to give it a road.
 
-export type PoiKind = 'home' | 'project' | 'about' | 'contact' | 'dock' | 'forest' | 'notice' | 'shop'
+export type PoiKind = 'home' | 'project' | 'about' | 'contact' | 'dock' | 'forest' | 'notice' | 'shop' | 'cave'
 export type Poi = { kind: PoiKind; x: number; z: number; label: string }
 
 /** The house at the centre of the map, where the game starts. Places sit on tile centres (whole numbers). */
@@ -21,11 +21,15 @@ export const pois: Poi[] = [
   { kind: 'dock', ...DOCK_ROOT, label: 'Dock' },
   { kind: 'notice', ...NOTICE_AT, label: 'Notice board' },
   { kind: 'shop', ...SHOP_AT, label: 'Shop' },
+  { kind: 'cave', x: CAVE_MOUTH.x, z: CAVE_MOUTH.z - 0.5, label: 'Waterfall' },
   { kind: 'forest', x: Math.round(FOREST.x), z: Math.round(FOREST.z), label: 'Forest clearing' },
   ...stationPos.map((p, i) => ({ kind: 'project' as const, x: p.x, z: p.z, label: projects[i].title })),
 ]
 
 const key = (t: Tile) => `${t.i},${t.j}`
+
+/** True if tile (i, j) is under the waterfall's outcrop (Waterfall.tsx). */
+export const inOutcrop = (i: number, j: number) => i >= OUTCROP.i0 && i <= OUTCROP.i1 && j >= OUTCROP.j0 && j <= OUTCROP.j1
 
 /** True if tile (i, j) is under the house. */
 export function inHouse(i: number, j: number): boolean {
@@ -37,9 +41,10 @@ const loop: Tile[] = []
 for (let i = HOUSE.i0 - 1; i <= HOUSE.i1 + 1; i++)
   for (let j = HOUSE.j0 - 1; j <= HOUSE.j1 + 1; j++) if (!inHouse(i, j)) loop.push({ i, j })
 
-// Tiles roads must not cross: places, and the house.
+// Tiles roads must not cross: places, the house and the outcrop.
 const taken = new Set(pois.map((p) => key(tileAt(p.x, p.z))))
 for (let i = HOUSE.i0; i <= HOUSE.i1; i++) for (let j = HOUSE.j0; j <= HOUSE.j1; j++) taken.add(key({ i, j }))
+for (let i = OUTCROP.i0; i <= OUTCROP.i1; i++) for (let j = OUTCROP.j0; j <= OUTCROP.j1; j++) taken.add(key({ i, j }))
 
 // Tiles from `from` to `to` (inclusive), walking along one axis and then the other: an L with a
 // single 90° corner, or a straight line when they share a row or column.
@@ -104,7 +109,7 @@ export const roadTiles: Tile[] = (() => {
 const SIGNS = 5 // at most this many
 const SIGN_APART = 6 // tiles between any two
 const SIGN_HOME = 4 // crossroads at least this far from the house
-const CORNER_HOME = 8 // and corners at least this far
+const CORNER_HOME = 7 // and corners at least this far
 const PER_WAY = 3 // places named for each direction, nearest first
 const HOME = 'Home'
 
@@ -213,7 +218,7 @@ export const signposts: Signpost[] = (() => {
 
 const signTiles = new Set(signposts.map((s) => key({ i: s.x, j: s.z })))
 
-/** True if tile (i, j) has something built on it: the house, or a signpost. Nothing else is placed there. */
+/** True if tile (i, j) has something built on it: the house, the waterfall's outcrop, or a signpost. Nothing else is placed there. */
 export function built(i: number, j: number): boolean {
-  return inHouse(i, j) || signTiles.has(key({ i, j }))
+  return inHouse(i, j) || inOutcrop(i, j) || signTiles.has(key({ i, j }))
 }

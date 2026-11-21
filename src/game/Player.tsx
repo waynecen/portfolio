@@ -42,6 +42,7 @@ const FLICKER = 14 // flickers per second while invulnerable after a bump
 const roads = new Set(roadTiles.map((t) => t.i + ',' + t.j))
 function surfaceAt(x: number, z: number): Surface {
   if (useGame.getState().scene === 'house') return 'tatami'
+  if (useGame.getState().scene === 'cave') return 'road' // stone
   if (onDock(x, z)) return 'wood'
   return roads.has(Math.round(x / TILE) + ',' + Math.round(z / TILE)) ? 'road' : winter ? 'snow' : 'grass'
 }

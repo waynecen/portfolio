@@ -36,3 +36,32 @@ export const NOTICE_AT = { x: 2, z: 4 }
 
 /** Pip's stall, the shop (Villagers.tsx, shop.ts): on the grass east of the house. A road leads to it (pois.ts). */
 export const SHOP_AT = { x: 7, z: -1 }
+
+/**
+ * The waterfall (Waterfall.tsx): a rocky outcrop on the island's north shore, tiles i0..i1 × j0..j1
+ * (inclusive), with water pouring down its front over the mouth of a cave. A road leads to the mouth.
+ */
+export const OUTCROP = { i0: 6, i1: 8, j0: -16, j1: -15 }
+
+/** The cave's mouth, in the middle of the outcrop's front face (the side facing the camera). */
+export const CAVE_MOUTH = { x: 7, z: OUTCROP.j1 + 0.5 }
+
+/** Coming out of the cave: a tile in front of the waterfall, facing the camera. */
+export const WATERFALL_SPAWN: Spawn = { x: CAVE_MOUTH.x, z: CAVE_MOUTH.z + 1.1, heading: 0 }
+
+/**
+ * The cave behind the waterfall (CaveRooms.tsx, cave.ts), built far off the island like the house. It's
+ * a few rooms in a grid, each the size of the house's room; this is the middle of the first one.
+ * Room (i, j) is centred at CAVE + (i × CAVE_PITCH.x, j × CAVE_PITCH.z); j counts north as negative.
+ */
+export const CAVE = { x: 200, z: 0 }
+/** Centre to centre between neighbouring rooms: the room plus a wall a tile thick. */
+export const CAVE_PITCH = { x: 2 * ROOM.hx + 1, z: 2 * ROOM.hz + 1 }
+
+/** The cave room (i, j) that point (x, z) is in. */
+export function caveRoom(x: number, z: number) {
+  return { i: Math.round((x - CAVE.x) / CAVE_PITCH.x), j: Math.round((z - CAVE.z) / CAVE_PITCH.z) }
+}
+
+/** Going in: just inside the first room's doorway, facing in. */
+export const CAVE_SPAWN: Spawn = { x: CAVE.x, z: CAVE.z + ROOM.hz - 1, heading: Math.PI }

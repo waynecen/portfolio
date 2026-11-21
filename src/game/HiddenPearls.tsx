@@ -64,8 +64,8 @@ function Buried({ p }: { p: Pearl }) {
   )
 }
 
-/** Every pearl not yet found, where it's hidden. Drawn with the island. */
-export function Pearls() {
+/** Every pearl not yet found in one area (the island, or the cave), where it's hidden. */
+export function Pearls({ where = 'world' }: { where?: 'world' | 'cave' }) {
   const found = usePearls((s) => s.found)
   const revealed = usePearls((s) => s.revealed)
   // One glint for them all: a slow shimmer now and then rather than a steady glow.
@@ -75,7 +75,7 @@ export function Pearls() {
   })
   return (
     <>
-      {PEARLS.filter((p) => !found.includes(p.id)).map((p) => {
+      {PEARLS.filter((p) => !found.includes(p.id) && (p.where ?? 'world') === where).map((p) => {
         const hide = hiddenBy(p)
         if (hide === 'dig') return <Buried key={p.id} p={p} />
         if (hide === 'grass' && !revealed.includes(p.id)) return null // still under its tuft (Grass.tsx)

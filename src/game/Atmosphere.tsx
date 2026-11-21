@@ -13,6 +13,8 @@ const RECHECK = 5 // seconds between reads of the clock
 const DARK = new Color('#000000') // indoors, everything past the room's walls
 const ROOM_DAY = { sky: new Color('#ffffff'), ground: new Color('#88aa77'), hemi: 1.2, sun: new Color('#ffffff'), sunI: 1.5 }
 const ROOM_NIGHT = { sky: new Color('#ffe2bd'), ground: new Color('#6a5a48'), hemi: 0.85, sun: new Color('#ffcf8f'), sunI: 1 }
+// The cave (CaveRooms.tsx): cool and dim, lit mostly by the player's own glow (PlayerGround.tsx) and the torches.
+const CAVE_LIGHT = { sky: new Color('#9aa8c8'), ground: new Color('#3a3540'), hemi: 0.75, sun: new Color('#c9d3f0'), sunI: 0.55 }
 const NO_FOG = 1e4 // fog pushed out of sight indoors (turning fog off would recompile every material)
 
 const background = new Color()
@@ -46,7 +48,20 @@ export function Atmosphere() {
     waterMaterial.color.copy(sky.water)
     foamMaterial.color.copy(sky.foam)
 
-    if (useGame.getState().scene === 'house') {
+    const where = useGame.getState().scene
+    if (where === 'cave') {
+      background.copy(DARK)
+      s.position.set(2, 10, 6)
+      fog.near = NO_FOG
+      fog.far = NO_FOG + 1
+      h.color.copy(CAVE_LIGHT.sky)
+      h.groundColor.copy(CAVE_LIGHT.ground)
+      h.intensity = CAVE_LIGHT.hemi
+      s.color.copy(CAVE_LIGHT.sun)
+      s.intensity = CAVE_LIGHT.sunI
+      return
+    }
+    if (where === 'house') {
       const n = sky.weather.night
       background.copy(DARK)
       s.position.set(5, 10, 4)

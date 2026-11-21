@@ -7,13 +7,14 @@ import { useGame } from './store'
 
 // What sits around the player rather than on them: a soft shadow that keeps the character on the
 // ground (the scene casts no real shadows), and at night a small warm light so a dark outfit still
-// reads against dark grass and doorways. Mounted in <Player>'s root, outside the rig, so neither
+// reads against dark grass and doorways (and, in the cave, always). Mounted in <Player>'s root, outside the rig, so neither
 // turns, leans or tumbles with the body.
 
 const SHADOW_SIZE = 0.85 // diameter on the ground, world units
 const SHADOW_OPACITY = 0.35
 const NIGHT_GLOW = 2.5 // the light's intensity at full night outdoors (candela)
 const INDOOR_GLOW = 0.4 // share of that indoors, where the room is already lamp-lit
+const CAVE_GLOW = 2 // in the cave, day or night
 
 // A radial gradient, drawn once: dark in the middle, fading to nothing at the edge.
 function shadowTexture() {
@@ -52,7 +53,8 @@ export function PlayerGround() {
     shadow.current?.scale.setScalar(SHADOW_SIZE * (1 - 0.2 * env))
     shadowMat.opacity = SHADOW_OPACITY * (1 - 0.3 * env)
     // Always mounted, at 0 by day: adding or removing a light would recompile every material.
-    if (light.current) light.current.intensity = NIGHT_GLOW * sky.weather.night * (useGame.getState().scene === 'house' ? INDOOR_GLOW : 1)
+    const scene = useGame.getState().scene
+    if (light.current) light.current.intensity = scene === 'cave' ? CAVE_GLOW : NIGHT_GLOW * sky.weather.night * (scene === 'house' ? INDOOR_GLOW : 1)
   })
 
   return (
