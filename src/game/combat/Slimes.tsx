@@ -7,13 +7,11 @@ import { burst } from '../player/Dust'
 import { damage, harm } from './health'
 import { busy } from '../core/interact'
 import { isInland } from '../world/Island'
-import { built, pois, roadTiles } from '../world/pois'
-import { tileAt } from '../core/grid'
 import { reducedMotion, useSettings } from '../core/settings'
 import { pop } from '../core/sfx'
 import { playerPos, playerRoll } from '../core/state'
 import { useGame } from '../core/store'
-import { trees } from '../world/Trees'
+import { clear, nearPath } from '../world/tiles'
 
 // A few slimes in the outer meadows. Each hops about near its home; when the player comes close
 // it hops toward them, and a bump costs half a heart (health.ts). Two sword hits, or one spin,
@@ -38,26 +36,10 @@ const RESPAWN_AWAY = 8
 const DROP = { heart: 0.25, shell: 0.5 }
 const COLORS = ['#7ccf6a', '#6fc2c9', '#c9a24f']
 
-// Tiles a slime may never stand on: roads, places and their neighbours, the house, trees.
-const key = (i: number, j: number) => `${i},${j}`
-const closed = new Set<string>()
-for (const t of roadTiles) closed.add(key(t.i, t.j))
-for (const p of pois) {
-  const t = tileAt(p.x, p.z)
-  for (let di = -1; di <= 1; di++) for (let dj = -1; dj <= 1; dj++) closed.add(key(t.i + di, t.j + dj))
-}
-const paths = new Set(closed) // roads and places only: homes keep two tiles from these
-for (const t of trees) closed.add(key(Math.round(t.x), Math.round(t.z)))
-const open = (x: number, z: number) => {
-  const i = Math.round(x)
-  const j = Math.round(z)
-  return !closed.has(key(i, j)) && !built(i, j) && isInland(i, j, 1)
-}
-// Homes: open meadow, far from the house, at least two tiles from any road.
-const nearRoad = (i: number, j: number) => {
-  for (let di = -2; di <= 2; di++) for (let dj = -2; dj <= 2; dj++) if (paths.has(key(i + di, j + dj))) return true
-  return false
-}
+// Tiles a slime may never stand on (tiles.ts): roads, places and their neighbours, the house, trees.
+const open = (x: number, z: number) => clear(Math.round(x), Math.round(z))
+// Homes: open meadow, far from the house, at least two tiles from any road or place.
+const nearRoad = (i: number, j: number) => nearPath(i, j, 2)
 
 function rng(seed: number) {
   return () => {

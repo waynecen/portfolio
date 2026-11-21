@@ -11,14 +11,10 @@ import {
   type BufferGeometry,
   type Group,
 } from 'three'
-import { tileAt } from '../core/grid'
 import { register } from '../core/interact'
 import { collect, ITEMS, useInventory, type Item, type ItemId } from './inventory'
-import { isInland } from '../world/Island'
-import { HOUSE } from '../world/layout'
-import { built, pois, roadTiles } from '../world/pois'
-import { trees } from '../world/Trees'
 import { reducedMotion } from '../core/settings'
+import { clear } from '../world/tiles'
 
 // The items still waiting to be found, floating and turning slowly over the grass so they catch
 // the eye. Walking up gives the "Pick up" prompt; picking one up puts it in the bag (inventory.ts).
@@ -33,23 +29,8 @@ const GLOW = 0.3 // share of its colour each item gives off, so it still shows a
 // Tiles an item mustn't sit on: roads, places and their neighbours, the house, and the tiles
 // round a tree, reaching further behind it (north), since the camera looks north and a canopy
 // would hide anything up to a few tiles back. Off the shore's edge too.
-const key = (i: number, j: number) => `${i},${j}`
-const blocked = new Set<string>()
-const around = (i: number, j: number, behind = 1) => {
-  for (let di = -1; di <= 1; di++) for (let dj = -behind; dj <= 1; dj++) blocked.add(key(i + di, j + dj))
-}
 const SHADE = 3 // tiles behind a tree it can hide
-for (const t of roadTiles) blocked.add(key(t.i, t.j))
-for (const p of pois) {
-  const t = tileAt(p.x, p.z)
-  around(t.i, t.j)
-}
-for (let i = HOUSE.i0; i <= HOUSE.i1; i++) for (let j = HOUSE.j0; j <= HOUSE.j1; j++) around(i, j)
-for (const t of trees) {
-  const { i, j } = tileAt(t.x, t.z)
-  around(i, j, SHADE)
-}
-const free = (i: number, j: number) => !blocked.has(key(i, j)) && !built(i, j) && isInland(i, j, 1)
+const free = (i: number, j: number) => clear(i, j, { house: 1, tree: 1, behind: SHADE })
 
 /** The clear tile nearest `at`, searching outward ring by ring. */
 function settle(at: Item['at']) {

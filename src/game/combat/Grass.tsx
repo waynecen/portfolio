@@ -6,14 +6,11 @@ import { addHittable } from './combat'
 import { maybeDrop } from './drops'
 import { burst } from '../player/Dust'
 import { merge } from '../core/geometry'
-import { isInland } from '../world/Island'
 import { PEARLS, revealPearl, usePearls } from '../secrets/pearls'
-import { built, pois, roadTiles } from '../world/pois'
 import { winter } from '../world/season'
 import { pop } from '../core/sfx'
 import { playerPos } from '../core/state'
-import { tileAt } from '../core/grid'
-import { trees } from '../world/Trees'
+import { clear } from '../world/tiles'
 
 // Things to cut and break with the sword (combat.ts): tufts of tall grass scattered over the
 // meadows, and a few clay pots. Either can leave a shell or a heart behind (drops.ts), and a few
@@ -38,16 +35,9 @@ function rng(seed: number) {
   }
 }
 
-// Tiles kept clear: roads, places and their neighbours, the house, and trees.
+// Tiles kept clear (tiles.ts): roads, places and their neighbours, the house, and trees.
 const key = (i: number, j: number) => `${i},${j}`
-const blocked = new Set<string>()
-for (const t of roadTiles) blocked.add(key(t.i, t.j))
-for (const p of pois) {
-  const t = tileAt(p.x, p.z)
-  for (let di = -1; di <= 1; di++) for (let dj = -1; dj <= 1; dj++) blocked.add(key(t.i + di, t.j + dj))
-}
-for (const t of trees) blocked.add(key(Math.round(t.x), Math.round(t.z)))
-const free = (i: number, j: number) => !blocked.has(key(i, j)) && !built(i, j) && isInland(i, j, 1)
+const free = (i: number, j: number) => clear(i, j)
 
 type Tuft = { x: number; z: number; turn: number; scale: number; pearl?: string }
 function placeTufts(): Tuft[] {

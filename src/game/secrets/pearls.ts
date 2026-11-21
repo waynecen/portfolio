@@ -1,17 +1,16 @@
 import { create } from 'zustand'
 import { centreOf, I, J, ROOM_OF } from './cave'
-import { tileAt } from '../core/grid'
 import { say, sayFirst } from '../core/interact'
 import { isInland } from '../world/Island'
 import { PEARL_AT } from './islet'
 import { addTrack } from '../core/music'
 import { placeholderBonus } from '../core/placeholderTracks'
-import { built, pois, roadTiles } from '../world/pois'
 import { winter } from '../world/season'
 import { chime, landed } from '../core/sfx'
 import { PEARL_TRACK } from '../core/tracks'
 import { inForest, trees } from '../world/Trees'
 import { readSaved, writeSaved } from '../core/persist'
+import { clear } from '../world/tiles'
 
 // Hidden pearls (HiddenPearls.tsx draws them): buried under a patch of disturbed earth, under a tuft of
 // tall grass that has to be cut first (Grass.tsx), or tucked behind a tree, where the canopy hides
@@ -38,22 +37,8 @@ function rng(seed: number) {
   }
 }
 
-// Open meadow: off roads and places (and a tile round them), clear of trees and the house.
-const key = (i: number, j: number) => `${i},${j}`
-const closed = new Set<string>()
-for (const t of roadTiles) closed.add(key(t.i, t.j))
-for (const p of pois) {
-  const t = tileAt(p.x, p.z)
-  for (let di = -1; di <= 1; di++) for (let dj = -1; dj <= 1; dj++) closed.add(key(t.i + di, t.j + dj))
-}
-const paths = new Set(closed) // roads and places only
-const treeTiles = new Set(trees.map((t) => key(Math.round(t.x), Math.round(t.z))))
-for (const t of trees) {
-  const i = Math.round(t.x)
-  const j = Math.round(t.z)
-  for (let di = -1; di <= 1; di++) for (let dj = -1; dj <= 1; dj++) closed.add(key(i + di, j + dj))
-}
-const open = (i: number, j: number) => !closed.has(key(i, j)) && !built(i, j)
+// Open meadow (tiles.ts): off roads and places (and a tile round them), a tile clear of trees, off the house.
+const open = (i: number, j: number) => clear(i, j, { tree: 1, inland: 0 })
 
 function place(): Pearl[] {
   const random = rng(SEED)
@@ -82,7 +67,7 @@ function place(): Pearl[] {
       const t = list[Math.floor(random() * list.length)]
       const i = Math.round(t.x)
       const j = Math.round(t.z) - 1
-      if (isInland(i, j, 1) && !paths.has(key(i, j)) && !treeTiles.has(key(i, j)) && !built(i, j) && apart(i, j)) return { i, j }
+      if (clear(i, j) && apart(i, j)) return { i, j }
     }
     return null
   }
