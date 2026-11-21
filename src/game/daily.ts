@@ -1,4 +1,4 @@
-import { dayNumber } from './calendar'
+import { dayNumber } from './secrets/calendar'
 import { addShells } from './drops'
 import { isInland, isLand } from './world/Island'
 import { say } from './core/interact'

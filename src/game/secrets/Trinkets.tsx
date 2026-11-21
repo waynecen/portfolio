@@ -1,12 +1,12 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { MeshLambertMaterial, OctahedronGeometry, type Group } from 'three'
-import { register } from './core/interact'
-import { isInland } from './world/Island'
-import { built, roadTiles } from './world/pois'
+import { register } from '../core/interact'
+import { isInland } from '../world/Island'
+import { built, roadTiles } from '../world/pois'
 import { findSecret, SECRETS, useSecrets, type Secret } from './secrets'
-import { reducedMotion } from './core/settings'
-import { trees } from './world/Trees'
+import { reducedMotion } from '../core/settings'
+import { trees } from '../world/Trees'
 
 // Where the odd trinkets wait (secrets.ts): small spinning stars, tucked into out-of-the-way spots
 // (deep in the forest, the far east tip, behind the house). Walking up gives the "Pick up" prompt.

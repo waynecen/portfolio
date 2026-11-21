@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react'
 import { keyName } from './core/keymap'
 import { camera, download, leavePhoto, nextPose, POSES, setZoom, shoot, usePhoto, ZOOM_MAX, ZOOM_MIN, zoomBy } from './photo'
 import { isTouch } from './core/quality'
-import { secretOn } from './secrets'
+import { secretOn } from './secrets/secrets'
 import { useGame } from './core/store'
 
 // Photo mode's buttons (photo.ts), along the bottom of the screen, with the rest of the HUD hidden

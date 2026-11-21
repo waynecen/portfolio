@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { calendarLines } from './calendar'
+import { calendarLines } from './secrets/calendar'
 import { busy, say } from './core/interact'
 import { leafPiles } from './Leaves'
 import { visit } from './visits'

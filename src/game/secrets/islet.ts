@@ -1,12 +1,12 @@
 import { create } from 'zustand'
 import { useCave } from './cave'
-import { addShells } from './drops'
-import { DOCK } from './fishing'
-import { say, sayFirst } from './core/interact'
-import { ISLET } from './world/Island'
-import { ISLET_BOAT, ISLET_SPAWN } from './world/layout'
-import { goTo, type Spawn } from './core/scene'
-import { landed, splash } from './core/sfx'
+import { addShells } from '../drops'
+import { DOCK } from '../fishing'
+import { say, sayFirst } from '../core/interact'
+import { ISLET } from '../world/Island'
+import { ISLET_BOAT, ISLET_SPAWN } from '../world/layout'
+import { goTo, type Spawn } from '../core/scene'
+import { landed, splash } from '../core/sfx'
 
 // The islet south of the dock (IsletScene.tsx draws it): a rowing boat tied to the dock goes there once
 // the player has the oar from the cave (cave.ts), and a second boat on the islet's shore brings them

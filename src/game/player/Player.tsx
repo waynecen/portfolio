@@ -23,7 +23,7 @@ import { step, whoosh, type Surface } from '../core/sfx'
 import { playerFacing, playerPos, playerRoll, playerVel, teleport } from '../core/state'
 import { held } from '../core/interact'
 import { useGame } from '../core/store'
-import { secretOn } from '../secrets'
+import { secretOn } from '../secrets/secrets'
 
 const SPEED = 2.5 // walking speed, units per second (about 2 body heights a second, so a chibi's steps can keep up)
 const SPRINT = 2.5 // holding Shift (or B on touch) multiplies top speed by this (2.5 → 6.25 units/s)

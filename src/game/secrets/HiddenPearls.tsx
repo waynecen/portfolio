@@ -1,12 +1,12 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useMemo, useRef } from 'react'
 import { Color, MeshBasicMaterial, MeshLambertMaterial, PlaneGeometry, SphereGeometry, type Group } from 'three'
-import { burst } from './player/Dust'
-import { register } from './core/interact'
+import { burst } from '../player/Dust'
+import { register } from '../core/interact'
 import { findPearl, hiddenBy, PEARLS, usePearls, type Pearl } from './pearls'
-import { reducedMotion } from './core/settings'
-import { useTreasureMap } from './shop'
-import { playerPos } from './core/state'
+import { reducedMotion } from '../core/settings'
+import { useTreasureMap } from '../shop'
+import { playerPos } from '../core/state'
 
 // The pearls still to find (pearls.ts). One lying in the open (or behind a tree, or in grass that's
 // been cut) glints on the ground; a buried one shows only as a cross of disturbed earth, and only

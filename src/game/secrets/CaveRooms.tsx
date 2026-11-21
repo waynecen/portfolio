@@ -34,19 +34,19 @@ import {
   useCave,
   type Room,
 } from './cave'
-import { addCollider, type Collider } from './core/collision'
-import { addHittable } from './combat'
-import { burst } from './player/Dust'
-import { block as box, flat, merge, pick, tint } from './core/geometry'
-import { damage, harm } from './health'
+import { addCollider, type Collider } from '../core/collision'
+import { addHittable } from '../combat'
+import { burst } from '../player/Dust'
+import { block as box, flat, merge, pick, tint } from '../core/geometry'
+import { damage, harm } from '../health'
 import { Pearls } from './HiddenPearls'
-import { keys, stick } from './core/input'
-import { busy, held, register, say } from './core/interact'
-import { caveRoom, DOOR, ROOM } from './world/layout'
-import { reducedMotion, useSettings } from './core/settings'
-import { pop, thud } from './core/sfx'
-import { playerPos, playerRoll } from './core/state'
-import { useGame } from './core/store'
+import { keys, stick } from '../core/input'
+import { busy, held, register, say } from '../core/interact'
+import { caveRoom, DOOR, ROOM } from '../world/layout'
+import { reducedMotion, useSettings } from '../core/settings'
+import { pop, thud } from '../core/sfx'
+import { playerPos, playerRoll } from '../core/state'
+import { useGame } from '../core/store'
 
 // The cave behind the waterfall (cave.ts has the rooms and what's been done in them). Each room is
 // built like the house's: a floor of stone tiles, tall walls behind and at the sides, a low one in

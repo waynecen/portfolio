@@ -1,7 +1,7 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { Color, IcosahedronGeometry, MeshLambertMaterial, Object3D, type InstancedMesh } from 'three'
-import { secretOn } from '../secrets'
+import { secretOn } from '../secrets/secrets'
 import { winter } from '../world/season'
 import { sky } from '../world/sky'
 import { playerPos, playerRoll, playerVel } from '../core/state'

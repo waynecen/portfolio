@@ -1,5 +1,5 @@
 import { holiday } from './calendar'
-import { FRONT_DOOR } from './world/layout'
+import { FRONT_DOOR } from '../world/layout'
 
 // Decorations by the front door on a few days of the year (calendar.ts): pumpkins at Halloween,
 // presents at Christmas, balloons on the island's birthday. A handful of plain shapes, only drawn

@@ -1,7 +1,7 @@
 import { useFishing } from '../fishing'
 import { ITEMS, useInventory } from '../inventory'
 import { isTouch } from '../core/quality'
-import { SECRETS, useSecrets } from '../secrets'
+import { SECRETS, useSecrets } from '../secrets/secrets'
 import { PLACES, useSeen } from '../seen'
 import { sky } from './sky'
 import { winter } from './season'
