@@ -1,5 +1,6 @@
 import { useRef, type PointerEvent } from 'react'
 import { pressAttack, releaseAttack } from './combat'
+import { putAwayRod, useFishing } from './fishing'
 import { actions, buttons, stick } from './input'
 import { interact } from './interact'
 import { isTouch } from './quality'
@@ -89,8 +90,9 @@ function ActionButton() {
   )
 }
 
-// Hold to sprint; a quick tap (under TAP seconds) swings the sword instead (combat.ts). Pointer
-// capture keeps the release tracked even if the thumb slides off the button.
+// Hold to sprint; a quick tap (under TAP seconds) swings the sword (combat.ts), or with the fishing
+// rod in hand puts it away (not mid-reel, so a stray tap can't lose a fish). Pointer capture keeps
+// the release tracked even if the thumb slides off the button.
 const TAP = 0.22
 function SprintButton() {
   const pointer = useRef<number | null>(null)
@@ -104,15 +106,20 @@ function SprintButton() {
     pointer.current = null
     set(false, e.currentTarget)
     if (e.type === 'pointerup' && performance.now() - downAt.current < TAP * 1000) {
-      pressAttack()
-      releaseAttack()
+      const { rod, phase } = useFishing.getState()
+      if (rod) {
+        if (phase !== 'reel') putAwayRod()
+      } else {
+        pressAttack()
+        releaseAttack()
+      }
     }
   }
   return (
     <button
       type="button"
       className="action-button action-button-b"
-      aria-label="Sprint (hold) or sword (tap)"
+      aria-label="Sprint (hold); sword, or put away the rod (tap)"
       aria-pressed="false"
       onPointerDown={(e) => {
         e.preventDefault()

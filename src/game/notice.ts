@@ -26,7 +26,7 @@ const NOTICES: Notice[] = [
   },
   {
     when: () => useFishing.getState().rod,
-    lines: () => ['PLEASE do not poke the notice board with your fishing rod.', `${key('B', 'Put away rod, in the menu,')} puts it back in the barrel.`],
+    lines: () => ['PLEASE do not poke the notice board with your fishing rod.', `${key('B', 'A tap of B')} puts it back in the barrel.`],
   },
   {
     when: () => !winter && sky.weather.rain > 0.5,

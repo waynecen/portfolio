@@ -149,16 +149,14 @@ export function toggleRod() {
       'rod',
       [
         'You take a fishing rod from the barrel.',
-        isTouch
-          ? 'Look for ripples in the water off the end of the dock.'
-          : 'Look for ripples in the water off the end of the dock. Press B to put the rod away.',
+        `Look for ripples in the water off the end of the dock. ${isTouch ? 'Tap B' : 'Press B'} to put the rod away.`,
       ],
       ['You take a fishing rod.'],
     )
 }
 
 /**
- * B on the keyboard, or the Put away rod chip: puts the rod away (back in the barrel, so another can be taken), reeling in
+ * B (a tap of it on touch screens), or the Put away rod chip: puts the rod away (back in the barrel, so another can be taken), reeling in
  * first if the line is out. False if there's no rod in hand, so B opens the bag instead.
  */
 export function putAwayRod(): boolean {

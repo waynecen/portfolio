@@ -50,7 +50,7 @@ export function pressAttack() {
   if (useFishing.getState().rod) {
     sayFirst(
       'sword-rod',
-      [`Your hands are full with the fishing rod. ${isTouch ? 'Put it away from the menu' : 'Press B to put it away'} to use your sword.`],
+      [`Your hands are full with the fishing rod. ${isTouch ? 'Tap B to put it away' : 'Press B to put it away'} to use your sword.`],
       ['Your hands are full with the rod.'],
     )
     return

@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react'
 import { toggleEdit } from './edit'
-import { putAwayRod, useFishing } from './fishing'
 import { pointMe } from './guide'
 import { closePanel, openPanel, toggleMenu } from './interact'
 import { ITEMS, useInventory } from './inventory'
@@ -9,14 +8,14 @@ import { useGame } from './store'
 
 // Touch screens: a Start button at the bottom, between the joystick and the A and B buttons, opens
 // this menu, which holds what the keyboard reaches with keys (the bag, Where to?, the log, the
-// settings, editing the room, putting the rod away). It keeps the top of the screen clear on a phone;
-// the chips that do these things on a computer are hidden on touch screens (style.css).
+// settings, editing the room); a tap of B puts the fishing rod away, as B does on a keyboard. It
+// keeps the top of the screen clear on a phone: the chips that do these things on a computer are
+// hidden on touch screens (style.css).
 
 export function MenuPanel() {
   const open = useGame((s) => s.panel === 'menu')
   const scene = useGame((s) => s.scene)
   const found = useInventory((s) => s.found.length)
-  const rod = useFishing((s) => s.rod)
   const first = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
@@ -64,13 +63,6 @@ export function MenuPanel() {
           <li>
             <button type="button" onClick={then(toggleEdit)}>
               Edit room
-            </button>
-          </li>
-        )}
-        {rod && (
-          <li>
-            <button type="button" onClick={then(putAwayRod)}>
-              Put away rod
             </button>
           </li>
         )}
