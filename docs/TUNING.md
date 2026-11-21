@@ -229,6 +229,7 @@ range: 1.4 // Furniture.tsx: how close the player must be to read the note (ever
 const CHARS_PER_SECOND = 40 // Dialogue.tsx: typewriter speed; lines appear instantly with "reduce motion" on
 const PAUSE_SENTENCE = 0.25 // Dialogue.tsx: extra pause (s) after . ! ? so the text reads like speech
 const PAUSE_COMMA = 0.1 // Dialogue.tsx: extra pause (s) after , ; :
+const MAX = 40 // log.ts: conversations kept in the dialogue log; older ones drop off
 const LEAVE = 0.6 // Interactions.tsx: a dialogue closes once the player is this much beyond the range of what started it
 const SAY_RANGE = 1.5 // interact.ts: the range used when nothing was in focus (it belongs to the spot it opened at)
 ```
@@ -236,6 +237,8 @@ const SAY_RANGE = 1.5 // interact.ts: the range used when nothing was in focus (
 Bubble look is in [style.css](../src/style.css): `.dialogue-cloud` `fill` (cream), `.dialogue` `color` (brown text), `.dialogue-next` `fill` (arrow), and the `dialogue-pop` keyframes (pop-in). The cloud outline is the SVG `path` in Dialogue.tsx; it stretches to fit, so it works at any width.
 
 Anything the player can use calls `register({ x, z, range, prompt, onInteract })` in an effect. Each frame, the nearest one in range gets focus and shows its prompt ("E Read"), or its card if it has a `card` (a project, or the contact links; the card's `action` labels what using it opens). The player can keep walking while a dialogue is open: walking out of range of whatever started it closes it, so reading a sign never holds you in place. Panels, edit mode, the fade between areas and a fishing line out still hold the player still (`held()` in interact.ts). To add a sign, place `<Sign x z lines={[…]} />` in [Game.tsx](../src/game/Game.tsx). The welcome and controls text is the `NOTE` array in [Furniture.tsx](../src/game/Furniture.tsx), with a keyboard and a touch version.
+
+**The log** ([log.ts](../src/game/log.ts), [LogPanel.tsx](../src/game/LogPanel.tsx)): every conversation this visit is kept, newest at the bottom; L (or Log in the bag) opens it, and L, Esc or × closes it. **Told once:** `sayFirst(key, first, again)` in interact.ts says the full `first` lines the first time this browser hears about `key`, and the short `again` lines after (saved under `told-v1`). The rod barrel and the ripple use it.
 
 ---
 
@@ -450,7 +453,7 @@ const codes: Record<string, Dir> = {
   ShiftLeft: 'sprint',
   ShiftRight: 'sprint', // hold to sprint
 }
-// In bindKeys: Space = advance dialogue if open, else reel in a line that's out (fishing.ts), else roll; E / Enter = interact (interact.ts), or reel in; Esc = close dialogue and reel in; F = edit the room (indoors); G = point the way to an unseen place (guide.ts); B = put away the rod if one is in hand (fishing.ts), else open or close the bag (inventory.ts)
+// In bindKeys: Space = advance dialogue if open, else reel in a line that's out (fishing.ts), else roll; E / Enter = interact (interact.ts), or reel in; Esc = close dialogue and reel in; F = edit the room (indoors); G = point the way to an unseen place (guide.ts); L = open or close the dialogue log (log.ts); B = put away the rod if one is in hand (fishing.ts), else open or close the bag (inventory.ts)
 // While editing, keys go to editKey() in edit.ts instead
 ```
 

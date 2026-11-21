@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import { FISH, putAwayRod, SPOTS, useFishing } from './fishing'
-import { closePanel } from './interact'
+import { closePanel, toggleLog } from './interact'
 import { ITEM, ITEMS, toggleBag, useInventory, type ItemId } from './inventory'
 import { isTouch } from './quality'
 import { PLACES, useSeen } from './seen'
@@ -153,6 +153,9 @@ export function InventoryPanel() {
         <span className="bag-count">
           {found.length} of {ITEMS.length} found
         </span>
+        <button type="button" className="bag-log" onClick={toggleLog}>
+          {!isTouch && <kbd>L</kbd>} Log
+        </button>
         <button type="button" className="bag-close" aria-label="Close" onClick={closePanel}>
           ×
         </button>

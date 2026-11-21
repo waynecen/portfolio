@@ -19,6 +19,7 @@ import { Interactions } from './Interactions'
 import { BagButton, InventoryPanel, RodButton } from './InventoryPanel'
 import { Island } from './Island'
 import { Joystick } from './Joystick'
+import { LogPanel } from './LogPanel'
 import { BED_SPAWN } from './layout'
 import { Mailbox } from './Mailbox'
 import { MusicPanel, NowPlaying } from './MusicPanel'
@@ -118,6 +119,7 @@ export function Game() {
       <NowPlaying />
       <MusicPanel />
       <InventoryPanel />
+      <LogPanel />
       <BagButton />
       <RodButton />
       <EditHud />

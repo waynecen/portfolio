@@ -250,6 +250,15 @@ body[data-scene="house"] .rod-toggle { top: calc(max(12px, env(safe-area-inset-t
 .bag-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
 .bag-head h2 { margin: 0; font-size: 20px; }
 .bag-count { flex: 1; font-size: 13px; font-weight: 500; opacity: .75; }
+.bag-log { padding: 5px 12px; border: 0; border-radius: 999px; background: rgb(122 100 73 / .12); font-size: 13px; }
+.bag-log kbd { display: inline-block; min-width: 18px; margin-right: 4px; padding: 0 4px; border-radius: 6px; background: #7a6449; color: #fdf5dc; font: inherit; }
+/* The dialogue log (LogPanel.tsx): the bag's panel, with a scrolling list, newest at the bottom. */
+.log-list { margin: 0; padding: 0 4px 0 0; list-style: none; max-height: min(60vh, 28rem); overflow: auto; }
+.log-list li { padding: 8px 0; border-top: 1px solid rgb(122 100 73 / .15); }
+.log-list li:first-child { border-top: 0; }
+.log-list p { margin: 0 0 4px; font-weight: 500; font-size: 14px; }
+.log-list p:last-child { margin-bottom: 0; }
+.log-empty { margin: 0; font-weight: 500; opacity: .75; }
 .bag-close { width: 36px; height: 36px; border: 0; border-radius: 50%; background: rgb(122 100 73 / .12); font-size: 22px; line-height: 1; }
 .bag-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 0 0 14px; padding: 0; list-style: none; }
 .bag-slot {

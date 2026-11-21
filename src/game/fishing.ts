@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { say } from './interact'
+import { say, sayFirst } from './interact'
 import { isTouch } from './quality'
 import { chime, click, plop, splash, whoosh } from './sfx'
 import { playerFacing, playerPos } from './state'
@@ -114,12 +114,16 @@ export function toggleRod() {
   const { rod } = useFishing.getState()
   useFishing.setState({ rod: !rod })
   if (!rod)
-    say([
-      'You take a fishing rod from the barrel.',
-      isTouch
-        ? 'Look for ripples in the water off the end of the dock.'
-        : 'Look for ripples in the water off the end of the dock. Press B to put the rod away.',
-    ])
+    sayFirst(
+      'rod',
+      [
+        'You take a fishing rod from the barrel.',
+        isTouch
+          ? 'Look for ripples in the water off the end of the dock.'
+          : 'Look for ripples in the water off the end of the dock. Press B to put the rod away.',
+      ],
+      ['You take a fishing rod.'],
+    )
 }
 
 /**
@@ -139,7 +143,11 @@ export function putAwayRod(): boolean {
 export function cast() {
   const s = useFishing.getState()
   if (!s.rod) {
-    say(['Something is moving under the water.', 'You’ll need a rod. There’s a barrel of them at the foot of the dock.'])
+    sayFirst(
+      'ripple',
+      ['Something is moving under the water.', 'You’ll need a rod. There’s a barrel of them at the foot of the dock.'],
+      ['You’ll need a rod from the barrel.'],
+    )
     return
   }
   const at = SPOTS[s.spot]

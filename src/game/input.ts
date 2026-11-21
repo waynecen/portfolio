@@ -2,7 +2,7 @@ import { editKey, toggleEdit } from './edit'
 import { putAwayRod, reel, stopFishing } from './fishing'
 import { pointMe } from './guide'
 import { toggleBag } from './inventory'
-import { advance, closeDialogue, closePanel, interact } from './interact'
+import { advance, closeDialogue, closePanel, interact, toggleLog } from './interact'
 import { unlock } from './sfx'
 import { useGame } from './store'
 
@@ -40,7 +40,7 @@ function reset() {
 }
 
 // Keys that act on the world. Ignored on focused links and buttons so those keep working.
-const ACTION_KEYS = new Set(['Space', 'KeyE', 'Enter', 'Escape', 'KeyF', 'KeyB', 'KeyG'])
+const ACTION_KEYS = new Set(['Space', 'KeyE', 'Enter', 'Escape', 'KeyF', 'KeyB', 'KeyG', 'KeyL'])
 
 export function bindKeys(): () => void {
   const set = (down: boolean) => (e: KeyboardEvent) => {
@@ -66,6 +66,7 @@ export function bindKeys(): () => void {
         stopFishing()
       } else if (e.code === 'KeyF') toggleEdit()
       else if (e.code === 'KeyG') pointMe()
+      else if (e.code === 'KeyL') toggleLog()
       else if (e.code === 'KeyB') {
         if (!putAwayRod()) toggleBag() // B puts away a rod in hand, otherwise opens the bag
       }

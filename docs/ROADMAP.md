@@ -103,7 +103,7 @@ Ten ideas taken from how acclaimed games look after their players, chosen for a 
 29. **Calendar moments.** The site's anniversary, a few holidays, and one gentle gag that reads the clock, such as a sign at 3am asking whether you shouldn't be asleep. *(K.K. Slider's birthday song, Psycho Mantis)*
 30. **Settings with honest assists.** Separate music and effects volumes, reduced motion, text size, and a fishing assist (a longer bite window) with a visible marker while it's on. *(The Last of Us Part II's presets, God of War Ragnarök's highlighted changes, Mario Kart's blinking antenna, Hades' God Mode)*
 31. **Feedback with rules.** A brief freeze and zoom on a catch, a jingle per kind of find, wetter footsteps in the rain, each with a written list of when it must not fire. *(Smash's Finish Zoom, Metroid's item fanfare, Animal Crossing's rain sounds)*
-32. **A dialogue log, and first-time messages only once.** Explanations such as the rod's play in full the first time and shorten after. *(Tears of the Kingdom's dialogue log and shrine banner)*
+32. **A dialogue log, and first-time messages only once.** *(done: log.ts, LogPanel.tsx, sayFirst in interact.ts)* Explanations such as the rod's play in full the first time and shorten after. *(Tears of the Kingdom's dialogue log and shrine banner)*
 33. **Silly secrets.** Three or four hidden trinkets, each switching on a harmless world effect: confetti steps, low gravity, a big head, black and white. *(Halo's skulls)*
 34. **Lines that react and hide real tips.** Signs and, later, villagers say different things by weather, hour or what you're carrying, with real tips tucked into the jokes. *(Smash's Palutena's Guidance, Valorant's agent voice lines)*
 

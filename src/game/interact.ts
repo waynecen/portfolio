@@ -1,4 +1,5 @@
 import { fishing, reel } from './fishing'
+import { firstTime, record } from './log'
 import { markSeen } from './seen'
 import { click } from './sfx'
 import { playerPos } from './state'
@@ -58,6 +59,15 @@ export function say(lines: string[]) {
   const f = useGame.getState().focus
   const at = f ? { x: f.x, z: f.z, range: f.range } : { x: playerPos.x, z: playerPos.z, range: SAY_RANGE }
   useGame.setState({ dialogue: { lines, index: 0, at } })
+  record(lines)
+}
+
+/**
+ * Says `first` the first time this browser hears about `key`, and the shorter `again` after that,
+ * so explanations play in full once and then get out of the way.
+ */
+export function sayFirst(key: string, first: string[], again: string[]) {
+  say(firstTime(key) ? first : again)
 }
 
 export function closeDialogue() {
@@ -87,6 +97,18 @@ export function interact(): boolean {
   if (f.seen) markSeen(f.seen)
   f.onInteract()
   return true
+}
+
+/** L, or Log in the bag: opens the dialogue log (LogPanel.tsx), or closes it if it's open. */
+export function toggleLog() {
+  const s = useGame.getState()
+  if (s.panel === 'log') {
+    click()
+    closePanel()
+  } else if (!busy() || s.panel === 'inventory') {
+    click()
+    openPanel('log')
+  }
 }
 
 /** Opens a panel such as the record player. */
