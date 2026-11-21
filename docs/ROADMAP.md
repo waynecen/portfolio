@@ -19,7 +19,7 @@ This replaces the earlier feature roadmap. Its unfinished items are folded in be
 - **Time of day and weather:** from the visitor's clock. Morning, dawn mist, afternoon rain, golden evening, and night with fireflies and lit windows.
 - **Shippable basics:** the About sign, the Contact mailbox, a loading screen, link previews, a favicon, robots and sitemap.
 - **Tooling:** the snapshot skill, and the model pipeline (`npm run models`) with a model-ready character rig.
-- **Removed on purpose:** the minimap. The island is explored on foot. A treasure map item (D17) is the only "map" planned.
+- **Removed on purpose:** the minimap. The island is explored on foot. The treasure map (D17) is the only "map", and it marks dig spots, not the way.
 
 ## Phase A: Character and feel *(next)*
 
@@ -69,12 +69,12 @@ Gentle by design: nothing is hard, and nothing blocks a project.
 
 ## Phase D: Secrets and a small dungeon
 
-15. **Hidden pearls.** Ten around the island: dug up, under grass, or behind trees. Finding them all unlocks a record for the record player. *(the bag and six placeholder finds done: inventory.ts, Pickups.tsx, InventoryPanel.tsx)*
-16. **The cave behind the waterfall.**
+15. **Hidden pearls.** *(done: pearls.ts, HiddenPearls.tsx; the record is a generated loop until tracks.ts gives PEARL_TRACK)* Ten around the island: dug up, under grass, or behind trees. Finding them all unlocks a record for the record player.
+16. **The cave behind the waterfall.** *(done: Waterfall.tsx, cave.ts, CaveRooms.tsx; the islet: islet.ts, IsletScene.tsx)*
     - A small dungeon in its own scene, the way the house is.
     - Flip-screen rooms inside, *Link's Awakening*-style.
     - A key, a push-block puzzle, a big-slime mini-boss, and a chest with an item that opens a new area: a pier and a boat to a second islet.
-17. **Signposts and a treasure map.** Signposts at the crossroads; the map is an item that marks dig spots, not a minimap.
+17. **Signposts and a treasure map.** *(done: signposts in pois.ts and Signposts.tsx; the map is sold at the shop, shop.ts)* Signposts at the crossroads; the map is an item that marks dig spots, not a minimap.
 
 ## Phase E: Keeping it and polish
 
