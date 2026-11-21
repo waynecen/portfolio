@@ -33,3 +33,6 @@ export const INSIDE_SPAWN: Spawn = { x: INTERIOR.x, z: INTERIOR.z + ROOM.hz - 1,
 
 /** The notice board (NoticeBoard.tsx): in front of the house, off to the right. A road leads to it (pois.ts). */
 export const NOTICE_AT = { x: 2, z: 4 }
+
+/** Pip's stall, the shop (Villagers.tsx, shop.ts): on the grass east of the house. A road leads to it (pois.ts). */
+export const SHOP_AT = { x: 7, z: -1 }

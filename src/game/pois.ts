@@ -1,14 +1,14 @@
 import { tileAt, type Tile } from './grid'
 import { DOCK_ROOT } from './fishing'
 import { FOREST } from './Island'
-import { HOUSE, NOTICE_AT } from './layout'
+import { HOUSE, NOTICE_AT, SHOP_AT } from './layout'
 import { ABOUT_AT, CONTACT_AT } from './places'
 import { projects, stationPos } from './projects'
 
 // Points of interest: the single list that roads are built from.
 // Add a place here (and place its object at the same x/z) to give it a road.
 
-export type PoiKind = 'home' | 'project' | 'about' | 'contact' | 'dock' | 'forest' | 'notice'
+export type PoiKind = 'home' | 'project' | 'about' | 'contact' | 'dock' | 'forest' | 'notice' | 'shop'
 export type Poi = { kind: PoiKind; x: number; z: number; label: string }
 
 /** The house at the centre of the map, where the game starts. Places sit on tile centres (whole numbers). */
@@ -20,6 +20,7 @@ export const pois: Poi[] = [
   { kind: 'contact', ...CONTACT_AT, label: 'Contact' },
   { kind: 'dock', ...DOCK_ROOT, label: 'Dock' },
   { kind: 'notice', ...NOTICE_AT, label: 'Notice board' },
+  { kind: 'shop', ...SHOP_AT, label: 'Shop' },
   { kind: 'forest', x: Math.round(FOREST.x), z: Math.round(FOREST.z), label: 'Forest clearing' },
   ...stationPos.map((p, i) => ({ kind: 'project' as const, x: p.x, z: p.z, label: projects[i].title })),
 ]

@@ -51,6 +51,7 @@ import { Stations } from './Station'
 import { useGame } from './store'
 import { Trees } from './Trees'
 import { Trinkets } from './Trinkets'
+import { Villagers } from './Villagers'
 import { WelcomeBack } from './WelcomeBack'
 
 const tier = detectTier()
@@ -113,6 +114,7 @@ export function Game() {
           <Pots />
           <Slimes />
           <GroundDrops />
+          <Villagers />
           <Butterflies />
           <DailyFinds />
           <Rain />
