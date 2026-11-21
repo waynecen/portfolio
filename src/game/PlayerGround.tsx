@@ -1,7 +1,7 @@
 import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
 import { CanvasTexture, MeshBasicMaterial, PlaneGeometry, type Mesh, type PointLight } from 'three'
-import { sky } from './sky'
+import { sky } from './world/sky'
 import { playerRoll } from './core/state'
 import { useGame } from './core/store'
 

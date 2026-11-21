@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { say } from './core/interact'
-import { CAVE, CAVE_PITCH, ROOM } from './layout'
+import { CAVE, CAVE_PITCH, ROOM } from './world/layout'
 import { chime, door, landed } from './core/sfx'
 import { useGame } from './core/store'
 

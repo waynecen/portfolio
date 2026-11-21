@@ -2,12 +2,12 @@ import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
 import { BufferAttribute, BufferGeometry, LineBasicMaterial, MeshBasicMaterial, Object3D, RingGeometry, type InstancedMesh, type LineSegments } from 'three'
 import { isLand } from './Island'
-import { detectTier } from './core/quality'
+import { detectTier } from '../core/quality'
 import { winter } from './season'
 import { sky } from './sky'
-import { playerPos, teleport } from './core/state'
-import { useGame } from './core/store'
-import { reducedMotion } from './core/settings'
+import { playerPos, teleport } from '../core/state'
+import { useGame } from '../core/store'
+import { reducedMotion } from '../core/settings'
 
 // The afternoon shower: thin streaks falling round the player, drawn as one set of line segments.
 // Each streak falls to the ground and starts again at the top somewhere near the player, so the

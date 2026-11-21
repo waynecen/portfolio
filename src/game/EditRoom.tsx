@@ -4,7 +4,7 @@ import { Color, MeshBasicMaterial, Plane, PlaneGeometry, Raycaster, Vector2, Vec
 import { holdOver, pickUp, putBack, putDown, stopEdit, toggleEdit, useEdit } from './edit'
 import { inRoom, PIECE, pieceAt, resetRoom, TILES, useRoom, type Spot } from './room'
 import { flat, merge } from './core/geometry'
-import { INTERIOR } from './layout'
+import { INTERIOR } from './world/layout'
 import { isTouch } from './core/quality'
 import { useGame } from './core/store'
 import { keyName } from './core/keymap'

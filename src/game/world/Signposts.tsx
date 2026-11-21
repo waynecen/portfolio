@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { BoxGeometry, ConeGeometry, CylinderGeometry, MeshLambertMaterial } from 'three'
-import { addCollider } from './core/collision'
-import { register, say } from './core/interact'
+import { addCollider } from '../core/collision'
+import { register, say } from '../core/interact'
 import { signposts, type Signpost, type Way } from './pois'
 
 // The signposts at the crossroads (pois.ts works out where, and which way each place is). A post

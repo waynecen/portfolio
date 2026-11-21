@@ -1,12 +1,12 @@
 import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
 import { BufferAttribute, BufferGeometry, PointsMaterial, type Points } from 'three'
-import { detectTier } from './core/quality'
+import { detectTier } from '../core/quality'
 import { autumn, spring, winter } from './season'
 import { sky } from './sky'
-import { playerPos, teleport } from './core/state'
-import { useGame } from './core/store'
-import { reducedMotion } from './core/settings'
+import { playerPos, teleport } from '../core/state'
+import { useGame } from '../core/store'
+import { reducedMotion } from '../core/settings'
 
 // Winter's snowfall: flakes drifting down round the player, swaying as they fall, drawn as one set
 // of points. Like the rain, each flake starts again at the top somewhere near the player when it

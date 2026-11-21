@@ -1,6 +1,6 @@
 import { MeshLambertMaterial, type BufferGeometry } from 'three'
-import { flat, merge } from './core/geometry'
-import { TILE } from './core/grid'
+import { flat, merge } from '../core/geometry'
+import { TILE } from '../core/grid'
 import { roadTiles } from './pois'
 
 const LIFT = 0.01 // just above the ground; polygonOffset handles the rest of the z-fighting

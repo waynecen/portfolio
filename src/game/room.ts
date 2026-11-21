@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { INTERIOR, ROOM } from './layout'
+import { INTERIOR, ROOM } from './world/layout'
 import { PILL_RADIUS } from './PillCharacter'
 import type { Spawn } from './core/scene'
 

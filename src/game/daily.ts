@@ -1,11 +1,11 @@
 import { dayNumber } from './calendar'
 import { addShells } from './drops'
-import { isInland, isLand } from './Island'
+import { isInland, isLand } from './world/Island'
 import { say } from './core/interact'
-import { built, pois, roadTiles } from './pois'
+import { built, pois, roadTiles } from './world/pois'
 import { tileAt } from './core/grid'
 import { chime } from './core/sfx'
-import { trees } from './Trees'
+import { trees } from './world/Trees'
 import { DOCK } from './fishing'
 
 // Something new each day, seeded by the date (Daily.tsx draws them): a message bottle washed up on

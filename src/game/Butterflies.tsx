@@ -4,10 +4,10 @@ import { DoubleSide, MeshLambertMaterial, PlaneGeometry, type Group } from 'thre
 import { BUGS, GOLDFLY, MORPHO, tryCatch, type BugId } from './bugs'
 import { fireflyNear, catchFirefly } from './Fireflies'
 import { register, type Interactable } from './core/interact'
-import { isInland } from './Island'
-import { winter } from './season'
+import { isInland } from './world/Island'
+import { winter } from './world/season'
 import { reducedMotion } from './core/settings'
-import { sky } from './sky'
+import { sky } from './world/sky'
 import { playerPos } from './core/state'
 import { useGame } from './core/store'
 

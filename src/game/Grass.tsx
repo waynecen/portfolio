@@ -6,14 +6,14 @@ import { addHittable } from './combat'
 import { maybeDrop } from './drops'
 import { burst } from './Dust'
 import { merge } from './core/geometry'
-import { isInland } from './Island'
+import { isInland } from './world/Island'
 import { PEARLS, revealPearl, usePearls } from './pearls'
-import { built, pois, roadTiles } from './pois'
-import { winter } from './season'
+import { built, pois, roadTiles } from './world/pois'
+import { winter } from './world/season'
 import { pop } from './core/sfx'
 import { playerPos } from './core/state'
 import { tileAt } from './core/grid'
-import { trees } from './Trees'
+import { trees } from './world/Trees'
 
 // Things to cut and break with the sword (combat.ts): tufts of tall grass scattered over the
 // meadows, and a few clay pots. Either can leave a shell or a heart behind (drops.ts), and a few

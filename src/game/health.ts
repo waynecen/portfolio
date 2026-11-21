@@ -1,7 +1,7 @@
 import { say, sayFirst } from './core/interact'
 import { keysName } from './core/keymap'
 import { isTouch } from './core/quality'
-import { BED_SPAWN } from './layout'
+import { BED_SPAWN } from './world/layout'
 import { clearSpawn } from './room'
 import { FADE, goTo } from './core/scene'
 import { hurt } from './core/sfx'

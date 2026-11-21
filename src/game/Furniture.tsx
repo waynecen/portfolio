@@ -7,7 +7,7 @@ import { centreOf, PIECE, placed, useOwned, useRoom, type PieceId } from './room
 import { block, merge, tint } from './core/geometry'
 import { register, say, type Interactable } from './core/interact'
 import { keyName, keysName, type Action } from './core/keymap'
-import { INTERIOR } from './layout'
+import { INTERIOR } from './world/layout'
 import { isTouch } from './core/quality'
 import { useGame } from './core/store'
 import { reducedMotion } from './core/settings'

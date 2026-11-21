@@ -6,14 +6,14 @@ import { maybeDrop } from './drops'
 import { burst } from './Dust'
 import { damage, harm } from './health'
 import { busy } from './core/interact'
-import { isInland } from './Island'
-import { built, pois, roadTiles } from './pois'
+import { isInland } from './world/Island'
+import { built, pois, roadTiles } from './world/pois'
 import { tileAt } from './core/grid'
 import { reducedMotion, useSettings } from './core/settings'
 import { pop } from './core/sfx'
 import { playerPos, playerRoll } from './core/state'
 import { useGame } from './core/store'
-import { trees } from './Trees'
+import { trees } from './world/Trees'
 
 // A few slimes in the outer meadows. Each hops about near its home; when the player comes close
 // it hops toward them, and a bump costs half a heart (health.ts). Two sword hits, or one spin,

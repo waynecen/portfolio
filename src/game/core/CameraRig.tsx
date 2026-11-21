@@ -1,6 +1,6 @@
 import { useFrame } from '@react-three/fiber'
 import { MathUtils, type PerspectiveCamera } from 'three'
-import { CAVE, CAVE_PITCH, caveRoom, INTERIOR, ROOM } from '../layout'
+import { CAVE, CAVE_PITCH, caveRoom, INTERIOR, ROOM } from '../world/layout'
 import { useEdit } from '../edit'
 import { panPhoto, photoCam } from '../photo'
 import { reducedMotion } from './settings'

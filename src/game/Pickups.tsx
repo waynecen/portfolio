@@ -14,10 +14,10 @@ import {
 import { tileAt } from './core/grid'
 import { register } from './core/interact'
 import { collect, ITEMS, useInventory, type Item, type ItemId } from './inventory'
-import { isInland } from './Island'
-import { HOUSE } from './layout'
-import { built, pois, roadTiles } from './pois'
-import { trees } from './Trees'
+import { isInland } from './world/Island'
+import { HOUSE } from './world/layout'
+import { built, pois, roadTiles } from './world/pois'
+import { trees } from './world/Trees'
 import { reducedMotion } from './core/settings'
 
 // The items still waiting to be found, floating and turning slowly over the grass so they catch

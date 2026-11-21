@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react'
 import { Color, Fog, type DirectionalLight, type HemisphereLight } from 'three'
 import { foamMaterial, waterMaterial } from './Island'
 import { currentHour, sample, sky } from './sky'
-import { useGame } from './core/store'
+import { useGame } from '../core/store'
 
 // Lights, background and fog for the time of day (see sky.ts). Outdoors they follow the sky;
 // indoors the room is lit by a fixed lamp-like set, warmer and dimmer at night, on black.

@@ -1,4 +1,4 @@
-import { currentHour } from './sky'
+import { currentHour } from './world/sky'
 import { visit } from './visits'
 
 // The real calendar, noticed: a line on the island's birthday and a few holidays, small decorations
