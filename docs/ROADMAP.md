@@ -105,7 +105,7 @@ Ten ideas taken from how acclaimed games look after their players, chosen for a 
 31. **Feedback with rules.** *(done: a fanfare and zoom for a new kind of fish, a short blip for repeats, wet footsteps in the rain)* A brief freeze and zoom on a catch, a jingle per kind of find, wetter footsteps in the rain, each with a written list of when it must not fire. *(Smash's Finish Zoom, Metroid's item fanfare, Animal Crossing's rain sounds)*
 32. **A dialogue log, and first-time messages only once.** *(done: log.ts, LogPanel.tsx, sayFirst in interact.ts)* Explanations such as the rod's play in full the first time and shorten after. *(Tears of the Kingdom's dialogue log and shrine banner)*
 33. **Silly secrets.** *(done: secrets.ts, Trinkets.tsx; confetti steps, tiny you, black and white)* Three or four hidden trinkets, each switching on a harmless world effect: confetti steps, low gravity, a big head, black and white. *(Halo's skulls)*
-34. **Lines that react and hide real tips.** Signs and, later, villagers say different things by weather, hour or what you're carrying, with real tips tucked into the jokes. *(Smash's Palutena's Guidance, Valorant's agent voice lines)*
+34. **Lines that react and hide real tips.** *(done for signs: the notice board, notice.ts; villagers still to come)* Signs and, later, villagers say different things by weather, hour or what you're carrying, with real tips tucked into the jokes. *(Smash's Palutena's Guidance, Valorant's agent voice lines)*
 
 Left out on purpose: a like-only guestbook (needs a backend; see F23), reshaping the island's terrain for Breath of the Wild's triangle rule (use it for new land instead), and a fake-crash gag (on a portfolio, a recruiter might believe it).
 

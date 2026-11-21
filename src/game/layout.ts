@@ -30,3 +30,6 @@ export const OUTSIDE_SPAWN: Spawn = { x: FRONT_DOOR.x, z: FRONT_DOOR.z + 1.1, he
 /** Going in: just inside the doorway, on the rug, facing into the room. */
 export const INSIDE_SPAWN: Spawn = { x: INTERIOR.x, z: INTERIOR.z + ROOM.hz - 1, heading: Math.PI }
 
+
+/** The notice board (NoticeBoard.tsx): in front of the house, off to the right. A road leads to it (pois.ts). */
+export const NOTICE_AT = { x: 2, z: 4 }

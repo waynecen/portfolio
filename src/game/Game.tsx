@@ -26,6 +26,7 @@ import { BED_SPAWN } from './layout'
 import { Mailbox } from './Mailbox'
 import { MusicPanel, NowPlaying } from './MusicPanel'
 import { ABOUT_AT, aboutLines } from './places'
+import { NoticeBoard } from './NoticeBoard'
 import { Pickups } from './Pickups'
 import { Player } from './Player'
 import { ProjectCard } from './ProjectCard'
@@ -94,6 +95,7 @@ export function Game() {
           <HouseExterior />
           <Sign x={ABOUT_AT.x} z={ABOUT_AT.z} lines={aboutLines} seen="about" night="It’s the middle of the night… shouldn’t you be asleep? Well, since you’re here:" />
           <Mailbox />
+          <NoticeBoard />
           <Dock />
           <Pickups />
           <Leaves />

@@ -218,6 +218,8 @@ The projects themselves aren't constants. They're read from the `#projects artic
 
 **Secrets** ([secrets.ts](../src/game/secrets.ts), [Trinkets.tsx](../src/game/Trinkets.tsx)): three odd trinkets (`SECRETS`), small spinning stars in quiet corners: deep in the forest, the far east tip, and behind the house where the camera can't see. Picking one up switches on its harmless effect, and the settings panel's Secrets section switches each found one on and off (`secrets-v1`). **Confetti steps** colours the dust and leaves a trail at walking pace (`CONFETTI_STEP = 0.3` in Dust.tsx), indoors too. **Tiny you** shrinks the character to `TINY = 0.55` (Player.tsx); collisions are unchanged. **Black and white** puts a greyscale filter on the game (`body.secret-mono` in style.css). Each trinket's `at` is only where it would like to be; it moves to the nearest grass tile off the roads and clear of trees.
 
+**The notice board** ([notice.ts](../src/game/notice.ts), [NoticeBoard.tsx](../src/game/NoticeBoard.tsx)): stands in front of the house at `NOTICE_AT` (layout.ts), with a road to it. Each read pins up a different notice, taking turns among those that apply right now (`NOTICES`, each with a `when`): projects still unseen, a rod in hand, rain, night, things still to find, secrets still hidden, and a fallback. Every notice is a joke with a real tip in it (Where to?, B to put the rod away, the bag, the log), worded for keyboard or touch. Villagers can reuse the same pattern.
+
 ---
 
 ## About sign and Contact mailbox: [src/game/places.ts](../src/game/places.ts), [src/game/Mailbox.tsx](../src/game/Mailbox.tsx)
