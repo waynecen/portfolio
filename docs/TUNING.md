@@ -84,6 +84,7 @@ Dust only shows outdoors and not in the rain. The light is always there, at 0 by
 const LEVEL = 0.5 // effects relative to the music volume; the music's mute silences them too
 const STEP_VOLUME = 0.45 // footsteps relative to the other effects
 const ROLL_VOLUME = 0.5 // the roll's whoosh relative to the other effects
+const WET_VOLUME = 0.7 // the splash layered under each footstep in the rain, relative to the step (Player.tsx: from WET_RAIN = 0.5 rain, outdoors, not in winter)
 ```
 
 Every sound is synthesised in `SOUNDS` (no audio files): footsteps for grass, snow, road and tatami, the furniture thud (`wood`), the roll whoosh, the door, dialogue blips and clicks. Change a sound's pitch or length there.
@@ -179,6 +180,8 @@ Everything past `FLAT` drops by `CURVE × distance²`, so the island rolls away 
 export const HEIGHT = 8 // how high the camera sits above the floor
 export const DISTANCE = 10 // how far back (toward the viewer) it sits from the player; a little lower than 45°, so the curved horizon shows
 const LAMBDA = 4 // follow rate: higher = camera sticks closer to the player, lower = floatier lag
+const ZOOM = 0.18 // a catch's zoom: how much nearer the camera comes, as a share of its distance (cameraZoom in state.ts)
+const ZOOM_TIME = 0.9 // seconds in and back out
 const ROOM_MARGIN = 1 // indoors: black kept beside the room's side walls when the screen is wide enough
 const ROOM_SHIFT = -0.5 // indoors: aim this far behind the room's centre so the tall back wall stays in view
 ```
@@ -409,6 +412,7 @@ export const SPOTS = [...]                 // where the ripple can be; it moves 
 export const CAST_TIME = 0.55              // seconds for the float to fly out
 const WAIT = [2.5, 6]                      // seconds before a bite, at random between these
 const BITE_TIME = 0.9                      // seconds to reel in once it bites
+const LAND_PAUSE = 0.35                    // seconds between landing a fish and the words about it, so the moment lands first
 export const FISH = [...]                  // every fish: name, words, colour, how often it bites (weight) and its size range in cm
 const SAVE_KEY = 'fish-v1'                 // localStorage key for catches; change it to forget them
 const RANGE = 1.6                          // Dock.tsx: how close to the ripple the player must be to cast
@@ -420,6 +424,8 @@ const ROD_LENGTH = 1.3                     // the rod in the player's hand; HOLD
 The road ends at the foot of the dock, beside the barrel. Using the barrel takes a rod (or puts it back), and so does B on the keyboard, which reels in first if the line is out. On phones the B button stays sprint; the **Put away rod** chip at the top right (`RodButton` in InventoryPanel.tsx, `.rod-toggle` in style.css) does it instead, on every device. It shows while a rod is in hand, except by the ripple, while the line is out, and while dialogue, a panel, a fade or edit mode is up. The rod isn't saved, so every visit starts without one. The ripple off the dock says to fetch a rod until you have one, then casts: the player turns to face it, the float flies out on its line, and after `WAIT` it nibbles, then bites with a splash and the prompt turns gold: **Reel in!** E, Space or A within `BITE_TIME` lands the fish; too late and it gets away, too early and the line comes back empty. Esc reels in quietly. The player stands still while the line is out.
 
 What bites is drawn by `weight`, and its length leans small, so big ones are rarer. Each catch is counted with its best size and shown in the bag.
+
+**Feedback, and when it doesn't fire.** A kind of fish never caught before gets the `fanfare` (sfx.ts) and a brief camera zoom; a new biggest gets the zoom with the short `catch` blip; any other catch only the blip, so the hundredth minnow doesn't hold you up. The zoom never runs with reduced motion. Items found on the island keep the `chime`.
 
 The dock is a walkway: the water either side of it doesn't stop the player (`dockOpens` in fishing.ts, used by Player.tsx); thin colliders along its open sides and across its end do instead. Footsteps on it are `wood`. The sounds are `plop` (the float landing) and `splash` (a bite) in sfx.ts.
 

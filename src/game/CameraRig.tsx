@@ -3,7 +3,7 @@ import { MathUtils, type PerspectiveCamera } from 'three'
 import { INTERIOR, ROOM } from './layout'
 import { useEdit } from './edit'
 import { guide } from './guide'
-import { cameraSnap, playerPos } from './state'
+import { cameraSnap, cameraZoom, playerPos } from './state'
 import { useGame } from './store'
 
 export const HEIGHT = 8
@@ -11,6 +11,9 @@ export const DISTANCE = 10 // a little lower than 45°, so the curved horizon sh
 const LAMBDA = 4 // higher = snappier follow
 const ROOM_MARGIN = 1 // indoors, keep at least this much black beside the walls when the screen is wide enough
 const ROOM_SHIFT = -0.5 // indoors, aim this far behind the room's centre so the tall back wall stays in view
+
+const ZOOM = 0.18 // a catch's zoom: how much nearer the camera comes, as a share of its distance
+const ZOOM_TIME = 0.9 // seconds in and back out
 
 const SLANT = Math.hypot(HEIGHT, DISTANCE) // camera's distance to the point it looks at
 
@@ -35,7 +38,14 @@ export function CameraRig() {
       tx = guide.x
       tz = guide.z
     }
-    tz += DISTANCE
+    // A catch's zoom (fishing.ts): in toward the player and back out, along the same view angle.
+    let near = 1
+    if (cameraZoom.t >= 0) {
+      cameraZoom.t += dt
+      if (cameraZoom.t >= ZOOM_TIME) cameraZoom.t = -1
+      else near = 1 - ZOOM * Math.sin((Math.PI * cameraZoom.t) / ZOOM_TIME)
+    }
+    tz += DISTANCE * near
     if (cameraSnap.pending) {
       // Just arrived somewhere (see scene.ts): cut straight there rather than gliding across the map.
       cameraSnap.pending = false
@@ -45,9 +55,9 @@ export function CameraRig() {
       p.x = MathUtils.damp(p.x, tx, LAMBDA, dt)
       p.z = MathUtils.damp(p.z, tz, LAMBDA, dt)
     }
-    p.y = HEIGHT
+    p.y = HEIGHT * near
     // Look along a fixed offset so the view angle never swims while easing.
-    camera.lookAt(p.x, 0, p.z - DISTANCE)
+    camera.lookAt(p.x, 0, p.z - DISTANCE * near)
   })
   return null
 }

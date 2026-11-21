@@ -12,6 +12,7 @@ import { PillCharacter, PILL_RADIUS } from './PillCharacter'
 import { PlayerGround } from './PlayerGround'
 import { roadTiles } from './pois'
 import { winter } from './season'
+import { sky } from './sky'
 import { step, whoosh, type Surface } from './sfx'
 import { playerFacing, playerPos, playerRoll, playerVel, teleport } from './state'
 import { held } from './interact'
@@ -35,6 +36,10 @@ function surfaceAt(x: number, z: number): Surface {
   if (onDock(x, z)) return 'wood'
   return roads.has(Math.round(x / TILE) + ',' + Math.round(z / TILE)) ? 'road' : winter ? 'snow' : 'grass'
 }
+
+// Footsteps splash in the rain: outdoors, while it's raining (not in winter, when it snows instead).
+const WET_RAIN = 0.5 // how much rain (sky.weather.rain, 0..1) before steps splash
+const wet = () => !winter && useGame.getState().scene === 'world' && sky.weather.rain > WET_RAIN
 
 // The 3D character's code (and the glTF loader) is fetched only if there's a model to show.
 const ModelCharacter = lazy(() => import('./ModelCharacter'))
@@ -142,7 +147,7 @@ export function Player() {
     if (roll.p >= 0 || v.speed < 0.1) stride.current = len * 0.7
     else if ((stride.current += v.speed * SPEED * dt) >= len) {
       stride.current -= len
-      step(surfaceAt(p.x, p.z))
+      step(surfaceAt(p.x, p.z), wet())
     }
     playerPos.x = p.x
     playerPos.z = p.z

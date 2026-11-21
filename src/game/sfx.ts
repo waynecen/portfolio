@@ -8,6 +8,7 @@ import { useMusic } from './music'
 const LEVEL = 0.5 // effects relative to the music volume
 const STEP_VOLUME = 0.45 // footsteps relative to the other effects: they repeat constantly, so they sit low
 const ROLL_VOLUME = 0.2 // the roll's whoosh relative to the other effects
+const WET_VOLUME = 0.7 // the splash layered under each footstep in the rain, relative to the step
 
 // Real recordings: put the files in public/sfx/ and their paths here. A sound with files plays them
 // instead of its synthesised version below (loaded when audio unlocks). List several to take turns,
@@ -106,6 +107,27 @@ const SOUNDS = {
     const lp = lowpass(0.55)
     return render(0.45, (t, n) => lp(n) * 2.2 * Math.min(1, t * 80) * Math.exp(-t * 9))
   },
+  wet: () => {
+    // The splash under a footstep in the rain, layered over the surface's own step.
+    const lp = lowpass(0.35)
+    return render(0.08, (t, n) => lp(n) * Math.exp(-t * 55) * 0.9)
+  },
+  catch: () =>
+    // A fish you've caught before: two quick rising blips.
+    render(0.22, (t) => {
+      const note = t < 0.07 ? 660 : 990
+      const since = t < 0.07 ? t : t - 0.07
+      return Math.sin(2 * Math.PI * note * t) * 0.28 * Math.exp(-since * 16) * Math.min(1, since * 400)
+    }),
+  fanfare: () =>
+    // A kind of fish you've never caught: four notes up an arpeggio, the last held.
+    render(0.9, (t) => {
+      const NOTES = [523.25, 659.25, 783.99, 1046.5]
+      const k = Math.min(3, Math.floor(t / 0.09))
+      const since = t - k * 0.09
+      const decay = k === 3 ? 4 : 14
+      return Math.sin(2 * Math.PI * NOTES[k] * t) * 0.26 * Math.exp(-since * decay) * Math.min(1, since * 400)
+    }),
   click: () => render(0.03, (t) => Math.sin(2 * Math.PI * 1200 * t) * 0.35 * Math.exp(-t * 120)),
 }
 type Sound = keyof typeof SOUNDS
@@ -154,8 +176,10 @@ function play(name: Sound, gain = 1, rate = 1) {
 export type Surface = 'grass' | 'snow' | 'road' | 'tatami' | 'wood'
 
 /** One footstep, slightly different every time (and left, right, left with recordings). */
-export const step = (surface: Surface) =>
+export const step = (surface: Surface, wet = false) => {
   play(surface, STEP_VOLUME * (0.85 + Math.random() * 0.3), 0.9 + Math.random() * 0.2)
+  if (wet) play('wet', STEP_VOLUME * WET_VOLUME * (0.8 + Math.random() * 0.4), 0.85 + Math.random() * 0.3)
+}
 export const whoosh = () => play('whoosh', ROLL_VOLUME, 0.95 + Math.random() * 0.1)
 export const door = () => play('door')
 /** A dialogue letter; `pitch` around 1 gives each line its own voice. */
@@ -163,6 +187,8 @@ export const blip = (pitch: number) => play('blip', 1, pitch * (0.96 + Math.rand
 export const click = () => play('click')
 /** An item picked up. */
 export const chime = () => play('chime')
+/** A fish landed: a fanfare for a kind never caught before, a short blip for one you have. */
+export const landed = (first: boolean) => (first ? play('fanfare') : play('catch', 1, 0.95 + Math.random() * 0.1))
 /** The fishing float landing on the water. */
 export const plop = () => play('plop', 0.8, 0.9 + Math.random() * 0.2)
 /** A fish biting. */

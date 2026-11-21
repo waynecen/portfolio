@@ -1,8 +1,8 @@
 import { create } from 'zustand'
 import { say, sayFirst } from './interact'
 import { isTouch } from './quality'
-import { chime, click, plop, splash, whoosh } from './sfx'
-import { playerFacing, playerPos } from './state'
+import { click, landed, plop, splash, whoosh } from './sfx'
+import { cameraZoom, playerFacing, playerPos } from './state'
 import { useGame } from './store'
 
 // Fishing off the dock at the island's bottom-left corner (Dock.tsx draws it). Take a rod from the
@@ -43,6 +43,8 @@ export const onDock = (x: number, z: number) => Math.abs(x - DOCK.x) < DOCK.half
 export const CAST_TIME = 0.55 // seconds for the float to fly out
 const WAIT = [2.5, 6] // seconds before a bite, at random between these
 const BITE_TIME = 0.9 // seconds to react once it bites
+const LAND_PAUSE = 0.35 // seconds between landing a fish and the words about it
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
 
 export type FishId = 'minnow' | 'mackerel' | 'tang' | 'puffer' | 'snapper' | 'carp'
 
@@ -216,10 +218,15 @@ function land() {
   } catch {
     // private mode or storage full: kept until the page closes
   }
-  chime()
+  // Feedback, with rules for when it doesn't fire: the fanfare only for a new kind of fish (a
+  // repeat gets a short blip), the zoom only for a new kind or a new biggest, and never with
+  // reduced motion. The words wait a beat (LAND_PAUSE) so the moment lands before the box opens.
+  const best = !!before && size > before.best
+  landed(!before)
+  if ((!before || best) && !reduced) cameraZoom.t = 0
   const lines = [`You caught a ${fish.name.toLowerCase()}! ${size} cm.`]
   if (!before) lines.push(`${fish.description} It’s in your bag.`)
-  else if (size > before.best) lines.push('Your biggest one yet!')
-  say(lines)
+  else if (best) lines.push('Your biggest one yet!')
+  setTimeout(() => say(lines), LAND_PAUSE * 1000)
 }
 

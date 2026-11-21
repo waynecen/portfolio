@@ -18,3 +18,6 @@ export const teleport = { pending: false, x: 0, z: 0, heading: 0 }
 
 /** Set to make the camera jump straight to its target on the next frame instead of easing there. */
 export const cameraSnap = { pending: true }
+
+/** Set `t` to 0 for a brief camera zoom toward the player (a catch, fishing.ts); CameraRig.tsx counts it up and back to -1. */
+export const cameraZoom = { t: -1 }
