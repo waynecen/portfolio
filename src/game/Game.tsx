@@ -17,7 +17,6 @@ import { Cave } from './CaveRooms'
 import { DailyFinds } from './DailyFinds'
 import { Festive } from './Festive'
 import { Fireflies } from './Fireflies'
-import { GuideButton, GuideWind } from './GuideWind'
 import { clearSpawn } from './room'
 import { Furniture } from './Furniture'
 import { Grass, Pots } from './Grass'
@@ -154,7 +153,6 @@ export function Game() {
         <Doors />
         <Interactions />
         <Sparkle />
-        <GuideWind />
         <Player />
         <Dust />
         <EditPointer />
@@ -165,7 +163,6 @@ export function Game() {
       <Fade />
       <Hearts />
       <ShellCounter />
-      <GuideButton />
       <SettingsButton />
       <ProjectCard />
       <Prompt />

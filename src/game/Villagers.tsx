@@ -132,7 +132,7 @@ const mochiLines = (() => {
     ['Have you met Pip? Pip keeps the shop east of the house.', 'Hats! Pip sells hats. Shells buy them.'],
     ['Bramble knows every project on the island.', 'Ask for the tour. Bramble loves giving the tour.'],
     ['I found shells in the tall grass yesterday.', 'Give it a swing with your sword. Gently.'],
-    ['Lost? The wind can show you the way.', 'Where to?, it’s called. Very useful.'],
+    ['Signposts stand where the roads cross.', 'Or ignore them and wander. That’s how I found the waterfall.'],
   ]
   return () => {
     if (useFishing.getState().rod) return ['Ooh, going fishing?', 'When something bites, hold left and right to keep the needle in the green.']

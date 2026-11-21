@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react'
 import { toggleEdit } from './edit'
-import { pointMe } from './guide'
 import { closePanel, openPanel, toggleMenu } from './interact'
 import { ITEMS, useInventory } from './inventory'
 import { togglePhoto } from './photo'
@@ -8,7 +7,7 @@ import { isTouch } from './quality'
 import { useGame } from './store'
 
 // Touch screens: a Start button at the bottom, between the joystick and the A and B buttons, opens
-// this menu, which holds what the keyboard reaches with keys (the bag, Where to?, the log, the
+// this menu, which holds what the keyboard reaches with keys (the bag, the log, the
 // settings, photo mode, editing the room); a tap of B puts the fishing rod away, as B does on a keyboard. It
 // keeps the top of the screen clear on a phone: the chips that do these things on a computer are
 // hidden on touch screens (style.css).
@@ -16,7 +15,6 @@ import { useGame } from './store'
 // A small line drawing beside each item, in the text's colour.
 const ICONS = {
   bag: 'M6 9h12l-1 11H7L6 9Zm3 0V7a3 3 0 0 1 6 0v2',
-  compass: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm3.5 5.5-2 5-5 2 2-5 5-2Z',
   log: 'M7 4h10v16H7zM10 8h4M10 12h4M10 16h2',
   camera: 'M4 8h4l1.5-2h5L16 8h4v11H4V8Zm8 2.5a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z',
   gear: 'M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm0-6v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1M5.6 18.4l2.1-2.1m8.6-8.6 2.1-2.1',
@@ -61,12 +59,6 @@ export function MenuPanel() {
           <button ref={first} type="button" onClick={() => openPanel('inventory')}>
             <Icon name="bag" />
             Bag <span className="bag-toggle-count">{found} of {ITEMS.length}</span>
-          </button>
-        </li>
-        <li>
-          <button type="button" onClick={then(pointMe)}>
-            <Icon name="compass" />
-            Where to?
           </button>
         </li>
         <li>

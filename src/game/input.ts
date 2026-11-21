@@ -1,7 +1,6 @@
 import { pressAttack, releaseAttack } from './combat'
 import { editKey, toggleEdit } from './edit'
 import { putAwayRod, reel, stopFishing } from './fishing'
-import { pointMe } from './guide'
 import { toggleBag } from './inventory'
 import { advance, closeDialogue, closePanel, interact, toggleLog, toggleSettings } from './interact'
 import { actionFor, type Action } from './keymap'
@@ -78,7 +77,6 @@ export function bindKeys(): () => void {
         // Roll advances dialogue when it's open, reels in a line that's out, otherwise rolls.
         if (!advance() && !reel()) actions.roll = true
       } else if (action === 'edit') toggleEdit()
-      else if (action === 'guide') pointMe()
       else if (action === 'log') toggleLog()
       else if (action === 'settings') toggleSettings()
       else if (action === 'photo') togglePhoto()

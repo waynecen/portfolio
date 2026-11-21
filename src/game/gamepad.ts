@@ -1,7 +1,6 @@
 import { pressAttack, releaseAttack } from './combat'
 import { putAwayRod, reel } from './fishing'
 import { moveFocus, openPanelElement } from './focus'
-import { pointMe } from './guide'
 import { actions } from './input'
 import { toggleBag } from './inventory'
 import { advance, closePanel, interact, toggleLog, toggleSettings } from './interact'
@@ -14,7 +13,7 @@ import { stopEdit } from './edit'
 // sticks). Standard layout, named for an Xbox pad:
 // - Left stick or d-pad: walk (or, in photo mode, slide the camera). A trigger or a stick click: sprint.
 // - A: talk, read, use. B: roll, or reel in. X: the sword (hold to charge). Y: the bag, or put the rod away.
-// - LB: point me somewhere. RB: photo mode. View: the log. Menu: the settings.
+// - RB: photo mode. View: the log. Menu: the settings.
 // - In a panel, the d-pad or stick moves between controls (arrow keys for the bag's grid), A presses,
 //   B closes. In photo mode, A takes the photo, B or RB leaves, X changes the pose, LB or LT zooms out and RT in.
 
@@ -130,7 +129,6 @@ export function pollGamepad() {
   if (pressed[2]) pressAttack()
   else if (released[2]) releaseAttack()
   if (pressed[3] && !putAwayRod()) toggleBag()
-  if (pressed[4]) pointMe()
   if (pressed[5]) togglePhoto()
   if (pressed[8]) toggleLog()
   if (pressed[9]) toggleSettings()

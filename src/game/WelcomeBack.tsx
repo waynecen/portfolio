@@ -2,8 +2,6 @@ import { useEffect } from 'react'
 import { calendarLines } from './calendar'
 import { busy, say } from './interact'
 import { leafPiles } from './Leaves'
-import { PLACES, useSeen } from './seen'
-import { isTouch } from './quality'
 import { visit } from './visits'
 
 // A word on arriving: anything the calendar has to say today (calendar.ts), and how long it's been
@@ -25,10 +23,6 @@ function awayLines(): string[] {
           ? ['Welcome back! It’s been over a week.']
           : ['Welcome back! It’s been a long time. The island missed you.']
   if (leafPiles) lines.push('A few leaves blew in while you were away. Walk through them outside to sweep them up.')
-  // After a long gap, a reminder of where things are, if there's anything left to see.
-  const { seen } = useSeen.getState()
-  if (d >= 7 && PLACES.some((p) => p.kind === 'project' && !seen.includes(p.id)))
-    lines.push(`${isTouch ? 'Open the menu and tap Where to?' : 'Press G'} to find a project you haven’t seen yet.`)
   return lines
 }
 

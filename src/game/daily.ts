@@ -16,7 +16,7 @@ import { DOCK } from './fishing'
 export const MESSAGES: string[][] = [
   ['“The fish bite more at dusk.”', 'Probably not true. But the evening light is nice on the water.'],
   ['“Every pillar on this island is a project.”', 'Walk up to one to read about it; use it to open it.'],
-  ['“Press G when you’re lost. The wind knows the way.”', 'On a phone, it’s Where to? in the menu.'],
+  ['“The roads all lead somewhere.”', 'So does the long grass, if you wade in.'],
   ['“Nothing here can be lost for good.”', 'Faint, and you wake at home. Leave for a month, and the island waits.'],
   ['“The island keeps your clock.”', 'Come back at night for the fireflies, or in the afternoon for the rain.'],
   ['“Some trinkets change the world. Harmlessly.”', 'Look behind things.'],

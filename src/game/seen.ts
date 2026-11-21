@@ -8,7 +8,7 @@ import { projects, stationPos } from './projects'
 // is with its `seen` id (interact.ts); it counts once its card has shown, or once it's been used if
 // it has no card.
 
-/** A place worth seeing, and where it stands on the island (the guide points there: guide.ts). */
+/** A place worth seeing, and where it stands on the island. */
 export type Place = { id: string; name: string; kind: 'project' | 'about' | 'contact'; x: number; z: number }
 
 /** Every place worth seeing, in the order the bag lists them. */

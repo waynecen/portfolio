@@ -2,7 +2,6 @@ import { useFrame } from '@react-three/fiber'
 import { MathUtils, type PerspectiveCamera } from 'three'
 import { CAVE, CAVE_PITCH, caveRoom, INTERIOR, ROOM } from './layout'
 import { useEdit } from './edit'
-import { guide } from './guide'
 import { panPhoto, photoCam } from './photo'
 import { reducedMotion } from './settings'
 import { cameraSnap, cameraZoom, playerPos } from './state'
@@ -46,10 +45,6 @@ export function CameraRig() {
       const x = useGame.getState().editing ? useEdit.getState().cursor.i : playerPos.x - cx
       tx = cx + MathUtils.clamp(x, -slack, slack)
       tz = cz + ROOM_SHIFT
-    } else if (guide.peek) {
-      // "Point me somewhere" (guide.ts): glide over to the place for a moment, then back.
-      tx = guide.x
-      tz = guide.z
     }
     // Photo mode (photo.ts): slid aside by the walk keys, and zoomed.
     const photo = useGame.getState().photo

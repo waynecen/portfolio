@@ -23,7 +23,7 @@ const NOTICES: Notice[] = [
     when: () => PLACES.some((p) => p.kind === 'project' && !useSeen.getState().seen.includes(p.id)),
     lines: () => [
       'LOST: one visitor. Last seen looking for the projects.',
-      `${key(`Press ${keyName('guide')}`, 'Open the menu, tap Where to?,')} and the wind will show you one you haven’t seen.`,
+      'Reward: a project for every pillar you find. Some are further out than others.',
     ],
   },
   {

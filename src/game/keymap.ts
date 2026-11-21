@@ -16,7 +16,6 @@ export type Action =
   | 'interact'
   | 'attack'
   | 'bag'
-  | 'guide'
   | 'log'
   | 'settings'
   | 'edit'
@@ -33,7 +32,6 @@ export const ACTIONS: { id: Action; label: string }[] = [
   { id: 'interact', label: 'Talk, read, use' },
   { id: 'attack', label: 'Sword' },
   { id: 'bag', label: 'Bag, put the rod away' },
-  { id: 'guide', label: 'Point me somewhere' },
   { id: 'log', label: 'Log' },
   { id: 'settings', label: 'Settings' },
   { id: 'edit', label: 'Edit the room' },
@@ -51,7 +49,7 @@ const DEFAULTS: Record<Action, string[]> = {
   interact: ['KeyE', 'Enter'],
   attack: ['KeyJ', 'KeyX'],
   bag: ['KeyB'],
-  guide: ['KeyG'],
+
   log: ['KeyL'],
   settings: ['KeyO'],
   edit: ['KeyF'],

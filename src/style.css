@@ -160,7 +160,7 @@ body.loading .loader { opacity: 1; visibility: visible; pointer-events: auto; tr
 /* Now-playing chip under the hearts. */
 .now-playing {
   position: absolute; display: flex; align-items: center; gap: 8px; max-width: calc(100% - 140px);
-  top: calc(max(12px, env(safe-area-inset-top)) + 84px); /* under the Where to? chip */ left: max(12px, env(safe-area-inset-left));
+  top: calc(max(12px, env(safe-area-inset-top)) + 44px); /* under the hearts */ left: max(12px, env(safe-area-inset-left));
   padding: 4px 12px 4px 4px; background: #fdf5dc; color: #7a6449; border-radius: 999px;
   box-shadow: 0 2px 0 rgb(122 100 73 / .25);
   font: 600 13px/1.3 ui-rounded, "SF Pro Rounded", "Nunito", system-ui, sans-serif; font-variant-emoji: text;
@@ -217,19 +217,6 @@ body.editing .joystick, body.editing .action-button { display: none; }
   background: rgb(122 100 73 / .14); font-size: 12px;
 }
 .bag-toggle:focus-visible { outline: 2px solid #f2b233; outline-offset: 2px; }
-/* Where to? (guide.ts): the Bag chip's look, at the top left under the hearts. */
-.guide-toggle {
-  position: absolute; padding: 6px 14px;
-  top: calc(max(12px, env(safe-area-inset-top)) + 44px); left: max(12px, env(safe-area-inset-left));
-  border: 0; border-radius: 999px; background: #fdf5dc; color: #7a6449; cursor: pointer;
-  font: 600 13px/1.3 ui-rounded, "SF Pro Rounded", "Nunito", system-ui, sans-serif;
-  box-shadow: 0 2px 0 rgb(122 100 73 / .25); -webkit-tap-highlight-color: transparent;
-}
-.guide-toggle kbd {
-  display: inline-block; min-width: 20px; margin-right: 6px; padding: 0 5px; border-radius: 6px; text-align: center;
-  background: #7a6449; color: #fdf5dc; font: inherit;
-}
-.guide-toggle:focus-visible { outline: 2px solid #f2b233; outline-offset: 2px; }
 /* Put away rod (fishing.ts): the Bag chip's look, under it, or under the Edit room chip indoors. */
 .rod-toggle {
   position: absolute; padding: 6px 14px;
@@ -373,7 +360,7 @@ body.big-text .reel { zoom: 1.2; }
 .menu-icon { width: 22px; height: 22px; flex: none; }
 .menu-list button:active { background: rgb(242 178 51 / .25); }
 @media (pointer: coarse) {
-  .bag-toggle, .settings-toggle, .guide-toggle, .rod-toggle, .edit-toggle { display: none; }
+  .bag-toggle, .settings-toggle, .rod-toggle, .edit-toggle { display: none; }
   .now-playing { top: calc(max(12px, env(safe-area-inset-top)) + 44px); } /* nothing above it but the hearts now */
 }
 /* The shell counter (GroundDrops.tsx): top centre for a moment after shells are picked up. */
