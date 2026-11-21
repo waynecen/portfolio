@@ -10,6 +10,7 @@ import type { Spawn } from './scene'
 
 export type PieceId =
   | 'bed' | 'dresser' | 'table' | 'stool1' | 'stool2' | 'pot1' | 'pot2' | 'pot3' | 'chest' | 'rug' | 'recordPlayer'
+  | 'lamp' | 'plant' | 'shelf'
 
 export type Spot = { i: number; j: number }
 
@@ -22,6 +23,8 @@ export type Piece = {
   d: number
   /** Lies on the floor (a rug): it can go under other furniture, and you can walk over it. */
   floor?: boolean
+  /** Bought at the shop (shop.ts) for this many shells: only in the room once owned. */
+  price?: number
 }
 
 export const PIECES: Piece[] = [
@@ -36,6 +39,9 @@ export const PIECES: Piece[] = [
   { id: 'pot2', name: 'a pot', w: 1, d: 1 },
   { id: 'pot3', name: 'a pot', w: 1, d: 1 },
   { id: 'recordPlayer', name: 'the record player', w: 1, d: 1 },
+  { id: 'lamp', name: 'the paper lamp', w: 1, d: 1, price: 10 },
+  { id: 'plant', name: 'the fern', w: 1, d: 1, price: 6 },
+  { id: 'shelf', name: 'the bookshelf', w: 1, d: 1, price: 15 },
 ]
 export const PIECE = Object.fromEntries(PIECES.map((p) => [p.id, p])) as Record<PieceId, Piece>
 
@@ -52,7 +58,29 @@ const DEFAULT: Record<PieceId, Spot> = {
   pot2: { i: -5, j: 0 },
   pot3: { i: -5, j: 1 },
   recordPlayer: { i: 5, j: -3 },
+  // Where bought pieces go if there's room there (otherwise the nearest free tile: addPiece).
+  lamp: { i: 5, j: 0 },
+  plant: { i: -5, j: 2 },
+  shelf: { i: -2, j: -3 },
 }
+
+// Pieces bought at the shop, kept in this browser. Only these (and everything that came with the
+// room) are in it: placed() is the list every rule below works from.
+const OWNED_KEY = 'decor-v1'
+function loadOwned(): PieceId[] {
+  try {
+    const v: unknown = JSON.parse(localStorage.getItem(OWNED_KEY) ?? '[]')
+    return Array.isArray(v) ? PIECES.filter((p) => p.price && v.includes(p.id)).map((p) => p.id) : []
+  } catch {
+    return []
+  }
+}
+export const useOwned = create<{ owned: PieceId[] }>(() => ({ owned: loadOwned() }))
+const computePlaced = () => PIECES.filter((p) => !p.price || useOwned.getState().owned.includes(p.id))
+let placedNow = computePlaced()
+useOwned.subscribe(() => (placedNow = computePlaced()))
+/** The pieces in the room: everything that came with it, and anything bought. */
+export const placed = () => placedNow
 
 /** The room's tiles, inclusive: 11 across and 7 deep. */
 export const TILES = { i0: -(ROOM.hx - 0.5), i1: ROOM.hx - 0.5, j0: -(ROOM.hz - 0.5), j1: ROOM.hz - 0.5 }
@@ -88,7 +116,7 @@ export function clampSpot(p: Piece, at: Spot): Spot {
 /** The piece on tile (i, j), if any; furniture before a rug under it. */
 export function pieceAt(t: Spot, spots = useRoom.getState().spots): Piece | null {
   let under: Piece | null = null
-  for (const p of PIECES) {
+  for (const p of placed()) {
     if (!covers(p, spots[p.id], t.i, t.j)) continue
     if (!p.floor) return p
     under = p
@@ -100,7 +128,7 @@ export function pieceAt(t: Spot, spots = useRoom.getState().spots): Piece | null
 const blocked = new Uint8Array(COLS * ROWS)
 function fillBlocked(spots: Record<PieceId, Spot>, moving?: Piece, to?: Spot) {
   blocked.fill(0)
-  for (const p of PIECES) {
+  for (const p of placed()) {
     if (p.floor) continue
     const at = p === moving && to ? to : spots[p.id]
     for (let i = at.i; i < at.i + p.w; i++)
@@ -139,7 +167,7 @@ function floodFromDoor() {
 // with rugs), and clear of the doorway.
 function clash(p: Piece, at: Spot, spots: Record<PieceId, Spot>): string | null {
   if (at.i < TILES.i0 || at.j < TILES.j0 || at.i + p.w - 1 > TILES.i1 || at.j + p.d - 1 > TILES.j1) return 'It won’t fit there.'
-  for (const o of PIECES) {
+  for (const o of placed()) {
     if (o === p || !!o.floor !== !!p.floor) continue
     const s = spots[o.id]
     if (at.i < s.i + o.w && s.i < at.i + p.w && at.j < s.j + o.d && s.j < at.j + p.d) return 'Something’s already there.'
@@ -227,10 +255,13 @@ function load(): Record<PieceId, Spot> {
   const spots = { ...DEFAULT }
   for (const p of PIECES) {
     const s = (saved as Record<string, unknown>)[p.id] as Spot | undefined
-    if (!s || !Number.isInteger(s.i) || !Number.isInteger(s.j)) return { ...DEFAULT }
+    if (!s || !Number.isInteger(s.i) || !Number.isInteger(s.j)) {
+      if (p.price) continue // bought since the layout was saved: it keeps its default spot
+      return { ...DEFAULT }
+    }
     spots[p.id] = { i: s.i, j: s.j }
   }
-  return PIECES.some((p) => clash(p, spots[p.id], spots)) ? { ...DEFAULT } : spots
+  return placed().some((p) => clash(p, spots[p.id], spots)) ? { ...DEFAULT } : spots
 }
 
 if (import.meta.env.DEV) {
@@ -242,3 +273,35 @@ if (import.meta.env.DEV) {
 
 /** Where every piece is. Last in the file: loading the save uses the rules above. */
 export const useRoom = create<{ spots: Record<PieceId, Spot> }>(() => ({ spots: load() }))
+
+/**
+ * A piece bought at the shop arrives in the room: at its default spot if that's free, otherwise
+ * the nearest tile it fits. Returns false if there's nowhere at all (the room is full).
+ */
+export function addPiece(id: PieceId): boolean {
+  const p = PIECE[id]
+  const spots = { ...useRoom.getState().spots }
+  useOwned.setState({ owned: [...useOwned.getState().owned.filter((x) => x !== id), id] })
+  let at: Spot | null = clash(p, spots[id], spots) ? null : spots[id]
+  let bestD = Infinity
+  if (!at)
+    for (let i = TILES.i0; i <= TILES.i1 - p.w + 1; i++)
+      for (let j = TILES.j0; j <= TILES.j1 - p.d + 1; j++) {
+        const d = (i - DEFAULT[id].i) ** 2 + (j - DEFAULT[id].j) ** 2
+        if (d < bestD && !clash(p, { i, j }, spots)) {
+          bestD = d
+          at = { i, j }
+        }
+      }
+  if (!at) {
+    useOwned.setState({ owned: useOwned.getState().owned.filter((x) => x !== id) })
+    return false
+  }
+  try {
+    localStorage.setItem(OWNED_KEY, JSON.stringify(useOwned.getState().owned))
+  } catch {
+    // private mode or storage full: kept until the page closes
+  }
+  place(id, at)
+  return true
+}

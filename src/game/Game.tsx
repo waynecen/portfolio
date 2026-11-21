@@ -40,6 +40,7 @@ import { RecordPlayer } from './RecordPlayer'
 import { Rain } from './Rain'
 import { ReelBar } from './ReelBar'
 import { Slimes } from './Slimes'
+import { ShopPanel } from './ShopPanel'
 import { Snow } from './Snow'
 import { Sparkle } from './Sparkle'
 import { Roads } from './Roads'
@@ -147,6 +148,7 @@ export function Game() {
       <InventoryPanel />
       <LogPanel />
       <SettingsPanel />
+      <ShopPanel />
       <WelcomeBack />
       <BagButton />
       <RodButton />

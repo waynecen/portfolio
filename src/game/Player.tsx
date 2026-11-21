@@ -6,6 +6,7 @@ import { swinging } from './combat'
 import { HeldRod } from './Dock'
 import { harm } from './health'
 import { Sword } from './Sword'
+import { Hat } from './Hat'
 import { dockOpens, onDock } from './fishing'
 import { TILE } from './grid'
 import { isLand } from './Island'
@@ -175,6 +176,7 @@ export function Player() {
       <PlayerGround />
       <HeldRod />
       <Sword />
+      <Hat />
       {PLAYER_MODEL ? (
         // The pill stands in while the model downloads.
         <Suspense fallback={<PillCharacter />}>

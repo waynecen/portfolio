@@ -3,7 +3,7 @@ import { useEffect, useRef, type RefObject } from 'react'
 import { Color, CylinderGeometry, MeshLambertMaterial, type BufferGeometry, type Group } from 'three'
 import { addCollider, type Collider } from './collision'
 import { useEdit } from './edit'
-import { centreOf, PIECE, PIECES, useRoom, type PieceId } from './room'
+import { centreOf, PIECE, placed, useOwned, useRoom, type PieceId } from './room'
 import { block, merge, tint } from './geometry'
 import { register, say, type Interactable } from './interact'
 import { INTERIOR } from './layout'
@@ -123,9 +123,51 @@ const RUG: Build = {
   solid: [],
 }
 
+// Bought at the shop (shop.ts): only in the room once owned.
+const LAMP: Build = {
+  // A paper lantern on a thin stand.
+  parts: (box, add) => {
+    add(cylinder(0, 0, 0.18, 0.18, 0, 0.04, new Color('#6b4a2e')))
+    box(new Color('#6b4a2e'), -0.025, 0.025, 0.04, 0.9, -0.025, 0.025)
+    add(cylinder(0, 0, 0.2, 0.24, 0.9, 1.3, new Color('#f4e3c0')))
+  },
+  solid: [{ kind: 'circle', x: 0, z: 0, r: 0.2 }],
+}
+const PLANT: Build = {
+  // A fern in a pot: a fan of leaves over a little clay pot.
+  parts: (box, add) => {
+    add(cylinder(0, 0, 0.22, 0.16, 0, 0.3, new Color('#c0703f')))
+    const leaf = new Color('#4f8f4f')
+    for (let k = 0; k < 6; k++) {
+      const a = (k / 6) * Math.PI * 2
+      const x = Math.cos(a) * 0.16
+      const z = Math.sin(a) * 0.16
+      box(leaf, x - 0.06, x + 0.06, 0.3, 0.62 + (k % 2) * 0.1, z - 0.06, z + 0.06)
+    }
+  },
+  solid: [{ kind: 'circle', x: 0, z: 0, r: 0.22 }],
+}
+const SHELF: Build = {
+  // A tall bookshelf against the back of its tile, three shelves of coloured spines.
+  parts: (box) => {
+    box(C.wood, -0.45, 0.45, 0, 1.5, -0.45, -0.15)
+    const spines = ['#c45a4a', '#4a7fb5', '#d9b24a', '#5f9e57', '#8a5ab5'].map((c) => new Color(c))
+    for (let shelf = 0; shelf < 3; shelf++) {
+      const y = 0.08 + shelf * 0.48
+      box(C.cap, -0.42, 0.42, y + 0.36, y + 0.4, -0.45, -0.12)
+      for (let k = 0; k < 6; k++) {
+        const x = -0.38 + k * 0.13
+        box(spines[(k + shelf * 2) % spines.length], x, x + 0.1, y, y + 0.3 - (k % 3) * 0.04, -0.42, -0.16)
+      }
+    }
+  },
+  solid: [{ kind: 'box', x: 0, z: -0.3, hx: 0.45, hz: 0.15 }],
+}
+
 const BUILDS: Partial<Record<PieceId, Build>> = {
   bed: BED, dresser: DRESSER, table: TABLE, stool1: STOOL, stool2: STOOL,
   pot1: POT, pot2: POT, pot3: POT, chest: CHEST, rug: RUG,
+  lamp: LAMP, plant: PLANT, shelf: SHELF,
 } // the record player draws itself (RecordPlayer.tsx)
 
 const geometries = new Map<Build, BufferGeometry>()
@@ -195,11 +237,12 @@ function Piece({ id, build }: { id: PieceId; build: Build }) {
   )
 }
 
-/** Everything movable in the room except the record player. In world units, like the room. */
+/** Everything movable in the room except the record player, bought pieces included once owned. In world units, like the room. */
 export function Furniture() {
+  useOwned((s) => s.owned) // re-render when something's bought
   return (
     <>
-      {PIECES.map((p) => {
+      {placed().map((p) => {
         const build = BUILDS[p.id]
         return build ? <Piece key={p.id} id={p.id} build={build} /> : null
       })}

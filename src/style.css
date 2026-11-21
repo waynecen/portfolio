@@ -378,3 +378,12 @@ body.big-text .reel { zoom: 1.2; }
   font: 600 13px/1.3 ui-rounded, "SF Pro Rounded", "Nunito", system-ui, sans-serif;
 }
 .shell-counter svg { width: 18px; height: 18px; }
+/* Pip's shop (ShopPanel.tsx): the bag's panel, with a row per thing for sale. */
+.shop-note { margin: 0 0 12px; font-weight: 500; font-size: 14px; }
+.shop-list { display: grid; gap: 6px; margin: 0 0 12px; padding: 0; list-style: none; }
+.shop-list li { display: flex; align-items: center; gap: 10px; padding: 6px 8px 6px 10px; border-radius: 14px; background: rgb(122 100 73 / .08); }
+.shop-name { flex: 1; font-size: 14px; }
+.shop-swatch { width: 14px; height: 14px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgb(0 0 0 / .15); }
+.shop-list button { padding: 5px 12px; border: 0; border-radius: 999px; background: #f2b233; color: #4a3a28; font-size: 13px; white-space: nowrap; }
+.shop-list button:disabled { background: rgb(122 100 73 / .15); color: inherit; cursor: default; }
+body.big-text .shop-panel { zoom: 1.2; }
