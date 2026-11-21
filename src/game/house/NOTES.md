@@ -20,7 +20,7 @@ analyser.fftSize = 64 // music.ts: analyser resolution for the pulse; level() av
 
 **Leaving the window:** music pauses when the window loses focus or the tab is hidden, and carries on when the visitor comes back, but only if it was playing when they left (`away` and `back` in music.ts). Pressing play, pause or a track in the meantime cancels the resume.
 
-Panel and now-playing styles are `.music-*` and `.now-playing` in [style.css](../../style.css).
+Panel styles are `.music-*` in [house.css](./house.css); the now-playing label is `.now-playing` in [ui/hud.css](../ui/hud.css).
 
 ---
 

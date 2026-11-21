@@ -97,7 +97,7 @@ Gentle by design: nothing is hard, and nothing blocks a project.
 Ten ideas taken from how acclaimed games look after their players, chosen for a visitor with a few minutes, often on a phone, who should leave having seen the projects. The research behind them, with sources, is in [reports/Player experience details in AAA games.md](../reports/Player%20experience%20details%20in%20AAA%20games.md). Most are an afternoon each, and items 25 and 26 lead into the guided tour (C10), persistence (E18) and accessibility (E19).
 
 25. **Places you've seen.** *(done: seen.ts)* Remember which projects, the About sign and the Contact mailbox a visitor has looked at, show "2 of 3 projects seen" in the bag, and let unseen project stations glow softly. *(Animal Crossing's Critterpedia marks, Metroid Dread's glowing unexplored areas)*
-26. **"Point me somewhere".** *(done: guide.ts, GuideWind.tsx; the camera glides over to the place and back rather than turning, since the curved world needs it facing north)* One key, and a chip on phones, turns the camera toward the nearest unseen project while wind lines or a bird drift that way. *(The Last of Us Part II's navigation button, Ghost of Tsushima's Guiding Wind)*
+26. **"Point me somewhere".** *(removed on purpose in H47: the island is explored, not led through)* One key, and a chip on phones, turns the camera toward the nearest unseen project while wind lines or a bird drift that way. *(The Last of Us Part II's navigation button, Ghost of Tsushima's Guiding Wind)*
 27. **Something to do while it loads.** *(done: a pill that hops on the loader; main.tsx)* The loading screen gets a small toy, or the island's map, while the 3D chunk downloads. *(Splatoon 3's lobby, Tears of the Kingdom's map on loading screens)*
 28. **Welcome back.** *(done: visits.ts, WelcomeBack.tsx, Leaves.tsx)* A greeting that changes with the days since the last visit, and a little capped, sweepable mess (leaves or weeds) that never costs anything. *(Animal Crossing's absence reactions)*
 29. **Calendar moments.** *(done: calendar.ts, Festive.tsx)* The site's anniversary, a few holidays, and one gentle gag that reads the clock, such as a sign at 3am asking whether you shouldn't be asleep. *(K.K. Slider's birthday song, Psycho Mantis)*
@@ -109,13 +109,13 @@ Ten ideas taken from how acclaimed games look after their players, chosen for a 
 
 Left out on purpose: a like-only guestbook (needs a backend; see F23), reshaping the island's terrain for Breath of the Wild's triangle rule (use it for new land instead), and a fake-crash gag (on a portfolio, a recruiter might believe it).
 
-## Phase H: Leaner code, a quieter guide *(next)*
+## Phase H: Leaner code, a quieter guide *(done, but for 50)*
 
 The game has grown to 107 files in one flat folder, a 710-line TUNING.md and a 426-line style.css, and the same patterns are written out again and again. Every change has to read more than it touches, which costs Claude tokens and makes mistakes likelier. This phase gives each part of the portfolio its own compartment, writes the shared patterns once, and lets the visitor explore rather than be led. Moves come first, so the refactors after them are small diffs.
 
 ### Compartments (fewer tokens per change)
 
-35. **One folder per area.** Split `src/game` into:
+35. **One folder per area.** *(done: src/game/core, world, player, house, secrets, life, combat, portfolio, ui)* Split `src/game` into:
     - `core/`: store, scene, state, input, keymap, gamepad, focus, collision, curve, save, settings, sfx, music
     - `world/`: island, trees, roads, grid, pois, layout, sky, season, weather
     - `player/`: the player, its characters, the hat, the sword
@@ -127,29 +127,29 @@ The game has grown to 107 files in one flat folder, a 710-line TUNING.md and a 4
     - `ui/`: panels, HUD, dialogue, touch controls, photo mode
 
     Only moves and import paths change, one commit per folder. Renames that only change case need two steps on Windows.
-36. **Tuning notes beside the code.** Each folder gets a short `NOTES.md` with its constants and rules, cut from TUNING.md, which becomes a one-page index. A change to fishing then reads about 40 lines, not 710.
-37. **A map in CLAUDE.md.** A "Where things live" table (folder, what's in it, entry file), and a rule to read that folder's NOTES.md first and never read TUNING.md or style.css whole. CLAUDE.md itself stays short.
-38. **CSS beside its component.** Split style.css into one file per area (`ui/panels.css`, `ui/hud.css`, `ui/touch.css`, `ui/photo.css`), each imported by the components that use it, and break up the one-line rules. Game CSS then loads with the 3D chunk instead of in the first view (4.7 KB gzip today).
+36. **Tuning notes beside the code.** *(done: a NOTES.md per folder; TUNING.md is the index)* Each folder gets a short `NOTES.md` with its constants and rules, cut from TUNING.md, which becomes a one-page index. A change to fishing then reads about 40 lines, not 710.
+37. **A map in CLAUDE.md.** *(done)* A "Where things live" table (folder, what's in it, entry file), and a rule to read that folder's NOTES.md first and never read TUNING.md or style.css whole. CLAUDE.md itself stays short.
+38. **CSS beside its component.** *(done: the first view's CSS is 0.9 KB gzip, from 4.7)* Split style.css into one file per area (`ui/panels.css`, `ui/hud.css`, `ui/touch.css`, `ui/photo.css`), each imported by the components that use it, and break up the one-line rules. Game CSS then loads with the 3D chunk instead of in the first view (4.7 KB gzip today).
 
 ### One copy of each pattern
 
-39. **A `persisted()` store helper** replaces 19 hand-written localStorage load-and-save blocks: a key, a default and a check, saved on change and wrapped in try/catch. Each store registers its key, so save.ts's Start over can't miss one.
-40. **One `<Panel>` component** for the bag, log, settings, shop and touch menu: the header and ×, Escape and the panel's own key to close, and focus on open. That removes five copies of the same code.
-41. **One HUD chip component** for the buttons at the top left, with shared CSS in place of a rule block each.
-42. **One tile-occupancy module.** Roads, buildings, the square, trees and places are worked out once. Grass, pickups, slimes, pearls, daily finds and trees ask it `free(i, j, margin)` instead of each building its own blocked set.
-43. **One hint helper.** `hint('bag', 'Tap B')` names the bound key on a keyboard and the button on touch. It replaces 13 `isTouch ?` ternaries and notice.ts's local `key()`.
-44. **A dead-code sweep.** Run a one-off unused-export check (`npx knip`, not added as a dependency), then remove unused exports, files and comments that name old keys or positions.
+39. **A `persisted()` store helper** *(done: core/persist.ts; Start over clears everything but the preferences, so it needs no list)* replaces 19 hand-written localStorage load-and-save blocks: a key, a default and a check, saved on change and wrapped in try/catch. Each store registers its key, so save.ts's Start over can't miss one.
+40. **One `<Panel>` component** *(done: ui/Panel.tsx)* for the bag, log, settings, shop and touch menu: the header and ×, Escape and the panel's own key to close, and focus on open. That removes five copies of the same code.
+41. **One HUD chip component** *(done: ui/Chip.tsx)* for the buttons at the top left, with shared CSS in place of a rule block each.
+42. **One tile-occupancy module.** *(done: world/tiles.ts; every placement comes out as before)* Roads, buildings, the square, trees and places are worked out once. Grass, pickups, slimes, pearls, daily finds and trees ask it `free(i, j, margin)` instead of each building its own blocked set.
+43. **One hint helper.** *(done: hint() in core/keymap.ts)* `hint('bag', 'Tap B')` names the bound key on a keyboard and the button on touch. It replaces 13 `isTouch ?` ternaries and notice.ts's local `key()`.
+44. **A dead-code sweep.** *(done: 2 dead exports removed, 25 made local)* Run a one-off unused-export check (`npx knip`, not added as a dependency), then remove unused exports, files and comments that name old keys or positions.
 
 ### Performance
 
-45. **A smaller 3D chunk.** It's 1.2 MB (346 KB gzip), over Vite's warning. Load rarely used parts on demand: the cave and islet, edit mode, photo mode and the shop. Check three.js is tree-shaken, and measure before and after.
-46. **Less work per frame.** Audit every `useFrame`: hidden scenes' components still run theirs. Skip them while their scene isn't shown, and merge static meshes where draw calls add up.
+45. **A smaller 3D chunk.** *(done: three.js and React in their own chunks, the game's code 133 KB; the cave, islet, edit mode, shop and photo mode load later)* It's 1.2 MB (346 KB gzip), over Vite's warning. Load rarely used parts on demand: the cave and islet, edit mode, photo mode and the shop. Check three.js is tree-shaken, and measure before and after.
+46. **Less work per frame.** *(done: core/sceneFrame.ts on 15 visual callbacks; no meshes needed merging)* Audit every `useFrame`: hidden scenes' components still run theirs. Skip them while their scene isn't shown, and merge static meshes where draw calls add up.
 
 ### Explore, don't be led
 
-47. **Remove "Point me somewhere".** Drop G, the Where to? chip and menu item, the guide wind and the camera glide (guide.ts, GuideWind.tsx). Also drop the hints that mention it: on the notice board, in a bottle tip, in the keymap and on the controller's LB. The world keeps its own cues: signposts, the soft glow on unseen stations, and Bramble's tour for whoever asks. G26 becomes "removed on purpose".
-48. **Fewer instructions up front.** The welcome note covers walking and using things, and stops there. Everything else is met in the world, with first-time lines (`sayFirst`) and the Keys list in the settings. The notice board's lines hint rather than direct.
-49. **"View as page" moves into the settings.** While playing, the button at the top hides and the settings gain a View as a page row. A visually hidden skip link stays first in the tab order, because the page is the accessible version. On the page, Play the game stays where it is. Without WebGL or with reduced motion the page is still the starting view.
+47. **Remove "Point me somewhere".** *(done)* Drop G, the Where to? chip and menu item, the guide wind and the camera glide (guide.ts, GuideWind.tsx). Also drop the hints that mention it: on the notice board, in a bottle tip, in the keymap and on the controller's LB. The world keeps its own cues: signposts, the soft glow on unseen stations, and Bramble's tour for whoever asks. G26 becomes "removed on purpose".
+48. **Fewer instructions up front.** *(done; the sword is taught on the first slime bump)* The welcome note covers walking and using things, and stops there. Everything else is met in the world, with first-time lines (`sayFirst`) and the Keys list in the settings. The notice board's lines hint rather than direct.
+49. **"View as page" moves into the settings.** *(done)* While playing, the button at the top hides and the settings gain a View as a page row. A visually hidden skip link stays first in the tab order, because the page is the accessible version. On the page, Play the game stays where it is. Without WebGL or with reduced motion the page is still the starting view.
 50. **The bag and its inventory: to be decided.** Parked until you've settled what the inventory should be.
 
 Suggested order for Phase H: 47 → 49 → 48 (small and visible), then 35 → 36 → 37 (moves, while nothing else is changing), then 39 → 40 → 41 → 42 → 43, then 44, 45 → 46, and 38 last.

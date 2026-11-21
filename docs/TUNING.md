@@ -22,7 +22,7 @@ Every constant that changes how the game looks, moves or performs, grouped by sy
 | [secrets/](../src/game/secrets/NOTES.md) | Hidden things: pearls, the cave behind the waterfall, the islet, the trinkets and the calendar. |
 | [ui/](../src/game/ui/NOTES.md) | What sits over the game: dialogue, panels, touch controls, photo mode and the welcome back. |
 
-Read the folder's NOTES.md before changing anything in it, rather than this page or style.css whole.
+Read the folder's NOTES.md before changing anything in it, rather than this page whole. Each area's CSS is beside its code too (`src/game/<area>/*.css`); src/style.css holds only the page and the loader.
 
 ---
 
@@ -40,6 +40,8 @@ gl={{ antialias: true }}                    // smooth edges on every device: mul
 ```
 
 The background, lights and fog come from the time of day; see the next section.
+
+**Chunks** (vite.config.ts, Game.tsx): the first view is the page and the loader alone. The game is split into three.js (about 820 KB, 209 KB gzip; R3F registers all of it, so it can't be tree-shaken), React with R3F (about 270 KB), and the game's own code (about 133 KB). The first two change only with an upgrade, so a returning visitor's browser keeps them across deploys. Parts most visits never reach (the cave, the islet, edit mode, the shop, photo mode) load after the first frame, each behind its own Suspense in Game.tsx (`later()`); a new rarely-seen part can go the same way, as long as nothing loaded up front imports it.
 
 quality.ts decides the device tier:
 

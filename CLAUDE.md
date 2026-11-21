@@ -19,7 +19,7 @@ React Three Fiber + Vite portfolio: an explorable 3D diorama world. Deployed on 
 | `src/game/ui/` | Dialogue, panels, touch controls, photo mode, welcome back | `Dialogue.tsx` |
 | `docs/` | `ROADMAP.md`, `CHARACTER.md`, `TUNING.md` (site-wide notes and the index) | |
 
-Before changing a folder, read its `NOTES.md`: its constants and rules. Don't read `docs/TUNING.md` or `src/style.css` whole; search them. Keep each `NOTES.md` current when its constants change.
+Before changing a folder, read its `NOTES.md`: its constants and rules. Don't read `docs/TUNING.md` whole; search it. Each area's CSS is beside its code (`src/game/<area>/*.css`), imported in order by `Game.tsx`; `src/style.css` holds only the page. Keep each `NOTES.md` current when its constants change.
 
 ## Commits
 
@@ -43,4 +43,5 @@ Before changing a folder, read its `NOTES.md`: its constants and rules. Don't re
 
 - Keep the first view (HTML/CSS/JS before the 3D chunk) under about 60 KB gzip; the 3D chunk loads lazily via `src/main.tsx`.
 - Run models through the gltf-transform pipeline before adding them to `public/models`.
-- No per-frame allocations in `useFrame`; keep per-frame state out of React.
+- No per-frame allocations in `useFrame`; keep per-frame state out of React. Visual work in one area uses `useSceneFrame` (core/sceneFrame.ts), so it stops while that area is hidden.
+- Use the shared helpers rather than repeating them: `readSaved`/`writeSaved` (core/persist.ts), `<Panel>` and `<Chip>` (ui/), `clear()` for free tiles (world/tiles.ts), `hint()` for control names (core/keymap.ts).

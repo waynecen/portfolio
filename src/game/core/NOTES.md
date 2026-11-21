@@ -62,7 +62,7 @@ const LEAVE = 0.6 // Interactions.tsx: a dialogue closes once the player is this
 const SAY_RANGE = 1.5 // interact.ts: the range used when nothing was in focus (it belongs to the spot it opened at)
 ```
 
-Bubble look is in [style.css](../../style.css): `.dialogue-cloud` `fill` (cream), `.dialogue` `color` (brown text), `.dialogue-next` `fill` (arrow), and the `dialogue-pop` keyframes (pop-in). The cloud outline is the SVG `path` in Dialogue.tsx; it stretches to fit, so it works at any width.
+Bubble look is in [ui/hud.css](../ui/hud.css): `.dialogue-cloud` `fill` (cream), `.dialogue` `color` (brown text), `.dialogue-next` `fill` (arrow), and the `dialogue-pop` keyframes (pop-in). The cloud outline is the SVG `path` in Dialogue.tsx; it stretches to fit, so it works at any width.
 
 Anything the player can use calls `register({ x, z, range, prompt, onInteract })` in an effect. Each frame, the nearest one in range gets focus and shows its prompt ("E Read"), or its card if it has a `card` (a project, or the contact links; the card's `action` labels what using it opens). The player can keep walking while a dialogue is open: walking out of range of whatever started it closes it, so reading a sign never holds you in place. Panels, edit mode, the fade between areas and a fishing line out still hold the player still (`held()` in interact.ts). To add a sign, place `<Sign x z lines={[…]} />` in [Game.tsx](../Game.tsx). The welcome and controls text is the `NOTE` array in [Furniture.tsx](../house/Furniture.tsx), with a keyboard and a touch version.
 
@@ -120,4 +120,12 @@ Polled once a frame (`<Controls>` in Game.tsx). Left stick or d-pad walks; a tri
 
 ## What's kept: [save.ts](./save.ts)
 
-Every part of a visit is kept in this browser's localStorage, each under its own key, read once and written on change, inside try/catch. `PROGRESS_KEYS` in save.ts lists them all: hearts (`hearts-v1`, store.ts), shells, the bag, bugs, fish, pearls, the cave, the islet's chest, the treasure map, hats, furniture bought and placed, secrets, projects seen, explanations given, today's finds and the last visit. **Start over** in the settings (it asks twice) forgets all of these and reloads. The settings, the music volume and the keys (`PREFERENCE_KEYS`) stay.
+Every part of a visit is kept in this browser's localStorage, each module under its own key, read once and written on change. All of it goes through [persist.ts](./persist.ts): `readSaved(key)` gives the parsed value or undefined, and each module checks its shape; `writeSaved(key, value)` saves it, or forgets the key for undefined. Blocked or full storage just means nothing is kept. **Start over** in the settings (it asks twice) clears every key but `PREFERENCE_KEYS` in save.ts (the settings, the music volume and the keys) and reloads, so it can't miss a key, even one from a module that hasn't loaded yet.
+
+---
+
+## Shared helpers: [keymap.ts](./keymap.ts), [sceneFrame.ts](./sceneFrame.ts)
+
+**Hints** name the controls the visitor has: `hint('Press {bag} to open it', 'Tap Bag in the menu')` gives the touch words on a touch screen, otherwise the keyboard words with `{action}` replaced by its main key and `{action*}` by all of its keys, so every hint follows a remap. Write new hints this way rather than with `isTouch ?`.
+
+**Frame work by area:** `useSceneFrame('world', cb)` is `useFrame` that skips its callback while another area is on show. Use it for purely visual work in one area (spinning, bobbing, glows). Anything that must keep going in the background, like the cave's block sliding home or the fishing logic, uses `useFrame`.

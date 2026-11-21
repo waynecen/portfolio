@@ -103,3 +103,9 @@ const GLOW = 1.1                   // House.tsx: window glow at full night
 Add `?season=winter` to the URL to see it (or `spring`, `summer`, `autumn`). The snapshot skill pins every shot to summer, plus one winter shot.
 
 With reduced motion, the colours and fog still change, but rain and fireflies hold still.
+
+---
+
+## Free tiles: [tiles.ts](./tiles.ts)
+
+Everything scattered over the island (grass, pickups, slimes, pearls, the daily finds) asks `clear(i, j, margins)` whether a tile is free: on land (`inland` tiles in from the shore, default 1), off roads and built tiles, and clear of places (`place`, default 1 tile round), trees (`tree`, default 0, and `behind` for the canopy's shadow towards the camera) and the house (`house`, default 0). `nearPath(i, j, ring)` is for keeping away from roads and places. Trees place themselves (Trees.tsx), so they keep their own clearings.

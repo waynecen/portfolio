@@ -46,4 +46,4 @@ Hearts.tsx colours:
 stroke="#2a1416" strokeWidth="2.2"         // outline colour and thickness
 ```
 
-Heart size on screen is `.heart { width: 32px }` in [style.css](../../style.css).
+Heart size on screen is `.heart { width: 32px }` in [ui/hud.css](../ui/hud.css).
