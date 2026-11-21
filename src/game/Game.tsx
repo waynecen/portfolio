@@ -19,6 +19,7 @@ import { Interactions } from './Interactions'
 import { BagButton, InventoryPanel, RodButton } from './InventoryPanel'
 import { Island } from './Island'
 import { Joystick } from './Joystick'
+import { Leaves } from './Leaves'
 import { LogPanel } from './LogPanel'
 import { BED_SPAWN } from './layout'
 import { Mailbox } from './Mailbox'
@@ -38,6 +39,7 @@ import { arrive } from './scene'
 import { Stations } from './Station'
 import { useGame } from './store'
 import { Trees } from './Trees'
+import { WelcomeBack } from './WelcomeBack'
 
 const tier = detectTier()
 
@@ -91,6 +93,7 @@ export function Game() {
           <Mailbox />
           <Dock />
           <Pickups />
+          <Leaves />
           <Rain />
           <Snow />
           <Fireflies />
@@ -120,6 +123,7 @@ export function Game() {
       <MusicPanel />
       <InventoryPanel />
       <LogPanel />
+      <WelcomeBack />
       <BagButton />
       <RodButton />
       <EditHud />

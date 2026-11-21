@@ -210,6 +210,8 @@ The projects themselves aren't constants. They're read from the `#projects artic
 
 **Where to?** ([guide.ts](../src/game/guide.ts), [GuideWind.tsx](../src/game/GuideWind.tsx)): G, or the Where to? chip at the top left, points the way to the nearest unseen project (then the About sign and the mailbox). The camera glides over to it and back (`PEEK = 2` seconds, gliding included; walking off ends it early) while wind streaks fly from the player toward it (`COUNT = 12` streaks over `STREAKS_FOR = 1.4` s, each `LIFE = 1` s at `SPEED = 4.5`, up to `LENGTH = 0.6` long). Indoors the streaks point to the door and the camera stays put. With everything seen, it says so and suggests the forest and the dock. The chip's style is `.guide-toggle` in style.css; the now-playing label sits under it.
 
+**Welcome back** ([visits.ts](../src/game/visits.ts), [WelcomeBack.tsx](../src/game/WelcomeBack.tsx), [Leaves.tsx](../src/game/Leaves.tsx)): the browser keeps when the first and last visits were and how many there have been (`visits-v1`; a reload within `SAME_VISIT` = 30 minutes is the same visit). A returning visitor is greeted 1.5 s (`DELAY`) after the game shows, in words that depend on the days away (one, a few, over a week, a long time). From `MIN_DAYS = 2` days away, one pile of leaves per day blows in beside the roads within `NEAR = 9` tiles of the house, at most `PILES = 6`; walking within `SWEEP = 0.55` sweeps one up with a rustle, and the last plays the find chime. After a week or more, the greeting also points to Where to? if a project is still unseen. A first visit gets no greeting: the note by the bed does that.
+
 ---
 
 ## About sign and Contact mailbox: [src/game/places.ts](../src/game/places.ts), [src/game/Mailbox.tsx](../src/game/Mailbox.tsx)
