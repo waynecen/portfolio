@@ -37,6 +37,7 @@ import { detectTier } from './quality'
 import { RecordPlayer } from './RecordPlayer'
 import { Rain } from './Rain'
 import { ReelBar } from './ReelBar'
+import { Slimes } from './Slimes'
 import { Snow } from './Snow'
 import { Sparkle } from './Sparkle'
 import { Roads } from './Roads'
@@ -107,6 +108,7 @@ export function Game() {
           <Trinkets />
           <Grass />
           <Pots />
+          <Slimes />
           <GroundDrops />
           <Rain />
           <Snow />

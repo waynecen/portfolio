@@ -15,10 +15,12 @@ type Settings = {
   bigText: boolean
   /** A longer window to reel in a bite (fishing.ts), marked on the prompt while it's on. */
   fishAssist: boolean
+  /** Slimes in the meadows (Slimes.tsx); off for a visit with nothing to fight. */
+  slimes: boolean
 }
 
 const KEY = 'settings-v1'
-const DEFAULTS: Settings = { effects: 1, motion: 'device', bigText: false, fishAssist: false }
+const DEFAULTS: Settings = { effects: 1, motion: 'device', bigText: false, fishAssist: false, slimes: true }
 
 function load(): Settings {
   try {
@@ -28,6 +30,7 @@ function load(): Settings {
       motion: saved.motion === 'reduce' || saved.motion === 'full' ? saved.motion : DEFAULTS.motion,
       bigText: saved.bigText === true,
       fishAssist: saved.fishAssist === true,
+      slimes: saved.slimes !== false,
     }
   } catch {
     return DEFAULTS

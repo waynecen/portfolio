@@ -79,6 +79,11 @@ export function SettingsPanel() {
         <input type="checkbox" checked={s.fishAssist} onChange={(e) => setSetting('fishAssist', e.currentTarget.checked)} />
       </label>
       <p className="settings-note">Twice as long to reel in a bite. “Assist on” shows on the prompt while it helps.</p>
+      <label className="settings-row">
+        Slimes
+        <input type="checkbox" checked={s.slimes} onChange={(e) => setSetting('slimes', e.currentTarget.checked)} />
+      </label>
+      <p className="settings-note">Off for a stroll with nothing to bump into.</p>
       {/* Secrets (secrets.ts): each trinket found can be switched on and off; until then, a hint. */}
       <div className="bag-head bag-subhead">
         <h3>Secrets</h3>
