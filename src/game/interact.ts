@@ -1,4 +1,5 @@
 import { fishing, reel } from './fishing'
+import { markSeen } from './seen'
 import { click } from './sfx'
 import { playerPos } from './state'
 import { useGame, type Panel } from './store'
@@ -26,6 +27,8 @@ export type Interactable = {
   onInteract: () => void
   /** A card to show while this has focus. */
   card?: Card
+  /** The place this is, for the places-seen list (seen.ts): seen once its card shows, or once used if it has none. */
+  seen?: string
 }
 
 // Plain array scanned once per frame by <Interactions>; entries are added and removed by components.
@@ -81,6 +84,7 @@ export function interact(): boolean {
   const f = useGame.getState().focus
   if (!f) return false
   click()
+  if (f.seen) markSeen(f.seen)
   f.onInteract()
   return true
 }

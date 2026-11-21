@@ -3,6 +3,7 @@ import { FISH, putAwayRod, SPOTS, useFishing } from './fishing'
 import { closePanel } from './interact'
 import { ITEM, ITEMS, toggleBag, useInventory, type ItemId } from './inventory'
 import { isTouch } from './quality'
+import { PLACES, useSeen } from './seen'
 import { useGame } from './store'
 
 // The bag: a slot for every item, filled once it's found, then one for every kind of fish, filled
@@ -71,6 +72,7 @@ export function InventoryPanel() {
   const open = useGame((s) => s.panel === 'inventory')
   const found = useInventory((s) => s.found)
   const caught = useFishing((s) => s.caught)
+  const seen = useSeen((s) => s.seen)
   const [chosen, setChosen] = useState<number>(0)
   const slots = useRef<(HTMLButtonElement | null)[]>([])
   const total = ITEMS.length + FISH.length // items first, then fish
@@ -152,6 +154,25 @@ export function InventoryPanel() {
           ×
         </button>
       </div>
+      {/* Places seen (seen.ts): every project, the About sign and the Contact mailbox, ticked once looked at. */}
+      <div className="bag-head bag-subhead">
+        <h3>Places</h3>
+        <span className="bag-count">
+          {PLACES.filter((p) => p.kind === 'project' && seen.includes(p.id)).length} of{' '}
+          {PLACES.filter((p) => p.kind === 'project').length} projects seen
+        </span>
+      </div>
+      <ul className="bag-places">
+        {PLACES.map((p) => {
+          const been = seen.includes(p.id)
+          return (
+            <li key={p.id} data-seen={been ? '' : undefined}>
+              <span aria-hidden="true">{been ? '✓' : '○'}</span> {p.name}
+              <span className="sr-only">{been ? ', seen' : ', not seen yet'}</span>
+            </li>
+          )
+        })}
+      </ul>
       <ul className="bag-slots">
         {ITEMS.map((t, k) => {
           const got = found.includes(t.id)

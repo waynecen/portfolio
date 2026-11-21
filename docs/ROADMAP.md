@@ -96,7 +96,7 @@ Gentle by design: nothing is hard, and nothing blocks a project.
 
 Ten ideas taken from how acclaimed games look after their players, chosen for a visitor with a few minutes, often on a phone, who should leave having seen the projects. The research behind them, with sources, is in [reports/Player experience details in AAA games.md](../reports/Player%20experience%20details%20in%20AAA%20games.md). Most are an afternoon each, and items 25 and 26 lead into the guided tour (C10), persistence (E18) and accessibility (E19).
 
-25. **Places you've seen.** Remember which projects, the About sign and the Contact mailbox a visitor has looked at, show "2 of 3 projects seen" in the bag, and let unseen project stations glow softly. *(Animal Crossing's Critterpedia marks, Metroid Dread's glowing unexplored areas)*
+25. **Places you've seen.** *(done: seen.ts)* Remember which projects, the About sign and the Contact mailbox a visitor has looked at, show "2 of 3 projects seen" in the bag, and let unseen project stations glow softly. *(Animal Crossing's Critterpedia marks, Metroid Dread's glowing unexplored areas)*
 26. **"Point me somewhere".** One key, and a chip on phones, turns the camera toward the nearest unseen project while wind lines or a bird drift that way. *(The Last of Us Part II's navigation button, Ghost of Tsushima's Guiding Wind)*
 27. **Something to do while it loads.** The loading screen gets a small toy, or the island's map, while the 3D chunk downloads. *(Splatoon 3's lobby, Tears of the Kingdom's map on loading screens)*
 28. **Welcome back.** A greeting that changes with the days since the last visit, and a little capped, sweepable mess (leaves or weeds) that never costs anything. *(Animal Crossing's absence reactions)*

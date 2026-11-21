@@ -20,6 +20,7 @@ export function Mailbox() {
         range: RANGE,
         prompt: 'Write',
         card: contactCard,
+        seen: 'contact',
         onInteract: () => {
           if (contactCard.url) window.open(contactCard.url, '_blank', 'noopener')
         },

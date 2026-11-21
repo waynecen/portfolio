@@ -1,5 +1,6 @@
 import { useFrame } from '@react-three/fiber'
 import { closeDialogue, interactables, type Interactable } from './interact'
+import { markSeen } from './seen'
 import { playerPos } from './state'
 import { useGame } from './store'
 
@@ -31,7 +32,10 @@ export function Interactions() {
         nearest = it
       }
     }
-    if (nearest !== s.focus) useGame.setState({ focus: nearest })
+    if (nearest !== s.focus) {
+      useGame.setState({ focus: nearest })
+      if (nearest?.seen && nearest.card) markSeen(nearest.seen) // its card is on screen now
+    }
   })
   return null
 }

@@ -197,9 +197,13 @@ Field of view is set in [Game.tsx](../src/game/Game.tsx): `fov: 35` (degrees). L
 const RANGE = 1.5 // Station.tsx: how close the player must be to a station for its project card to show
 const RING = 5 // projects.ts: stations are spaced evenly around a circle of this radius, the first straight ahead of spawn
 // Station.tsx: rotation.y += delta * 0.8 — spin speed of the marker's top, radians/s
+const GLOW = '#ffd27a' // an unseen project's gem glows this colour, pulsing between GLOW_MIN = 0.25 and GLOW_MAX = 0.8 at PULSE = 2.2 rad/s
+const SAVE_KEY = 'seen-v1' // seen.ts: localStorage key for the places seen; change it to forget them
 ```
 
 The projects themselves aren't constants. They're read from the `#projects article` elements in [index.html](../index.html), so adding an `<article>` there adds a station.
+
+**Places seen** ([seen.ts](../src/game/seen.ts)): every project, the About sign and the Contact mailbox is a place (`PLACES`). A place counts as seen once its card has shown (a project, the mailbox) or once it's been used (the sign, which has no card); an interactable names its place with `seen` when it registers. The list is saved in this browser and shown at the top of the bag ("2 of 3 projects seen"), and a project's gem glows until it's been seen. A project's place id is its title, so renaming one in index.html makes it unseen again.
 
 ---
 

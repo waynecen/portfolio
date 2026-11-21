@@ -80,7 +80,7 @@ export function Game() {
           <Trees />
           <Stations />
           <HouseExterior />
-          <Sign x={ABOUT_AT.x} z={ABOUT_AT.z} lines={aboutLines} />
+          <Sign x={ABOUT_AT.x} z={ABOUT_AT.z} lines={aboutLines} seen="about" />
           <Mailbox />
           <Dock />
           <Pickups />

@@ -1,16 +1,25 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
-import type { Mesh } from 'three'
+import type { Mesh, MeshLambertMaterial } from 'three'
 import { addCollider } from './collision'
 import { register } from './interact'
 import { projects, stationPos } from './projects'
+import { projectPlace, useSeen } from './seen'
 
 const RANGE = 1.5
 const BASE_RADIUS = 0.5 // widest part of the pedestal; also its collision radius
+const GLOW = '#ffd27a' // an unseen project's gem glows this colour (seen.ts)
+const GLOW_MIN = 0.25 // and pulses between these intensities
+const GLOW_MAX = 0.8
+const PULSE = 2.2 // radians per second
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
 
 function Station({ index }: { index: number }) {
   const top = useRef<Mesh>(null)
+  const gem = useRef<MeshLambertMaterial>(null)
   const { x, z } = stationPos[index]
+  const place = projectPlace(projects[index].title)
+  const unseen = useSeen((s) => !s.seen.includes(place))
 
   useEffect(() => {
     const project = projects[index]
@@ -20,6 +29,7 @@ function Station({ index }: { index: number }) {
       range: RANGE,
       prompt: 'Open project',
       card: project,
+      seen: projectPlace(project.title),
       onInteract: () => {
         if (project.url) window.open(project.url, '_blank', 'noopener')
       },
@@ -28,8 +38,13 @@ function Station({ index }: { index: number }) {
 
   useEffect(() => addCollider({ kind: 'circle', x, z, r: BASE_RADIUS }), [x, z])
 
-  useFrame((_, delta) => {
+  useFrame(({ clock }, delta) => {
     if (top.current) top.current.rotation.y += delta * 0.8
+    // Until it's been seen, the gem glows, pulsing gently (steady with reduced motion).
+    if (gem.current && unseen) {
+      const k = reduced ? 1 : 0.5 + 0.5 * Math.sin(clock.elapsedTime * PULSE)
+      gem.current.emissiveIntensity = GLOW_MIN + (GLOW_MAX - GLOW_MIN) * k
+    }
   })
   return (
     <group position={[x, 0, z]}>
@@ -39,7 +54,12 @@ function Station({ index }: { index: number }) {
       </mesh>
       <mesh ref={top} position={[0, 0.95, 0]}>
         <octahedronGeometry args={[0.25]} />
-        <meshLambertMaterial color="#5b7fbf" />
+        <meshLambertMaterial
+          ref={gem}
+          color="#5b7fbf"
+          emissive={unseen ? GLOW : '#000000'}
+          emissiveIntensity={unseen ? GLOW_MAX : 0}
+        />
       </mesh>
     </group>
   )

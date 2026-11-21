@@ -247,6 +247,10 @@ body[data-scene="house"] .rod-toggle { top: calc(max(12px, env(safe-area-inset-t
 .bag-slot[aria-pressed="true"] { border-color: #f2b233; background: rgb(242 178 51 / .2); }
 .bag-icon { width: 60%; height: 60%; }
 .bag-subhead { margin-bottom: 10px; }
+/* Places seen (seen.ts): one line each, ticked once seen; unseen ones dimmed. */
+.bag-places { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px; padding: 0; list-style: none; font-size: 13px; }
+.bag-places li { padding: 3px 10px; border-radius: 999px; background: rgb(122 100 73 / .1); opacity: .6; }
+.bag-places li[data-seen] { background: rgb(242 178 51 / .25); opacity: 1; }
 .bag-subhead h3 { margin: 0; font-size: 16px; }
 .bag-detail { min-height: 5.5em; }
 .bag-detail h3 { margin: 0 0 4px; font-size: 16px; }

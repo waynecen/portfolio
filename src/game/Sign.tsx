@@ -5,8 +5,8 @@ import { register, say } from './interact'
 const WOOD = '#a0724a'
 
 /** A readable wooden sign. `lines` are shown one per press in the dialogue box. */
-export function Sign({ x, z, lines }: { x: number; z: number; lines: string[] }) {
-  useEffect(() => register({ x, z, range: 1.4, prompt: 'Read', onInteract: () => say(lines) }), [x, z, lines])
+export function Sign({ x, z, lines, seen }: { x: number; z: number; lines: string[]; /** Its place id (seen.ts), counted once read. */ seen?: string }) {
+  useEffect(() => register({ x, z, range: 1.4, prompt: 'Read', seen, onInteract: () => say(lines) }), [x, z, lines, seen])
   // A little deeper than the board, so the pill bumps the sign rather than clipping its post.
   useEffect(() => addCollider({ kind: 'box', x, z, hx: 0.45, hz: 0.1 }), [x, z])
   return (
