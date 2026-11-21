@@ -2,7 +2,7 @@ import { dayNumber } from './calendar'
 import { addShells } from './drops'
 import { isInland, isLand } from './Island'
 import { say } from './interact'
-import { inHouse, pois, roadTiles } from './pois'
+import { built, pois, roadTiles } from './pois'
 import { tileAt } from './grid'
 import { chime } from './sfx'
 import { trees } from './Trees'
@@ -52,7 +52,7 @@ const shore: { x: number; z: number }[] = []
 const meadow: { x: number; z: number }[] = []
 for (let i = -30; i <= 30; i++)
   for (let j = -30; j <= 30; j++) {
-    if (!isLand(i, j) || roads.has(key(i, j)) || placeTiles.has(key(i, j)) || treeTiles.has(key(i, j)) || inHouse(i, j)) continue
+    if (!isLand(i, j) || roads.has(key(i, j)) || placeTiles.has(key(i, j)) || treeTiles.has(key(i, j)) || built(i, j)) continue
     if (!isInland(i, j, 1)) {
       if (!nearDock(i, j)) shore.push({ x: i, z: j })
     } else if (isInland(i, j, 2)) meadow.push({ x: i, z: j })

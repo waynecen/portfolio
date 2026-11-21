@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { useShells } from './drops'
 import { closePanel } from './interact'
 import { useOwned } from './room'
-import { buyHat, buyPiece, canAfford, DECOR, HATS, useHats, wearHat } from './shop'
+import { buyHat, buyMap, buyPiece, canAfford, DECOR, HATS, MAP_PRICE, useHats, useTreasureMap, wearHat } from './shop'
 import { useGame } from './store'
 
 // Pip's shop (shop.ts): hats to wear and furniture for the house, paid for in shells. Opened by
@@ -13,6 +13,7 @@ export function ShopPanel() {
   const shells = useShells((s) => s.shells)
   const hats = useHats()
   const owned = useOwned((s) => s.owned)
+  const map = useTreasureMap((s) => s.owned)
   const [note, setNote] = useState('Hats and things for the house. What’ll it be?')
   const first = useRef<HTMLButtonElement>(null)
 
@@ -94,6 +95,24 @@ export function ShopPanel() {
             </li>
           )
         })}
+      </ul>
+      <div className="bag-head bag-subhead">
+        <h3>Odds and ends</h3>
+      </div>
+      <ul className="shop-list">
+        <li>
+          <span className="shop-name">Treasure map</span>
+          <button
+            type="button"
+            disabled={map}
+            onClick={() => {
+              if (buyMap()) setNote('X marks the spot! Every buried thing on the island shows as a red cross now.')
+              else setNote(short(MAP_PRICE))
+            }}
+          >
+            {map ? 'In your bag' : `${MAP_PRICE} shells`}
+          </button>
+        </li>
       </ul>
       <p className="settings-note">Shells turn up in tall grass, pots and the odd slime, and buried in the day’s dig spot.</p>
     </div>

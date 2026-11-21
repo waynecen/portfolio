@@ -5,7 +5,8 @@ import { addPiece, PIECES, useOwned, type PieceId } from './room'
 
 // The shop at Pip's stall, east of the house (ShopPanel.tsx; the stall and Pip in Villagers.tsx):
 // shells (drops.ts) buy hats to wear and furniture for the house, which arrives in the room and
-// can be moved like the rest (edit mode). Everything bought is kept in this browser.
+// can be moved like the rest (edit mode), and a treasure map that marks where to dig.
+// Everything bought is kept in this browser.
 
 export type HatId = 'straw' | 'party' | 'beanie' | 'crown'
 export type Hat = { id: HatId; name: string; price: number; color: string }
@@ -63,6 +64,33 @@ export function wearHat(id: HatId | null) {
   if (id && !useHats.getState().owned.includes(id)) return
   useHats.setState({ worn: id })
   save()
+}
+
+/** The treasure map's price. With it, every buried pearl (pearls.ts) and the day's dig spot shows as a red cross. */
+export const MAP_PRICE = 15
+const MAP_KEY = 'map-v1'
+function loadMap() {
+  try {
+    return localStorage.getItem(MAP_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+/** Whether the treasure map has been bought. */
+export const useTreasureMap = create<{ owned: boolean }>(() => ({ owned: loadMap() }))
+
+/** Buys the treasure map. False if it can't be afforded (or is already owned). */
+export function buyMap(): boolean {
+  if (useTreasureMap.getState().owned || !canAfford(MAP_PRICE)) return false
+  addShells(-MAP_PRICE)
+  useTreasureMap.setState({ owned: true })
+  try {
+    localStorage.setItem(MAP_KEY, '1')
+  } catch {
+    // private mode or storage full: kept until the page closes
+  }
+  pickup()
+  return true
 }
 
 /** Buys a piece of furniture: it appears in the house. False if it can't be afforded or won't fit. */

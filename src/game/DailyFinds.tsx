@@ -5,6 +5,7 @@ import { bottleAt, bottleWaiting, dig, digAt, digWaiting, readBottle } from './d
 import { burst } from './Dust'
 import { register } from './interact'
 import { reducedMotion } from './settings'
+import { useTreasureMap } from './shop'
 
 // Today's message bottle on the shore and dig spot in the grass (daily.ts). Each goes once used.
 
@@ -59,6 +60,7 @@ function Bottle() {
 
 function DigSpot() {
   const [here, setHere] = useState(digWaiting)
+  const marked = useTreasureMap((s) => s.owned) // the treasure map marks it in red
   const { x, z } = digAt
   useEffect(() => {
     if (!here) return
@@ -81,7 +83,7 @@ function DigSpot() {
       {[0.6, -0.6].map((a) => (
         <mesh key={a} rotation={[-Math.PI / 2, 0, a]}>
           <planeGeometry args={[0.5, 0.09]} />
-          <meshLambertMaterial color="#6b5238" />
+          <meshLambertMaterial color={marked ? '#c4453b' : '#6b5238'} />
         </mesh>
       ))}
     </group>

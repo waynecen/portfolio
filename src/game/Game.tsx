@@ -47,6 +47,7 @@ import { Sparkle } from './Sparkle'
 import { Roads } from './Roads'
 import { SettingsButton, SettingsPanel } from './SettingsPanel'
 import { Sign } from './Sign'
+import { Signposts } from './Signposts'
 import { arrive } from './scene'
 import { Stations } from './Station'
 import { useGame } from './store'
@@ -106,6 +107,7 @@ export function Game() {
           <Sign x={ABOUT_AT.x} z={ABOUT_AT.z} lines={aboutLines} seen="about" night="It’s the middle of the night… shouldn’t you be asleep? Well, since you’re here:" />
           <Mailbox />
           <NoticeBoard />
+          <Signposts />
           <Dock />
           <Pickups />
           <Pearls />

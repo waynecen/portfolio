@@ -7,7 +7,7 @@ import { burst } from './Dust'
 import { damage, harm } from './health'
 import { busy } from './interact'
 import { isInland } from './Island'
-import { inHouse, pois, roadTiles } from './pois'
+import { built, pois, roadTiles } from './pois'
 import { tileAt } from './grid'
 import { reducedMotion, useSettings } from './settings'
 import { pop } from './sfx'
@@ -51,7 +51,7 @@ for (const t of trees) closed.add(key(Math.round(t.x), Math.round(t.z)))
 const open = (x: number, z: number) => {
   const i = Math.round(x)
   const j = Math.round(z)
-  return !closed.has(key(i, j)) && !inHouse(i, j) && isInland(i, j, 1)
+  return !closed.has(key(i, j)) && !built(i, j) && isInland(i, j, 1)
 }
 // Homes: open meadow, far from the house, at least two tiles from any road.
 const nearRoad = (i: number, j: number) => {

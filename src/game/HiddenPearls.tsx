@@ -5,11 +5,13 @@ import { burst } from './Dust'
 import { register } from './interact'
 import { findPearl, hiddenBy, PEARLS, usePearls, type Pearl } from './pearls'
 import { reducedMotion } from './settings'
+import { useTreasureMap } from './shop'
 import { playerPos } from './state'
 
 // The pearls still to find (pearls.ts). One lying in the open (or behind a tree, or in grass that's
 // been cut) glints on the ground; a buried one shows only as a cross of disturbed earth, and only
-// once the player is close: it's found by walking about, not from across the island.
+// once the player is close: it's found by walking about, not from across the island. With the
+// treasure map (shop.ts) every buried one is a red cross, seen from anywhere.
 
 const RANGE = 1 // how close to pick up or dig
 const NOTICE = [1.6, 2.6] // a buried pearl's earth shows fully within the first, not at all past the second
@@ -19,6 +21,8 @@ const pearlGeometry = new SphereGeometry(0.09, 12, 8)
 const pearlMaterial = new MeshLambertMaterial({ color: '#f6f0ea', emissive: '#fff4e8', emissiveIntensity: GLINT[0] })
 const markGeometry = new PlaneGeometry(0.46, 0.08).rotateX(-Math.PI / 2)
 const DIRT = new Color('#8a6a48')
+const EARTH = new Color('#6b5238')
+const MARKED = new Color('#c4453b') // the treasure map's red cross
 
 /** A pearl on the ground, to pick up. */
 function Loose({ p }: { p: Pearl }) {
@@ -28,7 +32,7 @@ function Loose({ p }: { p: Pearl }) {
 
 /** A buried pearl: a cross of earth, fading in as the player nears, to dig up. */
 function Buried({ p }: { p: Pearl }) {
-  const material = useMemo(() => new MeshBasicMaterial({ color: '#6b5238', transparent: true, opacity: 0, depthWrite: false }), [])
+  const material = useMemo(() => new MeshBasicMaterial({ color: EARTH, transparent: true, opacity: 0, depthWrite: false }), [])
   useEffect(() => () => material.dispose(), [material])
   const a = useRef<Group>(null)
   useEffect(
@@ -46,8 +50,10 @@ function Buried({ p }: { p: Pearl }) {
     [p],
   )
   useFrame(() => {
+    const marked = useTreasureMap.getState().owned
     const d = Math.hypot(p.x - playerPos.x, p.z - playerPos.z)
-    material.opacity = 1 - Math.min(1, Math.max(0, (d - NOTICE[0]) / (NOTICE[1] - NOTICE[0])))
+    material.opacity = marked ? 1 : 1 - Math.min(1, Math.max(0, (d - NOTICE[0]) / (NOTICE[1] - NOTICE[0])))
+    material.color.copy(marked ? MARKED : EARTH)
     if (a.current) a.current.visible = material.opacity > 0
   })
   return (

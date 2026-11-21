@@ -3,7 +3,7 @@ import { useRef } from 'react'
 import { Color, DoubleSide, MeshLambertMaterial, Object3D, PlaneGeometry, type InstancedMesh } from 'three'
 import { TILE } from './grid'
 import { isInland } from './Island'
-import { inHouse, roadTiles } from './pois'
+import { built, roadTiles } from './pois'
 import { chime, step } from './sfx'
 import { playerPos } from './state'
 import { useGame } from './store'
@@ -53,7 +53,7 @@ function placePiles() {
       const i = t.i + di
       const j = t.j + dj
       const k = `${i},${j}`
-      if (Math.hypot(i, j) > NEAR || roads.has(k) || treeTiles.has(k) || inHouse(i, j) || !isInland(i, j, 1)) continue
+      if (Math.hypot(i, j) > NEAR || roads.has(k) || treeTiles.has(k) || built(i, j) || !isInland(i, j, 1)) continue
       if (!spots.some((s) => s.x === i && s.z === j)) spots.push({ x: i * TILE, z: j * TILE })
     }
   for (let k = spots.length - 1; k > 0; k--) {

@@ -7,6 +7,7 @@ import { ITEM, ITEMS, toggleBag, useInventory, type ItemId } from './inventory'
 import { PEARLS, usePearls } from './pearls'
 import { isTouch } from './quality'
 import { PLACES, useSeen } from './seen'
+import { useTreasureMap } from './shop'
 import { useGame } from './store'
 
 // The bag: a slot for every item, filled once it's found, then one for every kind of fish, filled
@@ -92,6 +93,9 @@ export function InventoryPanel() {
   const seen = useSeen((s) => s.seen)
   const shells = useShells((s) => s.shells)
   const pearls = usePearls((s) => s.found.length)
+  const map = useTreasureMap((s) => s.owned)
+  // Things that open the way or show it, as chips under the pearls.
+  const treasures = [map && 'Treasure map'].filter(Boolean) as string[]
   const [chosen, setChosen] = useState<number>(0)
   const slots = useRef<(HTMLButtonElement | null)[]>([])
   const total = ITEMS.length + FISH.length + BUGS.length // items first, then fish, then bugs
@@ -214,6 +218,15 @@ export function InventoryPanel() {
           <span key={p.id} data-found={k < pearls ? '' : undefined} />
         ))}
       </p>
+      {treasures.length > 0 && (
+        <ul className="bag-places" aria-label="Treasures">
+          {treasures.map((t) => (
+            <li key={t} data-seen="">
+              {t}
+            </li>
+          ))}
+        </ul>
+      )}
       <ul className="bag-slots">
         {ITEMS.map((t, k) => {
           const got = found.includes(t.id)

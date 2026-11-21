@@ -16,7 +16,7 @@ import { register } from './interact'
 import { collect, ITEMS, useInventory, type Item, type ItemId } from './inventory'
 import { isInland } from './Island'
 import { HOUSE } from './layout'
-import { pois, roadTiles } from './pois'
+import { built, pois, roadTiles } from './pois'
 import { trees } from './Trees'
 import { reducedMotion } from './settings'
 
@@ -49,7 +49,7 @@ for (const t of trees) {
   const { i, j } = tileAt(t.x, t.z)
   around(i, j, SHADE)
 }
-const free = (i: number, j: number) => !blocked.has(key(i, j)) && isInland(i, j, 1)
+const free = (i: number, j: number) => !blocked.has(key(i, j)) && !built(i, j) && isInland(i, j, 1)
 
 /** The clear tile nearest `at`, searching outward ring by ring. */
 function settle(at: Item['at']) {

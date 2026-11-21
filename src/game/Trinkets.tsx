@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react'
 import { MeshLambertMaterial, OctahedronGeometry, type Group } from 'three'
 import { register } from './interact'
 import { isInland } from './Island'
-import { inHouse, roadTiles } from './pois'
+import { built, roadTiles } from './pois'
 import { findSecret, SECRETS, useSecrets, type Secret } from './secrets'
 import { reducedMotion } from './settings'
 import { trees } from './Trees'
@@ -25,7 +25,7 @@ function settle(at: Secret['at']) {
         if (Math.max(Math.abs(di), Math.abs(dj)) !== r) continue
         const i = at.i + di
         const j = at.j + dj
-        if (isInland(i, j, 1) && !roads.has(`${i},${j}`) && !treeTiles.has(`${i},${j}`) && !inHouse(i, j)) return { x: i, z: j }
+        if (isInland(i, j, 1) && !roads.has(`${i},${j}`) && !treeTiles.has(`${i},${j}`) && !built(i, j)) return { x: i, z: j }
       }
   return { x: at.i, z: at.j }
 }

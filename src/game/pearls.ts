@@ -4,7 +4,7 @@ import { say, sayFirst } from './interact'
 import { isInland } from './Island'
 import { addTrack } from './music'
 import { placeholderBonus } from './placeholderTracks'
-import { inHouse, pois, roadTiles } from './pois'
+import { built, pois, roadTiles } from './pois'
 import { winter } from './season'
 import { chime, landed } from './sfx'
 import { PEARL_TRACK } from './tracks'
@@ -49,7 +49,7 @@ for (const t of trees) {
   const j = Math.round(t.z)
   for (let di = -1; di <= 1; di++) for (let dj = -1; dj <= 1; dj++) closed.add(key(i + di, j + dj))
 }
-const open = (i: number, j: number) => !closed.has(key(i, j)) && !inHouse(i, j)
+const open = (i: number, j: number) => !closed.has(key(i, j)) && !built(i, j)
 
 function place(): Pearl[] {
   const random = rng(SEED)
@@ -78,7 +78,7 @@ function place(): Pearl[] {
       const t = list[Math.floor(random() * list.length)]
       const i = Math.round(t.x)
       const j = Math.round(t.z) - 1
-      if (isInland(i, j, 1) && !paths.has(key(i, j)) && !treeTiles.has(key(i, j)) && !inHouse(i, j) && apart(i, j)) return { i, j }
+      if (isInland(i, j, 1) && !paths.has(key(i, j)) && !treeTiles.has(key(i, j)) && !built(i, j) && apart(i, j)) return { i, j }
     }
     return null
   }

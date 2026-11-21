@@ -8,7 +8,7 @@ import { burst } from './Dust'
 import { merge } from './geometry'
 import { isInland } from './Island'
 import { PEARLS, revealPearl, usePearls } from './pearls'
-import { inHouse, pois, roadTiles } from './pois'
+import { built, pois, roadTiles } from './pois'
 import { winter } from './season'
 import { pop } from './sfx'
 import { playerPos } from './state'
@@ -47,7 +47,7 @@ for (const p of pois) {
   for (let di = -1; di <= 1; di++) for (let dj = -1; dj <= 1; dj++) blocked.add(key(t.i + di, t.j + dj))
 }
 for (const t of trees) blocked.add(key(Math.round(t.x), Math.round(t.z)))
-const free = (i: number, j: number) => !blocked.has(key(i, j)) && !inHouse(i, j) && isInland(i, j, 1)
+const free = (i: number, j: number) => !blocked.has(key(i, j)) && !built(i, j) && isInland(i, j, 1)
 
 type Tuft = { x: number; z: number; turn: number; scale: number; pearl?: string }
 function placeTufts(): Tuft[] {
