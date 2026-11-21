@@ -3,6 +3,7 @@ import { MathUtils, type PerspectiveCamera } from 'three'
 import { CAVE, CAVE_PITCH, caveRoom, INTERIOR, ROOM } from './layout'
 import { useEdit } from './edit'
 import { guide } from './guide'
+import { reducedMotion } from './settings'
 import { cameraSnap, cameraZoom, playerPos } from './state'
 import { useGame } from './store'
 
@@ -10,6 +11,7 @@ export const HEIGHT = 8
 export const DISTANCE = 10.25 // about 38°, well under 45°, so the curved horizon shows (curve.ts)
 const LAMBDA = 4 // higher = snappier follow
 const FLIP = 9 // in the cave, how quickly the camera slides from one room to the next
+const STEADY = 30 // with reduced motion: close enough to locked on that nothing seems to drift or sway
 const ROOM_MARGIN = 1 // indoors, keep at least this much black beside the walls when the screen is wide enough
 const ROOM_SHIFT = -0.5 // indoors, aim this far behind the room's centre so the tall back wall stays in view
 
@@ -62,7 +64,8 @@ export function CameraRig() {
       p.x = tx
       p.z = tz
     } else {
-      const lambda = scene === 'cave' ? FLIP : LAMBDA
+      // With reduced motion the camera stays locked to its target rather than drifting after it.
+      const lambda = reducedMotion() ? STEADY : scene === 'cave' ? FLIP : LAMBDA
       p.x = MathUtils.damp(p.x, tx, lambda, dt)
       p.z = MathUtils.damp(p.z, tz, lambda, dt)
     }

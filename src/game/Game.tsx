@@ -10,6 +10,7 @@ import { Doors } from './Doors'
 import { Dust } from './Dust'
 import { EditHud, EditOverlay, EditPointer } from './EditRoom'
 import { Fade } from './Fade'
+import { bindFocus } from './focus'
 import { Butterflies } from './Butterflies'
 import { Cave } from './CaveRooms'
 import { DailyFinds } from './DailyFinds'
@@ -61,6 +62,12 @@ import { Waterfall } from './Waterfall'
 import { WelcomeBack } from './WelcomeBack'
 
 const tier = detectTier()
+
+/** Focus kept inside open panels (focus.ts). */
+function Controls() {
+  useEffect(() => bindFocus(), [])
+  return null
+}
 
 arrive('house', clearSpawn(BED_SPAWN)) // every visit starts at home (beside the bed, unless furniture's been moved there)
 
@@ -149,6 +156,7 @@ export function Game() {
         <Dust />
         <EditPointer />
         <CameraRig />
+        <Controls />
       </Canvas>
       <Fade />
       <Hearts />
