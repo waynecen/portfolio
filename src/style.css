@@ -391,3 +391,8 @@ body.big-text .reel { zoom: 1.2; }
 .shop-list button { padding: 5px 12px; border: 0; border-radius: 999px; background: #f2b233; color: #4a3a28; font-size: 13px; white-space: nowrap; }
 .shop-list button:disabled { background: rgb(122 100 73 / .15); color: inherit; cursor: default; }
 body.big-text .shop-panel { zoom: 1.2; }
+
+
+/* Buttons in the settings (SettingsPanel.tsx): Start over asks twice. */
+.settings-action { padding: 6px 14px; border: 0; border-radius: 999px; background: rgb(122 100 73 / .12); font-size: 13px; }
+.settings-action[data-confirm] { background: #d9473b; color: #fff; }

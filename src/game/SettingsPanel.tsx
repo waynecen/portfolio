@@ -1,13 +1,15 @@
-import { useEffect, useRef, type KeyboardEvent } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { closePanel, toggleSettings } from './interact'
 import { setVolume, useMusic } from './music'
 import { isTouch } from './quality'
 import { SECRETS, setSecret, useSecrets } from './secrets'
+import { startOver } from './save'
 import { setSetting, useSettings, type Motion } from './settings'
 import { useGame } from './store'
 
 // The settings: music and effects volumes, how much things move, larger text and the fishing
-// assist (settings.ts). Opened with O or the gear by the hearts; O, Escape or × closes it.
+// assist (settings.ts) and starting over (save.ts). Opened with O or the gear
+// by the hearts; O, Escape or × closes it.
 
 export function SettingsPanel() {
   const open = useGame((s) => s.panel === 'settings')
@@ -15,9 +17,11 @@ export function SettingsPanel() {
   const s = useSettings()
   const secrets = useSecrets()
   const first = useRef<HTMLInputElement>(null)
+  const [sure, setSure] = useState(false) // "Start over" asks once more before forgetting everything
 
   useEffect(() => {
     if (open) first.current?.focus()
+    else setSure(false)
   }, [open])
 
   if (!open) return null
@@ -100,6 +104,24 @@ export function SettingsPanel() {
       {secrets.found.length < SECRETS.length && (
         <p className="settings-note">Odd trinkets are tucked away in quiet corners of the island. Each one changes something, harmlessly.</p>
       )}
+      <div className="bag-head bag-subhead">
+        <h3>Start over</h3>
+        <span className="bag-count" />
+        <button
+          type="button"
+          className="settings-action"
+          data-confirm={sure ? '' : undefined}
+          onClick={() => (sure ? startOver() : setSure(true))}
+          onBlur={() => setSure(false)}
+        >
+          {sure ? 'Yes, forget it all' : 'Start over…'}
+        </button>
+      </div>
+      <p className="settings-note">
+        {sure
+          ? 'Everything found, caught, bought and moved is forgotten, and the island starts fresh. Settings stay.'
+          : 'What you’ve found and done is kept in this browser, ready for next time.'}
+      </p>
     </div>
   )
 }

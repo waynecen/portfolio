@@ -30,13 +30,36 @@ type GameState = {
   editing: boolean
 }
 
+const MAX_HEARTS = 3
+const HEARTS_KEY = 'hearts-v1' // save.ts
+
+// Hearts left are kept between visits (an empty count wakes in bed with all of them anyway, health.ts).
+function loadHealth(): number {
+  try {
+    const n = Number(localStorage.getItem(HEARTS_KEY))
+    return Number.isInteger(n) && n > 0 && n <= MAX_HEARTS * 2 ? n : MAX_HEARTS * 2
+  } catch {
+    return MAX_HEARTS * 2
+  }
+}
+
 export const useGame = create<GameState>(() => ({
   focus: null,
   dialogue: null,
   panel: null,
-  maxHearts: 3,
-  health: 6,
+  maxHearts: MAX_HEARTS,
+  health: loadHealth(),
   scene: 'world',
   fading: false,
   editing: false,
 }))
+
+useGame.subscribe((s, prev) => {
+  if (s.health === prev.health) return
+  try {
+    // Zero is only for a faint, which wakes with every heart back (health.ts), so that's what's kept.
+    localStorage.setItem(HEARTS_KEY, String(s.health || MAX_HEARTS * 2))
+  } catch {
+    // private mode or storage full: kept until the page closes
+  }
+})
