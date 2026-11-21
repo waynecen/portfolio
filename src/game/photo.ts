@@ -29,7 +29,8 @@ export const POSES = [
   { label: 'Jump!', heading: 0, lift: 0.45 },
 ]
 
-export const usePhoto = create<{ pose: number }>(() => ({ pose: 0 }))
+/** The pose, and the camera's distance (a share of the usual one) for the slider; photoCam.zoom mirrors it for the camera. */
+export const usePhoto = create<{ pose: number; zoom: number }>(() => ({ pose: 0, zoom: 1 }))
 
 /** Per-frame state, outside React: the camera's offset from the player and its zoom (CameraRig.tsx). */
 export const photoCam = { x: 0, z: 0, zoom: 1 }
@@ -55,7 +56,7 @@ export function togglePhoto() {
   closeDialogue()
   click()
   photoCam.x = photoCam.z = 0
-  photoCam.zoom = 1
+  setZoom(1)
   useGame.setState({ photo: true, focus: null })
   setPose(0)
 }
@@ -77,10 +78,14 @@ export function setPose(n: number) {
 
 export const nextPose = () => setPose(usePhoto.getState().pose + 1)
 
-/** Zooms in (negative) or out (positive) by `notches`. */
-export function zoomBy(notches: number) {
-  photoCam.zoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, photoCam.zoom + notches * ZOOM_STEP))
+/** Sets the camera's distance, as a share of the usual one (the slider in PhotoHud.tsx). */
+export function setZoom(zoom: number) {
+  photoCam.zoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, zoom))
+  usePhoto.setState({ zoom: photoCam.zoom })
 }
+
+/** Moves the camera nearer (negative) or farther (positive) by `notches`. */
+export const zoomBy = (notches: number) => setZoom(photoCam.zoom + notches * ZOOM_STEP)
 
 /** Each frame in photo mode (CameraRig.tsx): the walk keys and the stick slide the camera. */
 export function panPhoto(dt: number) {

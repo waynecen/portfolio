@@ -1,7 +1,7 @@
 import { useThree } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { keyName } from './keymap'
-import { camera, download, leavePhoto, nextPose, POSES, shoot, usePhoto, zoomBy } from './photo'
+import { camera, download, leavePhoto, nextPose, POSES, setZoom, shoot, usePhoto, ZOOM_MAX, ZOOM_MIN, zoomBy } from './photo'
 import { isTouch } from './quality'
 import { secretOn } from './secrets'
 import { useGame } from './store'
@@ -12,6 +12,7 @@ import { useGame } from './store'
 export function PhotoHud() {
   const on = useGame((s) => s.photo)
   const pose = usePhoto((s) => s.pose)
+  const zoom = usePhoto((s) => s.zoom)
   const flash = useRef<HTMLDivElement>(null)
 
   // Focus stays on the game, so Space takes the photo; Tab reaches the buttons.
@@ -41,12 +42,18 @@ export function PhotoHud() {
             <button type="button" onClick={nextPose}>
               {POSES[pose].label}
             </button>
-            <button type="button" aria-label="Zoom in" onClick={() => zoomBy(-1)}>
-              +
-            </button>
-            <button type="button" aria-label="Zoom out" onClick={() => zoomBy(1)}>
-              −
-            </button>
+            {/* Nearer to the left, farther to the right. */}
+            <label className="photo-distance">
+              <span>Distance</span>
+              <input
+                type="range"
+                min={ZOOM_MIN}
+                max={ZOOM_MAX}
+                step={0.05}
+                value={zoom}
+                onChange={(e) => setZoom(Number(e.currentTarget.value))}
+              />
+            </label>
             <button type="button" className="photo-shutter" onClick={shoot}>
               Take photo{isTouch ? '' : ' (Space)'}
             </button>

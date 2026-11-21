@@ -406,6 +406,11 @@ body[data-photo] #game > :not(:first-child, .photo-hud, .photo-flash, .joystick)
   min-width: 40px; padding: 8px 14px; border: 0; border-radius: 999px; background: #fdf5dc; color: #7a6449; font: inherit; cursor: pointer;
   box-shadow: 0 2px 0 rgb(122 100 73 / .25); -webkit-tap-highlight-color: transparent;
 }
+.photo-distance {
+  display: flex; align-items: center; gap: 8px; padding: 4px 14px; border-radius: 999px; background: #fdf5dc; color: #7a6449;
+  box-shadow: 0 2px 0 rgb(122 100 73 / .25);
+}
+.photo-distance input { width: 8rem; accent-color: #7a6449; }
 .photo-buttons .photo-shutter { background: #7a6449; color: #fdf5dc; }
 .photo-buttons button:focus-visible { outline: 2px solid #f2b233; outline-offset: 2px; }
 /* On a phone the stick sits bottom left, so the buttons go above it. */
