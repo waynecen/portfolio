@@ -1,6 +1,5 @@
 import { useFishing } from '../life/fishing'
 import { ITEMS, useInventory } from '../life/inventory'
-import { isTouch } from '../core/quality'
 import { SECRETS, useSecrets } from '../secrets/secrets'
 import { PLACES, useSeen } from '../portfolio/seen'
 import { sky } from './sky'
@@ -14,9 +13,8 @@ import { winter } from './season'
 
 type Notice = { when: () => boolean; lines: () => string[] }
 
-import { keyName } from '../core/keymap'
+import { hint } from '../core/keymap'
 
-const key = (desktop: string, touch: string) => (isTouch ? touch : desktop)
 
 const NOTICES: Notice[] = [
   {
@@ -28,7 +26,7 @@ const NOTICES: Notice[] = [
   },
   {
     when: () => useFishing.getState().rod,
-    lines: () => ['PLEASE do not poke the notice board with your fishing rod.', `${key(`Right-click (or ${keyName('bag')})`, 'A tap of B')} puts it back in the barrel.`],
+    lines: () => ['PLEASE do not poke the notice board with your fishing rod.', `${hint('Right-click (or {bag})', 'A tap of B')} puts it back in the barrel.`],
   },
   {
     when: () => !winter && sky.weather.rain > 0.5,
@@ -42,7 +40,7 @@ const NOTICES: Notice[] = [
     when: () => useInventory.getState().found.length < ITEMS.length,
     lines: () => [
       'LOST PROPERTY: six small things, scattered. Finder may keep them.',
-      `${key(`Press ${keyName('bag')}`, 'Open the menu and tap Bag')} to see what you’ve found so far.`,
+      `${hint('Press {bag}', 'Open the menu and tap Bag')} to see what you’ve found so far.`,
     ],
   },
   {
@@ -51,7 +49,7 @@ const NOTICES: Notice[] = [
   },
   {
     when: () => true,
-    lines: () => ['NOTICE: there is nothing to notice. Have a nice day.', `${key(keyName('log'), 'The log, in the menu,')} shows everything that’s been said, if you missed something.`],
+    lines: () => ['NOTICE: there is nothing to notice. Have a nice day.', `${hint('{log}', 'The log, in the menu,')} shows everything that’s been said, if you missed something.`],
   },
 ]
 

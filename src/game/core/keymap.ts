@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { isTouch } from './quality'
 import { readSaved, writeSaved } from './persist'
 
 // The keyboard's bindings, remappable in the settings (SettingsPanel.tsx). Every action has a main
@@ -143,4 +144,14 @@ export function resetKeys() {
 function save(main: Partial<Record<Action, string>>) {
   useKeymap.setState({ main })
   writeSaved(KEY, Object.keys(main).length ? main : undefined)
+}
+
+/**
+ * Words for whichever controls the visitor has: `touch` on a touch screen, otherwise `keys` with
+ * each {action} replaced by its main key's name and {action*} by all of its keys, so hints follow a
+ * remap. hint('Press {bag} to open it', 'Tap Bag in the menu').
+ */
+export function hint(keys: string, touch: string): string {
+  if (isTouch) return touch
+  return keys.replace(/\{(\w+)(\*?)\}/g, (m, a: string, all: string) => (ids.has(a) ? (all ? keysName(a as Action) : keyName(a as Action)) : m))
 }

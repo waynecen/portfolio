@@ -1,12 +1,11 @@
 import { say, sayFirst } from '../core/interact'
-import { keysName } from '../core/keymap'
-import { isTouch } from '../core/quality'
 import { BED_SPAWN } from '../world/layout'
 import { clearSpawn } from '../house/room'
 import { FADE, goTo } from '../core/scene'
 import { hurt } from '../core/sfx'
 import { playerVel } from '../core/state'
 import { useGame } from '../core/store'
+import { hint } from '../core/keymap'
 
 // Hearts that matter, gently. A bump (a slime, slimes.ts) costs half a heart, knocks the player
 // back and leaves them flickering and untouchable for a moment. At zero hearts, a soft fade and
@@ -36,7 +35,7 @@ export function damage(halves: number, dx: number, dz: number) {
   else
     sayFirst(
       'bumped',
-      ['Oof! Slimes bump.', `${isTouch ? 'Tap B' : `Click, or press ${keysName('attack')},`} to swing your sword. Hold it after a swing, then let go, to spin.`],
+      ['Oof! Slimes bump.', `${hint('Click, or press {attack*},', 'Tap B')} to swing your sword. Hold it after a swing, then let go, to spin.`],
       [],
     )
 }

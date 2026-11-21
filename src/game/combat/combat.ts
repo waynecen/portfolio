@@ -1,9 +1,8 @@
 import { useFishing } from '../life/fishing'
 import { busy, sayFirst } from '../core/interact'
-import { isTouch } from '../core/quality'
 import { hit as hitSound, whoosh } from '../core/sfx'
 import { playerFacing, playerPos, playerRoll } from '../core/state'
-import { keyName } from '../core/keymap'
+import { hint } from '../core/keymap'
 
 // The sword (Sword.tsx draws it). A press swings it in an arc in front of the player; keep holding
 // after the swing to charge, and let go once charged for a spin attack all the way round, twice as
@@ -51,7 +50,7 @@ export function pressAttack() {
   if (useFishing.getState().rod) {
     sayFirst(
       'sword-rod',
-      [`Your hands are full with the fishing rod. ${isTouch ? 'Tap B to put it away' : `Right-click or press ${keyName('bag')} to put it away`} to use your sword.`],
+      [`Your hands are full with the fishing rod. ${hint('Right-click or press {bag} to put it away', 'Tap B to put it away')} to use your sword.`],
       ['Your hands are full with the rod.'],
     )
     return

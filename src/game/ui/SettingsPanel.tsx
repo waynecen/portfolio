@@ -1,6 +1,6 @@
 import { useEffect, useState, type KeyboardEvent } from 'react'
 import { closePanel, toggleSettings } from '../core/interact'
-import { ACTIONS, codeName, keyName, keysFor, rebind, RESERVED, resetKeys, useKeymap, type Action } from '../core/keymap'
+import { ACTIONS, codeName, keysFor, rebind, RESERVED, resetKeys, useKeymap, type Action } from '../core/keymap'
 import { setVolume, useMusic } from '../core/music'
 import { isTouch } from '../core/quality'
 import { SECRETS, setSecret, useSecrets } from '../secrets/secrets'
@@ -8,6 +8,7 @@ import { startOver } from '../core/save'
 import { setSetting, useSettings, type Motion } from '../core/settings'
 import { useGame } from '../core/store'
 import { Panel } from './Panel'
+import { hint } from '../core/keymap'
 
 // The settings: music and effects volumes, how much things move, larger text and the fishing
 // assist (settings.ts), the keys (keymap.ts) and starting over (save.ts). Opened with O or the gear
@@ -170,7 +171,7 @@ export function SettingsButton() {
   const hidden = useGame((st) => st.dialogue !== null || st.panel !== null || st.fading || st.editing)
   if (hidden) return null
   return (
-    <button type="button" className="settings-toggle" onClick={toggleSettings} aria-label={isTouch ? 'Settings' : `Settings (${keyName('settings')})`}>
+    <button type="button" className="settings-toggle" onClick={toggleSettings} aria-label={hint('Settings ({settings})', 'Settings')}>
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path
           fill="currentColor"

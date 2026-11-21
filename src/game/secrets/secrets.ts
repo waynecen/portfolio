@@ -1,8 +1,8 @@
 import { create } from 'zustand'
 import { say } from '../core/interact'
-import { isTouch } from '../core/quality'
 import { chime } from '../core/sfx'
 import { readSaved, writeSaved } from '../core/persist'
+import { hint } from '../core/keymap'
 
 // Odd trinkets hidden around the island, each switching on a harmless, silly change to the world
 // (Halo's skulls, in spirit). Finding one switches its effect on; the settings panel switches each
@@ -67,7 +67,7 @@ export function findSecret(id: SecretId) {
   const secret = SECRETS.find((x) => x.id === id)!
   say([
     `You found the ${secret.name.toLowerCase()}! Something feels different: ${secret.effect.toLowerCase()}.`,
-    `${isTouch ? 'Open the menu and tap Settings' : 'Press O for the settings'} to switch it off again.`,
+    `${hint('Press {settings} for the settings', 'Open the menu and tap Settings')} to switch it off again.`,
   ])
 }
 

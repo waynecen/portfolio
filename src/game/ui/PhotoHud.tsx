@@ -5,6 +5,7 @@ import { camera, download, leavePhoto, nextPose, POSES, setZoom, shoot, usePhoto
 import { isTouch } from '../core/quality'
 import { secretOn } from '../secrets/secrets'
 import { useGame } from '../core/store'
+import { hint } from '../core/keymap'
 
 // Photo mode's buttons (photo.ts), along the bottom of the screen, with the rest of the HUD hidden
 // (style.css: body[data-photo]). PhotoCapture, inside the canvas, renders a fresh frame and saves it.
@@ -55,10 +56,10 @@ export function PhotoHud() {
               />
             </label>
             <button type="button" className="photo-shutter" onClick={shoot}>
-              Take photo{isTouch ? '' : ' (Space)'}
+              Take photo{hint(' (Space)', '')}
             </button>
             <button type="button" onClick={leavePhoto}>
-              Done{isTouch ? '' : ` (${keyName('photo')})`}
+              Done{hint(' ({photo})', '')}
             </button>
           </div>
         </div>

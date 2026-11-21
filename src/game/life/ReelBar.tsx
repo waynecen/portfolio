@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { line, reelZone, useFishing } from './fishing'
-import { isTouch } from '../core/quality'
 import { useSettings } from '../core/settings'
+import { hint } from '../core/keymap'
 
 // The reel (fishing.ts): a bar with a green zone in the middle and a needle the fish tugs back and
 // forth. Hold left and right to keep the needle in the green; the meter under it fills while it's
@@ -44,7 +44,7 @@ export function ReelBar() {
         <div ref={meter} className="reel-meter-fill" />
       </div>
       <p className="reel-hint">
-        {isTouch ? 'Push the joystick left and right' : 'Hold ← → (or A D)'} to keep the needle in the green
+        {hint('Hold {left} and {right} (or ← →)', 'Push the joystick left and right')} to keep the needle in the green
         {assist && <span className="prompt-assist">Assist on</span>}
       </p>
     </div>

@@ -1,16 +1,15 @@
 import { useEffect, useRef } from 'react'
 import { useFishing } from '../life/fishing'
 import { advance, typer } from '../core/interact'
-import { keyName } from '../core/keymap'
 import { blip } from '../core/sfx'
-import { isTouch } from '../core/quality'
 import { useGame } from '../core/store'
 import { reducedMotion, useSettings } from '../core/settings'
+import { hint } from '../core/keymap'
 
 const CHARS_PER_SECOND = 40
 const PAUSE_SENTENCE = 0.25 // extra seconds after . ! ?
 const PAUSE_COMMA = 0.15 // extra seconds after , ; :
-const key = () => (isTouch ? 'A' : keyName('interact'))
+const key = () => hint('{interact}', 'A')
 
 // Seconds to wait after typing `ch` before the next letter.
 function delayAfter(ch: string) {

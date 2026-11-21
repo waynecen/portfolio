@@ -1,13 +1,12 @@
 import { create } from 'zustand'
 import { say, sayFirst } from '../core/interact'
-import { isTouch } from '../core/quality'
 import { keys, stick } from '../core/input'
 import { click, landed, plop, reelClick, splash, whoosh } from '../core/sfx'
 import { cameraZoom, playerFacing, playerPos } from '../core/state'
 import { useGame } from '../core/store'
 import { reducedMotion, useSettings } from '../core/settings'
-import { keyName } from '../core/keymap'
 import { readSaved, writeSaved } from '../core/persist'
+import { hint } from '../core/keymap'
 
 // Fishing off the dock at the island's bottom-left corner (Dock.tsx draws it). Take a rod from the
 // barrel at the foot of the dock, walk out and use the ripple in the water: the line goes out, and
@@ -147,7 +146,7 @@ export function toggleRod() {
       'rod',
       [
         'You take a fishing rod from the barrel.',
-        `Look for ripples in the water off the end of the dock. ${isTouch ? 'Tap B' : `Right-click or press ${keyName('bag')}`} to put the rod away.`,
+        `Look for ripples in the water off the end of the dock. ${hint('Right-click or press {bag}', 'Tap B')} to put the rod away.`,
       ],
       ['You take a fishing rod.'],
     )

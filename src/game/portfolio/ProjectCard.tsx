@@ -1,7 +1,6 @@
 import { track } from '../../analytics'
-import { isTouch } from '../core/quality'
 import { useGame } from '../core/store'
-import { keyName } from '../core/keymap'
+import { hint } from '../core/keymap'
 
 // Shows the focused interactable's card: a station's project, or the mailbox's contact links.
 // Using the interactable (E / Enter / A) opens the card's url.
@@ -38,7 +37,7 @@ export function ProjectCard() {
                   {action}
                 </a>
               )}
-              <span aria-hidden="true"> · press {isTouch ? 'A' : keyName('interact')}</span>
+              <span aria-hidden="true"> · press {hint('{interact}', 'A')}</span>
             </p>
           )}
         </article>
