@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { toggleEdit } from './edit'
+import { toggleEdit } from './house/edit'
 import { closePanel, openPanel, toggleMenu } from './core/interact'
 import { ITEMS, useInventory } from './inventory'
 import { togglePhoto } from './photo'

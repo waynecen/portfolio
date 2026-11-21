@@ -1,11 +1,11 @@
 import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
 import { MathUtils, type Group, type Mesh } from 'three'
-import type { Collider } from './core/collision'
+import type { Collider } from '../core/collision'
 import { usePiece } from './Furniture'
-import { openPanel } from './core/interact'
-import { level, useMusic } from './core/music'
-import { reducedMotion } from './core/settings'
+import { openPanel } from '../core/interact'
+import { level, useMusic } from '../core/music'
+import { reducedMotion } from '../core/settings'
 
 // In the house, on its own tile (see room.ts): it can be moved like the rest of the furniture.
 const BACK = -0.15 // how far towards the back of its tile it stands

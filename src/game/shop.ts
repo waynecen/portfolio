@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { addShells, useShells } from './drops'
 import { pickup } from './core/sfx'
-import { addPiece, PIECES, useOwned, type PieceId } from './room'
+import { addPiece, PIECES, useOwned, type PieceId } from './house/room'
 
 // The shop at Pip's stall, east of the house (ShopPanel.tsx; the stall and Pip in Villagers.tsx):
 // shells (drops.ts) buy hats to wear and furniture for the house, which arrives in the room and

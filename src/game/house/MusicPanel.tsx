@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
-import { closePanel } from './core/interact'
-import { getTracks, next, playTrack, prev, setVolume, toggle, toggleMute, useMusic } from './core/music'
-import { useGame } from './core/store'
+import { closePanel } from '../core/interact'
+import { getTracks, next, playTrack, prev, setVolume, toggle, toggleMute, useMusic } from '../core/music'
+import { useGame } from '../core/store'
 
 /** The record player's panel: track list, transport and volume. Opened by interacting with the record player. */
 export function MusicPanel() {

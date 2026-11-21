@@ -1,11 +1,11 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect } from 'react'
 import { CanvasTexture, Color, ExtrudeGeometry, MeshLambertMaterial, RepeatWrapping, Shape, SRGBColorSpace, type BufferGeometry } from 'three'
-import { addCollider, type Collider } from './core/collision'
-import { block, flat, merge, pick, tint, unindexed } from './core/geometry'
-import { DOOR, FRONT_DOOR, HOUSE, INTERIOR, ROOM } from './world/layout'
-import { winter } from './world/season'
-import { sky } from './world/sky'
+import { addCollider, type Collider } from '../core/collision'
+import { block, flat, merge, pick, tint, unindexed } from '../core/geometry'
+import { DOOR, FRONT_DOOR, HOUSE, INTERIOR, ROOM } from '../world/layout'
+import { winter } from '../world/season'
+import { sky } from '../world/sky'
 
 // The house the game starts in: one room seen from above, with nothing around it (the background
 // is black indoors), and the same house seen from outside at the centre of the island. Built from

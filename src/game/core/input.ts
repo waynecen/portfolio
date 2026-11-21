@@ -1,5 +1,5 @@
 import { pressAttack, releaseAttack } from '../combat'
-import { editKey, toggleEdit } from '../edit'
+import { editKey, toggleEdit } from '../house/edit'
 import { putAwayRod, reel, stopFishing } from '../fishing'
 import { toggleBag } from '../inventory'
 import { advance, closeDialogue, closePanel, interact, toggleLog, toggleSettings } from './interact'

@@ -7,7 +7,7 @@ import { advance, closePanel, interact, toggleLog, toggleSettings } from './inte
 import { leavePhoto, nextPose, shoot, togglePhoto, zoomBy } from '../photo'
 import { unlock } from './sfx'
 import { useGame } from './store'
-import { stopEdit } from '../edit'
+import { stopEdit } from '../house/edit'
 
 // A controller, read once a frame (polled from <Gamepad> in Game.tsx; the browser has no events for
 // sticks). Standard layout, named for an Xbox pad:

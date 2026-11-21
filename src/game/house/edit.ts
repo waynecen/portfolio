@@ -1,9 +1,9 @@
 import { create } from 'zustand'
 import { clampSpot, inRoom, PIECE, pieceAt, place, tileAt, TILES, useRoom, whyNot, type PieceId, type Spot } from './room'
-import { busy } from './core/interact'
-import { blip, click, thud } from './core/sfx'
-import { playerPos } from './core/state'
-import { useGame } from './core/store'
+import { busy } from '../core/interact'
+import { blip, click, thud } from '../core/sfx'
+import { playerPos } from '../core/state'
+import { useGame } from '../core/store'
 
 // Edit mode, indoors: the player stands still and the furniture can be picked up and put down on
 // the room's grid. With keys, a cursor moves a tile at a time and E picks up or puts down whatever
