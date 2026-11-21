@@ -23,6 +23,11 @@ function today() {
 
 const { month, day } = today()
 
+/** Today as a whole number of days since 1970 (respecting ?date=), for anything seeded by the day (daily.ts). */
+export function dayNumber() {
+  return Math.floor(Date.UTC(new Date().getFullYear(), month - 1, day) / 86400000)
+}
+
 /** Today's holiday on the island, if any. */
 export const holiday: Holiday | null =
   month === ISLAND_BIRTHDAY.month && day === ISLAND_BIRTHDAY.day
