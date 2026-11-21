@@ -556,7 +556,7 @@ requestIdleCallback(start, { timeout: 1500 }) // start loading the game when the
 setTimeout(start, 200) // fallback for browsers without requestIdleCallback (Safari): start after 0.2 s
 ```
 
-While the game loads, a black "Loading the island" screen (`.loader` in [style.css](../src/style.css)) covers the page, so the page doesn't flash up first. It fades out over 0.4 s once the game has drawn a frame: Game.tsx sends a `gameready` event from the canvas's `onCreated`. The view toggle stays above it.
+While the game loads, a black "Loading the island" screen (`.loader` in [style.css](../src/style.css)) covers the page, so the page doesn't flash up first. While it waits, a little pill on the loader hops on a tap, a click or Space and counts the hops (`hop` in main.tsx, `.loader-pill` and the `loader-hop` keyframes in style.css); it listens only while loading, so it never takes a key from the game. It costs a few hundred bytes of the first view.It fades out over 0.4 s once the game has drawn a frame: Game.tsx sends a `gameready` event from the canvas's `onCreated`. The view toggle stays above it.
 
 ## Link previews and search: [index.html](../index.html), [vite.config.ts](../vite.config.ts)
 

@@ -28,6 +28,23 @@ addEventListener('gameready', () => {
   document.body.classList.remove('loading')
 }, { once: true })
 
+// Something to do while the island loads: the pill on the loader hops on a tap, a click or Space,
+// and counts the hops. Only while loading, so it never takes a key from the game.
+const pill = document.querySelector<HTMLElement>('.loader-pill')!
+const hint = document.querySelector<HTMLElement>('.loader-hint')!
+let hops = 0
+function hop(e: Event) {
+  if (!document.body.classList.contains('loading')) return
+  if (e instanceof KeyboardEvent && (e.code !== 'Space' || e.repeat)) return
+  if (e instanceof KeyboardEvent) e.preventDefault()
+  pill.classList.remove('hop')
+  void pill.offsetWidth // restart the animation
+  pill.classList.add('hop')
+  hint.textContent = ++hops === 1 ? '1 hop' : hops + ' hops'
+}
+addEventListener('keydown', hop)
+document.querySelector('.loader')!.addEventListener('pointerdown', hop)
+
 async function setView(next: View) {
   choose(next)
   if (next === 'game') {
