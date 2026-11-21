@@ -1,4 +1,6 @@
-import { say } from './interact'
+import { say, sayFirst } from './interact'
+import { keysName } from './keymap'
+import { isTouch } from './quality'
 import { BED_SPAWN } from './layout'
 import { clearSpawn } from './room'
 import { FADE, goTo } from './scene'
@@ -31,6 +33,12 @@ export function damage(halves: number, dx: number, dz: number) {
   playerVel.z = (dz / len) * KNOCK
   hurt()
   if (next === 0) faint()
+  else
+    sayFirst(
+      'bumped',
+      ['Oof! Slimes bump.', `${isTouch ? 'Tap B' : `Click, or press ${keysName('attack')},`} to swing your sword. Hold it after a swing, then let go, to spin.`],
+      [],
+    )
 }
 
 /** Restores `halves` half hearts, up to the containers there are. */

@@ -33,30 +33,18 @@ const C = {
   brass: new Color('#d9a441'),
 }
 
-/** Lines in the note on the table: the first thing to read, so it covers the controls (named as they're bound now, keymap.ts). */
-const note = () => isTouch
-  ? [
-      'Welcome home! This little world is my portfolio.',
-      'Drag the joystick on the left to walk. Hold B to sprint, or tap it to swing your sword.',
-      'Tap A to read, talk or use whatever is nearby. With nothing nearby, A makes you roll.',
-      'The record player by the back wall plays music. Tap A beside it to choose a song.',
-      'To move the furniture around, open the menu at the bottom and tap Edit room.',
-      'Little things are hidden around the island. Tap the menu button at the bottom, then Bag, to see what you’ve found.',
-      'The door at the bottom of the room leads outside.',
-      'Each pillar out there is a project. Walk up to one to see it, then tap A to open it.',
-    ]
-  : [
-      'Welcome home! This little world is my portfolio.',
-      `Walk with ${['forward', 'left', 'back', 'right'].map((a) => keyName(a as Action)).join('')} or the arrow keys. Hold ${keyName('sprint')} to sprint, and press ${keyName('roll')} to roll.`,
-      `Click, or press ${keysName('attack')}, to swing your sword. Hold it after a swing, then let go, to spin.`,
-      `Press ${keysName('interact')} to read, talk or use whatever is nearby.`,
-      `The record player by the back wall plays music. Press ${keyName('interact')} beside it to choose a song.`,
-      `Press ${keyName('edit')} to move the furniture around, and ${keyName('photo')} to take a photo.`,
-      `Little things are hidden around the island. Press ${keyName('bag')} to see what you’ve found.`,
-      'The door at the bottom of the room leads outside.',
-      `Each pillar out there is a project. Walk up to one to see it, then press ${keyName('interact')} to open it.`,
-      `Every key can be changed in the settings (${keyName('settings')}).`,
-    ]
+/**
+ * Lines in the note on the table: the first thing to read. Only walking and using things; the rest is
+ * met out in the world (first-time lines, prompts) and listed under Keys in the settings (keymap.ts).
+ */
+const note = () =>
+  isTouch
+    ? ['Welcome home! This little world is my portfolio.', 'Drag the joystick to walk, and tap A to read, talk or use whatever is nearby.', 'The rest you’ll find out there.']
+    : [
+        'Welcome home! This little world is my portfolio.',
+        `Walk with ${['forward', 'left', 'back', 'right'].map((k) => keyName(k as Action)).join('')} or the arrow keys, and press ${keysName('interact')} to read, talk or use whatever is nearby.`,
+        `The rest you’ll find out there. Every key is listed in the settings (${keyName('settings')}).`,
+      ]
 const NOTE_AT = { x: -0.1, z: 0 } // on the table, from its centre
 
 function cylinder(x: number, z: number, r0: number, r1: number, y0: number, y1: number, color: Color) {
