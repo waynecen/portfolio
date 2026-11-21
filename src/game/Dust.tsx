@@ -1,6 +1,7 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
-import { IcosahedronGeometry, MeshLambertMaterial, Object3D, type InstancedMesh } from 'three'
+import { Color, IcosahedronGeometry, MeshLambertMaterial, Object3D, type InstancedMesh } from 'three'
+import { secretOn } from './secrets'
 import { winter } from './season'
 import { sky } from './sky'
 import { playerPos, playerRoll, playerVel } from './state'
@@ -20,7 +21,12 @@ const TRAIL = 0.12 // seconds between puffs while sprinting
 const SPRINTING = 1.5 // speed (relative to walking) above which the trail starts
 
 const geometry = new IcosahedronGeometry(1, 0)
-const material = new MeshLambertMaterial({ color: winter ? '#ffffff' : '#efe6d6', flatShading: true })
+// White, so each puff's own colour shows: dust (or snow), or confetti with that secret on (secrets.ts).
+const material = new MeshLambertMaterial({ color: '#ffffff', flatShading: true })
+const DUST = new Color(winter ? '#ffffff' : '#efe6d6')
+const CONFETTI = ['#e0566a', '#f2b233', '#5b9bd5', '#6cc27a', '#b07ad9'].map((c) => new Color(c))
+const CONFETTI_STEP = 0.3 // with confetti on, walking at this speed (relative to walking) leaves a trail too
+const colors: Color[] = Array.from({ length: COUNT }, () => DUST.clone())
 
 // The pool, preallocated: position, velocity, age and size per puff. age >= LIFE means unused.
 const pos = new Float32Array(COUNT * 3)
@@ -41,6 +47,7 @@ function spawn(x: number, z: number, vx: number, vz: number, s: number) {
   vel[i * 3 + 2] = vz
   age[i] = 0
   size[i] = s
+  colors[i].copy(secretOn('confetti') ? CONFETTI[Math.floor(Math.random() * CONFETTI.length)] : DUST)
 }
 
 export function Dust() {
@@ -53,7 +60,10 @@ export function Dust() {
     if (!m) return
     dummy.scale.setScalar(0)
     dummy.updateMatrix()
-    for (let i = 0; i < COUNT; i++) m.setMatrixAt(i, dummy.matrix)
+    for (let i = 0; i < COUNT; i++) {
+      m.setMatrixAt(i, dummy.matrix)
+      m.setColorAt(i, DUST) // makes the colour buffer now, so the shader doesn't change mid-game
+    }
     m.instanceMatrix.needsUpdate = true
   }, [])
 
@@ -61,7 +71,9 @@ export function Dust() {
     const m = mesh.current
     if (!m) return
     const dt = Math.min(delta, 0.1)
-    const on = useGame.getState().scene === 'world' && (winter || sky.weather.rain < 0.5)
+    const confetti = secretOn('confetti')
+    // Dust only outdoors on dry ground; confetti anywhere.
+    const on = confetti || (useGame.getState().scene === 'world' && (winter || sky.weather.rain < 0.5))
 
     // A roll just started: a ring of puffs at the feet, thrown out sideways and back.
     const rolling = playerRoll.p >= 0
@@ -77,7 +89,7 @@ export function Dust() {
 
     // Sprinting: a puff behind the heels every TRAIL seconds.
     s.trail += dt
-    if (on && !rolling && !reducedMotion() && playerVel.speed > SPRINTING && s.trail >= TRAIL) {
+    if (on && !rolling && !reducedMotion() && playerVel.speed > (confetti ? CONFETTI_STEP : SPRINTING) && s.trail >= TRAIL) {
       s.trail = 0
       const len = Math.hypot(playerVel.x, playerVel.z) || 1
       const bx = -playerVel.x / len
@@ -101,9 +113,13 @@ export function Dust() {
       dummy.scale.setScalar(t >= 1 ? 0 : size[i] * Math.sin(Math.PI * Math.sqrt(t))) // swells fast, shrinks slowly
       dummy.updateMatrix()
       m.setMatrixAt(i, dummy.matrix)
+      m.setColorAt(i, colors[i])
       changed = true
     }
-    if (changed) m.instanceMatrix.needsUpdate = true
+    if (changed) {
+      m.instanceMatrix.needsUpdate = true
+      if (m.instanceColor) m.instanceColor.needsUpdate = true
+    }
   })
 
   return <instancedMesh ref={mesh} args={[geometry, material, COUNT]} frustumCulled={false} />

@@ -41,6 +41,7 @@ import { arrive } from './scene'
 import { Stations } from './Station'
 import { useGame } from './store'
 import { Trees } from './Trees'
+import { Trinkets } from './Trinkets'
 import { WelcomeBack } from './WelcomeBack'
 
 const tier = detectTier()
@@ -97,6 +98,7 @@ export function Game() {
           <Pickups />
           <Leaves />
           <Festive />
+          <Trinkets />
           <Rain />
           <Snow />
           <Fireflies />

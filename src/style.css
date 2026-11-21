@@ -326,3 +326,5 @@ body.big-text .bag-panel, body.big-text .music-panel { zoom: 1.2; }
 }
 .settings-toggle svg { width: 20px; height: 20px; }
 .settings-toggle:focus-visible { outline: 2px solid #f2b233; outline-offset: 2px; }
+/* The "black and white" secret (secrets.ts): the whole island in greyscale. */
+body.secret-mono #game canvas { filter: grayscale(1); }

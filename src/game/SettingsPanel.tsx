@@ -2,6 +2,7 @@ import { useEffect, useRef, type KeyboardEvent } from 'react'
 import { closePanel, toggleSettings } from './interact'
 import { setVolume, useMusic } from './music'
 import { isTouch } from './quality'
+import { SECRETS, setSecret, useSecrets } from './secrets'
 import { setSetting, useSettings, type Motion } from './settings'
 import { useGame } from './store'
 
@@ -12,6 +13,7 @@ export function SettingsPanel() {
   const open = useGame((s) => s.panel === 'settings')
   const music = useMusic((s) => s.volume)
   const s = useSettings()
+  const secrets = useSecrets()
   const first = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -77,6 +79,22 @@ export function SettingsPanel() {
         <input type="checkbox" checked={s.fishAssist} onChange={(e) => setSetting('fishAssist', e.currentTarget.checked)} />
       </label>
       <p className="settings-note">Twice as long to reel in a bite. “Assist on” shows on the prompt while it helps.</p>
+      {/* Secrets (secrets.ts): each trinket found can be switched on and off; until then, a hint. */}
+      <div className="bag-head bag-subhead">
+        <h3>Secrets</h3>
+        <span className="bag-count">
+          {secrets.found.length} of {SECRETS.length} found
+        </span>
+      </div>
+      {SECRETS.filter((x) => secrets.found.includes(x.id)).map((x) => (
+        <label key={x.id} className="settings-row">
+          {x.effect}
+          <input type="checkbox" checked={secrets.on.includes(x.id)} onChange={(e) => setSecret(x.id, e.currentTarget.checked)} />
+        </label>
+      ))}
+      {secrets.found.length < SECRETS.length && (
+        <p className="settings-note">Odd trinkets are tucked away in quiet corners of the island. Each one changes something, harmlessly.</p>
+      )}
     </div>
   )
 }

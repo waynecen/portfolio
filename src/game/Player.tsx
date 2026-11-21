@@ -17,6 +17,7 @@ import { step, whoosh, type Surface } from './sfx'
 import { playerFacing, playerPos, playerRoll, playerVel, teleport } from './state'
 import { held } from './interact'
 import { useGame } from './store'
+import { secretOn } from './secrets'
 
 const SPEED = 2.5 // walking speed, units per second (about 2 body heights a second, so a chibi's steps can keep up)
 const SPRINT = 2.5 // holding Shift (or B on touch) multiplies top speed by this (2.5 → 6.25 units/s)
@@ -29,6 +30,7 @@ const ROLL_TIME = 0.45 // seconds for one tumble
 const ROLL_SPEED = 9 // burst speed at the start of a roll, eases down toward walk speed
 const ROLL_COOLDOWN = 0.2 // seconds after a roll before the next can start
 const STEP_LEN = [0.45, 0.7] // units travelled per footstep sound: walking, and at full sprint
+const TINY = 0.55 // the character's size with the "tiny you" secret on (secrets.ts)
 
 const roads = new Set(roadTiles.map((t) => t.i + ',' + t.j))
 function surfaceAt(x: number, z: number): Surface {
@@ -151,6 +153,8 @@ export function Player() {
     }
     playerPos.x = p.x
     playerPos.z = p.z
+    // The "tiny you" secret: the character (and its shadow and light) shrink; collisions don't change.
+    root.scale.setScalar(secretOn('tiny') ? TINY : 1)
   })
 
   return (
