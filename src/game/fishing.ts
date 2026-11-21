@@ -149,7 +149,7 @@ export function toggleRod() {
       'rod',
       [
         'You take a fishing rod from the barrel.',
-        `Look for ripples in the water off the end of the dock. ${isTouch ? 'Tap B' : 'Press B'} to put the rod away.`,
+        `Look for ripples in the water off the end of the dock. ${isTouch ? 'Tap B' : 'Right-click or press B'} to put the rod away.`,
       ],
       ['You take a fishing rod.'],
     )

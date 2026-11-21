@@ -47,7 +47,7 @@ const NOTE = isTouch
   : [
       'Welcome home! This little world is my portfolio.',
       'Walk with WASD or the arrow keys. Hold Shift to sprint, and press Space to roll.',
-      'J or X swings your sword. Hold it after a swing, then let go, to spin.',
+      'Click, or press J or X, to swing your sword. Hold it after a swing, then let go, to spin.',
       'Press E or Enter to read, talk or use whatever is nearby.',
       'The record player by the back wall plays music. Press E beside it to choose a song.',
       'Press F to move the furniture around.',

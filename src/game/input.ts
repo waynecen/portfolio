@@ -54,7 +54,7 @@ export function bindKeys(): () => void {
       if (down && !isTyping(e.target) && document.body.classList.contains('playing')) editKey(e)
       return
     }
-    // J or X: the sword. Down swings (and starts a charge), up lets a charged spin go (combat.ts).
+    // J or X (or the left mouse button, below): the sword. Down swings (and starts a charge), up lets a charged spin go (combat.ts).
     if (e.code === 'KeyJ' || e.code === 'KeyX') {
       if (isTyping(e.target) || !document.body.classList.contains('playing')) return
       if (down && !e.repeat) pressAttack()
@@ -90,15 +90,35 @@ export function bindKeys(): () => void {
   }
   const onDown = set(true)
   const onUp = set(false)
+  // The mouse, on the game itself (not the HUD over it): the left button is the sword like J, the
+  // right button puts the rod away like B. Edit mode reads the mouse its own way (EditRoom.tsx).
+  const onGame = (e: MouseEvent) =>
+    e.target instanceof HTMLCanvasElement && document.body.classList.contains('playing') && !useGame.getState().editing
+  const onPointerDown = (e: PointerEvent) => {
+    unlock() // audio may only start after a gesture
+    if (e.pointerType !== 'mouse' || !onGame(e)) return
+    if (e.button === 0) pressAttack()
+    else if (e.button === 2) putAwayRod()
+  }
+  const onPointerUp = (e: PointerEvent) => {
+    if (e.pointerType === 'mouse' && e.button === 0) releaseAttack()
+  }
+  const onContextMenu = (e: MouseEvent) => {
+    if (onGame(e)) e.preventDefault() // the right button is for the rod, not the browser's menu
+  }
   window.addEventListener('keydown', onDown)
   window.addEventListener('keyup', onUp)
-  window.addEventListener('pointerdown', unlock)
+  window.addEventListener('pointerdown', onPointerDown)
+  window.addEventListener('pointerup', onPointerUp)
+  window.addEventListener('contextmenu', onContextMenu)
   window.addEventListener('blur', reset)
   window.addEventListener('viewchange', reset)
   return () => {
     window.removeEventListener('keydown', onDown)
     window.removeEventListener('keyup', onUp)
-    window.removeEventListener('pointerdown', unlock)
+    window.removeEventListener('pointerdown', onPointerDown)
+    window.removeEventListener('pointerup', onPointerUp)
+    window.removeEventListener('contextmenu', onContextMenu)
     window.removeEventListener('blur', reset)
     window.removeEventListener('viewchange', reset)
     reset()
