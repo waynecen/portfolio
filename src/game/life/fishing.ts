@@ -7,6 +7,7 @@ import { cameraZoom, playerFacing, playerPos } from '../core/state'
 import { useGame } from '../core/store'
 import { reducedMotion, useSettings } from '../core/settings'
 import { keyName } from '../core/keymap'
+import { readSaved, writeSaved } from '../core/persist'
 
 // Fishing off the dock at the island's bottom-left corner (Dock.tsx draws it). Take a rod from the
 // barrel at the foot of the dock, walk out and use the ripple in the water: the line goes out, and
@@ -98,18 +99,14 @@ export type FishRecord = { count: number; best: number }
 const SAVE_KEY = 'fish-v1'
 
 function load(): Partial<Record<FishId, FishRecord>> {
-  try {
-    const saved: unknown = JSON.parse(localStorage.getItem(SAVE_KEY) ?? '{}')
-    if (!saved || typeof saved !== 'object') return {}
-    const out: Partial<Record<FishId, FishRecord>> = {}
-    for (const f of FISH) {
-      const r = (saved as Record<string, unknown>)[f.id] as FishRecord | undefined
-      if (r && typeof r.count === 'number' && typeof r.best === 'number') out[f.id] = { count: r.count, best: r.best }
-    }
-    return out
-  } catch {
-    return {}
+  const saved: unknown = (readSaved(SAVE_KEY) ?? {})
+  if (!saved || typeof saved !== 'object') return {}
+  const out: Partial<Record<FishId, FishRecord>> = {}
+  for (const f of FISH) {
+    const r = (saved as Record<string, unknown>)[f.id] as FishRecord | undefined
+    if (r && typeof r.count === 'number' && typeof r.best === 'number') out[f.id] = { count: r.count, best: r.best }
   }
+  return out
 }
 
 /** idle: not fishing. cast: the float is flying out. wait: waiting for a bite. bite: hook it now! reel: bringing it in. */
@@ -296,11 +293,7 @@ function land(fish: Fish) {
   // The ripple moves on to another spot.
   const move = 1 + Math.floor(Math.random() * (SPOTS.length - 1))
   useFishing.setState({ caught: next, spot: (spot + move) % SPOTS.length })
-  try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify(next))
-  } catch {
-    // private mode or storage full: kept until the page closes
-  }
+  writeSaved(SAVE_KEY, next)
   // Feedback, with rules for when it doesn't fire: the fanfare only for a new kind of fish (a
   // repeat gets a short blip), the zoom only for a new kind or a new biggest, and never with
   // reduced motion. The words wait a beat (LAND_PAUSE) so the moment lands before the box opens.

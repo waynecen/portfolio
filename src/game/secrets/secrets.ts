@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { say } from '../core/interact'
 import { isTouch } from '../core/quality'
 import { chime } from '../core/sfx'
+import { readSaved, writeSaved } from '../core/persist'
 
 // Odd trinkets hidden around the island, each switching on a harmless, silly change to the world
 // (Halo's skulls, in spirit). Finding one switches its effect on; the settings panel switches each
@@ -33,24 +34,16 @@ const KEY = 'secrets-v1'
 type State = { found: SecretId[]; on: SecretId[] }
 
 function load(): State {
-  try {
-    const saved = JSON.parse(localStorage.getItem(KEY) ?? '{}') as Partial<State>
-    const ids = SECRETS.map((s) => s.id)
-    const keep = (list: unknown) => (Array.isArray(list) ? ids.filter((id) => list.includes(id)) : [])
-    return { found: keep(saved.found), on: keep(saved.on) }
-  } catch {
-    return { found: [], on: [] }
-  }
+  const saved = (readSaved(KEY) ?? {}) as Partial<State>
+  const ids = SECRETS.map((s) => s.id)
+  const keep = (list: unknown) => (Array.isArray(list) ? ids.filter((id) => list.includes(id)) : [])
+  return { found: keep(saved.found), on: keep(saved.on) }
 }
 
 export const useSecrets = create<State>(() => load())
 
 function save() {
-  try {
-    localStorage.setItem(KEY, JSON.stringify(useSecrets.getState()))
-  } catch {
-    // private mode or storage full: kept until the page closes
-  }
+  writeSaved(KEY, useSecrets.getState())
 }
 
 /** True while a found secret's effect is on. Cheap enough to call every frame. */

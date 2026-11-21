@@ -7,6 +7,7 @@ import { ISLET } from '../world/Island'
 import { ISLET_BOAT, ISLET_SPAWN } from '../world/layout'
 import { goTo, type Spawn } from '../core/scene'
 import { landed, splash } from '../core/sfx'
+import { readSaved, writeSaved } from '../core/persist'
 
 // The islet south of the dock (IsletScene.tsx draws it): a rowing boat tied to the dock goes there once
 // the player has the oar from the cave (cave.ts), and a second boat on the islet's shore brings them
@@ -24,11 +25,7 @@ const CHEST_SHELLS = 20
 
 const KEY = 'islet-v1'
 function load(): boolean {
-  try {
-    return (JSON.parse(localStorage.getItem(KEY) ?? '{}') as { chest?: unknown }).chest === true
-  } catch {
-    return false
-  }
+  return ((readSaved(KEY) ?? {}) as { chest?: unknown }).chest === true
 }
 /** Whether the islet's chest has been opened, kept in this browser. */
 export const useIslet = create<{ chest: boolean }>(() => ({ chest: load() }))
@@ -52,11 +49,7 @@ export function rowBack() {
 export function openChest() {
   if (useIslet.getState().chest) return
   useIslet.setState({ chest: true })
-  try {
-    localStorage.setItem(KEY, JSON.stringify({ chest: true }))
-  } catch {
-    // private mode or storage full: kept until the page closes
-  }
+  writeSaved(KEY, { chest: true })
   addShells(CHEST_SHELLS)
   landed(true)
   say([`An old sea chest, full of shells! You take all ${CHEST_SHELLS}.`])

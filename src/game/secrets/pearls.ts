@@ -11,6 +11,7 @@ import { winter } from '../world/season'
 import { chime, landed } from '../core/sfx'
 import { PEARL_TRACK } from '../core/tracks'
 import { inForest, trees } from '../world/Trees'
+import { readSaved, writeSaved } from '../core/persist'
 
 // Hidden pearls (HiddenPearls.tsx draws them): buried under a patch of disturbed earth, under a tuft of
 // tall grass that has to be cut first (Grass.tsx), or tucked behind a tree, where the canopy hides
@@ -105,12 +106,8 @@ export const hiddenBy = (p: Pearl): Hide => (p.hide === 'grass' && winter ? 'dig
 
 const KEY = 'pearls-v1'
 function load(): string[] {
-  try {
-    const v: unknown = JSON.parse(localStorage.getItem(KEY) ?? '[]')
-    return Array.isArray(v) ? PEARLS.filter((p) => v.includes(p.id)).map((p) => p.id) : []
-  } catch {
-    return []
-  }
+  const v: unknown = (readSaved(KEY) ?? [])
+  return Array.isArray(v) ? PEARLS.filter((p) => v.includes(p.id)).map((p) => p.id) : []
 }
 
 /** Pearls found (kept), and pearls whose grass has been cut this visit (shown on the ground). */
@@ -132,11 +129,7 @@ export function findPearl(id: string) {
   if (found.includes(id)) return
   const next = PEARLS.filter((p) => p.id === id || found.includes(p.id)).map((p) => p.id)
   usePearls.setState({ found: next })
-  try {
-    localStorage.setItem(KEY, JSON.stringify(next))
-  } catch {
-    // private mode or storage full: kept until the page closes
-  }
+  writeSaved(KEY, next)
   const n = next.length
   if (n === PEARLS.length) {
     landed(true)

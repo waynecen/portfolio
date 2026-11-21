@@ -3,6 +3,7 @@ import { say } from '../core/interact'
 import { CAVE, CAVE_PITCH, ROOM } from '../world/layout'
 import { chime, door, landed } from '../core/sfx'
 import { useGame } from '../core/store'
+import { readSaved, writeSaved } from '../core/persist'
 
 // The cave behind the waterfall (CaveRooms.tsx draws it): a small dungeon of flip-screen rooms, the
 // camera sliding from one to the next as the player walks through a doorway. Gentle by design: a
@@ -58,28 +59,20 @@ type CaveState = {
 const KEY = 'cave-v1'
 const FRESH: CaveState = { solved: false, key: 'none', beaten: false, heart: false, oar: false }
 function load(): CaveState {
-  try {
-    const v = JSON.parse(localStorage.getItem(KEY) ?? '{}') as Partial<CaveState>
-    return {
-      solved: v.solved === true,
-      key: v.key === 'held' || v.key === 'used' ? v.key : 'none',
-      beaten: v.beaten === true,
-      heart: v.heart === true,
-      oar: v.oar === true,
-    }
-  } catch {
-    return { ...FRESH }
+  const v = (readSaved(KEY) ?? {}) as Partial<CaveState>
+  return {
+    solved: v.solved === true,
+    key: v.key === 'held' || v.key === 'used' ? v.key : 'none',
+    beaten: v.beaten === true,
+    heart: v.heart === true,
+    oar: v.oar === true,
   }
 }
 
 export const useCave = create<CaveState>(() => load())
 function set(change: Partial<CaveState>) {
   useCave.setState(change)
-  try {
-    localStorage.setItem(KEY, JSON.stringify(useCave.getState()))
-  } catch {
-    // private mode or storage full: kept until the page closes
-  }
+  writeSaved(KEY, useCave.getState())
 }
 
 /** One more heart for each heart container found. */

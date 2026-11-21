@@ -1,3 +1,4 @@
+import { readSaved, writeSaved } from '../core/persist'
 // Visits to the island from this browser: when the first was, when the last one was and how many
 // there have been. A reload within SAME_VISIT counts as the same visit. Read once at load, so the
 // welcome back (WelcomeBack.tsx), the leaves to sweep (Leaves.tsx) and the calendar moments
@@ -10,12 +11,8 @@ const DAY = 24 * 60 * 60 * 1000
 type Saved = { first: number; last: number; count: number }
 
 function load(): Saved | null {
-  try {
-    const v = JSON.parse(localStorage.getItem(KEY) ?? 'null') as Saved | null
-    return v && typeof v.first === 'number' && typeof v.last === 'number' && typeof v.count === 'number' ? v : null
-  } catch {
-    return null
-  }
+  const v = (readSaved(KEY) ?? null) as Saved | null
+  return v && typeof v.first === 'number' && typeof v.last === 'number' && typeof v.count === 'number' ? v : null
 }
 
 const now = Date.now()
@@ -33,8 +30,4 @@ export const visit = {
   daysAway: saved && !same ? Math.floor((now - saved.last) / DAY) : saved ? 0 : null,
 }
 
-try {
-  localStorage.setItem(KEY, JSON.stringify({ first: visit.first, last: now, count }))
-} catch {
-  // private mode or storage full: every visit is a first one
-}
+writeSaved(KEY, { first: visit.first, last: now, count })

@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { readSaved, writeSaved } from './persist'
 
 // The keyboard's bindings, remappable in the settings (SettingsPanel.tsx). Every action has a main
 // key, which the visitor can change, and maybe a spare that always works too (the arrow keys,
@@ -63,14 +64,10 @@ const KEY = 'keys-v1' // save.ts: a preference, kept by "Start over"
 const ids = new Set<string>(ACTIONS.map((a) => a.id))
 
 function load(): Partial<Record<Action, string>> {
-  try {
-    const v = JSON.parse(localStorage.getItem(KEY) ?? '{}') as Record<string, unknown>
-    const out: Partial<Record<Action, string>> = {}
-    for (const [a, code] of Object.entries(v)) if (ids.has(a) && typeof code === 'string' && !RESERVED.has(code)) out[a as Action] = code
-    return out
-  } catch {
-    return {}
-  }
+  const v = readSaved(KEY)
+  const out: Partial<Record<Action, string>> = {}
+  if (v && typeof v === 'object') for (const [a, code] of Object.entries(v)) if (ids.has(a) && typeof code === 'string' && !RESERVED.has(code)) out[a as Action] = code
+  return out
 }
 
 /** The visitor's changes: a new main key per action. */
@@ -145,10 +142,5 @@ export function resetKeys() {
 
 function save(main: Partial<Record<Action, string>>) {
   useKeymap.setState({ main })
-  try {
-    if (Object.keys(main).length) localStorage.setItem(KEY, JSON.stringify(main))
-    else localStorage.removeItem(KEY)
-  } catch {
-    // private mode or storage full: kept until the page closes
-  }
+  writeSaved(KEY, Object.keys(main).length ? main : undefined)
 }

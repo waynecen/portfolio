@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { readSaved, writeSaved } from './persist'
 
 // The visitor's settings (SettingsPanel.tsx), kept in this browser: the effects volume (music has
 // its own, music.ts), how much things move, larger text, and the fishing assist. Every assist is
@@ -23,17 +24,13 @@ const KEY = 'settings-v1'
 const DEFAULTS: Settings = { effects: 1, motion: 'device', bigText: false, fishAssist: false, slimes: true }
 
 function load(): Settings {
-  try {
-    const saved = JSON.parse(localStorage.getItem(KEY) ?? '{}') as Partial<Settings>
-    return {
-      effects: typeof saved.effects === 'number' && saved.effects >= 0 && saved.effects <= 1 ? saved.effects : DEFAULTS.effects,
-      motion: saved.motion === 'reduce' || saved.motion === 'full' ? saved.motion : DEFAULTS.motion,
-      bigText: saved.bigText === true,
-      fishAssist: saved.fishAssist === true,
-      slimes: saved.slimes !== false,
-    }
-  } catch {
-    return DEFAULTS
+  const saved = (readSaved(KEY) ?? {}) as Partial<Settings>
+  return {
+    effects: typeof saved.effects === 'number' && saved.effects >= 0 && saved.effects <= 1 ? saved.effects : DEFAULTS.effects,
+    motion: saved.motion === 'reduce' || saved.motion === 'full' ? saved.motion : DEFAULTS.motion,
+    bigText: saved.bigText === true,
+    fishAssist: saved.fishAssist === true,
+    slimes: saved.slimes !== false,
   }
 }
 
@@ -42,11 +39,7 @@ export const useSettings = create<Settings>(() => load())
 /** Changes one setting and remembers it. */
 export function setSetting<K extends keyof Settings>(key: K, value: Settings[K]) {
   useSettings.setState({ [key]: value } as Pick<Settings, K>)
-  try {
-    localStorage.setItem(KEY, JSON.stringify(useSettings.getState()))
-  } catch {
-    // private mode or storage full: kept until the page closes
-  }
+  writeSaved(KEY, useSettings.getState())
 }
 
 const deviceReduces = matchMedia('(prefers-reduced-motion: reduce)')

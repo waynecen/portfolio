@@ -4,6 +4,7 @@ import { isTouch } from '../core/quality'
 import { chime, click } from '../core/sfx'
 import { useGame } from '../core/store'
 import { keyName } from '../core/keymap'
+import { readSaved, writeSaved } from '../core/persist'
 
 // The bag: small things to find around the island. Each item waits at its spot (Pickups.tsx) until
 // the player picks it up; then it's in the bag (InventoryPanel.tsx) for good, saved in this browser.
@@ -35,12 +36,8 @@ export const ITEM = Object.fromEntries(ITEMS.map((t) => [t.id, t])) as Record<It
 const SAVE_KEY = 'inventory-v1'
 
 function load(): ItemId[] {
-  try {
-    const saved: unknown = JSON.parse(localStorage.getItem(SAVE_KEY) ?? '[]')
-    return Array.isArray(saved) ? ITEMS.filter((t) => saved.includes(t.id)).map((t) => t.id) : []
-  } catch {
-    return []
-  }
+  const saved: unknown = (readSaved(SAVE_KEY) ?? [])
+  return Array.isArray(saved) ? ITEMS.filter((t) => saved.includes(t.id)).map((t) => t.id) : []
 }
 
 /** Items found so far, in the order of ITEMS. */
@@ -52,11 +49,7 @@ export function collect(id: ItemId) {
   if (found.includes(id)) return
   const next = ITEMS.filter((t) => t.id === id || found.includes(t.id)).map((t) => t.id)
   useInventory.setState({ found: next })
-  try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify(next))
-  } catch {
-    // private mode or storage full: it's in the bag until the page closes
-  }
+  writeSaved(SAVE_KEY, next)
   chime()
   const item = ITEM[id]
   const lines = [`You found the ${item.name.toLowerCase()}! ${item.description}`]

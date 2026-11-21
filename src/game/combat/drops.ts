@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { heal, hurting } from './health'
 import { pickup } from '../core/sfx'
+import { readSaved, writeSaved } from '../core/persist'
 
 // What cut grass, broken pots and popped slimes leave behind (Drops.tsx draws them): a shell (the
 // island's currency, kept in this browser) or a heart. Walking over one picks it up. They wait a
@@ -53,12 +54,8 @@ export function updateDrops(dt: number, px: number, pz: number) {
 const KEY = 'shells-v1'
 
 function load(): number {
-  try {
-    const n = Number(localStorage.getItem(KEY) ?? 0)
-    return Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0
-  } catch {
-    return 0
-  }
+  const n = readSaved(KEY)
+  return typeof n === 'number' && Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0
 }
 
 /** Shells in the visitor's pocket, kept in this browser. Spent at the shop, one day (ROADMAP C14). */
@@ -67,9 +64,5 @@ export const useShells = create<{ shells: number; at: number }>(() => ({ shells:
 export function addShells(n: number) {
   const shells = useShells.getState().shells + n
   useShells.setState({ shells, at: Date.now() })
-  try {
-    localStorage.setItem(KEY, String(shells))
-  } catch {
-    // private mode or storage full: kept until the page closes
-  }
+  writeSaved(KEY, shells)
 }

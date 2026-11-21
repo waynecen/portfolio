@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { placeholderTracks } from './placeholderTracks'
 import { TRACKS, type Track } from './tracks'
+import { readSaved, writeSaved } from './persist'
 
 // One shared <audio> element for the whole game. It's created on the first play (a user gesture,
 // which browsers require for audio) and streams the file, so nothing downloads until then.
@@ -19,12 +20,8 @@ const VOLUME_KEY = 'portfolio.music.volume'
 const DEFAULT_VOLUME = 0.6
 
 function loadVolume() {
-  try {
-    const v = parseFloat(localStorage.getItem(VOLUME_KEY) ?? '')
-    return v >= 0 && v <= 1 ? v : DEFAULT_VOLUME
-  } catch {
-    return DEFAULT_VOLUME
-  }
+  const v = readSaved(VOLUME_KEY)
+  return typeof v === 'number' && v >= 0 && v <= 1 ? v : DEFAULT_VOLUME
 }
 
 export const useMusic = create<MusicState>(() => ({ index: -1, playing: false, volume: loadVolume() }))
@@ -149,11 +146,7 @@ export function setVolume(v: number) {
   useMusic.setState({ volume: v })
   if (gain) gain.gain.value = v
   else if (audio) audio.volume = v
-  try {
-    localStorage.setItem(VOLUME_KEY, String(v))
-  } catch {
-    // storage blocked: volume just isn't remembered
-  }
+  writeSaved(VOLUME_KEY, v)
 }
 
 /** Loudness of the low end right now, 0..1. Cheap enough to call every frame; allocates nothing. */

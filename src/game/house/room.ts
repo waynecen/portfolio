@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { INTERIOR, ROOM } from '../world/layout'
 import { PILL_RADIUS } from '../player/PillCharacter'
 import type { Spawn } from '../core/scene'
+import { readSaved, writeSaved } from '../core/persist'
 
 // The furniture in the house, on the room's tile grid. Every piece covers a set block of tiles
 // (its footprint: w across, d deep) and sits at a tile, so moving it in edit mode (edit.ts) is a
@@ -68,12 +69,8 @@ const DEFAULT: Record<PieceId, Spot> = {
 // room) are in it: placed() is the list every rule below works from.
 const OWNED_KEY = 'decor-v1'
 function loadOwned(): PieceId[] {
-  try {
-    const v: unknown = JSON.parse(localStorage.getItem(OWNED_KEY) ?? '[]')
-    return Array.isArray(v) ? PIECES.filter((p) => p.price && v.includes(p.id)).map((p) => p.id) : []
-  } catch {
-    return []
-  }
+  const v: unknown = (readSaved(OWNED_KEY) ?? [])
+  return Array.isArray(v) ? PIECES.filter((p) => p.price && v.includes(p.id)).map((p) => p.id) : []
 }
 export const useOwned = create<{ owned: PieceId[] }>(() => ({ owned: loadOwned() }))
 const computePlaced = () => PIECES.filter((p) => !p.price || useOwned.getState().owned.includes(p.id))
@@ -203,11 +200,7 @@ export function place(id: PieceId, at: Spot) {
 /** Puts everything back where it started. */
 export function resetRoom() {
   useRoom.setState({ spots: { ...DEFAULT } })
-  try {
-    localStorage.removeItem(SAVE_KEY)
-  } catch {
-    // storage blocked: nothing was saved anyway
-  }
+  writeSaved(SAVE_KEY, undefined)
 }
 
 /**
@@ -235,22 +228,13 @@ export function clearSpawn(at: Spawn): Spawn {
 }
 
 function save() {
-  try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify(useRoom.getState().spots))
-  } catch {
-    // storage blocked (private window): the layout lasts until the page closes
-  }
+  writeSaved(SAVE_KEY, useRoom.getState().spots)
 }
 
 // The saved layout, if it's whole and still makes sense (every piece in the room, nothing
 // overlapping, the door clear); otherwise the default.
 function load(): Record<PieceId, Spot> {
-  let saved: unknown
-  try {
-    saved = JSON.parse(localStorage.getItem(SAVE_KEY) ?? 'null')
-  } catch {
-    return { ...DEFAULT }
-  }
+  const saved = readSaved(SAVE_KEY)
   if (!saved || typeof saved !== 'object') return { ...DEFAULT }
   const spots = { ...DEFAULT }
   for (const p of PIECES) {
@@ -297,11 +281,7 @@ export function addPiece(id: PieceId): boolean {
     useOwned.setState({ owned: useOwned.getState().owned.filter((x) => x !== id) })
     return false
   }
-  try {
-    localStorage.setItem(OWNED_KEY, JSON.stringify(useOwned.getState().owned))
-  } catch {
-    // private mode or storage full: kept until the page closes
-  }
+  writeSaved(OWNED_KEY, useOwned.getState().owned)
   place(id, at)
   return true
 }

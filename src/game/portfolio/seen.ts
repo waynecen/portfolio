@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { ABOUT_AT, CONTACT_AT } from './places'
 import { projects, stationPos } from './projects'
+import { readSaved, writeSaved } from '../core/persist'
 
 // Places the visitor has looked at: each project, the About sign and the Contact mailbox. Kept in
 // this browser, shown in the bag ("2 of 3 projects seen"), and unseen project stations glow
@@ -26,12 +27,8 @@ export function projectPlace(title: string) {
 const SAVE_KEY = 'seen-v1'
 
 function load(): string[] {
-  try {
-    const saved: unknown = JSON.parse(localStorage.getItem(SAVE_KEY) ?? '[]')
-    return Array.isArray(saved) ? PLACES.filter((p) => saved.includes(p.id)).map((p) => p.id) : []
-  } catch {
-    return []
-  }
+  const saved: unknown = (readSaved(SAVE_KEY) ?? [])
+  return Array.isArray(saved) ? PLACES.filter((p) => saved.includes(p.id)).map((p) => p.id) : []
 }
 
 /** The ids of every place seen so far, in the order of PLACES. */
@@ -43,9 +40,5 @@ export function markSeen(id: string) {
   if (seen.includes(id) || !PLACES.some((p) => p.id === id)) return
   const next = PLACES.filter((p) => p.id === id || seen.includes(p.id)).map((p) => p.id)
   useSeen.setState({ seen: next })
-  try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify(next))
-  } catch {
-    // private mode or storage full: remembered until the page closes
-  }
+  writeSaved(SAVE_KEY, next)
 }

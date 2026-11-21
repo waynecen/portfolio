@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { addShells, useShells } from '../combat/drops'
 import { pickup } from '../core/sfx'
 import { addPiece, PIECES, useOwned, type PieceId } from '../house/room'
+import { readSaved, writeSaved } from '../core/persist'
 
 // The shop at Pip's stall, east of the house (ShopPanel.tsx; the stall and Pip in Villagers.tsx):
 // shells (drops.ts) buy hats to wear and furniture for the house, which arrives in the room and
@@ -25,23 +26,15 @@ export const DECOR = PIECES.filter((p) => p.price)
 const KEY = 'hats-v1'
 type HatState = { owned: HatId[]; worn: HatId | null }
 function load(): HatState {
-  try {
-    const v = JSON.parse(localStorage.getItem(KEY) ?? '{}') as Partial<HatState>
-    const ids = HATS.map((h) => h.id)
-    const owned = Array.isArray(v.owned) ? ids.filter((id) => v.owned!.includes(id)) : []
-    return { owned, worn: v.worn && owned.includes(v.worn) ? v.worn : null }
-  } catch {
-    return { owned: [], worn: null }
-  }
+  const v = (readSaved(KEY) ?? {}) as Partial<HatState>
+  const ids = HATS.map((h) => h.id)
+  const owned = Array.isArray(v.owned) ? ids.filter((id) => v.owned!.includes(id)) : []
+  return { owned, worn: v.worn && owned.includes(v.worn) ? v.worn : null }
 }
 /** Hats owned, and the one being worn (Hat.tsx draws it). */
 export const useHats = create<HatState>(() => load())
 function save() {
-  try {
-    localStorage.setItem(KEY, JSON.stringify(useHats.getState()))
-  } catch {
-    // private mode or storage full: kept until the page closes
-  }
+  writeSaved(KEY, useHats.getState())
 }
 
 /** True if there are enough shells for `price`. */
@@ -69,13 +62,7 @@ export function wearHat(id: HatId | null) {
 /** The treasure map's price. With it, every buried pearl (pearls.ts) and the day's dig spot shows as a red cross. */
 export const MAP_PRICE = 15
 const MAP_KEY = 'map-v1'
-function loadMap() {
-  try {
-    return localStorage.getItem(MAP_KEY) === '1'
-  } catch {
-    return false
-  }
-}
+const loadMap = () => readSaved(MAP_KEY) === 1 || readSaved(MAP_KEY) === true
 /** Whether the treasure map has been bought. */
 export const useTreasureMap = create<{ owned: boolean }>(() => ({ owned: loadMap() }))
 
@@ -84,11 +71,7 @@ export function buyMap(): boolean {
   if (useTreasureMap.getState().owned || !canAfford(MAP_PRICE)) return false
   addShells(-MAP_PRICE)
   useTreasureMap.setState({ owned: true })
-  try {
-    localStorage.setItem(MAP_KEY, '1')
-  } catch {
-    // private mode or storage full: kept until the page closes
-  }
+  writeSaved(MAP_KEY, true)
   pickup()
   return true
 }

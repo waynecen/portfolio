@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import type { Interactable } from './interact'
+import { readSaved, writeSaved } from './persist'
 
 /** A panel over the game: the record player's, the bag (inventory.ts), the dialogue log (log.ts), the settings (settings.ts), or the touch screen's menu (MenuPanel.tsx). */
 export type Panel = 'music' | 'inventory' | 'log' | 'settings' | 'menu' | 'shop'
@@ -37,12 +38,8 @@ const HEARTS_KEY = 'hearts-v1' // save.ts
 
 // Hearts left are kept between visits (an empty count wakes in bed with all of them anyway, health.ts).
 function loadHealth(): number {
-  try {
-    const n = Number(localStorage.getItem(HEARTS_KEY))
-    return Number.isInteger(n) && n > 0 && n <= MAX_HEARTS * 2 ? n : MAX_HEARTS * 2
-  } catch {
-    return MAX_HEARTS * 2
-  }
+  const n = readSaved(HEARTS_KEY)
+  return typeof n === 'number' && Number.isInteger(n) && n > 0 && n <= MAX_HEARTS * 2 ? n : MAX_HEARTS * 2
 }
 
 export const useGame = create<GameState>(() => ({
@@ -59,10 +56,6 @@ export const useGame = create<GameState>(() => ({
 
 useGame.subscribe((s, prev) => {
   if (s.health === prev.health) return
-  try {
-    // Zero is only for a faint, which wakes with every heart back (health.ts), so that's what's kept.
-    localStorage.setItem(HEARTS_KEY, String(s.health || MAX_HEARTS * 2))
-  } catch {
-    // private mode or storage full: kept until the page closes
-  }
+  // Zero is only for a faint, which wakes with every heart back (health.ts), so that's what's kept.
+  writeSaved(HEARTS_KEY, s.health || MAX_HEARTS * 2)
 })

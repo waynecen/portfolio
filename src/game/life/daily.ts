@@ -7,6 +7,7 @@ import { tileAt } from '../core/grid'
 import { chime } from '../core/sfx'
 import { trees } from '../world/Trees'
 import { DOCK } from './fishing'
+import { readSaved, writeSaved } from '../core/persist'
 
 // Something new each day, seeded by the date (Daily.tsx draws them): a message bottle washed up on
 // a different stretch of shore, holding a tip or a fun fact, and a dig spot somewhere in the grass
@@ -67,20 +68,12 @@ const message = MESSAGES[((day % MESSAGES.length) + MESSAGES.length) % MESSAGES.
 // Which day each was last used, kept in this browser.
 const KEY = 'daily-v1'
 function load(): { bottle: number; dig: number } {
-  try {
-    const v = JSON.parse(localStorage.getItem(KEY) ?? '{}') as { bottle?: number; dig?: number }
-    return { bottle: typeof v.bottle === 'number' ? v.bottle : -1, dig: typeof v.dig === 'number' ? v.dig : -1 }
-  } catch {
-    return { bottle: -1, dig: -1 }
-  }
+  const v = (readSaved(KEY) ?? {}) as { bottle?: number; dig?: number }
+  return { bottle: typeof v.bottle === 'number' ? v.bottle : -1, dig: typeof v.dig === 'number' ? v.dig : -1 }
 }
 const used = load()
 function save() {
-  try {
-    localStorage.setItem(KEY, JSON.stringify(used))
-  } catch {
-    // private mode or storage full: forgotten when the page closes
-  }
+  writeSaved(KEY, used)
 }
 
 /** True until today's bottle has been read, and today's spot dug. */

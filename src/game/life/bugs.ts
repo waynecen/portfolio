@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { say, sayFirst } from '../core/interact'
 import { landed } from '../core/sfx'
 import { playerVel } from '../core/state'
+import { readSaved, writeSaved } from '../core/persist'
 
 // Catching bugs: butterflies over the meadows by day (Butterflies.tsx) and fireflies at night
 // (Fireflies.tsx). Walk up to one and catch it (E, Enter or A); come in at a sprint and it gets
@@ -25,14 +26,10 @@ const STEADY = 1.2 // at more than this speed (relative to walking), a bug sees 
 
 const KEY = 'bugs-v1'
 function load(): Partial<Record<BugId, number>> {
-  try {
-    const v = JSON.parse(localStorage.getItem(KEY) ?? '{}') as Record<string, unknown>
-    const out: Partial<Record<BugId, number>> = {}
-    for (const b of BUGS) if (typeof v[b.id] === 'number') out[b.id] = v[b.id] as number
-    return out
-  } catch {
-    return {}
-  }
+  const v = (readSaved(KEY) ?? {}) as Record<string, unknown>
+  const out: Partial<Record<BugId, number>> = {}
+  for (const b of BUGS) if (typeof v[b.id] === 'number') out[b.id] = v[b.id] as number
+  return out
 }
 
 /** How many of each bug have been caught. */
@@ -51,11 +48,7 @@ export function tryCatch(id: BugId): boolean {
   const first = !caught[id]
   const next = { ...caught, [id]: (caught[id] ?? 0) + 1 }
   useBugs.setState({ caught: next })
-  try {
-    localStorage.setItem(KEY, JSON.stringify(next))
-  } catch {
-    // private mode or storage full: kept until the page closes
-  }
+  writeSaved(KEY, next)
   landed(first)
   const bug = BUGS.find((b) => b.id === id)!
   const lines = [`You caught a ${bug.name.toLowerCase()}!`]
