@@ -133,6 +133,11 @@ const SOUNDS = {
     const lp = lowpass(0.45)
     return render(0.12, (t, n) => (lp(n) * 1.4 + Math.sin(2 * Math.PI * 180 * t) * 0.5) * Math.exp(-t * 38))
   },
+  hurt: () => {
+    // The player bumped: a low, short grunt of noise.
+    const lp = lowpass(0.8)
+    return render(0.18, (t, n) => (lp(n) * 1.6 + Math.sin(2 * Math.PI * 140 * t) * 0.6) * Math.exp(-t * 20))
+  },
   click: () => render(0.03, (t) => Math.sin(2 * Math.PI * 1200 * t) * 0.35 * Math.exp(-t * 120)),
 }
 type Sound = keyof typeof SOUNDS
@@ -192,6 +197,8 @@ export const blip = (pitch: number) => play('blip', 1, pitch * (0.96 + Math.rand
 export const click = () => play('click')
 /** The sword connecting with something (combat.ts). */
 export const hit = () => play('hit', 0.9, 0.9 + Math.random() * 0.2)
+/** The player bumped by a slime. */
+export const hurt = () => play('hurt')
 /** An item picked up. */
 export const chime = () => play('chime')
 /** The reel turning while the needle's in the green (fishing.ts): a soft, quick tick. */

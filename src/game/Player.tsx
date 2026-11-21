@@ -4,6 +4,7 @@ import { MathUtils, type Group } from 'three'
 import { pushOutOfBox, resolve } from './collision'
 import { swinging } from './combat'
 import { HeldRod } from './Dock'
+import { harm } from './health'
 import { Sword } from './Sword'
 import { dockOpens, onDock } from './fishing'
 import { TILE } from './grid'
@@ -34,6 +35,8 @@ const ROLL_COOLDOWN = 0.2 // seconds after a roll before the next can start
 const STEP_LEN = [0.45, 0.7] // units travelled per footstep sound: walking, and at full sprint
 const TINY = 0.55 // the character's size with the "tiny you" secret on (secrets.ts)
 const SWING_SPEED = 0.35 // top speed while swinging the sword, as a share (combat.ts)
+const KNOCK_DECEL = 5 // how quickly a knockback eases off (health.ts); lower = further
+const FLICKER = 14 // flickers per second while invulnerable after a bump
 
 const roads = new Set(roadTiles.map((t) => t.i + ',' + t.j))
 function surfaceAt(x: number, z: number): Surface {
@@ -91,8 +94,12 @@ export function Player() {
       }
     }
 
-    let x = talking ? 0 : +keys.right - +keys.left + stick.x
-    let z = talking ? 0 : +keys.back - +keys.forward + stick.z
+    // A bump (health.ts) takes control away for a moment while the knockback plays out.
+    harm.invuln = Math.max(0, harm.invuln - dt)
+    harm.stagger = Math.max(0, harm.stagger - dt)
+    const still = talking || harm.stagger > 0
+    let x = still ? 0 : +keys.right - +keys.left + stick.x
+    let z = still ? 0 : +keys.back - +keys.forward + stick.z
     const len2 = x * x + z * z
     // Cap at full speed: diagonals don't go faster, a half-pushed stick goes slower.
     if (len2 > 1) {
@@ -116,7 +123,7 @@ export function Player() {
     if (roll.p < 0) {
       // Ease velocity toward the input instead of snapping, so starts and stops feel weighty.
       // Sprint eases in and out through the same damp, so pressing Shift ramps up rather than jumps.
-      const rate = len2 > 0 ? ACCEL : DECEL
+      const rate = harm.stagger > 0 ? KNOCK_DECEL : len2 > 0 ? ACCEL : DECEL
       // Swinging the sword slows the player to SWING_SPEED, so a swing plants the feet.
       const top = (keys.sprint || buttons.sprint ? SPEED * SPRINT : SPEED) * (swinging() ? SWING_SPEED : 1)
       v.x = MathUtils.damp(v.x, x * top, rate, dt)
@@ -159,6 +166,8 @@ export function Player() {
     playerPos.z = p.z
     // The "tiny you" secret: the character (and its shadow and light) shrink; collisions don't change.
     root.scale.setScalar(secretOn('tiny') ? TINY : 1)
+    // After a bump, the character flickers while nothing can hurt it.
+    root.visible = harm.invuln <= 0 || Math.floor(harm.invuln * FLICKER) % 2 === 0
   })
 
   return (
