@@ -1,14 +1,14 @@
 import { tileAt, type Tile } from './grid'
 import { DOCK_ROOT } from './fishing'
 import { FOREST, isInland } from './Island'
-import { CAVE_MOUTH, HOUSE, NOTICE_AT, OUTCROP, SHOP_AT } from './layout'
+import { CAVE_MOUTH, FOUNTAIN, HOUSE, inSquare, OUTCROP, SHOP_AT, SQUARE } from './layout'
 import { ABOUT_AT, CONTACT_AT } from './places'
 import { projects, stationPos } from './projects'
 
 // Points of interest: the single list that roads are built from.
 // Add a place here (and place its object at the same x/z) to give it a road.
 
-export type PoiKind = 'home' | 'project' | 'about' | 'contact' | 'dock' | 'forest' | 'notice' | 'shop' | 'cave'
+export type PoiKind = 'home' | 'project' | 'about' | 'contact' | 'dock' | 'forest' | 'square' | 'shop' | 'cave'
 export type Poi = { kind: PoiKind; x: number; z: number; label: string }
 
 /** The house at the centre of the map, where the game starts. Places sit on tile centres (whole numbers). */
@@ -19,7 +19,7 @@ export const pois: Poi[] = [
   { kind: 'about', ...ABOUT_AT, label: 'About' },
   { kind: 'contact', ...CONTACT_AT, label: 'Contact' },
   { kind: 'dock', ...DOCK_ROOT, label: 'Dock' },
-  { kind: 'notice', ...NOTICE_AT, label: 'Notice board' },
+  { kind: 'square', ...FOUNTAIN, label: 'City square' }, // the notice board stands on it
   { kind: 'shop', ...SHOP_AT, label: 'Shop' },
   { kind: 'cave', x: CAVE_MOUTH.x, z: CAVE_MOUTH.z - 0.5, label: 'Waterfall' },
   { kind: 'forest', x: Math.round(FOREST.x), z: Math.round(FOREST.z), label: 'Forest clearing' },
@@ -45,6 +45,9 @@ for (let i = HOUSE.i0 - 1; i <= HOUSE.i1 + 1; i++)
 const taken = new Set(pois.map((p) => key(tileAt(p.x, p.z))))
 for (let i = HOUSE.i0; i <= HOUSE.i1; i++) for (let j = HOUSE.j0; j <= HOUSE.j1; j++) taken.add(key({ i, j }))
 for (let i = OUTCROP.i0; i <= OUTCROP.i1; i++) for (let j = OUTCROP.j0; j <= OUTCROP.j1; j++) taken.add(key({ i, j }))
+// The square is taken too, except by its own road, which stops at its edge.
+const squareTiles = new Set<string>()
+for (let i = SQUARE.i0; i <= SQUARE.i1; i++) for (let j = SQUARE.j0; j <= SQUARE.j1; j++) squareTiles.add(key({ i, j }))
 
 // Tiles from `from` to `to` (inclusive), walking along one axis and then the other: an L with a
 // single 90° corner, or a straight line when they share a row or column.
@@ -63,7 +66,8 @@ function lPath(from: Tile, to: Tile, xFirst: boolean): Tile[] {
 }
 
 // A path is clear if nothing but its two ends sits on a place's tile or the house.
-const clear = (path: Tile[]) => path.every((t, n) => n === 0 || n === path.length - 1 || !taken.has(key(t)))
+const clear = (path: Tile[], square = false) =>
+  path.every((t, n) => n === 0 || n === path.length - 1 || !(taken.has(key(t)) || (!square && squareTiles.has(key(t)))))
 
 // The loop tile closest to a place (fewest tiles to walk), where its road leaves the loop.
 function nearestOnLoop(goal: Tile): Tile {
@@ -90,9 +94,11 @@ export const roads: Tile[][] = pois
     const goal = tileAt(p.x, p.z)
     const start = nearestOnLoop(goal)
     const xFirst = Math.abs(goal.i - start.i) < Math.abs(goal.j - start.j)
+    const square = p.kind === 'square'
     let path = lPath(start, goal, xFirst)
-    if (!clear(path)) path = lPath(start, goal, !xFirst)
-    return path.slice(0, -1) // stop on the doorstep, not under the place itself
+    if (!clear(path, square)) path = lPath(start, goal, !xFirst)
+    // Stop on the doorstep, not under the place itself; the square's road stops where the paving starts.
+    return square ? path.filter((t) => !inSquare(t.i, t.j)) : path.slice(0, -1)
   })
 
 /** Every loop and road tile, once each: what Roads.tsx draws. */
@@ -184,7 +190,7 @@ function signpostAt(at: Tile): Signpost | null {
     const i = at.i + di
     const j = at.j + dj
     const k = key({ i, j })
-    if (!onRoad.has(k) && !placeTiles.has(k) && !inHouse(i, j) && isInland(i, j, 1)) return { x: i, z: j, ways }
+    if (!onRoad.has(k) && !placeTiles.has(k) && !inHouse(i, j) && !inSquare(i, j) && isInland(i, j, 1)) return { x: i, z: j, ways }
   }
   return null
 }
@@ -218,7 +224,7 @@ export const signposts: Signpost[] = (() => {
 
 const signTiles = new Set(signposts.map((s) => key({ i: s.x, j: s.z })))
 
-/** True if tile (i, j) has something built on it: the house, the waterfall's outcrop, or a signpost. Nothing else is placed there. */
+/** True if tile (i, j) has something built on it: the house, the waterfall's outcrop, the city square or a signpost. Nothing else is placed there. */
 export function built(i: number, j: number): boolean {
-  return inHouse(i, j) || inOutcrop(i, j) || signTiles.has(key({ i, j }))
+  return inHouse(i, j) || inOutcrop(i, j) || inSquare(i, j) || signTiles.has(key({ i, j }))
 }

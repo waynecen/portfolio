@@ -32,11 +32,21 @@ export const OUTSIDE_SPAWN: Spawn = { x: FRONT_DOOR.x, z: FRONT_DOOR.z + 1.1, he
 export const INSIDE_SPAWN: Spawn = { x: INTERIOR.x, z: INTERIOR.z + ROOM.hz - 1, heading: Math.PI }
 
 
-/** The notice board (NoticeBoard.tsx): in front of the house, off to the right. A road leads to it (pois.ts). */
-export const NOTICE_AT = { x: 2, z: 4 }
+/** The notice board (NoticeBoard.tsx): on the city square (SQUARE below), at its corner nearest the shop. */
+export const NOTICE_AT = { x: 10, z: -2 }
 
 /** Pip's stall, the shop (Villagers.tsx, shop.ts): on the grass east of the house. A road leads to it (pois.ts). */
 export const SHOP_AT = { x: 7, z: -1 }
+
+/**
+ * The city square east of the house, beside the shop: a paved square of tiles (inclusive) with a
+ * fountain in its middle (CitySquare.tsx). A road comes in on its west side, at the fountain's row.
+ */
+export const SQUARE = { i0: 9, i1: 15, j0: -3, j1: 3 }
+/** The fountain, in the middle of the square. */
+export const FOUNTAIN = { x: (SQUARE.i0 + SQUARE.i1) / 2, z: (SQUARE.j0 + SQUARE.j1) / 2 }
+/** True if tile (i, j) is paved square. */
+export const inSquare = (i: number, j: number) => i >= SQUARE.i0 && i <= SQUARE.i1 && j >= SQUARE.j0 && j <= SQUARE.j1
 
 /**
  * The waterfall (Waterfall.tsx): a rocky outcrop on the island's north shore, tiles i0..i1 × j0..j1

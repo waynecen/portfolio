@@ -4,7 +4,7 @@ import { register, say } from './interact'
 import { NOTICE_AT } from './layout'
 import { noticeLines } from './notice'
 
-// The notice board in front of the house: two posts, a wide board and a few pinned papers. Reading
+// The notice board on the city square, by the shop: two posts, a wide board and a few pinned papers. Reading
 // it pins up a different notice each time, chosen from what's going on (notice.ts).
 
 const WOOD = '#a0724a'

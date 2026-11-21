@@ -6,7 +6,7 @@ import { PLACES, useSeen } from './seen'
 import { sky } from './sky'
 import { winter } from './season'
 
-// The notice board in front of the house (NoticeBoard.tsx, NOTICE_AT in layout.ts): each read pins
+// The notice board on the city square (NoticeBoard.tsx, NOTICE_AT in layout.ts): each read pins
 // up a different notice, chosen from what's true right now (carrying a rod, projects not yet seen,
 // rain, night, things still to find). Each is a joke with a real tip tucked into it, the way
 // Smash's Palutena's Guidance hides strategy in banter. Add a notice to NOTICES: `when` says if it

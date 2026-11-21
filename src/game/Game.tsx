@@ -4,6 +4,7 @@ import { Atmosphere } from './Atmosphere'
 import { CameraRig, DISTANCE, HEIGHT } from './CameraRig'
 import './curve' // bends the world away; before anything is drawn
 import { Dialogue, Prompt } from './Dialogue'
+import { CitySquare } from './CitySquare'
 import { Dock } from './Dock'
 import { Doors } from './Doors'
 import { Dust } from './Dust'
@@ -111,6 +112,7 @@ export function Game() {
           <Mailbox />
           <NoticeBoard />
           <Signposts />
+          <CitySquare />
           <Dock />
           <Waterfall />
           <Islet />

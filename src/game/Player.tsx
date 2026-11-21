@@ -10,6 +10,7 @@ import { Hat } from './Hat'
 import { dockOpens, onDock } from './fishing'
 import { TILE } from './grid'
 import { isLand } from './Island'
+import { inSquare } from './layout'
 import { PLAYER_MODEL } from './models'
 import { actions, bindKeys, buttons, keys, stick } from './input'
 import { PillCharacter, PILL_RADIUS } from './PillCharacter'
@@ -44,7 +45,9 @@ function surfaceAt(x: number, z: number): Surface {
   if (useGame.getState().scene === 'house') return 'tatami'
   if (useGame.getState().scene === 'cave') return 'road' // stone
   if (onDock(x, z)) return 'wood'
-  return roads.has(Math.round(x / TILE) + ',' + Math.round(z / TILE)) ? 'road' : winter ? 'snow' : 'grass'
+  const i = Math.round(x / TILE)
+  const j = Math.round(z / TILE)
+  return roads.has(i + ',' + j) || inSquare(i, j) ? 'road' : winter ? 'snow' : 'grass'
 }
 
 // Footsteps splash in the rain: outdoors, while it's raining (not in winter, when it snows instead).

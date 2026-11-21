@@ -4,7 +4,7 @@ import { Color, ConeGeometry, CylinderGeometry, MeshLambertMaterial, Object3D, V
 import { addCollider } from './collision'
 import { TILE, tileAt } from './grid'
 import { FOREST, ISLAND_RADIUS, ISLET, isInland } from './Island'
-import { HOUSE, OUTCROP } from './layout'
+import { HOUSE, OUTCROP, SQUARE } from './layout'
 import { pois, roadTiles } from './pois'
 import { autumn, spring, winter } from './season'
 import { playerPos } from './state'
@@ -70,6 +70,7 @@ function place(): Tree[] {
   }
   for (let i = HOUSE.i0; i <= HOUSE.i1; i++) for (let j = HOUSE.j0; j <= HOUSE.j1; j++) keepClear(i, j)
   for (let i = OUTCROP.i0; i <= OUTCROP.i1; i++) for (let j = OUTCROP.j0; j <= OUTCROP.j1; j++) keepClear(i, j)
+  for (let i = SQUARE.i0; i <= SQUARE.i1; i++) for (let j = SQUARE.j0; j <= SQUARE.j1; j++) keepClear(i, j)
 
   // The forest: trees on every other tile, like a chessboard's dark squares, with a few missing.
   // They're never side by side, only corner to corner, so there's always a way through on the
