@@ -76,15 +76,15 @@ Gentle by design: nothing is hard, and nothing blocks a project.
     - A key, a push-block puzzle, a big-slime mini-boss, and a chest with an item that opens a new area: a pier and a boat to a second islet.
 17. **Signposts and a treasure map.** *(done: signposts in pois.ts and Signposts.tsx; the map is sold at the shop, shop.ts)* Signposts at the crossroads; the map is an item that marks dig spots, not a minimap.
 
-## Phase E: Keeping it and polish
+## Phase E: Keeping it and polish *(done)*
 
-18. **Persistence.** `localStorage` (wrapped in try/catch) for hearts, shells, pearls, the collection, visited stations, decor and volume.
-19. **Accessibility.**
+18. **Persistence.** *(done: every module keeps its own part; save.ts lists them, and Start over in the settings forgets them)* `localStorage` (wrapped in try/catch) for hearts, shells, pearls, the collection, visited stations, decor and volume.
+19. **Accessibility.** *(done: focus.ts, keymap.ts, gamepad.ts; the dialogue's `aria-live` mirror was already in Dialogue.tsx)*
     - Keyboard focus in panels, and an `aria-live` mirror of dialogue.
     - A reduced-motion camera.
     - Remappable keys, and gamepad support in input.ts.
-20. **Analytics.** Vercel Web Analytics (cookieless), with events for game vs page view, project opens and tour finished.
-21. **Photo mode.** A free camera, a few poses, and a screenshot download.
+20. **Analytics.** *(done: analytics.ts; Web Analytics must be switched on in Vercel)* Vercel Web Analytics (cookieless), with events for game vs page view, project opens and tour finished.
+21. **Photo mode.** *(done: photo.ts, PhotoHud.tsx; the camera slides and zooms but keeps its angle, for the curved world)* A free camera, a few poses, and a screenshot download.
 
 ## Phase F: Content and stretch
 

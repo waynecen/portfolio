@@ -557,34 +557,72 @@ Joystick and A/B button sizes and positions are in [style.css](../src/style.css)
 
 ---
 
-## Keyboard: [src/game/input.ts](../src/game/input.ts)
+## Keyboard: [src/game/input.ts](../src/game/input.ts), [src/game/keymap.ts](../src/game/keymap.ts)
 
 ```ts
-const codes: Record<string, Dir> = {
-  KeyW: 'forward',
-  ArrowUp: 'forward', // physical key positions (e.code), so it works on any keyboard layout
-  KeyS: 'back',
-  ArrowDown: 'back',
-  KeyA: 'left',
-  ArrowLeft: 'left',
-  KeyD: 'right',
-  ArrowRight: 'right',
-  ShiftLeft: 'sprint',
-  ShiftRight: 'sprint', // hold to sprint
+// keymap.ts: [main key, spares…] per action, as physical key positions (e.code), so it works on any keyboard layout
+const DEFAULTS: Record<Action, string[]> = {
+  forward: ['KeyW', 'ArrowUp'], back: ['KeyS', 'ArrowDown'], left: ['KeyA', 'ArrowLeft'], right: ['KeyD', 'ArrowRight'],
+  sprint: ['ShiftLeft', 'ShiftRight'], // hold to sprint
+  roll: ['Space'], interact: ['KeyE', 'Enter'], attack: ['KeyJ', 'KeyX'], bag: ['KeyB'],
+  guide: ['KeyG'], log: ['KeyL'], settings: ['KeyO'], edit: ['KeyF'], photo: ['KeyP'],
 }
+// Every main key can be changed under Keys in the settings (saved as keys-v1). The spares keep working
+// unless the visitor gives one to something else. Escape and Tab can't be taken. Hints name the main
+// key (keyName), so they follow a change. Edit mode's own keys (edit.ts) don't change.
 // J or X = the sword: down swings, held after a swing charges, up lets a charged spin go (combat.ts)
 // The mouse, over the game (not the HUD): left button = the sword, like J; right button = put the rod away, like B (the browser's menu is kept off the game)
-// In bindKeys: Space = advance dialogue if open, else reel in a line that's out (fishing.ts), else roll; E / Enter = interact (interact.ts), or reel in; Esc = close dialogue and reel in; F = edit the room (indoors); G = point the way to an unseen place (guide.ts); L = open or close the dialogue log (log.ts); B = put away the rod if one is in hand (fishing.ts), else open or close the bag (inventory.ts)
-// While editing, keys go to editKey() in edit.ts instead
+// In bindKeys: Space = advance dialogue if open, else reel in a line that's out (fishing.ts), else roll; E / Enter = interact (interact.ts), or reel in; Esc = close dialogue and reel in; F = edit the room (indoors); G = point the way to an unseen place (guide.ts); L = open or close the dialogue log (log.ts); O = the settings; P = photo mode (photo.ts); B = put away the rod if one is in hand (fishing.ts), else open or close the bag (inventory.ts)
+// While editing, keys go to editKey() in edit.ts instead; in photo mode, photoKey() in photo.ts goes first
 ```
+
+Panels keep Tab inside them, and give focus back to the button that opened them when that was reached from the keyboard (focus.ts). With reduced motion the camera locks onto its target (`STEADY = 30` in CameraRig.tsx) instead of drifting after it, and "Point me somewhere" cuts across rather than gliding.
+
+---
+
+## Controller: [src/game/gamepad.ts](../src/game/gamepad.ts)
+
+```ts
+const DEAD = 0.22    // stick dead zone; past it, the walk is rescaled so a light push walks slowly
+const NAV = 0.6      // in a panel, how far the stick must lean to move between controls
+const TRIGGER = 0.3  // how far a trigger must go to count as held
+```
+
+Polled once a frame (`<Controls>` in Game.tsx). Left stick or d-pad walks; a trigger or a stick click sprints. A uses, B rolls (or reels in), X is the sword (hold to charge), Y is the bag (or puts the rod away), LB points the way, RB is photo mode, View is the log and Menu the settings. In a panel the stick moves between controls (arrow keys for the bag's grid, left and right for a slider), A presses and B closes. In photo mode A takes the photo, B or RB leaves, X changes the pose, LB or LT zooms out and RT in.
+
+---
+
+## Photo mode: [src/game/photo.ts](../src/game/photo.ts), [src/game/PhotoHud.tsx](../src/game/PhotoHud.tsx)
+
+```ts
+const PAN_SPEED = 6          // units/s the camera slides with the walk keys or a stick
+const PAN_MAX = 9            // how far from the player it can slide
+export const ZOOM_MIN = 0.45 // nearest, as a share of the usual distance; ZOOM_MAX = 1.5 farthest
+const ZOOM_STEP = 0.1        // one press of Q or E (or - and =), or one notch of the wheel
+export const POSES = [...]   // Say cheese, Turn left, Turn right, Look out to sea, Jump! (a heading and a lift off the ground)
+```
+
+P (or Photo in the touch menu) hides the HUD but the stick and photo mode's buttons (`body[data-photo]` in style.css) and holds the player still. The camera keeps its angle, as the curved world needs it facing north. 1 to 5 pick a pose. Space, Enter or Take photo renders a fresh frame and saves it as `island-YYYY-MM-DD-HHMM.png` (the black-and-white secret applies to the picture too), with a click and a white flash (not with reduced motion).
+
+---
+
+## What's kept: [src/game/save.ts](../src/game/save.ts)
+
+Every part of a visit is kept in this browser's localStorage, each under its own key, read once and written on change, inside try/catch. `PROGRESS_KEYS` in save.ts lists them all: hearts (`hearts-v1`, store.ts), shells, the bag, bugs, fish, pearls, the cave, the islet's chest, the treasure map, hats, furniture bought and placed, secrets, projects seen, explanations given, today's finds and the last visit. **Start over** in the settings (it asks twice) forgets all of these and reloads. The settings, the music volume and the keys (`PREFERENCE_KEYS`) stay.
+
+---
+
+## Analytics: [src/analytics.ts](../src/analytics.ts)
+
+Vercel Web Analytics, cookieless, loaded only on the deployed site (never on localhost or in development). It needs **Web Analytics switched on for the project in Vercel's dashboard**, which serves `/_vercel/insights/script.js`. Page views come for free. The events are `View` (`game` or `page`), `Project opened` (its title, from the game), `Link opened` (a link on the page, or the card's or mailbox's links in the game) and `Tour finished`. Custom events need a Vercel plan that includes them; without one they're dropped and page views still count.
 
 ---
 
 ## HUD hearts: [src/game/store.ts](../src/game/store.ts), [src/game/Hearts.tsx](../src/game/Hearts.tsx)
 
 ```ts
-maxHearts: 3 // store.ts: number of heart containers shown
-health: 6 // store.ts: starting health in HALF hearts (6 = 3 full hearts; 5 = 2½)
+const MAX_HEARTS = 3 // store.ts: number of heart containers shown
+health: loadHealth() // store.ts: in HALF hearts (6 = 3 full hearts; 5 = 2½); full on a first visit, then whatever was left last time (hearts-v1)
 ```
 
 Hearts.tsx colours:
