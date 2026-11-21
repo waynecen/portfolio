@@ -76,6 +76,7 @@ body.loading .loader { opacity: 1; visibility: visible; pointer-events: auto; tr
 /* Something is biting (fishing.ts): the prompt lights up and shakes. */
 .prompt[data-alert] { background: #f2b233; animation: prompt-shake .12s linear infinite alternate; }
 @keyframes prompt-shake { from { transform: rotate(-2deg); } to { transform: rotate(2deg); } }
+.prompt-assist { margin-left: 10px; padding: 1px 8px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 10px; letter-spacing: .1em; }
 .prompt kbd {
   display: inline-block; min-width: 24px; margin-right: 8px; padding: 2px 6px; text-align: center;
   background: var(--ink); color: #fff; font: 600 13px/1.4 system-ui, sans-serif; letter-spacing: 0;
@@ -298,3 +299,24 @@ body[data-panel]:not([data-panel=""]) .joystick, body[data-panel]:not([data-pane
 .fade { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; transition: opacity .25s ease; }
 .fade-on { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .fade { transition: none; } }
+
+/* Settings (settings.ts): "reduce motion" chosen in the game does what the device setting does. */
+body.reduce-motion .dialogue, body.reduce-motion .dialogue[data-done] .dialogue-next, body.reduce-motion .music-panel,
+body.reduce-motion .bag-panel, body.reduce-motion .prompt[data-alert] { animation: none; }
+/* Larger text: the dialogue, prompts, cards and panels scaled up together. */
+body.big-text .dialogue-region, body.big-text .prompt-region, body.big-text .project-card-region,
+body.big-text .bag-panel, body.big-text .music-panel { zoom: 1.2; }
+/* The settings panel (SettingsPanel.tsx): the bag's panel, with labelled rows. */
+.settings-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 12px; font-size: 14px; }
+.settings-row input[type="range"] { width: 9rem; accent-color: #7a6449; }
+.settings-row input[type="checkbox"] { width: 20px; height: 20px; accent-color: #7a6449; }
+.settings-row select { font: inherit; color: inherit; padding: 4px 8px; border: 0; border-radius: 10px; background: rgb(122 100 73 / .12); }
+.settings-note { margin: -6px 0 12px; font-size: 12px; font-weight: 500; opacity: .75; }
+/* The settings chip: a round gear button to the right of the hearts. */
+.settings-toggle {
+  position: absolute; top: max(12px, env(safe-area-inset-top)); left: calc(max(12px, env(safe-area-inset-left)) + 116px);
+  width: 34px; height: 34px; padding: 0; border: 0; border-radius: 50%; background: #fdf5dc; color: #7a6449; cursor: pointer;
+  box-shadow: 0 2px 0 rgb(122 100 73 / .25); -webkit-tap-highlight-color: transparent; display: grid; place-items: center;
+}
+.settings-toggle svg { width: 20px; height: 20px; }
+.settings-toggle:focus-visible { outline: 2px solid #f2b233; outline-offset: 2px; }

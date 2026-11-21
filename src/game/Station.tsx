@@ -5,6 +5,7 @@ import { addCollider } from './collision'
 import { register } from './interact'
 import { projects, stationPos } from './projects'
 import { projectPlace, useSeen } from './seen'
+import { reducedMotion } from './settings'
 
 const RANGE = 1.5
 const BASE_RADIUS = 0.5 // widest part of the pedestal; also its collision radius
@@ -12,7 +13,6 @@ const GLOW = '#ffd27a' // an unseen project's gem glows this colour (seen.ts)
 const GLOW_MIN = 0.25 // and pulses between these intensities
 const GLOW_MAX = 0.8
 const PULSE = 2.2 // radians per second
-const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
 
 function Station({ index }: { index: number }) {
   const top = useRef<Mesh>(null)
@@ -42,7 +42,7 @@ function Station({ index }: { index: number }) {
     if (top.current) top.current.rotation.y += delta * 0.8
     // Until it's been seen, the gem glows, pulsing gently (steady with reduced motion).
     if (gem.current && unseen) {
-      const k = reduced ? 1 : 0.5 + 0.5 * Math.sin(clock.elapsedTime * PULSE)
+      const k = reducedMotion() ? 1 : 0.5 + 0.5 * Math.sin(clock.elapsedTime * PULSE)
       gem.current.emissiveIntensity = GLOW_MIN + (GLOW_MAX - GLOW_MIN) * k
     }
   })

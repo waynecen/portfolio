@@ -23,6 +23,7 @@ import { register } from './interact'
 import { isLand, WATER_Y } from './Island'
 import { sky } from './sky'
 import { playerFacing, playerRoll } from './state'
+import { reducedMotion } from './settings'
 
 // The fishing dock at the island's bottom-left (rules and catches in fishing.ts): a plank walkway
 // on posts out over the water, a barrel of rods at its foot, and the ripple to fish at. While the
@@ -43,7 +44,6 @@ const BARREL_RANGE = 1.3
 const RINGS = 3 // rings in the ripple, spreading one after another
 const RIPPLE_R = 0.6 // how far a ring spreads, idle
 const RIPPLE_PERIOD = 2.2 // seconds for one ring to spread and fade
-const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
 
 function buildDock() {
   const parts: BufferGeometry[] = []
@@ -184,7 +184,7 @@ export function Dock() {
       for (let k = 0; k < RINGS; k++) {
         const m = rings.current[k]
         if (!m) continue
-        const p = reduced ? 0.5 : (t / period + k / RINGS) % 1
+        const p = reducedMotion() ? 0.5 : (t / period + k / RINGS) % 1
         m.scale.setScalar(radius * (0.2 + 0.8 * p))
         ringMaterials[k].color.copy(sky.foam)
         ringMaterials[k].opacity = (1 - p) * 0.7
@@ -194,7 +194,7 @@ export function Dock() {
     const s = shadow.current
     if (s) {
       s.visible = phase === 'idle'
-      const a = reduced ? 0 : t * 0.7
+      const a = reducedMotion() ? 0 : t * 0.7
       s.position.set(at.x + Math.cos(a) * 0.25, WATER_Y - 0.01, at.z + Math.sin(a) * 0.25)
       s.rotation.y = -a
     }

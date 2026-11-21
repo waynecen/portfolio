@@ -81,7 +81,7 @@ Dust only shows outdoors and not in the rain. The light is always there, at 0 by
 ## Sound effects: [src/game/sfx.ts](../src/game/sfx.ts)
 
 ```ts
-const LEVEL = 0.5 // effects relative to the music volume; the music's mute silences them too
+const LEVEL = 0.5 // effects at full on the settings' Sound effects slider (settings.ts), apart from the music's volume and mute
 const STEP_VOLUME = 0.45 // footsteps relative to the other effects
 const ROLL_VOLUME = 0.5 // the roll's whoosh relative to the other effects
 const WET_VOLUME = 0.7 // the splash layered under each footstep in the rain, relative to the step (Player.tsx: from WET_RAIN = 0.5 rain, outdoors, not in winter)
@@ -213,6 +213,8 @@ The projects themselves aren't constants. They're read from the `#projects artic
 **Welcome back** ([visits.ts](../src/game/visits.ts), [WelcomeBack.tsx](../src/game/WelcomeBack.tsx), [Leaves.tsx](../src/game/Leaves.tsx)): the browser keeps when the first and last visits were and how many there have been (`visits-v1`; a reload within `SAME_VISIT` = 30 minutes is the same visit). A returning visitor is greeted 1.5 s (`DELAY`) after the game shows, in words that depend on the days away (one, a few, over a week, a long time). From `MIN_DAYS = 2` days away, one pile of leaves per day blows in beside the roads within `NEAR = 9` tiles of the house, at most `PILES = 6`; walking within `SWEEP = 0.55` sweeps one up with a rustle, and the last plays the find chime. After a week or more, the greeting also points to Where to? if a project is still unseen. A first visit gets no greeting: the note by the bed does that.
 
 **Calendar moments** ([calendar.ts](../src/game/calendar.ts), [Festive.tsx](../src/game/Festive.tsx)): on arriving, the island says a line on its birthday (`ISLAND_BIRTHDAY`, a placeholder set to 20 November; change it to the day the site went up), New Year's Day, Valentine's Day, Halloween, Christmas Eve and Day, and New Year's Eve, and thanks visitors on their 10th, 25th, 50th and 100th visit (`MILESTONES`). Pumpkins (Halloween), presents (Christmas) or balloons (the birthday) stand by the front door on those days. Between 2 and 5am (`NIGHT`), the About sign asks if you shouldn't be asleep before its words. Add `?date=MM-DD` to the URL to try a day, with `?hour=` for the time.
+
+**Settings** ([settings.ts](../src/game/settings.ts), [SettingsPanel.tsx](../src/game/SettingsPanel.tsx)): O, or the gear to the right of the hearts, opens them; they're kept in this browser (`settings-v1`). Music and Sound effects have separate sliders. Motion is "Match my device" (the default), "Reduce" or "Full": every effect that used to read `prefers-reduced-motion` once at load now calls `reducedMotion()`, which follows this choice live, and `body.reduce-motion` does the same for the CSS animations. Larger text scales the dialogue, prompts, cards and panels by 1.2 (`body.big-text`). The fishing assist doubles the time to reel in a bite (`ASSIST_BITE_TIME = 1.8` s in fishing.ts) and shows **Assist on** on the prompt while the line is out, so it's never hidden help. The page view's choice to start in the game still follows the device setting (main.tsx).
 
 ---
 

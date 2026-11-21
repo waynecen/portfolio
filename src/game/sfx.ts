@@ -1,11 +1,11 @@
-import { useMusic } from './music'
+import { useSettings } from './settings'
 
 // Sound effects, synthesised in the browser like the placeholder music, unless FILES gives recordings. Each
 // sound is a short buffer rendered the first time it's needed; playing one makes a single buffer
-// source (a few a second at most). They follow the music's volume, so its mute silences them too.
+// source (a few a second at most). Their volume is the effects slider in the settings, apart from the music's.
 // Browsers only start audio after a gesture, so unlock() runs on the first key or tap.
 
-const LEVEL = 0.5 // effects relative to the music volume
+const LEVEL = 0.5 // effects at full on the settings slider, relative to full volume
 const STEP_VOLUME = 0.45 // footsteps relative to the other effects: they repeat constantly, so they sit low
 const ROLL_VOLUME = 0.2 // the roll's whoosh relative to the other effects
 const WET_VOLUME = 0.7 // the splash layered under each footstep in the rain, relative to the step
@@ -28,10 +28,10 @@ export function unlock() {
     if (!ctx) {
       ctx = new AudioContext()
       master = ctx.createGain()
-      master.gain.value = useMusic.getState().volume * LEVEL
+      master.gain.value = useSettings.getState().effects * LEVEL
       master.connect(ctx.destination)
-      useMusic.subscribe((s) => {
-        if (master) master.gain.value = s.volume * LEVEL
+      useSettings.subscribe((s) => {
+        if (master) master.gain.value = s.effects * LEVEL
       })
     }
     if (ctx.state === 'suspended') void ctx.resume()

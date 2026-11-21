@@ -7,6 +7,7 @@ import { winter } from './season'
 import { sky } from './sky'
 import { playerPos, teleport } from './state'
 import { useGame } from './store'
+import { reducedMotion } from './settings'
 
 // The afternoon shower: thin streaks falling round the player, drawn as one set of line segments.
 // Each streak falls to the ground and starts again at the top somewhere near the player, so the
@@ -29,7 +30,6 @@ const SPLASH_NEAR_X = 8 // only within this far of the player, where they can be
 const SPLASH_NEAR_Z = 6
 const SPLASH_LIFE = 0.28 // seconds a ring spreads for
 const SPLASH_SIZE = 0.16 // its radius at the end
-const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
 
 const positions = new Float32Array(COUNT * 6) // two points per streak
 const geometry = new BufferGeometry()
@@ -92,7 +92,7 @@ export function Rain() {
       // Scatter the whole shower at every height on its first frame, so it doesn't arrive as one sheet.
       for (let n = 0; n < COUNT; n++) drop(n, Math.random() * TOP)
       started.current = true
-    } else if (!reduced) {
+    } else if (!reducedMotion()) {
       const fall = SPEED * Math.min(delta, 0.1)
       for (let n = 0; n < COUNT; n++) {
         const k = n * 6
@@ -112,7 +112,7 @@ export function Rain() {
 
     // Spread each live ring, then hide it.
     const r = rings.current
-    if (r && !reduced) {
+    if (r && !reducedMotion()) {
       const dt = Math.min(delta, 0.1)
       for (let i = 0; i < SPLASHES; i++) {
         if (splashAge[i] >= SPLASH_LIFE) {

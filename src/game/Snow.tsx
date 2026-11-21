@@ -6,6 +6,7 @@ import { winter } from './season'
 import { sky } from './sky'
 import { playerPos, teleport } from './state'
 import { useGame } from './store'
+import { reducedMotion } from './settings'
 
 // Winter's snowfall: flakes drifting down round the player, swaying as they fall, drawn as one set
 // of points. Like the rain, each flake starts again at the top somewhere near the player when it
@@ -19,7 +20,6 @@ const TOP = 9 // flakes start this high
 const SPEED = 1.3 // fall speed, units/s
 const SWAY = 0.5 // sideways drift, units/s
 const SIZE = 0.09
-const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
 
 const positions = new Float32Array(COUNT * 3)
 const phase = new Float32Array(COUNT) // each flake's own sway
@@ -50,7 +50,7 @@ export function Snow() {
     if (!started.current) {
       for (let n = 0; n < COUNT; n++) drop(n, Math.random() * TOP)
       started.current = true
-    } else if (!reduced) {
+    } else if (!reducedMotion()) {
       const dt = Math.min(delta, 0.1)
       const t = clock.elapsedTime
       for (let n = 0; n < COUNT; n++) {

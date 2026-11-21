@@ -35,6 +35,7 @@ import { Rain } from './Rain'
 import { Snow } from './Snow'
 import { Sparkle } from './Sparkle'
 import { Roads } from './Roads'
+import { SettingsButton, SettingsPanel } from './SettingsPanel'
 import { Sign } from './Sign'
 import { arrive } from './scene'
 import { Stations } from './Station'
@@ -118,6 +119,7 @@ export function Game() {
       <Fade />
       <Hearts />
       <GuideButton />
+      <SettingsButton />
       <ProjectCard />
       <Prompt />
       <Dialogue />
@@ -125,6 +127,7 @@ export function Game() {
       <MusicPanel />
       <InventoryPanel />
       <LogPanel />
+      <SettingsPanel />
       <WelcomeBack />
       <BagButton />
       <RodButton />

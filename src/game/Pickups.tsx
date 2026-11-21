@@ -18,6 +18,7 @@ import { isInland } from './Island'
 import { HOUSE } from './layout'
 import { pois, roadTiles } from './pois'
 import { trees } from './Trees'
+import { reducedMotion } from './settings'
 
 // The items still waiting to be found, floating and turning slowly over the grass so they catch
 // the eye. Walking up gives the "Pick up" prompt; picking one up puts it in the bag (inventory.ts).
@@ -28,7 +29,6 @@ const FLOAT = 0.45 // height above the ground
 const BOB = 0.06
 const SPIN = 1.2 // radians per second
 const GLOW = 0.3 // share of its colour each item gives off, so it still shows at night
-const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
 
 // Tiles an item mustn't sit on: roads, places and their neighbours, the house, and the tiles
 // round a tree, reaching further behind it (north), since the camera looks north and a canopy
@@ -91,7 +91,7 @@ function Pickup({ item }: { item: Item }) {
   const phase = x * 1.7 + z // so they don't all bob in step
   useFrame(({ clock }) => {
     const g = group.current
-    if (!g || reduced) return
+    if (!g || reducedMotion()) return
     const t = clock.elapsedTime + phase
     g.rotation.y = t * SPIN
     g.position.y = FLOAT + Math.sin(t * 2) * BOB

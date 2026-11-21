@@ -5,6 +5,7 @@ import { BOUND, isInland } from './Island'
 import { inHouse } from './pois'
 import { winter } from './season'
 import { sky } from './sky'
+import { reducedMotion } from './settings'
 
 // Night on the island: small warm lights drifting low over the grass, each wandering round its own
 // spot and twinkling on and off. One set of points, faded in and out with the night weather.
@@ -14,7 +15,6 @@ const WANDER = 0.5 // how far each one drifts from its spot
 const HEIGHT = 0.45 // average height above the grass
 const BOB = 0.25 // how far it rises and sinks
 const SIZE = 0.3
-const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
 
 // Each firefly's spot (a random inland grass tile, not under the house) and its own rhythm.
 const spots: { x: number; z: number; phase: number; speed: number }[] = []
@@ -43,7 +43,7 @@ function place(t: number) {
     positions[k * 3] = s.x + Math.sin(a * 0.7) * WANDER
     positions[k * 3 + 1] = HEIGHT + Math.sin(a * 1.3) * BOB
     positions[k * 3 + 2] = s.z + Math.cos(a * 0.5) * WANDER
-    const glow = reduced ? 1 : 0.25 + 0.75 * Math.max(0, Math.sin(a * 1.9))
+    const glow = reducedMotion() ? 1 : 0.25 + 0.75 * Math.max(0, Math.sin(a * 1.9))
     colors[k * 3] = colors[k * 3 + 1] = colors[k * 3 + 2] = glow
   }
   geometry.attributes.position.needsUpdate = true
@@ -60,7 +60,7 @@ export function Fireflies() {
     points.current.visible = night > 0
     if (night <= 0) return
     material.opacity = night
-    if (!reduced) place(clock.elapsedTime)
+    if (!reducedMotion()) place(clock.elapsedTime)
   })
 
   if (winter) return null // no fireflies in the cold

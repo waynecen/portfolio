@@ -4,11 +4,11 @@ import { advance, typer } from './interact'
 import { blip } from './sfx'
 import { isTouch } from './quality'
 import { useGame } from './store'
+import { reducedMotion, useSettings } from './settings'
 
 const CHARS_PER_SECOND = 40
 const PAUSE_SENTENCE = 0.25 // extra seconds after . ! ?
 const PAUSE_COMMA = 0.15 // extra seconds after , ; :
-const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
 const KEY = isTouch ? 'A' : 'E'
 
 // Seconds to wait after typing `ch` before the next letter.
@@ -112,7 +112,7 @@ function LiquidCloud() {
   const path = useRef<SVGPathElement>(null)
   useEffect(() => {
     const el = path.current
-    if (!el || reduced) return
+    if (!el || reducedMotion()) return
     let raf = 0
     const start = performance.now()
     const tick = (now: number) => {
@@ -142,7 +142,7 @@ export function Dialogue() {
     const el = text.current
     const bubble = box.current
     if (!d || !el || !bubble) return
-    let n = reduced ? line.length : 0
+    let n = reducedMotion() ? line.length : 0
     let raf = 0
     let due = performance.now()
     const voice = 1 + (index % 3) * 0.08 // each line pitched a little differently
@@ -168,7 +168,7 @@ export function Dialogue() {
       show()
     }
     // A little squash between lines (the first line gets the CSS pop-in instead).
-    if (index > 0 && !reduced) {
+    if (index > 0 && !reducedMotion()) {
       bubble.animate(
         [{ transform: 'scale(1)' }, { transform: 'scale(1.03, 0.95)' }, { transform: 'scale(1)' }],
         { duration: 180, easing: 'ease-out' },
@@ -207,6 +207,7 @@ export function Prompt() {
   const talking = useGame((s) => s.dialogue !== null || s.panel !== null)
   // While the line is out (fishing.ts) the prompt is to reel in, urgently once something bites.
   const phase = useFishing((s) => s.phase)
+  const assist = useSettings((s) => s.fishAssist)
   const reel = phase === 'bite' ? 'Reel in!' : phase !== 'idle' ? 'Reel in' : null
   const label = reel ?? (focus && !focus.card ? focus.prompt : null)
   const show = label && !talking
@@ -215,6 +216,8 @@ export function Prompt() {
       {show && (
         <p className="prompt" data-alert={phase === 'bite' ? '' : undefined}>
           <kbd>{KEY}</kbd> {label}
+          {/* The fishing assist shows while it's helping, like an assist light (settings.ts). */}
+          {reel && assist && <span className="prompt-assist">Assist on</span>}
         </p>
       )}
     </div>

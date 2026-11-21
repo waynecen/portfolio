@@ -9,6 +9,7 @@ import { register, say, type Interactable } from './interact'
 import { INTERIOR } from './layout'
 import { isTouch } from './quality'
 import { useGame } from './store'
+import { reducedMotion } from './settings'
 
 // The room's furniture, one mesh per piece so each can be moved on its own (see room.ts and
 // edit.ts). Every piece is built from placeholder blocks around its footprint's centre, and
@@ -16,7 +17,6 @@ import { useGame } from './store'
 
 const LIFT = 0.25 // how high a piece floats while it's being moved
 const BOB = 0.04 // and how much it bobs
-const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
 
 const C = {
   wood: new Color('#8a5a3b'),
@@ -180,7 +180,7 @@ export function usePiece(id: PieceId, group: RefObject<Group | null>, solid: Col
     const p = PIECE[id]
     g.position.x = INTERIOR.x + at.i + (p.w - 1) / 2 // centreOf(), without making an object each frame
     g.position.z = INTERIOR.z + at.j + (p.d - 1) / 2
-    g.position.y = held ? LIFT + (reduced ? 0 : Math.sin(clock.elapsedTime * 5) * BOB) : 0
+    g.position.y = held ? LIFT + (reducedMotion() ? 0 : Math.sin(clock.elapsedTime * 5) * BOB) : 0
   })
 }
 

@@ -5,6 +5,7 @@ import type { Collider } from './collision'
 import { usePiece } from './Furniture'
 import { openPanel } from './interact'
 import { level, useMusic } from './music'
+import { reducedMotion } from './settings'
 
 // In the house, on its own tile (see room.ts): it can be moved like the rest of the furniture.
 const BACK = -0.15 // how far towards the back of its tile it stands
@@ -14,7 +15,6 @@ const PULSE = 0.08 // how much the cabinet bounces to the beat
 const W_X = 0.8 // cabinet width
 const W_Z = 0.6 // cabinet depth
 const W_H = 1.3 // cabinet height, to the top the turntable sits on
-const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
 
 const SOLID: Collider[] = [{ kind: 'box', x: 0, z: BACK, hx: W_X / 2 + 0.05, hz: W_Z / 2 + 0.05 }]
 const USE = { dx: 0, dz: BACK, range: RANGE, prompt: 'Play music', onInteract: () => openPanel('music') }
@@ -33,7 +33,7 @@ export function RecordPlayer() {
     // Platter spins up and winds down instead of snapping on and off.
     s.spin = MathUtils.damp(s.spin, useMusic.getState().playing ? SPIN : 0, 2, dt)
     disc.current.rotation.y += s.spin * dt
-    s.pulse = MathUtils.damp(s.pulse, reduced ? 0 : level(), 14, dt)
+    s.pulse = MathUtils.damp(s.pulse, reducedMotion() ? 0 : level(), 14, dt)
     body.current.scale.y = 1 + s.pulse * PULSE
   })
 

@@ -1,8 +1,8 @@
 import { create } from 'zustand'
 import type { Interactable } from './interact'
 
-/** A panel over the game: the record player's, the bag (inventory.ts), or the dialogue log (log.ts). */
-export type Panel = 'music' | 'inventory' | 'log'
+/** A panel over the game: the record player's, the bag (inventory.ts), the dialogue log (log.ts), or the settings (settings.ts). */
+export type Panel = 'music' | 'inventory' | 'log' | 'settings'
 
 /** The area the player is in: inside the house, or out on the island. */
 export type Scene = 'house' | 'world'

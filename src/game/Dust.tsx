@@ -5,6 +5,7 @@ import { winter } from './season'
 import { sky } from './sky'
 import { playerPos, playerRoll, playerVel } from './state'
 import { useGame } from './store'
+import { reducedMotion } from './settings'
 
 // Little puffs of dust kicked up outdoors: a burst when a roll starts, and a trail while sprinting.
 // One instanced mesh of low-poly balls from a fixed pool; each puff swells, drifts and shrinks to
@@ -17,7 +18,6 @@ const SIZE = 0.09 // a puff's radius at its biggest
 const BURST = 6 // puffs when a roll starts
 const TRAIL = 0.12 // seconds between puffs while sprinting
 const SPRINTING = 1.5 // speed (relative to walking) above which the trail starts
-const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
 
 const geometry = new IcosahedronGeometry(1, 0)
 const material = new MeshLambertMaterial({ color: winter ? '#ffffff' : '#efe6d6', flatShading: true })
@@ -66,7 +66,7 @@ export function Dust() {
     // A roll just started: a ring of puffs at the feet, thrown out sideways and back.
     const rolling = playerRoll.p >= 0
     if (rolling && !s.rolling && on) {
-      const n = reduced ? BURST / 2 : BURST
+      const n = reducedMotion() ? BURST / 2 : BURST
       for (let k = 0; k < n; k++) {
         const a = (k / n) * Math.PI * 2 + Math.random() * 0.5
         const out = 0.6 + Math.random() * 0.5
@@ -77,7 +77,7 @@ export function Dust() {
 
     // Sprinting: a puff behind the heels every TRAIL seconds.
     s.trail += dt
-    if (on && !rolling && !reduced && playerVel.speed > SPRINTING && s.trail >= TRAIL) {
+    if (on && !rolling && !reducedMotion() && playerVel.speed > SPRINTING && s.trail >= TRAIL) {
       s.trail = 0
       const len = Math.hypot(playerVel.x, playerVel.z) || 1
       const bx = -playerVel.x / len

@@ -2,6 +2,7 @@ import { useFrame } from '@react-three/fiber'
 import { useRef, type ReactNode } from 'react'
 import { MathUtils, MeshLambertMaterial, SphereGeometry, type Group, type Mesh } from 'three'
 import { playerFacing, playerRoll, playerVel } from './state'
+import { reducedMotion } from './settings'
 
 // Procedural walk: everything is driven by playerVel each frame, no clips or bones.
 // Local +z is "forward"; at yaw 0 the pill faces the camera.
@@ -35,8 +36,7 @@ const FOOT_X = 0.18
 const FOOT_Y = 0.07
 const FOOT_Z = 0.06
 
-const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
-const MOTION = reduced ? 0.3 : 1
+const motionScale = () => (reducedMotion() ? 0.3 : 1)
 
 // Shared between the pair, created once with the game chunk.
 const eyeGeo = new SphereGeometry(0.055, 12, 8)
@@ -91,15 +91,15 @@ export function PillCharacter({ model }: { model?: ReactNode }) {
     tumble.current.position.y = CENTER - env * ROLL_DROP
 
     // Lean into the direction of travel from the feet, more when sprinting, giving the walk weight.
-    lean.current.rotation.x = (model ? MODEL_LEAN : LEAN) * w * MOTION * (1 + SPRINT_LEAN * sprint)
+    lean.current.rotation.x = (model ? MODEL_LEAN : LEAN) * w * motionScale() * (1 + SPRINT_LEAN * sprint)
 
     if (!body.current || !footL.current || !footR.current) return // the model animates itself from here on
 
     // Footfalls happen where cos(phase) = 0, so the body is lowest there and highest mid-swing.
     const hop = Math.abs(Math.cos(s.phase))
-    body.current.position.y = -PILL_HALF + hop * BOB * w * MOTION
+    body.current.position.y = -PILL_HALF + hop * BOB * w * motionScale()
     const idle = (1 - s.w) * (1 - env)
-    const stretch = (hop * 2 - 1) * SQUASH * w * MOTION + Math.sin(s.t * 2) * BREATHE * idle - TUCK * env
+    const stretch = (hop * 2 - 1) * SQUASH * w * motionScale() + Math.sin(s.t * 2) * BREATHE * idle - TUCK * env
     body.current.scale.y = 1 + stretch
     const xz = 1 / Math.sqrt(1 + stretch) // keep volume constant
     body.current.scale.x = xz

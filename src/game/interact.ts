@@ -111,6 +111,18 @@ export function toggleLog() {
   }
 }
 
+/** O, or the gear by the hearts: opens the settings (SettingsPanel.tsx), or closes them if they're open. */
+export function toggleSettings() {
+  const s = useGame.getState()
+  if (s.panel === 'settings') {
+    click()
+    closePanel()
+  } else if (!busy()) {
+    click()
+    openPanel('settings')
+  }
+}
+
 /** Opens a panel such as the record player. */
 export function openPanel(panel: Panel) {
   useGame.setState({ panel })
