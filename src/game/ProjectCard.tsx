@@ -1,3 +1,4 @@
+import { track } from '../analytics'
 import { isTouch } from './quality'
 import { useGame } from './store'
 import { keyName } from './keymap'
@@ -20,7 +21,9 @@ export function ProjectCard() {
             <ul className="project-card-links">
               {card.links.map((l) => (
                 <li key={l.href}>
-                  <a href={l.href} target="_blank" rel="noopener">{l.label}</a>
+                  <a href={l.href} target="_blank" rel="noopener" onClick={() => track('Link opened', { href: l.href, from: 'game' })}>
+                    {l.label}
+                  </a>
                 </li>
               ))}
             </ul>
@@ -28,7 +31,13 @@ export function ProjectCard() {
           {url && (
             <p className="project-card-action">
               {/* With a list of links the action is already among them, so here it's only the key hint. */}
-              {card.links ? action : <a href={url} target="_blank" rel="noopener">{action}</a>}
+              {card.links ? (
+                action
+              ) : (
+                <a href={url} target="_blank" rel="noopener" onClick={() => track('Project opened', { title: card.title, from: 'game' })}>
+                  {action}
+                </a>
+              )}
               <span aria-hidden="true"> · press {isTouch ? 'A' : keyName('interact')}</span>
             </p>
           )}

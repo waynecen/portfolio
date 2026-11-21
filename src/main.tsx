@@ -1,3 +1,5 @@
+import { track } from './analytics'
+
 // Keep the first view tiny: the 3D chunk is fetched only if the device can and should run it.
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
 const webgl = (() => {
@@ -57,6 +59,7 @@ async function setView(next: View) {
     }
   }
   if (view !== next) return // switched again while the chunk was loading
+  track('View', { view: next })
   document.body.classList.toggle('playing', next === 'game')
   if (next === 'game') game.removeAttribute('aria-hidden')
   else game.setAttribute('aria-hidden', 'true')

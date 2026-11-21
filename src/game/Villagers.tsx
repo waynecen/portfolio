@@ -1,3 +1,4 @@
+import { track } from '../analytics'
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { CapsuleGeometry, ConeGeometry, MeshLambertMaterial, SphereGeometry, type Group } from 'three'
@@ -224,6 +225,7 @@ function updateTour(dt: number) {
     if (!dialogue) {
       if (tour.stop === STOPS.length - 1) {
         tour.phase = 'home'
+        track('Tour finished')
         walkTo(bramble, bramble.home)
       } else {
         tour.stop++

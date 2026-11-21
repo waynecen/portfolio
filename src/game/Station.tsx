@@ -1,3 +1,4 @@
+import { track } from '../analytics'
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import type { Mesh, MeshLambertMaterial } from 'three'
@@ -31,7 +32,9 @@ function Station({ index }: { index: number }) {
       card: project,
       seen: projectPlace(project.title),
       onInteract: () => {
-        if (project.url) window.open(project.url, '_blank', 'noopener')
+        if (!project.url) return
+        window.open(project.url, '_blank', 'noopener')
+        track('Project opened', { title: project.title, from: 'game' })
       },
     })
   }, [index, x, z])

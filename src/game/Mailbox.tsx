@@ -1,3 +1,4 @@
+import { track } from '../analytics'
 import { useEffect } from 'react'
 import { addCollider } from './collision'
 import { register } from './interact'
@@ -22,7 +23,9 @@ export function Mailbox() {
         card: contactCard,
         seen: 'contact',
         onInteract: () => {
-          if (contactCard.url) window.open(contactCard.url, '_blank', 'noopener')
+          if (!contactCard.url) return
+          window.open(contactCard.url, '_blank', 'noopener')
+          track('Link opened', { href: contactCard.url, from: 'game' })
         },
       }),
     [x, z],
