@@ -47,6 +47,7 @@ import { reducedMotion, useSettings } from '../core/settings'
 import { pop, thud } from '../core/sfx'
 import { playerPos, playerRoll } from '../core/state'
 import { useGame } from '../core/store'
+import { useSceneFrame } from '../core/sceneFrame'
 
 // The cave behind the waterfall (cave.ts has the rooms and what's been done in them). Each room is
 // built like the house's: a floor of stone tiles, tall walls behind and at the sides, a low one in
@@ -551,7 +552,7 @@ function HeartContainer() {
     if (!ready) return
     return register({ x: c.x, z: c.z, range: 1, prompt: 'Pick up', onInteract: takeHeart })
   }, [ready, c.x, c.z])
-  useFrame(({ clock }) => {
+  useSceneFrame('cave', ({ clock }) => {
     if (!mesh.current || reducedMotion()) return
     mesh.current.rotation.y = clock.elapsedTime * 1.5
     mesh.current.position.y = 0.5 + Math.sin(clock.elapsedTime * 2) * 0.05
@@ -607,7 +608,7 @@ const CONTENTS: Record<Room['id'], () => ReactNode> = {
 export function Cave() {
   const groups = useRef<(Group | null)[]>([])
   const view = useRef({ now: -1, last: -1, until: 0 })
-  useFrame(({ clock }) => {
+  useSceneFrame('cave', ({ clock }) => {
     // Which room is on screen, and the one just left while the camera slides across.
     const at = caveRoom(playerPos.x, playerPos.z)
     const now = ROOMS.findIndex((r) => r.i === at.i && r.j === at.j)

@@ -1,4 +1,3 @@
-import { useFrame } from '@react-three/fiber'
 import { useEffect, useMemo, useRef } from 'react'
 import {
   BoxGeometry,
@@ -15,6 +14,7 @@ import { register } from '../core/interact'
 import { collect, ITEMS, useInventory, type Item, type ItemId } from './inventory'
 import { reducedMotion } from '../core/settings'
 import { clear } from '../world/tiles'
+import { useSceneFrame } from '../core/sceneFrame'
 
 // The items still waiting to be found, floating and turning slowly over the grass so they catch
 // the eye. Walking up gives the "Pick up" prompt; picking one up puts it in the bag (inventory.ts).
@@ -70,7 +70,7 @@ function Pickup({ item }: { item: Item }) {
   useEffect(() => register({ x, z, range: RANGE, prompt: 'Pick up', onInteract: () => collect(item.id) }), [x, z, item])
 
   const phase = x * 1.7 + z // so they don't all bob in step
-  useFrame(({ clock }) => {
+  useSceneFrame('world', ({ clock }) => {
     const g = group.current
     if (!g || reducedMotion()) return
     const t = clock.elapsedTime + phase

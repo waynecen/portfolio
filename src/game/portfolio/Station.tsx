@@ -1,5 +1,4 @@
 import { track } from '../../analytics'
-import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import type { Mesh, MeshLambertMaterial } from 'three'
 import { addCollider } from '../core/collision'
@@ -7,6 +6,7 @@ import { register } from '../core/interact'
 import { projects, stationPos } from './projects'
 import { projectPlace, useSeen } from './seen'
 import { reducedMotion } from '../core/settings'
+import { useSceneFrame } from '../core/sceneFrame'
 
 const RANGE = 1.5
 const BASE_RADIUS = 0.5 // widest part of the pedestal; also its collision radius
@@ -41,7 +41,7 @@ function Station({ index }: { index: number }) {
 
   useEffect(() => addCollider({ kind: 'circle', x, z, r: BASE_RADIUS }), [x, z])
 
-  useFrame(({ clock }, delta) => {
+  useSceneFrame('world', ({ clock }, delta) => {
     if (top.current) top.current.rotation.y += delta * 0.8
     // Until it's been seen, the gem glows, pulsing gently (steady with reduced motion).
     if (gem.current && unseen) {

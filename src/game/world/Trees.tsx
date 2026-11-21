@@ -1,4 +1,3 @@
-import { useFrame } from '@react-three/fiber'
 import { useEffect, useLayoutEffect, useRef } from 'react'
 import { Color, ConeGeometry, CylinderGeometry, MeshLambertMaterial, Object3D, Vector2, type InstancedMesh } from 'three'
 import { addCollider } from '../core/collision'
@@ -8,6 +7,7 @@ import { HOUSE, OUTCROP, SQUARE } from './layout'
 import { pois, roadTiles } from './pois'
 import { autumn, spring, winter } from './season'
 import { playerPos } from '../core/state'
+import { useSceneFrame } from '../core/sceneFrame'
 
 // Placeholder trees: a trunk and a low-poly cone, drawn as instanced meshes (a draw call or two
 // for every tree on the island). Placed once at load from a fixed seed, so the layout is the same
@@ -202,7 +202,7 @@ export function Trees() {
     return () => removers.forEach((remove) => remove())
   }, [])
 
-  useFrame(() => {
+  useSceneFrame('world', () => {
     player.value.set(playerPos.x, playerPos.z)
   })
 

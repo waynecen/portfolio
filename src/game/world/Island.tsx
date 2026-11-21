@@ -1,8 +1,8 @@
-import { useFrame } from '@react-three/fiber'
 import { BoxGeometry, Color, MeshBasicMaterial, MeshLambertMaterial, PlaneGeometry, type BufferGeometry } from 'three'
 import { flat, merge, pick, tint, unindexed } from '../core/geometry'
 import { TILE } from '../core/grid'
 import { autumn, spring, winter } from './season'
+import { useSceneFrame } from '../core/sceneFrame'
 
 // A blocky island centred on spawn, built from whole grid tiles: a grass plateau ringed by stone
 // cliffs that drop into open water. It's two overlapping circles of land: the main island round the
@@ -156,7 +156,7 @@ export const waterMaterial = new MeshLambertMaterial({ color: '#5aa7c7' })
 export const foamMaterial = new MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.5, depthWrite: false })
 
 export function Island() {
-  useFrame(({ clock }) => {
+  useSceneFrame('world', ({ clock }) => {
     foamMaterial.opacity = 0.45 + 0.2 * Math.sin(clock.elapsedTime * FOAM_PULSE)
   })
 

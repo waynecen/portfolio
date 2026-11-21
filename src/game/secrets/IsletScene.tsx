@@ -1,4 +1,3 @@
-import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { BoxGeometry, Color, CylinderGeometry, MeshLambertMaterial, type BufferGeometry, type Group } from 'three'
 import { useCave } from './cave'
@@ -10,6 +9,7 @@ import { WATER_Y } from '../world/Island'
 import { ISLET_BOAT } from '../world/layout'
 import { CHEST_AT, DOCK_BOAT, openChest, readSign, rowBack, rowOut, SIGN_AT, useIslet } from './islet'
 import { reducedMotion } from '../core/settings'
+import { useSceneFrame } from '../core/sceneFrame'
 
 // The two rowing boats (one tied to the dock, one off the islet's shore) and what stands on the
 // islet: a carved sign and an old sea chest (islet.ts has the rules). Its trees are drawn with the
@@ -47,7 +47,7 @@ const oarGeometry = merge([
 function Boat({ x, z, turn, oars, prompt, from, onUse }: { x: number; z: number; turn: number; oars: number; prompt: string; from: { x: number; z: number }; onUse: () => void }) {
   const g = useRef<Group>(null)
   useEffect(() => register({ x: from.x, z: from.z, range: 0.9, prompt, onInteract: onUse }), [from.x, from.z, prompt, onUse])
-  useFrame(({ clock }) => {
+  useSceneFrame('world', ({ clock }) => {
     if (!g.current || reducedMotion()) return
     const t = clock.elapsedTime + x
     g.current.position.y = WATER_Y + 0.08 + Math.sin(t * 1.4) * BOB

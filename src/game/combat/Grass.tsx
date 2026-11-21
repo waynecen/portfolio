@@ -1,4 +1,3 @@
-import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef, useState } from 'react'
 import { Color, ConeGeometry, CylinderGeometry, MeshLambertMaterial, Object3D, type BufferGeometry, type InstancedMesh } from 'three'
 import { addCollider } from '../core/collision'
@@ -11,6 +10,7 @@ import { winter } from '../world/season'
 import { pop } from '../core/sfx'
 import { playerPos } from '../core/state'
 import { clear } from '../world/tiles'
+import { useSceneFrame } from '../core/sceneFrame'
 
 // Things to cut and break with the sword (combat.ts): tufts of tall grass scattered over the
 // meadows, and a few clay pots. Either can leave a shell or a heart behind (drops.ts), and a few
@@ -99,7 +99,7 @@ export function Grass() {
     return () => removers.forEach((r) => r())
   }, [])
 
-  useFrame(() => {
+  useSceneFrame('world', () => {
     const m = mesh.current
     if (!m) return
     // Grow back what was cut a while ago, out of the player's sight-line.

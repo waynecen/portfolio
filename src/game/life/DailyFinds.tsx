@@ -1,4 +1,3 @@
-import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef, useState } from 'react'
 import { Color, type Group } from 'three'
 import { bottleAt, bottleWaiting, dig, digAt, digWaiting, readBottle } from './daily'
@@ -6,6 +5,7 @@ import { burst } from '../player/Dust'
 import { register } from '../core/interact'
 import { reducedMotion } from '../core/settings'
 import { useTreasureMap } from './shop'
+import { useSceneFrame } from '../core/sceneFrame'
 
 // Today's message bottle on the shore and dig spot in the grass (daily.ts). Each goes once used.
 
@@ -29,7 +29,7 @@ function Bottle() {
     })
   }, [here, x, z])
   // Rocking gently, as if the tide just left it.
-  useFrame(({ clock }) => {
+  useSceneFrame('world', ({ clock }) => {
     if (group.current && !reducedMotion()) group.current.rotation.z = Math.sin(clock.elapsedTime * 1.4) * 0.08
   })
   if (!here) return null

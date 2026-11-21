@@ -1,4 +1,3 @@
-import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
 import { AdditiveBlending, BufferAttribute, BufferGeometry, PointsMaterial, type Points } from 'three'
 import { BOUND, isInland } from '../world/Island'
@@ -6,6 +5,7 @@ import { inHouse } from '../world/pois'
 import { winter } from '../world/season'
 import { sky } from '../world/sky'
 import { reducedMotion } from '../core/settings'
+import { useSceneFrame } from '../core/sceneFrame'
 
 // Night on the island: small warm lights drifting low over the grass, each wandering round its own
 // spot and twinkling on and off. One set of points, faded in and out with the night weather.
@@ -56,7 +56,7 @@ place(0)
 export function Fireflies() {
   const points = useRef<Points>(null)
 
-  useFrame(({ clock }) => {
+  useSceneFrame('world', ({ clock }) => {
     const night = sky.weather.night
     if (!points.current) return
     points.current.visible = night > 0

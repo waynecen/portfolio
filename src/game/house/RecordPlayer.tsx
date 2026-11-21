@@ -1,4 +1,3 @@
-import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
 import { MathUtils, type Group, type Mesh } from 'three'
 import type { Collider } from '../core/collision'
@@ -6,6 +5,7 @@ import { usePiece } from './Furniture'
 import { openPanel } from '../core/interact'
 import { level, useMusic } from '../core/music'
 import { reducedMotion } from '../core/settings'
+import { useSceneFrame } from '../core/sceneFrame'
 
 // In the house, on its own tile (see room.ts): it can be moved like the rest of the furniture.
 const BACK = -0.15 // how far towards the back of its tile it stands
@@ -27,7 +27,7 @@ export function RecordPlayer() {
 
   usePiece('recordPlayer', spot, SOLID, USE)
 
-  useFrame((_, delta) => {
+  useSceneFrame('house', (_, delta) => {
     if (!disc.current || !body.current) return
     const dt = Math.min(delta, 0.1)
     // Platter spins up and winds down instead of snapping on and off.

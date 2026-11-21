@@ -1,4 +1,3 @@
-import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { CanvasTexture, Color, MeshBasicMaterial, MeshLambertMaterial, PlaneGeometry, RepeatWrapping, SphereGeometry, type BufferGeometry, type Mesh } from 'three'
 import { addCollider } from '../core/collision'
@@ -6,6 +5,7 @@ import { block, merge, pick, tint } from '../core/geometry'
 import { CAVE_MOUTH, OUTCROP } from '../world/layout'
 import { reducedMotion } from '../core/settings'
 import { winter } from '../world/season'
+import { useSceneFrame } from '../core/sceneFrame'
 
 // A rocky outcrop on the island's north shore with a waterfall pouring down its front, over the
 // mouth of a cave (CaveRooms.tsx; walking in is in Doors.tsx). Built from blocks like the cliffs, the
@@ -87,7 +87,7 @@ export function Waterfall() {
     ]
     return () => removers.forEach((r) => r())
   }, [])
-  useFrame(({ clock }, delta) => {
+  useSceneFrame('world', ({ clock }, delta) => {
     if (reducedMotion()) return
     water.map!.offset.y += FLOW * Math.min(delta, 0.1)
     const t = clock.elapsedTime

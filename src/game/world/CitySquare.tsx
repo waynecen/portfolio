@@ -1,4 +1,3 @@
-import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { Color, CylinderGeometry, MeshLambertMaterial, SphereGeometry, type BufferGeometry, type Mesh } from 'three'
 import { addCollider } from '../core/collision'
@@ -11,6 +10,7 @@ import { FOUNTAIN, SQUARE } from './layout'
 import { reducedMotion } from '../core/settings'
 import { chime, plop } from '../core/sfx'
 import { sky } from './sky'
+import { useSceneFrame } from '../core/sceneFrame'
 
 // The city square east of the house, beside the shop (SQUARE in layout.ts): paving stones, a
 // fountain in the middle, benches round it and a lamp post at each corner. The notice board stands
@@ -164,7 +164,7 @@ export function CitySquare() {
   }, [])
   useEffect(() => register({ x: FOUNTAIN.x, z: FOUNTAIN.z + BASIN_R, range: 0.9, prompt: 'Make a wish', onInteract: wish }), [])
 
-  useFrame(({ clock }) => {
+  useSceneFrame('world', ({ clock }) => {
     lantern.emissiveIntensity = LAMP_GLOW * sky.weather.night
     const t = clock.elapsedTime
     for (let k = 0; k < DROPS; k++) {

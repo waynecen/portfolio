@@ -1,4 +1,3 @@
-import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef, type RefObject } from 'react'
 import { Color, CylinderGeometry, MeshLambertMaterial, type BufferGeometry, type Group } from 'three'
 import { addCollider, type Collider } from '../core/collision'
@@ -11,6 +10,7 @@ import { INTERIOR } from '../world/layout'
 import { isTouch } from '../core/quality'
 import { useGame } from '../core/store'
 import { reducedMotion } from '../core/settings'
+import { useSceneFrame } from '../core/sceneFrame'
 
 // The room's furniture, one mesh per piece so each can be moved on its own (see room.ts and
 // edit.ts). Every piece is built from placeholder blocks around its footprint's centre, and
@@ -204,7 +204,7 @@ export function usePiece(id: PieceId, group: RefObject<Group | null>, solid: Col
     return () => removers.forEach((remove) => remove())
   }, [id, solid, use])
 
-  useFrame(({ clock }) => {
+  useSceneFrame('house', ({ clock }) => {
     const g = group.current
     if (!g) return
     const h = useEdit.getState().held
