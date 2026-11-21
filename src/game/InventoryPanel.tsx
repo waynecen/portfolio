@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
-import { FISH, useFishing } from './fishing'
+import { FISH, putAwayRod, SPOTS, useFishing } from './fishing'
 import { closePanel } from './interact'
 import { ITEM, ITEMS, toggleBag, useInventory, type ItemId } from './inventory'
 import { isTouch } from './quality'
@@ -188,6 +188,25 @@ export function BagButton() {
   return (
     <button type="button" className="bag-toggle" onClick={toggleBag} aria-label={`Bag, ${count} of ${ITEMS.length} found`}>
       {!isTouch && <kbd>B</kbd>} Bag <span className="bag-toggle-count">{count}</span>
+    </button>
+  )
+}
+
+/**
+ * The Put away chip, under the Bag chip (or the Edit room chip indoors), while a rod is in hand: the
+ * phone's way to do what B does on a keyboard. Hidden by the ripple, where the rod is for fishing,
+ * while the line is out, and while something else has the player's attention.
+ */
+export function RodButton() {
+  const away = useGame((s) => s.dialogue !== null || s.panel !== null || s.fading || s.editing)
+  const rod = useFishing((s) => s.rod)
+  const fishing = useFishing((s) => s.phase !== 'idle')
+  const spot = useFishing((s) => SPOTS[s.spot])
+  const atSpot = useGame((s) => s.focus !== null && s.focus.x === spot.x && s.focus.z === spot.z)
+  if (!rod || away || fishing || atSpot) return null
+  return (
+    <button type="button" className="rod-toggle" onClick={putAwayRod}>
+      {!isTouch && <kbd>B</kbd>} Put away rod
     </button>
   )
 }

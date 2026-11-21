@@ -15,7 +15,7 @@ import { Furniture } from './Furniture'
 import { Hearts } from './Hearts'
 import { HouseExterior, HouseInterior } from './House'
 import { Interactions } from './Interactions'
-import { BagButton, InventoryPanel } from './InventoryPanel'
+import { BagButton, InventoryPanel, RodButton } from './InventoryPanel'
 import { Island } from './Island'
 import { Joystick } from './Joystick'
 import { BED_SPAWN } from './layout'
@@ -111,6 +111,7 @@ export function Game() {
       <MusicPanel />
       <InventoryPanel />
       <BagButton />
+      <RodButton />
       <EditHud />
       <Joystick />
     </>

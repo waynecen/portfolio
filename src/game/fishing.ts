@@ -123,7 +123,7 @@ export function toggleRod() {
 }
 
 /**
- * B on the keyboard: puts the rod away (back in the barrel, so another can be taken), reeling in
+ * B on the keyboard, or the Put away rod chip: puts the rod away (back in the barrel, so another can be taken), reeling in
  * first if the line is out. False if there's no rod in hand, so B opens the bag instead.
  */
 export function putAwayRod(): boolean {

@@ -210,6 +210,20 @@ body.editing .joystick, body.editing .action-button { display: none; }
   background: rgb(122 100 73 / .14); font-size: 12px;
 }
 .bag-toggle:focus-visible { outline: 2px solid #f2b233; outline-offset: 2px; }
+/* Put away rod (fishing.ts): the Bag chip's look, under it, or under the Edit room chip indoors. */
+.rod-toggle {
+  position: absolute; padding: 6px 14px;
+  top: calc(max(12px, env(safe-area-inset-top)) + 84px); right: max(12px, env(safe-area-inset-right));
+  border: 0; border-radius: 999px; background: #fdf5dc; color: #7a6449; cursor: pointer;
+  font: 600 13px/1.3 ui-rounded, "SF Pro Rounded", "Nunito", system-ui, sans-serif;
+  box-shadow: 0 2px 0 rgb(122 100 73 / .25); -webkit-tap-highlight-color: transparent;
+}
+body[data-scene="house"] .rod-toggle { top: calc(max(12px, env(safe-area-inset-top)) + 124px); }
+.rod-toggle kbd {
+  display: inline-block; min-width: 20px; margin-right: 6px; padding: 0 5px; border-radius: 6px; text-align: center;
+  background: #7a6449; color: #fdf5dc; font: inherit;
+}
+.rod-toggle:focus-visible { outline: 2px solid #f2b233; outline-offset: 2px; }
 .bag-panel {
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
   width: min(20rem, calc(100% - 32px)); max-height: calc(100% - 32px); overflow: auto; padding: 18px 20px 18px;
