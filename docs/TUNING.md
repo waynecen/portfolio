@@ -455,6 +455,30 @@ The dock is a walkway: the water either side of it doesn't stop the player (`doc
 
 ---
 
+## Sword, grass, pots, slimes and hearts: [src/game/combat.ts](../src/game/combat.ts), [src/game/Sword.tsx](../src/game/Sword.tsx), [src/game/Grass.tsx](../src/game/Grass.tsx), [src/game/Slimes.tsx](../src/game/Slimes.tsx), [src/game/health.ts](../src/game/health.ts), [src/game/drops.ts](../src/game/drops.ts)
+
+```ts
+const SWING_TIME = 0.24 // combat.ts: seconds for a swing; SPIN_TIME = 0.45 for a spin
+const REACH = 0.95      // how far in front a swing reaches (to a target's edge), within 80° of facing; SPIN_REACH = 1.25 all round
+const CHARGE = 0.65     // seconds of holding after a swing before a spin is ready (the blade glows)
+const SWING_SPEED = 0.35 // Player.tsx: top speed while swinging, as a share
+const TUFTS = 90        // Grass.tsx: tufts of tall grass, seeded (SEED = 11); REGROW = 60 s after cutting, once the player is REGROW_AWAY = 5 off
+const GRASS_DROP = { heart: 0.06, shell: 0.16 } // chances a cut tuft leaves a heart or a shell; POT_DROP = { heart: 0.25, shell: 0.5 }
+const COUNT = 5         // Slimes.tsx: slimes, each with a home in open meadow HOME_AWAY = 8 from the house and two tiles clear of any road
+const SEE = 3.2         // how close the player must be before a slime hops their way (it never strays more than LEASH = 3 from home to chase)
+const HP = 2            // sword hits to pop one (a spin does 2); RESPAWN = 40 s later, out of sight; DROP = { heart: 0.25, shell: 0.5 }
+const INVULN = 1.2      // health.ts: seconds of flicker after a bump, when nothing can hurt the player; STAGGER = 0.22, KNOCK = 6
+const DROP_LIFE = 20    // drops.ts: seconds a drop waits (blinking for the last 4); MAX = 16 at once; GRAB = 0.55 to pick one up
+```
+
+J or X swings the sword in an arc in front of the player, slowing them while it does; holding the key after the swing charges it, and letting go once the blade glows spins it all the way round, twice as strong. On touch screens a quick tap of B (under `TAP = 0.22` s, Joystick.tsx) swings; holding B still sprints. With the fishing rod in hand the sword stays put. Anything that can be struck registers with `addHittable` (the same pattern as `register` for interactables).
+
+Tall grass and a few clay pots (beside the house and by the dock) can be cut and broken, leaving a shell or, if the player is missing some, a heart. Shells are kept in this browser (`shells-v1`), counted in the bag's header and shown at the top for a moment when picked up; they're for the shop, later (ROADMAP C14). Pots can't be picked up and thrown yet.
+
+Five slimes hop about the outer meadows. A bump costs half a heart, knocks the player back and leaves them flickering and untouchable for a moment; rolling through one is safe. Slimes never hop onto a road, near a place or under the house, so every project stays one safe walk away, and the Slimes switch in the settings takes them away entirely. At zero hearts the screen fades and the player wakes in bed with every heart back, nothing lost.
+
+---
+
 ## Touch controls: [src/game/Joystick.tsx](../src/game/Joystick.tsx)
 
 On touch screens the **Start button** (`StartButton` in [MenuPanel.tsx](../src/game/MenuPanel.tsx), `.start-button` in style.css) sits at the bottom, 12px right of the joystick and low enough to clear the B button. It opens the **menu**: Bag, Where to?, Log, Settings, Edit room (indoors) and Put away rod (with a rod in hand). While any panel is open it shows × and closes it. The top chips that do these things on a computer (Bag, the settings gear, Where to?, Edit room, Put away rod) are hidden on touch screens, so a phone's top edge only has the hearts, the now-playing label and View as page. Messages written for touch point to the menu.
@@ -483,6 +507,7 @@ const codes: Record<string, Dir> = {
   ShiftLeft: 'sprint',
   ShiftRight: 'sprint', // hold to sprint
 }
+// J or X = the sword: down swings, held after a swing charges, up lets a charged spin go (combat.ts)
 // In bindKeys: Space = advance dialogue if open, else reel in a line that's out (fishing.ts), else roll; E / Enter = interact (interact.ts), or reel in; Esc = close dialogue and reel in; F = edit the room (indoors); G = point the way to an unseen place (guide.ts); L = open or close the dialogue log (log.ts); B = put away the rod if one is in hand (fishing.ts), else open or close the bag (inventory.ts)
 // While editing, keys go to editKey() in edit.ts instead
 ```

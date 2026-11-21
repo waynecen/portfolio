@@ -37,19 +37,19 @@ This replaces the earlier feature roadmap. Its unfinished items are folded in be
 
 Gentle by design: nothing is hard, and nothing blocks a project.
 
-6. **Sword.**
+6. **Sword.** *(done: combat.ts, Sword.tsx)*
    - An Attack input: J or X, and a tap of the touch **B** button (sprint moves to holding B).
    - Hold to charge a spin attack.
    - Hits are tested in an arc against a `hittables` list, the same pattern as `interactables` in interact.ts.
-7. **Cuttable grass and pots.**
+7. **Cuttable grass and pots.** *(done: Grass.tsx, drops.ts; pots break but can't be thrown yet)*
    - Instanced grass tufts and pots are placed off the roads the way the trees are.
    - Cutting them can drop a heart or **shells** (the island's currency).
    - Pots can be picked up and thrown.
-8. **Slimes.**
+8. **Slimes.** *(done: Slimes.tsx, with a Slimes switch in the settings)*
    - A few wander the outer meadows and hop toward you when you're close.
    - A bump costs half a heart; the sword knocks them back and pops them.
    - They never wander onto the roads to projects.
-9. **Hearts that matter.**
+9. **Hearts that matter.** *(done: health.ts; the cliff can't be walked off, so its fall isn't needed, and heart pieces wait for something to find them in)*
    - Damage gives a moment of flashing invulnerability.
    - Walking off the cliff costs half a heart and puts you back on the last road tile.
    - At zero hearts, a soft fade and you wake up in bed at home, nothing lost.
