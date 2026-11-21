@@ -68,16 +68,23 @@ function wav(samples: Float32Array): Blob {
 }
 
 // Each loop is rendered the first time it's played (its src is read), not when the list is shown.
+function track(s: { title: string; chords: number[][] }): Track {
+  let url = ''
+  return {
+    title: s.title,
+    artist: 'Placeholder loop',
+    get src() {
+      return (url ||= URL.createObjectURL(wav(render(s.chords))))
+    },
+    credit: 'Generated in your browser. Replace via src/game/tracks.ts',
+  }
+}
+
 export function placeholderTracks(): Track[] {
-  return SONGS.map((s) => {
-    let url = ''
-    return {
-      title: s.title,
-      artist: 'Placeholder loop',
-      get src() {
-        return (url ||= URL.createObjectURL(wav(render(s.chords))))
-      },
-      credit: 'Generated in your browser. Replace via src/game/tracks.ts',
-    }
-  })
+  return SONGS.map(track)
+}
+
+/** The record every pearl unlocks (pearls.ts), until PEARL_TRACK in tracks.ts names a real one. */
+export function placeholderBonus(): Track {
+  return track({ title: 'Pearl Song', chords: [[64, 67, 71, 74], [60, 64, 67, 71], [62, 65, 69, 72], [59, 62, 67, 71]] })
 }

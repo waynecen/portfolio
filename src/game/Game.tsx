@@ -32,6 +32,7 @@ import { MenuPanel, StartButton } from './MenuPanel'
 import { MusicPanel, NowPlaying } from './MusicPanel'
 import { ABOUT_AT, aboutLines } from './places'
 import { NoticeBoard } from './NoticeBoard'
+import { Pearls } from './HiddenPearls'
 import { Pickups } from './Pickups'
 import { Player } from './Player'
 import { ProjectCard } from './ProjectCard'
@@ -107,6 +108,7 @@ export function Game() {
           <NoticeBoard />
           <Dock />
           <Pickups />
+          <Pearls />
           <Leaves />
           <Festive />
           <Trinkets />

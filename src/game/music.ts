@@ -30,9 +30,16 @@ function loadVolume() {
 export const useMusic = create<MusicState>(() => ({ index: -1, playing: false, volume: loadVolume() }))
 
 let list: Track[] | null = null
-/** The library: TRACKS, or generated placeholders while that's empty. */
+const extra: Track[] = [] // records unlocked in the game (pearls.ts), after the library
+/** The library: TRACKS, or generated placeholders while that's empty, then any records unlocked. */
 export function getTracks(): Track[] {
-  return (list ??= TRACKS.length ? TRACKS : placeholderTracks())
+  list ??= TRACKS.length ? TRACKS : placeholderTracks()
+  return extra.length ? [...list, ...extra] : list
+}
+
+/** Adds a record to the end of the library (once). */
+export function addTrack(t: Track) {
+  if (!extra.some((e) => e.title === t.title)) extra.push(t)
 }
 
 let audio: HTMLAudioElement | null = null

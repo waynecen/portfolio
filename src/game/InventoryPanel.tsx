@@ -4,6 +4,7 @@ import { useShells } from './drops'
 import { FISH, putAwayRod, SPOTS, useFishing } from './fishing'
 import { closePanel, toggleLog } from './interact'
 import { ITEM, ITEMS, toggleBag, useInventory, type ItemId } from './inventory'
+import { PEARLS, usePearls } from './pearls'
 import { isTouch } from './quality'
 import { PLACES, useSeen } from './seen'
 import { useGame } from './store'
@@ -90,6 +91,7 @@ export function InventoryPanel() {
   const bugs = useBugs((s) => s.caught)
   const seen = useSeen((s) => s.seen)
   const shells = useShells((s) => s.shells)
+  const pearls = usePearls((s) => s.found.length)
   const [chosen, setChosen] = useState<number>(0)
   const slots = useRef<(HTMLButtonElement | null)[]>([])
   const total = ITEMS.length + FISH.length + BUGS.length // items first, then fish, then bugs
@@ -200,6 +202,18 @@ export function InventoryPanel() {
           )
         })}
       </ul>
+      {/* Pearls (pearls.ts): one dot each, filled once found. */}
+      <div className="bag-head bag-subhead">
+        <h3>Pearls</h3>
+        <span className="bag-count">
+          {pearls} of {PEARLS.length} found
+        </span>
+      </div>
+      <p className="bag-pearls" aria-hidden="true">
+        {PEARLS.map((p, k) => (
+          <span key={p.id} data-found={k < pearls ? '' : undefined} />
+        ))}
+      </p>
       <ul className="bag-slots">
         {ITEMS.map((t, k) => {
           const got = found.includes(t.id)

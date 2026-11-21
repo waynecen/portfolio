@@ -15,3 +15,6 @@ export type Track = {
 export const TRACKS: Track[] = [
   // { title: 'Morning Meadow', artist: 'Your Name', src: '/audio/morning-meadow.m4a', credit: 'CC0' },
 ]
+
+/** The record that finding every pearl adds (pearls.ts). While null, a generated loop stands in. */
+export const PEARL_TRACK: Track | null = null

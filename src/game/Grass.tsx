@@ -7,6 +7,7 @@ import { maybeDrop } from './drops'
 import { burst } from './Dust'
 import { merge } from './geometry'
 import { isInland } from './Island'
+import { PEARLS, revealPearl, usePearls } from './pearls'
 import { inHouse, pois, roadTiles } from './pois'
 import { winter } from './season'
 import { pop } from './sfx'
@@ -15,7 +16,8 @@ import { tileAt } from './grid'
 import { trees } from './Trees'
 
 // Things to cut and break with the sword (combat.ts): tufts of tall grass scattered over the
-// meadows, and a few clay pots. Either can leave a shell or a heart behind (drops.ts). Cut grass
+// meadows, and a few clay pots. Either can leave a shell or a heart behind (drops.ts), and a few
+// tufts hide a pearl (pearls.ts). Cut grass
 // grows back a minute later, once the player has walked away; pots stay broken until the next visit.
 // In winter the grass is under the snow.
 
@@ -47,21 +49,28 @@ for (const p of pois) {
 for (const t of trees) blocked.add(key(Math.round(t.x), Math.round(t.z)))
 const free = (i: number, j: number) => !blocked.has(key(i, j)) && !inHouse(i, j) && isInland(i, j, 1)
 
-function placeTufts() {
+type Tuft = { x: number; z: number; turn: number; scale: number; pearl?: string }
+function placeTufts(): Tuft[] {
   if (winter) return []
   const random = rng(SEED)
+  // First a tuft over each grass pearl, right on top of it, then the rest scattered.
+  const hiding = PEARLS.filter((p) => p.hide === 'grass')
   const tiles: { i: number; j: number }[] = []
-  for (let i = -30; i <= 30; i++) for (let j = -30; j <= 30; j++) if (free(i, j)) tiles.push({ i, j })
+  for (let i = -30; i <= 30; i++)
+    for (let j = -30; j <= 30; j++) if (free(i, j) && !hiding.some((p) => p.x === i && p.z === j)) tiles.push({ i, j })
   for (let k = tiles.length - 1; k > 0; k--) {
     const r = Math.floor(random() * (k + 1))
     ;[tiles[k], tiles[r]] = [tiles[r], tiles[k]]
   }
-  return tiles.slice(0, TUFTS).map((t) => ({
-    x: t.i + (random() - 0.5) * 0.5,
-    z: t.j + (random() - 0.5) * 0.5,
-    turn: random() * Math.PI * 2,
-    scale: 0.8 + random() * 0.4,
-  }))
+  const over: Tuft[] = hiding.map((p) => ({ x: p.x, z: p.z, turn: random() * Math.PI * 2, scale: 1.25, pearl: p.id }))
+  return over.concat(
+    tiles.slice(0, TUFTS - over.length).map((t) => ({
+      x: t.i + (random() - 0.5) * 0.5,
+      z: t.j + (random() - 0.5) * 0.5,
+      turn: random() * Math.PI * 2,
+      scale: 0.8 + random() * 0.4,
+    })),
+  )
 }
 const tufts = placeTufts()
 const cutAt = new Float32Array(tufts.length).fill(-1) // clock time when cut; -1 = standing
@@ -92,7 +101,8 @@ export function Grass() {
           cutAt[n] = performance.now() / 1000
           dirty.current = true
           burst(t.x, t.z, 4, CLIPPINGS)
-          maybeDrop(t.x, t.z, GRASS_DROP.heart, GRASS_DROP.shell)
+          if (t.pearl && !usePearls.getState().found.includes(t.pearl)) revealPearl(t.pearl)
+          else maybeDrop(t.x, t.z, GRASS_DROP.heart, GRASS_DROP.shell)
         },
       }),
     )
