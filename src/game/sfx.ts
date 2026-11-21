@@ -128,6 +128,11 @@ const SOUNDS = {
       const decay = k === 3 ? 4 : 14
       return Math.sin(2 * Math.PI * NOTES[k] * t) * 0.26 * Math.exp(-since * decay) * Math.min(1, since * 400)
     }),
+  hit: () => {
+    // The sword connecting: a dull thwack with a bright edge.
+    const lp = lowpass(0.45)
+    return render(0.12, (t, n) => (lp(n) * 1.4 + Math.sin(2 * Math.PI * 180 * t) * 0.5) * Math.exp(-t * 38))
+  },
   click: () => render(0.03, (t) => Math.sin(2 * Math.PI * 1200 * t) * 0.35 * Math.exp(-t * 120)),
 }
 type Sound = keyof typeof SOUNDS
@@ -185,6 +190,8 @@ export const door = () => play('door')
 /** A dialogue letter; `pitch` around 1 gives each line its own voice. */
 export const blip = (pitch: number) => play('blip', 1, pitch * (0.96 + Math.random() * 0.08))
 export const click = () => play('click')
+/** The sword connecting with something (combat.ts). */
+export const hit = () => play('hit', 0.9, 0.9 + Math.random() * 0.2)
 /** An item picked up. */
 export const chime = () => play('chime')
 /** The reel turning while the needle's in the green (fishing.ts): a soft, quick tick. */

@@ -36,7 +36,7 @@ const C = {
 const NOTE = isTouch
   ? [
       'Welcome home! This little world is my portfolio.',
-      'Drag the joystick on the left to walk. Hold B to sprint.',
+      'Drag the joystick on the left to walk. Hold B to sprint, or tap it to swing your sword.',
       'Tap A to read, talk or use whatever is nearby. With nothing nearby, A makes you roll.',
       'The record player by the back wall plays music. Tap A beside it to choose a song.',
       'To move the furniture around, open the menu at the bottom and tap Edit room.',
@@ -47,6 +47,7 @@ const NOTE = isTouch
   : [
       'Welcome home! This little world is my portfolio.',
       'Walk with WASD or the arrow keys. Hold Shift to sprint, and press Space to roll.',
+      'J or X swings your sword. Hold it after a swing, then let go, to spin.',
       'Press E or Enter to read, talk or use whatever is nearby.',
       'The record player by the back wall plays music. Press E beside it to choose a song.',
       'Press F to move the furniture around.',

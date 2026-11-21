@@ -1,3 +1,4 @@
+import { pressAttack, releaseAttack } from './combat'
 import { editKey, toggleEdit } from './edit'
 import { putAwayRod, reel, stopFishing } from './fishing'
 import { pointMe } from './guide'
@@ -37,6 +38,7 @@ function reset() {
   keys.forward = keys.back = keys.left = keys.right = keys.sprint = false
   actions.roll = false
   buttons.sprint = false
+  releaseAttack()
 }
 
 // Keys that act on the world. Ignored on focused links and buttons so those keep working.
@@ -50,6 +52,13 @@ export function bindKeys(): () => void {
       const dir = codes[e.code]
       if (dir && !down) keys[dir] = false
       if (down && !isTyping(e.target) && document.body.classList.contains('playing')) editKey(e)
+      return
+    }
+    // J or X: the sword. Down swings (and starts a charge), up lets a charged spin go (combat.ts).
+    if (e.code === 'KeyJ' || e.code === 'KeyX') {
+      if (isTyping(e.target) || !document.body.classList.contains('playing')) return
+      if (down && !e.repeat) pressAttack()
+      else if (!down) releaseAttack()
       return
     }
     if (ACTION_KEYS.has(e.code)) {

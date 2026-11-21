@@ -2,7 +2,9 @@ import { useFrame } from '@react-three/fiber'
 import { lazy, Suspense, useEffect, useRef } from 'react'
 import { MathUtils, type Group } from 'three'
 import { pushOutOfBox, resolve } from './collision'
+import { swinging } from './combat'
 import { HeldRod } from './Dock'
+import { Sword } from './Sword'
 import { dockOpens, onDock } from './fishing'
 import { TILE } from './grid'
 import { isLand } from './Island'
@@ -31,6 +33,7 @@ const ROLL_SPEED = 9 // burst speed at the start of a roll, eases down toward wa
 const ROLL_COOLDOWN = 0.2 // seconds after a roll before the next can start
 const STEP_LEN = [0.45, 0.7] // units travelled per footstep sound: walking, and at full sprint
 const TINY = 0.55 // the character's size with the "tiny you" secret on (secrets.ts)
+const SWING_SPEED = 0.35 // top speed while swinging the sword, as a share (combat.ts)
 
 const roads = new Set(roadTiles.map((t) => t.i + ',' + t.j))
 function surfaceAt(x: number, z: number): Surface {
@@ -114,7 +117,8 @@ export function Player() {
       // Ease velocity toward the input instead of snapping, so starts and stops feel weighty.
       // Sprint eases in and out through the same damp, so pressing Shift ramps up rather than jumps.
       const rate = len2 > 0 ? ACCEL : DECEL
-      const top = keys.sprint || buttons.sprint ? SPEED * SPRINT : SPEED
+      // Swinging the sword slows the player to SWING_SPEED, so a swing plants the feet.
+      const top = (keys.sprint || buttons.sprint ? SPEED * SPRINT : SPEED) * (swinging() ? SWING_SPEED : 1)
       v.x = MathUtils.damp(v.x, x * top, rate, dt)
       v.z = MathUtils.damp(v.z, z * top, rate, dt)
       if (len2 === 0 && v.x * v.x + v.z * v.z < 1e-4) v.x = v.z = 0
@@ -161,6 +165,7 @@ export function Player() {
     <group ref={ref}>
       <PlayerGround />
       <HeldRod />
+      <Sword />
       {PLAYER_MODEL ? (
         // The pill stands in while the model downloads.
         <Suspense fallback={<PillCharacter />}>

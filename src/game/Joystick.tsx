@@ -1,4 +1,5 @@
 import { useRef, type PointerEvent } from 'react'
+import { pressAttack, releaseAttack } from './combat'
 import { actions, buttons, stick } from './input'
 import { interact } from './interact'
 import { isTouch } from './quality'
@@ -88,9 +89,12 @@ function ActionButton() {
   )
 }
 
-// Hold to sprint. Pointer capture keeps the release tracked even if the thumb slides off the button.
+// Hold to sprint; a quick tap (under TAP seconds) swings the sword instead (combat.ts). Pointer
+// capture keeps the release tracked even if the thumb slides off the button.
+const TAP = 0.22
 function SprintButton() {
   const pointer = useRef<number | null>(null)
+  const downAt = useRef(0)
   const set = (on: boolean, el: HTMLButtonElement) => {
     buttons.sprint = on
     el.setAttribute('aria-pressed', String(on))
@@ -99,16 +103,21 @@ function SprintButton() {
     if (e.pointerId !== pointer.current) return
     pointer.current = null
     set(false, e.currentTarget)
+    if (e.type === 'pointerup' && performance.now() - downAt.current < TAP * 1000) {
+      pressAttack()
+      releaseAttack()
+    }
   }
   return (
     <button
       type="button"
       className="action-button action-button-b"
-      aria-label="Sprint"
+      aria-label="Sprint (hold) or sword (tap)"
       aria-pressed="false"
       onPointerDown={(e) => {
         e.preventDefault()
         pointer.current = e.pointerId
+        downAt.current = performance.now()
         e.currentTarget.setPointerCapture(e.pointerId)
         set(true, e.currentTarget)
       }}
