@@ -4,7 +4,7 @@ import { putAwayRod, reel, stopFishing } from '../life/fishing'
 import { toggleBag } from '../life/inventory'
 import { advance, closeDialogue, closePanel, interact, toggleLog, toggleSettings } from './interact'
 import { actionFor, type Action } from './keymap'
-import { photoKey, togglePhoto } from '../photo'
+import { photoKey, togglePhoto } from '../ui/photo'
 import { unlock } from './sfx'
 import { useGame } from './store'
 

@@ -1,5 +1,5 @@
 import { currentHour } from '../world/sky'
-import { visit } from '../visits'
+import { visit } from '../ui/visits'
 
 // The real calendar, noticed: a line on the island's birthday and a few holidays, small decorations
 // by the front door on some of them (Festive.tsx), a word on round-numbered visits, and one gentle

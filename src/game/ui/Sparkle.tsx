@@ -1,8 +1,8 @@
 import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
 import { MathUtils, MeshBasicMaterial, Object3D, OctahedronGeometry, type InstancedMesh } from 'three'
-import { useGame } from './core/store'
-import { reducedMotion } from './core/settings'
+import { useGame } from '../core/store'
+import { reducedMotion } from '../core/settings'
 
 // A few gold glints circling above whatever the player can use right now (the focused
 // interactable: a station, the sign, the mailbox, the record player), so it's clear what E / A

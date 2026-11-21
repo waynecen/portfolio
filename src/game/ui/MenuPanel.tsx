@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react'
-import { toggleEdit } from './house/edit'
-import { closePanel, openPanel, toggleMenu } from './core/interact'
-import { ITEMS, useInventory } from './life/inventory'
+import { toggleEdit } from '../house/edit'
+import { closePanel, openPanel, toggleMenu } from '../core/interact'
+import { ITEMS, useInventory } from '../life/inventory'
 import { togglePhoto } from './photo'
-import { isTouch } from './core/quality'
-import { useGame } from './core/store'
+import { isTouch } from '../core/quality'
+import { useGame } from '../core/store'
 
 // Touch screens: a Start button at the bottom, between the joystick and the A and B buttons, opens
 // this menu, which holds what the keyboard reaches with keys (the bag, the log, the

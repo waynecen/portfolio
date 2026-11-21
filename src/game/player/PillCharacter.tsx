@@ -1,7 +1,7 @@
 import { useFrame } from '@react-three/fiber'
 import { useRef, type ReactNode } from 'react'
 import { MathUtils, MeshLambertMaterial, SphereGeometry, type Group, type Mesh } from 'three'
-import { photoPose } from '../photo'
+import { photoPose } from '../ui/photo'
 import { playerFacing, playerRoll, playerVel } from '../core/state'
 import { reducedMotion } from '../core/settings'
 
