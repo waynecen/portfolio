@@ -57,15 +57,15 @@ Gentle by design: nothing is hard, and nothing blocks a project.
 
 ## Phase C: Island life (Animal Crossing-style)
 
-10. **Villagers and a guided tour.**
+10. **Villagers and a guided tour.** *(done: Villagers.tsx: Bramble gives the tour, Mochi chats, Pip keeps the shop)*
     - Two or three original animal neighbours wander, chat, and change their lines with the time of day and weather.
     - One offers a **guided tour**: they walk the roads and introduce each project.
-11. **Catching.**
+11. **Catching.** *(done: butterflies and fireflies, bugs.ts; catches are in the bag rather than a separate book)*
     - A bug net for fireflies and butterflies, and fishing at the shore with a simple timing bite *(fishing done: the dock, rods and six fish; fishing.ts, Dock.tsx)*.
     - Catches fill a **collection book** panel *(fish are listed in the bag for now)*.
-12. **Seasons from the real month.** Blossom in spring, autumn colours, and snow in winter *(winter done: season.ts)*, alongside the time-of-day slots in sky.ts.
-13. **Something new each day.** A message bottle on the beach (a tip or fun fact) and a dig spot that moves, both seeded by the date.
-14. **Shop and decor.** Spend shells on hats for the character and furniture for the house, placed on the room's tile grid *(moving furniture on the grid done: room.ts, edit.ts)*.
+12. **Seasons from the real month.** *(done: blossom and petals in spring, turning trees and falling leaves in autumn)* Blossom in spring, autumn colours, and snow in winter *(winter done: season.ts)*, alongside the time-of-day slots in sky.ts.
+13. **Something new each day.** *(done: daily.ts)* A message bottle on the beach (a tip or fun fact) and a dig spot that moves, both seeded by the date.
+14. **Shop and decor.** *(done: Pip's shop, shop.ts: four hats, and a lamp, a fern and a bookshelf for the house)* Spend shells on hats for the character and furniture for the house, placed on the room's tile grid *(moving furniture on the grid done: room.ts, edit.ts)*.
 
 ## Phase D: Secrets and a small dungeon
 

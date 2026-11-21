@@ -441,7 +441,7 @@ const POSTS = [17, 18.3, ...]              // z of each pair of posts under the 
 const ROD_LENGTH = 1.3                     // the rod in the player's hand; HOLD and FISHING_HOLD are how far it tips forward
 ```
 
-The road ends at the foot of the dock, beside the barrel. Using the barrel takes a rod (or puts it back), and so does B on the keyboard, which reels in first if the line is out. On phones the B button stays sprint; the **Put away rod** chip at the top right (`RodButton` in InventoryPanel.tsx, `.rod-toggle` in style.css) does it instead, on every device. It shows while a rod is in hand, except by the ripple, while the line is out, and while dialogue, a panel, a fade or edit mode is up. The rod isn't saved, so every visit starts without one. The ripple off the dock says to fetch a rod until you have one, then casts: the player turns to face it, the float flies out on its line, and after `WAIT` it nibbles, then bites with a splash and the prompt turns gold: **Hook it!** E, Space or A within `BITE_TIME` hooks it; too late and it gets away, too early and the line comes back empty. Esc reels in quietly. The player stands still while the line is out.
+The road ends at the foot of the dock, beside the barrel. Using the barrel takes a rod (or puts it back), and so does B on the keyboard, which reels in first if the line is out. On phones, a tap of B does it (holding B still sprints, and mid-reel a tap does nothing, so a stray one can't lose a fish); on a computer the **Put away rod** chip at the top right (`RodButton` in InventoryPanel.tsx, `.rod-toggle` in style.css) does too.css) does it instead, on every device. It shows while a rod is in hand, except by the ripple, while the line is out, and while dialogue, a panel, a fade or edit mode is up. The rod isn't saved, so every visit starts without one. The ripple off the dock says to fetch a rod until you have one, then casts: the player turns to face it, the float flies out on its line, and after `WAIT` it nibbles, then bites with a splash and the prompt turns gold: **Hook it!** E, Space or A within `BITE_TIME` hooks it; too late and it gets away, too early and the line comes back empty. Esc reels in quietly. The player stands still while the line is out.
 
 **Reeling it in** ([ReelBar.tsx](../src/game/ReelBar.tsx)): once hooked, a bar appears with a green zone in the middle and a needle the fish tugs back and forth, changing direction every `TUG_EVERY` seconds. Holding left and right (A and D, the arrow keys or the joystick) pushes back. While the needle is in the green, the catch meter fills (with a soft reel click) and it drains outside; fill it to land the fish. Let it drain, or let the needle reach an end of the bar (the line snaps), and the fish gets away. Each fish has a `fight` from 0 (the minnow) to 1 (the golden carp): it tugs harder and the meter fills more slowly. The assist widens the zone and softens the tugs. Each turn eases in at its own speed, and some are lunges (short, hard yanks, more often from strong fish), so the fish can't be read from a rhythm. Tuned in a simulation: doing nothing lands a minnow about 1 time in 4 and nothing stronger; a slow but attentive player lands the small fish every time, a red snapper 4 times in 5 and the golden carp about 1 time in 3; a quick player lands the carp 9 times in 10, in about 9 seconds. With the assist, the slow player lands everything. The float and rod follow the needle while reeling.
 
@@ -476,6 +476,32 @@ J or X swings the sword in an arc in front of the player, slowing them while it 
 Tall grass and a few clay pots (beside the house and by the dock) can be cut and broken, leaving a shell or, if the player is missing some, a heart. Shells are kept in this browser (`shells-v1`), counted in the bag's header and shown at the top for a moment when picked up; they're for the shop, later (ROADMAP C14). Pots can't be picked up and thrown yet.
 
 Five slimes hop about the outer meadows. A bump costs half a heart, knocks the player back and leaves them flickering and untouchable for a moment; rolling through one is safe. Slimes never hop onto a road, near a place or under the house, so every project stays one safe walk away, and the Slimes switch in the settings takes them away entirely. At zero hearts the screen fades and the player wakes in bed with every heart back, nothing lost.
+
+---
+
+## Island life: [src/game/Villagers.tsx](../src/game/Villagers.tsx), [src/game/bugs.ts](../src/game/bugs.ts), [src/game/daily.ts](../src/game/daily.ts), [src/game/shop.ts](../src/game/shop.ts), [src/game/season.ts](../src/game/season.ts)
+
+```ts
+const GUIDE_WALK = 1.5 // Villagers.tsx: Bramble's pace on the tour (a little under the player's); Mochi strolls at WALK = 1.2
+const CATCH_UP = 2.6   // on the tour, how close the player comes before Bramble introduces a project; LOST = 14 for LOST_FOR = 10 s calls it off
+const WANDER = 9       // Mochi strolls to road tiles this near the house, pausing PAUSE = 2–5 s
+export const SHOP_AT = { x: 7, z: -1 } // layout.ts: Pip's stall; a road leads there (a 'shop' place in pois.ts)
+export const HATS = [...] // shop.ts: hats for sale (name, price, colour); furniture for sale is every room piece with a price (room.ts)
+const STEADY = 1.2     // bugs.ts: come at a bug faster than this (relative to walking) and it flees; MORPHO = 0.15, GOLDFLY = 0.08 rare chances
+const COUNT = 6        // Butterflies.tsx: butterflies, on dry days outside winter; a caught or startled one is AWAY = 25 s
+export const MESSAGES = [...] // daily.ts: the message bottle's notes, one a day in turn
+const BLOSSOMING = 0.35 // Trees.tsx: share of trees in blossom in spring; AUTUMN = the turning colours; GROUND in Island.tsx by season
+```
+
+**Villagers.** Three neighbours walk the roads, finding their way with a breadth-first search over the road tiles, and never stand on the step outside the front door. **Bramble** (a frog) waits by the house; talk to Bramble for the guided tour: Bramble walks to the road beside each project in turn, waits until the player catches up, introduces it (its title and words from the HTML page), and moves on, walking only while the player keeps up. Wander more than `LOST` away for `LOST_FOR` seconds and the tour is off, to be picked up next time. **Mochi** (a rabbit) strolls about and chats; what Mochi says depends on what's in hand, the rain, the night and the season, with a real tip in each line. **Pip** (a hedgehog) keeps the shop at the stall east of the house.
+
+**Catching.** Butterflies flutter over the meadows by day (not in rain or winter) and fireflies glow at night. One "Catch" prompt follows whichever is nearest; walk up and use it. Rush in at a sprint and the bug gets away. Catches are counted in the bag's Bugs section (`bugs-v1`), beside the fish.
+
+**Something new each day** (seeded by the date, `dayNumber()` in calendar.ts, so `?date=MM-DD` tries another day): a message bottle on a different stretch of shore holding the day's note, and a cross of dug earth in the grass with 3–6 shells under it. Each can be used once a day (`daily-v1`).
+
+**The shop.** Shells buy hats (worn at once, then put on or taken off at the shop; `hats-v1`) and furniture: a paper lamp, a fern and a bookshelf (room.ts pieces with a `price`). A bought piece appears in the house at its default spot, or the nearest free tile, and can be moved like the rest in edit mode. Only owned pieces count in the room's rules (`placed()` in room.ts; `decor-v1`).
+
+**Seasons.** Spring: fresh grass, a third of the trees in pink blossom, and a few petals drifting down. Autumn: golden grass, the trees turning orange, red and yellow, and a few falling leaves. Winter: snow, as before. Add `?season=spring` (or summer, autumn, winter) to the URL to see one.
 
 ---
 
