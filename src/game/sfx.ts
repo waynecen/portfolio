@@ -133,6 +133,12 @@ const SOUNDS = {
     const lp = lowpass(0.45)
     return render(0.12, (t, n) => (lp(n) * 1.4 + Math.sin(2 * Math.PI * 180 * t) * 0.5) * Math.exp(-t * 38))
   },
+  pop: () =>
+    // A slime popping, or a pot breaking: a quick wet burst that drops in pitch.
+    render(0.2, (t, n) => (Math.sin(2 * Math.PI * (700 - 2400 * t) * t) * 0.45 + n * 0.25 * Math.exp(-t * 40)) * Math.exp(-t * 14)),
+  pickup: () =>
+    // A shell or heart picked up from the ground: one bright blip, rising.
+    render(0.12, (t) => Math.sin(2 * Math.PI * (1100 + 900 * t) * t) * 0.25 * Math.exp(-t * 22) * Math.min(1, t * 400)),
   hurt: () => {
     // The player bumped: a low, short grunt of noise.
     const lp = lowpass(0.8)
@@ -197,6 +203,10 @@ export const blip = (pitch: number) => play('blip', 1, pitch * (0.96 + Math.rand
 export const click = () => play('click')
 /** The sword connecting with something (combat.ts). */
 export const hit = () => play('hit', 0.9, 0.9 + Math.random() * 0.2)
+/** A slime popping, or a pot breaking. */
+export const pop = () => play('pop', 0.9, 0.9 + Math.random() * 0.2)
+/** A shell or heart picked up off the ground. */
+export const pickup = () => play('pickup')
 /** The player bumped by a slime. */
 export const hurt = () => play('hurt')
 /** An item picked up. */

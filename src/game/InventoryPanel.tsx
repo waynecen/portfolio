@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
+import { useShells } from './drops'
 import { FISH, putAwayRod, SPOTS, useFishing } from './fishing'
 import { closePanel, toggleLog } from './interact'
 import { ITEM, ITEMS, toggleBag, useInventory, type ItemId } from './inventory'
@@ -76,6 +77,7 @@ export function InventoryPanel() {
   const found = useInventory((s) => s.found)
   const caught = useFishing((s) => s.caught)
   const seen = useSeen((s) => s.seen)
+  const shells = useShells((s) => s.shells)
   const [chosen, setChosen] = useState<number>(0)
   const slots = useRef<(HTMLButtonElement | null)[]>([])
   const total = ITEMS.length + FISH.length // items first, then fish
@@ -151,7 +153,7 @@ export function InventoryPanel() {
       <div className="bag-head">
         <h2>Bag</h2>
         <span className="bag-count">
-          {found.length} of {ITEMS.length} found
+          {found.length} of {ITEMS.length} found · {shells} {shells === 1 ? 'shell' : 'shells'}
         </span>
         <button type="button" className="bag-log" onClick={toggleLog}>
           {!isTouch && <kbd>L</kbd>} Log

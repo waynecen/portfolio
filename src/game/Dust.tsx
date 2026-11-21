@@ -13,7 +13,7 @@ import { reducedMotion } from './settings'
 // nothing, so no transparency is needed. Off in the rain (the ground is wet) and indoors;
 // in winter they're puffs of snow, even while it snows.
 
-const COUNT = 16
+const COUNT = 32 // shared by the dust, confetti and bursts (cut grass, pots, slimes)
 const LIFE = 0.45 // seconds a puff lasts
 const SIZE = 0.09 // a puff's radius at its biggest
 const BURST = 6 // puffs when a roll starts
@@ -36,7 +36,7 @@ const size = new Float32Array(COUNT)
 let next = 0
 const dummy = new Object3D()
 
-function spawn(x: number, z: number, vx: number, vz: number, s: number) {
+function spawn(x: number, z: number, vx: number, vz: number, s: number, color?: Color) {
   const i = next
   next = (next + 1) % COUNT
   pos[i * 3] = x
@@ -47,7 +47,16 @@ function spawn(x: number, z: number, vx: number, vz: number, s: number) {
   vel[i * 3 + 2] = vz
   age[i] = 0
   size[i] = s
-  colors[i].copy(secretOn('confetti') ? CONFETTI[Math.floor(Math.random() * CONFETTI.length)] : DUST)
+  colors[i].copy(color ?? (secretOn('confetti') ? CONFETTI[Math.floor(Math.random() * CONFETTI.length)] : DUST))
+}
+
+/** A puff of `n` bits thrown out from (x, z) in `color`: cut grass, a broken pot, a popped slime. */
+export function burst(x: number, z: number, n: number, color: Color) {
+  for (let k = 0; k < n; k++) {
+    const a = (k / n) * Math.PI * 2 + Math.random() * 0.6
+    const out = 0.8 + Math.random() * 0.8
+    spawn(x, z, Math.cos(a) * out, Math.sin(a) * out, SIZE * (0.6 + Math.random() * 0.5), color)
+  }
 }
 
 export function Dust() {

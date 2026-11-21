@@ -14,6 +14,8 @@ import { Fireflies } from './Fireflies'
 import { GuideButton, GuideWind } from './GuideWind'
 import { clearSpawn } from './room'
 import { Furniture } from './Furniture'
+import { Grass, Pots } from './Grass'
+import { GroundDrops, ShellCounter } from './GroundDrops'
 import { Hearts } from './Hearts'
 import { HouseExterior, HouseInterior } from './House'
 import { Interactions } from './Interactions'
@@ -103,6 +105,9 @@ export function Game() {
           <Leaves />
           <Festive />
           <Trinkets />
+          <Grass />
+          <Pots />
+          <GroundDrops />
           <Rain />
           <Snow />
           <Fireflies />
@@ -124,6 +129,7 @@ export function Game() {
       </Canvas>
       <Fade />
       <Hearts />
+      <ShellCounter />
       <GuideButton />
       <SettingsButton />
       <ProjectCard />
