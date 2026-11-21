@@ -38,6 +38,7 @@ import { ABOUT_AT, aboutLines } from './places'
 import { NoticeBoard } from './NoticeBoard'
 import { Pearls } from './HiddenPearls'
 import { Islet } from './IsletScene'
+import { PhotoCapture, PhotoHud } from './PhotoHud'
 import { Pickups } from './Pickups'
 import { Player } from './Player'
 import { ProjectCard } from './ProjectCard'
@@ -158,6 +159,7 @@ export function Game() {
         <Dust />
         <EditPointer />
         <CameraRig />
+        <PhotoCapture />
         <Controls />
       </Canvas>
       <Fade />
@@ -182,6 +184,7 @@ export function Game() {
       <Joystick />
       <MenuPanel />
       <StartButton />
+      <PhotoHud />
     </>
   )
 }

@@ -1,6 +1,7 @@
 import { useFrame } from '@react-three/fiber'
 import { useRef, type ReactNode } from 'react'
 import { MathUtils, MeshLambertMaterial, SphereGeometry, type Group, type Mesh } from 'three'
+import { photoPose } from './photo'
 import { playerFacing, playerRoll, playerVel } from './state'
 import { reducedMotion } from './settings'
 
@@ -52,7 +53,7 @@ export function PillCharacter({ model }: { model?: ReactNode }) {
   const footL = useRef<Mesh>(null)
   const footR = useRef<Mesh>(null)
   // Starts facing wherever the player already faces, so swapping the pill for the model doesn't turn it.
-  const s = useRef({ w: 0, phase: 0, heading: playerFacing.heading, t: 0 }).current
+  const s = useRef({ w: 0, phase: 0, heading: playerFacing.heading, t: 0, lift: 0 }).current
 
   useFrame((_, delta) => {
     if (!yaw.current || !lean.current || !tumble.current) return
@@ -88,7 +89,9 @@ export function PillCharacter({ model }: { model?: ReactNode }) {
     // dropping low mid-roll so the pill turns over along the floor.
     const flip = p >= 0 ? p * p * (3 - 2 * p) : 0
     tumble.current.rotation.x = flip * Math.PI * 2
-    tumble.current.position.y = CENTER - env * ROLL_DROP
+    // A photo pose (photo.ts) can hold the character up off the ground, mid-jump.
+    s.lift = reducedMotion() ? photoPose.lift : MathUtils.damp(s.lift, photoPose.lift, 12, dt)
+    tumble.current.position.y = CENTER - env * ROLL_DROP + s.lift
 
     // Lean into the direction of travel from the feet, more when sprinting, giving the walk weight.
     lean.current.rotation.x = (model ? MODEL_LEAN : LEAN) * w * motionScale() * (1 + SPRINT_LEAN * sprint)

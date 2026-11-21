@@ -19,7 +19,7 @@ export function Interactions() {
       if (dx * dx + dz * dz > r * r) closeDialogue()
       return // keep the current focus while talking
     }
-    if (s.panel || s.editing) return // keep the current focus in a panel; none while editing
+    if (s.panel || s.editing || s.photo) return // keep the current focus in a panel; none while editing or in photo mode
     let nearest: Interactable | null = null
     let best = Infinity
     for (let i = 0; i < interactables.length; i++) {

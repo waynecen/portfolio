@@ -5,6 +5,7 @@ import { pointMe } from './guide'
 import { toggleBag } from './inventory'
 import { advance, closeDialogue, closePanel, interact, toggleLog, toggleSettings } from './interact'
 import { actionFor, type Action } from './keymap'
+import { photoKey, togglePhoto } from './photo'
 import { unlock } from './sfx'
 import { useGame } from './store'
 
@@ -49,6 +50,14 @@ export function bindKeys(): () => void {
       if (down && !isTyping(e.target) && document.body.classList.contains('playing')) editKey(e)
       return
     }
+    // Photo mode (photo.ts) has a few keys of its own; the walk keys slide its camera.
+    if (useGame.getState().photo && down && !isTyping(e.target) && document.body.classList.contains('playing')) {
+      if (action === 'photo') {
+        if (!e.repeat) togglePhoto()
+        return
+      }
+      if (!e.repeat && photoKey(e)) return
+    }
     // J or X (or the left mouse button, below): the sword. Down swings (and starts a charge), up lets a charged spin go (combat.ts).
     if (action === 'attack') {
       if (isTyping(e.target) || !document.body.classList.contains('playing')) return
@@ -72,6 +81,7 @@ export function bindKeys(): () => void {
       else if (action === 'guide') pointMe()
       else if (action === 'log') toggleLog()
       else if (action === 'settings') toggleSettings()
+      else if (action === 'photo') togglePhoto()
       else if (action === 'bag') {
         if (!putAwayRod()) toggleBag() // B puts away a rod in hand, otherwise opens the bag
       } else interact()

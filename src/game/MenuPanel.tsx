@@ -3,12 +3,13 @@ import { toggleEdit } from './edit'
 import { pointMe } from './guide'
 import { closePanel, openPanel, toggleMenu } from './interact'
 import { ITEMS, useInventory } from './inventory'
+import { togglePhoto } from './photo'
 import { isTouch } from './quality'
 import { useGame } from './store'
 
 // Touch screens: a Start button at the bottom, between the joystick and the A and B buttons, opens
 // this menu, which holds what the keyboard reaches with keys (the bag, Where to?, the log, the
-// settings, editing the room); a tap of B puts the fishing rod away, as B does on a keyboard. It
+// settings, photo mode, editing the room); a tap of B puts the fishing rod away, as B does on a keyboard. It
 // keeps the top of the screen clear on a phone: the chips that do these things on a computer are
 // hidden on touch screens (style.css).
 
@@ -52,6 +53,11 @@ export function MenuPanel() {
         <li>
           <button type="button" onClick={() => openPanel('log')}>
             Log
+          </button>
+        </li>
+        <li>
+          <button type="button" onClick={then(togglePhoto)}>
+            Photo
           </button>
         </li>
         <li>

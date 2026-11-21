@@ -392,6 +392,25 @@ body.big-text .reel { zoom: 1.2; }
 .shop-list button:disabled { background: rgb(122 100 73 / .15); color: inherit; cursor: default; }
 body.big-text .shop-panel { zoom: 1.2; }
 
+/* Photo mode (photo.ts, PhotoHud.tsx): everything over the game steps aside but the stick and photo mode's own buttons. */
+body[data-photo] #game > :not(:first-child, .photo-hud, .photo-flash, .joystick) { display: none; }
+.photo-flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+.photo-hud {
+  position: absolute; left: 16px; right: 16px; bottom: max(16px, env(safe-area-inset-bottom));
+  display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none;
+  font: 600 14px/1.4 ui-rounded, "SF Pro Rounded", "Nunito", "Varela Round", system-ui, sans-serif;
+}
+.photo-help { margin: 0; padding: 4px 12px; border-radius: 999px; background: rgb(0 0 0 / .45); color: #fff; font-size: 12px; font-weight: 500; text-align: center; }
+.photo-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; pointer-events: auto; }
+.photo-buttons button {
+  min-width: 40px; padding: 8px 14px; border: 0; border-radius: 999px; background: #fdf5dc; color: #7a6449; font: inherit; cursor: pointer;
+  box-shadow: 0 2px 0 rgb(122 100 73 / .25); -webkit-tap-highlight-color: transparent;
+}
+.photo-buttons .photo-shutter { background: #7a6449; color: #fdf5dc; }
+.photo-buttons button:focus-visible { outline: 2px solid #f2b233; outline-offset: 2px; }
+/* On a phone the stick sits bottom left, so the buttons go above it. */
+@media (pointer: coarse) { .photo-hud { bottom: calc(max(24px, env(safe-area-inset-bottom)) + 124px); } }
+body.big-text .photo-hud { zoom: 1.2; }
 
 /* The keys in the settings (SettingsPanel.tsx): a button per action that waits for the new key. */
 .settings-key { min-width: 5.5rem; padding: 4px 10px; border: 0; border-radius: 10px; background: rgb(122 100 73 / .12); font-size: 13px; }

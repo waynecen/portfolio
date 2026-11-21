@@ -89,7 +89,7 @@ export function advance(): boolean {
 
 /** The context action: advance dialogue, else use the focused interactable. Returns false if nothing happened. */
 export function interact(): boolean {
-  if (useGame.getState().editing) return false
+  if (useGame.getState().editing || useGame.getState().photo) return false
   if (advance() || reel()) return true
   const f = useGame.getState().focus
   if (!f) return false
@@ -145,8 +145,8 @@ export function busy() {
   return useGame.getState().dialogue !== null || held()
 }
 
-/** True while the player can't move: a panel, a fade between areas, edit mode or fishing. Dialogue doesn't hold them. */
+/** True while the player can't move: a panel, a fade between areas, edit mode, photo mode or fishing. Dialogue doesn't hold them. */
 export function held() {
   const s = useGame.getState()
-  return s.panel !== null || s.fading || s.editing || fishing()
+  return s.panel !== null || s.fading || s.editing || s.photo || fishing()
 }

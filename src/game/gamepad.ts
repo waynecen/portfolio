@@ -5,17 +5,18 @@ import { pointMe } from './guide'
 import { actions } from './input'
 import { toggleBag } from './inventory'
 import { advance, closePanel, interact, toggleLog, toggleSettings } from './interact'
+import { leavePhoto, nextPose, shoot, togglePhoto, zoomBy } from './photo'
 import { unlock } from './sfx'
 import { useGame } from './store'
 import { stopEdit } from './edit'
 
 // A controller, read once a frame (polled from <Gamepad> in Game.tsx; the browser has no events for
 // sticks). Standard layout, named for an Xbox pad:
-// - Left stick or d-pad: walk. A trigger or a stick click: sprint.
+// - Left stick or d-pad: walk (or, in photo mode, slide the camera). A trigger or a stick click: sprint.
 // - A: talk, read, use. B: roll, or reel in. X: the sword (hold to charge). Y: the bag, or put the rod away.
-// - LB: point me somewhere. View: the log. Menu: the settings.
+// - LB: point me somewhere. RB: photo mode. View: the log. Menu: the settings.
 // - In a panel, the d-pad or stick moves between controls (arrow keys for the bag's grid), A presses,
-//   B closes.
+//   B closes. In photo mode, A takes the photo, B or RB leaves, X changes the pose, LB or LT zooms out and RT in.
 
 const DEAD = 0.22 // stick dead zone
 const NAV = 0.6 // in a panel, how far the stick must lean to count as a press
@@ -111,6 +112,14 @@ export function pollGamepad() {
   }
   wasNav.up = wasNav.down = wasNav.left = wasNav.right = false
 
+  if (s.photo) {
+    if (pressed[0]) shoot()
+    if (pressed[1] || pressed[5]) leavePhoto()
+    if (pressed[2]) nextPose()
+    if (pressed[4] || pressed[6]) zoomBy(1)
+    if (pressed[7]) zoomBy(-1)
+    return
+  }
   if (s.editing) {
     if (pressed[1]) stopEdit()
     return
@@ -122,6 +131,7 @@ export function pollGamepad() {
   else if (released[2]) releaseAttack()
   if (pressed[3] && !putAwayRod()) toggleBag()
   if (pressed[4]) pointMe()
+  if (pressed[5]) togglePhoto()
   if (pressed[8]) toggleLog()
   if (pressed[9]) toggleSettings()
 }

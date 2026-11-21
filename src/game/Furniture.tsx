@@ -51,7 +51,7 @@ const note = () => isTouch
       `Click, or press ${keysName('attack')}, to swing your sword. Hold it after a swing, then let go, to spin.`,
       `Press ${keysName('interact')} to read, talk or use whatever is nearby.`,
       `The record player by the back wall plays music. Press ${keyName('interact')} beside it to choose a song.`,
-      `Press ${keyName('edit')} to move the furniture around.`,
+      `Press ${keyName('edit')} to move the furniture around, and ${keyName('photo')} to take a photo.`,
       `Little things are hidden around the island. Press ${keyName('bag')} to see what you’ve found.`,
       'The door at the bottom of the room leads outside.',
       `Each pillar out there is a project. Walk up to one to see it, then press ${keyName('interact')} to open it.`,

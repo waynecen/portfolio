@@ -20,6 +20,7 @@ export type Action =
   | 'log'
   | 'settings'
   | 'edit'
+  | 'photo'
 
 /** The actions in the order the settings list them, with their names there. */
 export const ACTIONS: { id: Action; label: string }[] = [
@@ -36,6 +37,7 @@ export const ACTIONS: { id: Action; label: string }[] = [
   { id: 'log', label: 'Log' },
   { id: 'settings', label: 'Settings' },
   { id: 'edit', label: 'Edit the room' },
+  { id: 'photo', label: 'Photo mode' },
 ]
 
 /** [main key, spares…] for each action, as KeyboardEvent.code. */
@@ -53,6 +55,7 @@ const DEFAULTS: Record<Action, string[]> = {
   log: ['KeyL'],
   settings: ['KeyO'],
   edit: ['KeyF'],
+  photo: ['KeyP'],
 }
 
 /** Keys that can't be bound: Escape closes things, Tab moves focus. */

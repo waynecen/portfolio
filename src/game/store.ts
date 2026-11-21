@@ -28,6 +28,8 @@ type GameState = {
   fading: boolean
   /** Rearranging the furniture indoors (edit.ts); the player can't move meanwhile. */
   editing: boolean
+  /** Photo mode (photo.ts): the HUD steps aside and the camera is the visitor's; the player holds still. */
+  photo: boolean
 }
 
 const MAX_HEARTS = 3
@@ -52,6 +54,7 @@ export const useGame = create<GameState>(() => ({
   scene: 'world',
   fading: false,
   editing: false,
+  photo: false,
 }))
 
 useGame.subscribe((s, prev) => {

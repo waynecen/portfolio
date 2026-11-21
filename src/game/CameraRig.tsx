@@ -3,6 +3,7 @@ import { MathUtils, type PerspectiveCamera } from 'three'
 import { CAVE, CAVE_PITCH, caveRoom, INTERIOR, ROOM } from './layout'
 import { useEdit } from './edit'
 import { guide } from './guide'
+import { panPhoto, photoCam } from './photo'
 import { reducedMotion } from './settings'
 import { cameraSnap, cameraZoom, playerPos } from './state'
 import { useGame } from './store'
@@ -50,6 +51,13 @@ export function CameraRig() {
       tx = guide.x
       tz = guide.z
     }
+    // Photo mode (photo.ts): slid aside by the walk keys, and zoomed.
+    const photo = useGame.getState().photo
+    if (photo) {
+      panPhoto(dt)
+      tx += photoCam.x
+      tz += photoCam.z
+    }
     // A catch's zoom (fishing.ts): in toward the player and back out, along the same view angle.
     let near = 1
     if (cameraZoom.t >= 0) {
@@ -57,6 +65,7 @@ export function CameraRig() {
       if (cameraZoom.t >= ZOOM_TIME) cameraZoom.t = -1
       else near = 1 - ZOOM * Math.sin((Math.PI * cameraZoom.t) / ZOOM_TIME)
     }
+    if (photo) near *= photoCam.zoom
     tz += DISTANCE * near
     if (cameraSnap.pending) {
       // Just arrived somewhere (see scene.ts): cut straight there rather than gliding across the map.
@@ -65,7 +74,7 @@ export function CameraRig() {
       p.z = tz
     } else {
       // With reduced motion the camera stays locked to its target rather than drifting after it.
-      const lambda = reducedMotion() ? STEADY : scene === 'cave' ? FLIP : LAMBDA
+      const lambda = reducedMotion() && !photo ? STEADY : scene === 'cave' ? FLIP : LAMBDA
       p.x = MathUtils.damp(p.x, tx, lambda, dt)
       p.z = MathUtils.damp(p.z, tz, lambda, dt)
     }
