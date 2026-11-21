@@ -14,7 +14,7 @@ This replaces the earlier feature roadmap. Its unfinished items are folded in be
 - **Core loop:** walk, sprint and roll; follow camera; dialogue; record player and music; hearts HUD; touch controls.
 - **The island:**
   - a tile grid with roads and an island ringed by cliffs and water
-  - seeded trees
+  - seeded trees, and a forest on the north-west land with a clearing in its middle
   - the house you wake up in, with walk-through doors and its own indoor scene
 - **Time of day and weather:** from the visitor's clock. Morning, dawn mist, afternoon rain, golden evening, and night with fireflies and lit windows.
 - **Shippable basics:** the About sign, the Contact mailbox, a loading screen, link previews, a favicon, robots and sitemap.

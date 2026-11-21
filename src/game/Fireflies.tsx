@@ -1,7 +1,7 @@
 import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
 import { AdditiveBlending, BufferAttribute, BufferGeometry, PointsMaterial, type Points } from 'three'
-import { ISLAND_RADIUS, isInland } from './Island'
+import { BOUND, isInland } from './Island'
 import { inHouse } from './pois'
 import { winter } from './season'
 import { sky } from './sky'
@@ -9,7 +9,7 @@ import { sky } from './sky'
 // Night on the island: small warm lights drifting low over the grass, each wandering round its own
 // spot and twinkling on and off. One set of points, faded in and out with the night weather.
 
-const COUNT = 40
+const COUNT = 55
 const WANDER = 0.5 // how far each one drifts from its spot
 const HEIGHT = 0.45 // average height above the grass
 const BOB = 0.25 // how far it rises and sinks
@@ -18,7 +18,7 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
 
 // Each firefly's spot (a random inland grass tile, not under the house) and its own rhythm.
 const spots: { x: number; z: number; phase: number; speed: number }[] = []
-const n = Math.ceil(ISLAND_RADIUS)
+const n = BOUND
 while (spots.length < COUNT) {
   const i = Math.round((Math.random() * 2 - 1) * n)
   const j = Math.round((Math.random() * 2 - 1) * n)

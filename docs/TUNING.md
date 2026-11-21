@@ -280,6 +280,7 @@ There's no map on purpose: the island is found by walking round it. `pois` in po
 
 ```ts
 export const ISLAND_RADIUS = 18 // Island.tsx: in tiles; every tile whose centre is closer than this to spawn is land, so the shore steps along tile edges
+export const FOREST = { x: -17, z: -15, r: 12 } // the forest's land to the north-west: every tile closer than r to (x, z) is land too
 const WATER_Y = -1.2            // water surface height, well below the grass; the cliffs fill the drop
 const COURSES = 3               // rows of stone blocks in each cliff face
 const UNDERWATER = 0.4          // the cliff carries on this far under the water so its foot never shows a gap
@@ -294,14 +295,23 @@ const WATER_SEGMENTS = 160      // squares across the water, so it bends with th
 const FOAM = 0.4                // width of the white surf border at the foot of the cliffs; keep under half a tile
 const FOAM_PULSE = 1.2          // how fast the surf fades in and out, rad/s
 const SEED = 7                  // Trees.tsx: change for a different (but still fixed) tree layout
-const MAX_TREES = 70            // upper limit on trees
+const MAX_TREES = 70            // upper limit on the main island's scattered trees
 const CLEARANCE = 1             // tiles kept free around every road tile, place and the house
 const SHORE_GAP = 1             // tiles kept free between trees and the cliff edge
 const MIN_SCALE = 0.8           // trees are randomly sized between these
 const MAX_SCALE = 1.3
+const MAX_TRUNK = 0.3           // most a trunk's collider grows, so the pill fits between forest trees corner to corner
+const FOREST_DENSITY = 0.85     // share of the forest's tree spots that get one
+const FOREST_SCALE = [1, 1.5]   // forest trees are sized between these: taller than the island's
+const CLEARING = 3.5            // radius of the open clearing in the middle of the forest, in tiles
+const FADE = 0.75               // how much of a tree standing in front of the player drops out
 ```
 
-Trees sit on tile centres and never touch each other, diagonals included, so there's always a gap to walk through. They're placeholders: a trunk and a cone, drawn as two instanced meshes.
+The island is two overlapping circles of land: the main one round the house, and the forest's to the north-west (top left). `BOUND` in Island.tsx is how far out either reaches, for anything that loops over every tile.
+
+On the main island, trees never touch each other, diagonals included, so there's always a gap to walk through. The forest is packed: a tree on every other tile, like a chessboard's dark squares (`FOREST_DENSITY` of them), so they only ever meet corner to corner and you can always slip through on the diagonals. In its middle is a clearing, and a road leads there from the house (a `forest` place in pois.ts); the pine cone waits in it.
+
+Every tree between the camera and the player thins out (`seeThrough` in Trees.tsx): its shader drops out a fixed noise pattern of pixels, up to `FADE` of them, so the player never vanishes behind a canopy. They're placeholders: a trunk and a cone, drawn as two instanced meshes.
 
 ---
 

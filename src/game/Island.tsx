@@ -5,11 +5,14 @@ import { TILE } from './grid'
 import { winter } from './season'
 
 // A blocky island centred on spawn, built from whole grid tiles: a grass plateau ringed by stone
-// cliffs that drop into open water. The shoreline steps along tile edges, so every corner is 90°.
+// cliffs that drop into open water. It's two overlapping circles of land: the main island round the
+// house, and a smaller one to the north-west (top left) that the forest grows on (Trees.tsx). The shoreline steps along tile edges, so every corner is 90°.
 // The player walks right up to the cliff's rim and stops there (see Player.tsx).
 
 /** Island size in tiles: every tile whose centre is closer than this to spawn is land. */
 export const ISLAND_RADIUS = 18
+/** The forest's land: every tile whose centre is closer than `r` to (x, z) is land too. */
+export const FOREST = { x: -17, z: -15, r: 12 }
 export const WATER_Y = -1.2 // water surface, well below the grass; the cliff fills the drop
 const WATER_SIZE = 400 // wide enough that the camera never sees past it
 // Squares across the water. The world bends away from the camera (curve.ts) one vertex at a time,
@@ -30,12 +33,16 @@ const STONE = ['#c9bfa9', '#bdb29b', '#d3cab6'].map((c) => new Color(c)) // clif
 const RIM = new Color('#e4ddca')
 const GROUND = winter ? '#eef3f8' : '#8cc084' // grass, or snow in winter (season.ts)
 
-const N = Math.ceil(ISLAND_RADIUS) // tile index bound: nothing past ±N is land
+/** Tile index bound: nothing past ±BOUND (on either axis) is land. */
+export const BOUND = Math.ceil(Math.max(ISLAND_RADIUS, Math.abs(FOREST.x) + FOREST.r, Math.abs(FOREST.z) + FOREST.r))
+const N = BOUND
 
 const key = (i: number, j: number) => `${i},${j}`
 
 const land = new Set<string>()
-for (let i = -N; i <= N; i++) for (let j = -N; j <= N; j++) if (Math.hypot(i, j) < ISLAND_RADIUS) land.add(key(i, j))
+for (let i = -N; i <= N; i++)
+  for (let j = -N; j <= N; j++)
+    if (Math.hypot(i, j) < ISLAND_RADIUS || Math.hypot(i - FOREST.x, j - FOREST.z) < FOREST.r) land.add(key(i, j))
 
 /** True if tile (i, j) is land. */
 export function isLand(i: number, j: number): boolean {
