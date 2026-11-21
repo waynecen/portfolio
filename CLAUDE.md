@@ -16,6 +16,7 @@ React Three Fiber + Vite portfolio: an explorable 3D diorama world. Deployed on 
 | `src/game/life/` | Villagers, bugs, fishing, shop, daily finds, things for the bag | `Villagers.tsx` |
 | `src/game/combat/` | Sword, grass and pots, slimes, hearts, shells | `combat.ts` |
 | `src/game/secrets/` | Pearls, cave, islet, trinkets, calendar | `pearls.ts` |
+| `src/game/golf/` | Mini golf on the islet's east lobe: the ball, putting, holes | `golf.ts` |
 | `src/game/ui/` | Dialogue, panels, touch controls, photo mode, welcome back | `Dialogue.tsx` |
 | `docs/` | `ROADMAP.md`, `CHARACTER.md`, `TUNING.md` (site-wide notes and the index) | |
 

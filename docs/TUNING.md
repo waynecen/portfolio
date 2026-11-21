@@ -20,6 +20,7 @@ Every constant that changes how the game looks, moves or performs, grouped by sy
 | [life/](../src/game/life/NOTES.md) | Island life: villagers and the tour, bugs, fishing, the shop, daily finds and the things to find for the bag. |
 | [combat/](../src/game/combat/NOTES.md) | The light action: the sword, grass and pots, slimes, hearts and shells. |
 | [secrets/](../src/game/secrets/NOTES.md) | Hidden things: pearls, the cave behind the waterfall, the islet, the trinkets and the calendar. |
+| [golf/](../src/game/golf/NOTES.md) | Mini golf on the islet's east lobe: the ball, putting, the holes. |
 | [ui/](../src/game/ui/NOTES.md) | What sits over the game: dialogue, panels, touch controls, photo mode and the welcome back. |
 
 Read the folder's NOTES.md before changing anything in it, rather than this page whole. Each area's CSS is beside its code too (`src/game/<area>/*.css`); src/style.css holds only the page and the loader.
