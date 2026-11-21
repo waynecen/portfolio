@@ -31,6 +31,8 @@ type GameState = {
   editing: boolean
   /** Photo mode (photo.ts): the HUD steps aside and the camera is the visitor's; the player holds still. */
   photo: boolean
+  /** Standing at the golf ball, aiming a putt (golf/golf.ts): the player holds still. */
+  putting: boolean
 }
 
 const MAX_HEARTS = 3
@@ -52,6 +54,7 @@ export const useGame = create<GameState>(() => ({
   fading: false,
   editing: false,
   photo: false,
+  putting: false,
 }))
 
 useGame.subscribe((s, prev) => {

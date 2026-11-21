@@ -8,6 +8,7 @@ import { leavePhoto, nextPose, shoot, togglePhoto, zoomBy } from '../ui/photo'
 import { unlock } from './sfx'
 import { useGame } from './store'
 import { stopEdit } from '../house/edit'
+import { putter } from './putt'
 
 // A controller, read once a frame (polled from <Gamepad> in Game.tsx; the browser has no events for
 // sticks). Standard layout, named for an Xbox pad:
@@ -121,6 +122,13 @@ export function pollGamepad() {
   }
   if (s.editing) {
     if (pressed[1]) stopEdit()
+    return
+  }
+  // At the golf ball (golf/golf.ts): the stick aims, X charges and putts, A or B steps away.
+  if (s.putting) {
+    if (pressed[2]) putter.press()
+    else if (released[2]) putter.release()
+    if (pressed[0] || pressed[1]) putter.leave()
     return
   }
 

@@ -6,6 +6,7 @@ import './house/house.css'
 import './ui/panels.css'
 import './life/life.css'
 import './ui/photo.css'
+import './golf/golf.css'
 import { lazy, Suspense, useEffect, useState, type ComponentType, type ReactNode } from 'react'
 import { Atmosphere } from './world/Atmosphere'
 import { CameraRig, DISTANCE, HEIGHT } from './core/CameraRig'
@@ -71,6 +72,8 @@ const tier = detectTier()
 const later = <T,>(load: () => Promise<T>, pick: (m: T) => ComponentType) => lazy(() => load().then((m) => ({ default: pick(m) })))
 const Cave = later(() => import('./secrets/CaveRooms'), (m) => m.Cave)
 const Islet = later(() => import('./secrets/IsletScene'), (m) => m.Islet)
+const Course = later(() => import('./golf/Course'), (m) => m.Course)
+const GolfHud = later(() => import('./golf/GolfHud'), (m) => m.GolfHud)
 const EditOverlay = later(() => import('./house/EditRoom'), (m) => m.EditOverlay)
 const EditPointer = later(() => import('./house/EditRoom'), (m) => m.EditPointer)
 const EditHud = later(() => import('./house/EditRoom'), (m) => m.EditHud)
@@ -141,6 +144,9 @@ export function Game() {
           <Waterfall />
           <Later>
             <Islet />
+          </Later>
+          <Later>
+            <Course />
           </Later>
           <Pickups />
           <Pearls />
@@ -213,6 +219,9 @@ export function Game() {
       <Later>
             <PhotoHud />
           </Later>
+      <Later>
+        <GolfHud />
+      </Later>
     </>
   )
 }

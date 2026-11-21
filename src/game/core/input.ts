@@ -5,6 +5,7 @@ import { toggleBag } from '../life/inventory'
 import { advance, closeDialogue, closePanel, interact, toggleLog, toggleSettings } from './interact'
 import { actionFor, type Action } from './keymap'
 import { photoKey, togglePhoto } from '../ui/photo'
+import { putter } from './putt'
 import { unlock } from './sfx'
 import { useGame } from './store'
 
@@ -60,6 +61,12 @@ export function bindKeys(): () => void {
     // The sword's keys (J or X unless remapped; the left mouse button is below). Down swings (and starts a charge), up lets a charged spin go (combat.ts).
     if (action === 'attack') {
       if (isTyping(e.target) || !document.body.classList.contains('playing')) return
+      if (useGame.getState().putting) {
+        // At the golf ball the sword's key charges the putt instead (golf/golf.ts).
+        if (down && !e.repeat) putter.press()
+        else if (!down) putter.release()
+        return
+      }
       if (down && !e.repeat) pressAttack()
       else if (!down) releaseAttack()
       return
@@ -70,6 +77,7 @@ export function bindKeys(): () => void {
       if (e.code === 'Space') e.preventDefault() // don't scroll the page
       if (!down || e.repeat) return
       if (e.code === 'Escape') {
+        if (useGame.getState().putting) putter.leave()
         closeDialogue()
         closePanel()
         stopFishing()
@@ -97,7 +105,7 @@ export function bindKeys(): () => void {
     e.target instanceof HTMLCanvasElement && document.body.classList.contains('playing') && !useGame.getState().editing
   const onPointerDown = (e: PointerEvent) => {
     unlock() // audio may only start after a gesture
-    if (e.pointerType !== 'mouse' || !onGame(e)) return
+    if (e.pointerType !== 'mouse' || !onGame(e) || useGame.getState().putting) return // the golf reads its own drag
     if (e.button === 0) pressAttack()
     else if (e.button === 2) putAwayRod()
   }

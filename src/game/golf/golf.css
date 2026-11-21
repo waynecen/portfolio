@@ -1,0 +1,19 @@
+/* The mini golf (GolfHud.tsx): the scorecard at the top, and the putt's meter in the reel's look (life.css). */
+.golf-card {
+  position: absolute; left: 50%; transform: translateX(-50%); top: calc(max(12px, env(safe-area-inset-top)) + 44px);
+  display: flex; align-items: center; gap: 10px; margin: 0; padding: 6px 14px; border-radius: 999px;
+  background: #fdf5dc; color: #7a6449; box-shadow: 0 2px 0 rgb(122 100 73 / .25); white-space: nowrap;
+  font: 600 13px/1.3 ui-rounded, "SF Pro Rounded", "Nunito", system-ui, sans-serif; pointer-events: none;
+}
+.golf-strokes, .golf-best { padding: 1px 8px; border-radius: 999px; background: rgb(122 100 73 / .14); font-size: 12px; }
+.golf-best { background: rgb(242 178 51 / .3); }
+.golf-putt { pointer-events: auto; }
+.golf-meter { height: 12px; margin: 4px 0 10px; border-radius: 6px; background: rgb(122 100 73 / .18); overflow: hidden; }
+.golf-meter-fill { height: 100%; width: 0; border-radius: 6px; background: linear-gradient(90deg, #8cc084, #f2b233 70%, #d9473b); }
+.golf-leave {
+  padding: 5px 14px; border: 0; border-radius: 999px; background: rgb(122 100 73 / .12); color: inherit; font: inherit; font-size: 13px; cursor: pointer;
+}
+.golf-leave:focus-visible { outline: 2px solid #f2b233; outline-offset: 2px; }
+/* While lining up a putt, a drag anywhere aims it, so the stick and buttons step aside. */
+body[data-putting] .joystick, body[data-putting] .action-button, body[data-putting] .prompt-region { display: none; }
+body.big-text .golf-card, body.big-text .golf-putt { zoom: 1.2; }

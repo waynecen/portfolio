@@ -1,4 +1,5 @@
 import { fishing, reel } from '../life/fishing'
+import { putter } from './putt'
 import { firstTime, record } from './log'
 import { markSeen } from '../portfolio/seen'
 import { click } from './sfx'
@@ -91,6 +92,10 @@ export function advance(): boolean {
 export function interact(): boolean {
   if (useGame.getState().editing || useGame.getState().photo) return false
   if (advance() || reel()) return true
+  if (useGame.getState().putting) {
+    putter.leave() // the use key steps away from the ball again
+    return true
+  }
   const f = useGame.getState().focus
   if (!f) return false
   click()
@@ -145,8 +150,8 @@ export function busy() {
   return useGame.getState().dialogue !== null || held()
 }
 
-/** True while the player can't move: a panel, a fade between areas, edit mode, photo mode or fishing. Dialogue doesn't hold them. */
+/** True while the player can't move: a panel, a fade between areas, edit mode, photo mode, putting or fishing. Dialogue doesn't hold them. */
 export function held() {
   const s = useGame.getState()
-  return s.panel !== null || s.fading || s.editing || s.photo || fishing()
+  return s.panel !== null || s.fading || s.editing || s.photo || s.putting || fishing()
 }
