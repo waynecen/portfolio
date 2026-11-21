@@ -55,13 +55,17 @@ const LAND_PAUSE = 0.35 // seconds between landing a fish and the words about it
 const ZONE = 0.3 // half-width of the green zone
 const ASSIST_ZONE = 0.45 // with the fishing assist on
 const PUSH = 3.4 // how hard holding left or right pushes the needle (units/s²)
-const PULL = [1.8, 4.4] // how hard the fish tugs: the weakest fish, and the strongest (units/s²)
+const PULL = [1.9, 4.2] // how hard the fish tugs: the weakest fish, and the strongest (units/s²)
 const ASSIST_PULL = 0.7 // the fish's tug with the assist on, as a share
-const TUG_EVERY = [0.35, 1.05] // seconds between the fish changing direction, at random between these
+const TUG_EVERY = [0.25, 1.1] // seconds between the fish changing direction, at random between these
+const EASE = [3, 10] // how sharply it turns to a new direction: lazily, or all at once (at random between these)
+const LUNGE = [0.1, 0.3] // chance each turn is a lunge instead: the weakest fish, and the strongest
+const LUNGE_PULL = 1.35 // a lunge tugs this many times harder
+const LUNGE_TIME = [0.15, 0.3] // and lasts this long (s), before the next turn
 const DAMP = 2.4 // how quickly the needle's swing dies away
 const START = 0.25 // the catch meter's level on hooking
-const FILL = [0.26, 0.12] // meter filled per second in the zone: the weakest fish, and the strongest
-const DRAIN = 0.28 // meter drained per second outside it
+const FILL = [0.24, 0.11] // meter filled per second in the zone: the weakest fish, and the strongest
+const DRAIN = 0.3 // meter drained per second outside it
 
 export type FishId = 'minnow' | 'mackerel' | 'tang' | 'puffer' | 'snapper' | 'carp'
 
@@ -126,7 +130,7 @@ export const useFishing = create<FishingState>(() => ({ rod: false, phase: 'idle
  * Per-frame state, outside React: seconds into the current phase and when the bite comes; and while
  * reeling, the fish on the line, the needle (-1..1) and its speed, the fish's tug, and the catch meter (0..1).
  */
-export const line = { t: 0, biteAt: 0, fish: null as Fish | null, needle: 0, speed: 0, tug: 0, tugTo: 0, tugIn: 0, meter: 0, tick: 0 }
+export const line = { t: 0, biteAt: 0, fish: null as Fish | null, needle: 0, speed: 0, tug: 0, tugTo: 0, tugIn: 0, ease: 6, meter: 0, tick: 0 }
 
 /** Half-width of the green zone right now (wider with the assist). */
 export const reelZone = () => (useSettings.getState().fishAssist ? ASSIST_ZONE : ZONE)
@@ -205,14 +209,24 @@ export function tick(dt: number) {
 function reeling(dt: number) {
   const fish = line.fish!
   const assist = useSettings.getState().fishAssist
-  // The fish picks a new direction and strength every so often, and its tug eases toward it.
+  // The fish picks a new direction and strength every so often and turns to it, sometimes lazily,
+  // sometimes all at once; now and then it lunges instead, a short hard yank (more often the harder
+  // it fights), so it can't be read from a rhythm.
   line.tugIn -= dt
   if (line.tugIn <= 0) {
     const strength = (PULL[0] + fish.fight * (PULL[1] - PULL[0])) * (assist ? ASSIST_PULL : 1)
-    line.tugTo = (Math.random() * 2 - 1) * strength
-    line.tugIn = TUG_EVERY[0] + Math.random() * (TUG_EVERY[1] - TUG_EVERY[0])
+    const between = (a: number[]) => a[0] + Math.random() * (a[1] - a[0])
+    if (Math.random() < LUNGE[0] + fish.fight * (LUNGE[1] - LUNGE[0])) {
+      line.tugTo = (Math.random() < 0.5 ? -1 : 1) * strength * LUNGE_PULL
+      line.tugIn = between(LUNGE_TIME)
+      line.ease = EASE[1]
+    } else {
+      line.tugTo = (Math.random() * 2 - 1) * strength
+      line.tugIn = between(TUG_EVERY)
+      line.ease = between(EASE)
+    }
   }
-  line.tug += (line.tugTo - line.tug) * (1 - Math.exp(-6 * dt))
+  line.tug += (line.tugTo - line.tug) * (1 - Math.exp(-line.ease * dt))
   // The player pushes back with left and right (keys, arrows or the joystick).
   const push = Math.max(-1, Math.min(1, +keys.right - +keys.left + stick.x))
   line.speed = (line.speed + (line.tug + push * PUSH) * dt) * Math.exp(-DAMP * dt)
