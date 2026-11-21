@@ -1,4 +1,4 @@
-import { Canvas } from '@react-three/fiber'
+import { Canvas, useFrame } from '@react-three/fiber'
 import { useEffect, useState } from 'react'
 import { Atmosphere } from './Atmosphere'
 import { CameraRig, DISTANCE, HEIGHT } from './CameraRig'
@@ -11,6 +11,7 @@ import { Dust } from './Dust'
 import { EditHud, EditOverlay, EditPointer } from './EditRoom'
 import { Fade } from './Fade'
 import { bindFocus } from './focus'
+import { pollGamepad } from './gamepad'
 import { Butterflies } from './Butterflies'
 import { Cave } from './CaveRooms'
 import { DailyFinds } from './DailyFinds'
@@ -63,8 +64,9 @@ import { WelcomeBack } from './WelcomeBack'
 
 const tier = detectTier()
 
-/** Focus kept inside open panels (focus.ts). */
+/** A controller, read every frame (gamepad.ts), and focus kept inside open panels (focus.ts). */
 function Controls() {
+  useFrame(() => pollGamepad())
   useEffect(() => bindFocus(), [])
   return null
 }

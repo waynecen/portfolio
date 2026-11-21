@@ -142,7 +142,7 @@ export function SettingsPanel() {
               </button>
             </div>
           ))}
-          <p className="settings-note">Escape always closes things.</p>
+          <p className="settings-note">Escape always closes things. A controller works too: stick to walk, A to use, B to roll, X for the sword, Y for the bag.</p>
         </>
       )}
       <div className="bag-head bag-subhead">

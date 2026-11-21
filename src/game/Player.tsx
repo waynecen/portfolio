@@ -12,6 +12,7 @@ import { TILE } from './grid'
 import { isLand } from './Island'
 import { inSquare } from './layout'
 import { PLAYER_MODEL } from './models'
+import { pad } from './gamepad'
 import { actions, bindKeys, buttons, keys, stick } from './input'
 import { PillCharacter, PILL_RADIUS } from './PillCharacter'
 import { PlayerGround } from './PlayerGround'
@@ -103,8 +104,8 @@ export function Player() {
     harm.invuln = Math.max(0, harm.invuln - dt)
     harm.stagger = Math.max(0, harm.stagger - dt)
     const still = talking || harm.stagger > 0
-    let x = still ? 0 : +keys.right - +keys.left + stick.x
-    let z = still ? 0 : +keys.back - +keys.forward + stick.z
+    let x = still ? 0 : +keys.right - +keys.left + stick.x + pad.x
+    let z = still ? 0 : +keys.back - +keys.forward + stick.z + pad.z
     const len2 = x * x + z * z
     // Cap at full speed: diagonals don't go faster, a half-pushed stick goes slower.
     if (len2 > 1) {
@@ -130,7 +131,7 @@ export function Player() {
       // Sprint eases in and out through the same damp, so pressing Shift ramps up rather than jumps.
       const rate = harm.stagger > 0 ? KNOCK_DECEL : len2 > 0 ? ACCEL : DECEL
       // Swinging the sword slows the player to SWING_SPEED, so a swing plants the feet.
-      const top = (keys.sprint || buttons.sprint ? SPEED * SPRINT : SPEED) * (swinging() ? SWING_SPEED : 1)
+      const top = (keys.sprint || buttons.sprint || pad.sprint ? SPEED * SPRINT : SPEED) * (swinging() ? SWING_SPEED : 1)
       v.x = MathUtils.damp(v.x, x * top, rate, dt)
       v.z = MathUtils.damp(v.z, z * top, rate, dt)
       if (len2 === 0 && v.x * v.x + v.z * v.z < 1e-4) v.x = v.z = 0
