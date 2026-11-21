@@ -102,6 +102,20 @@ export function SettingsPanel() {
         <input type="checkbox" checked={s.slimes} onChange={(e) => setSetting('slimes', e.currentTarget.checked)} />
       </label>
       <p className="settings-note">Off for a stroll with nothing to bump into.</p>
+      {/* The page (main.tsx): everything on the island, as a plain page. The button at the top is only a skip link while playing. */}
+      <div className="settings-row">
+        Projects as a plain page
+        <button
+          type="button"
+          className="settings-action"
+          onClick={() => {
+            closePanel()
+            dispatchEvent(new CustomEvent('requestview', { detail: 'page' }))
+          }}
+        >
+          View as page
+        </button>
+      </div>
       {/* Secrets (secrets.ts): each trinket found can be switched on and off; until then, a hint. */}
       <div className="bag-head bag-subhead">
         <h3>Secrets</h3>

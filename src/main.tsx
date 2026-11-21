@@ -66,6 +66,9 @@ async function setView(next: View) {
   dispatchEvent(new CustomEvent<View>('viewchange', { detail: next }))
 }
 
+// The settings' View as a page (SettingsPanel.tsx) asks for the switch from inside the game chunk.
+addEventListener('requestview', (e) => void setView((e as CustomEvent<View>).detail))
+
 if (webgl) {
   toggle.hidden = false
   toggle.addEventListener('click', () => setView(view === 'game' ? 'page' : 'game'))

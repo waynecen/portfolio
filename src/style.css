@@ -14,6 +14,9 @@ body:not(.playing) #game { visibility: hidden; }
 }
 .view-toggle:hover { text-decoration: underline; }
 .view-toggle:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+/* While playing, the way back to the page lives in the settings; the button stays first in the tab
+   order as a skip link, shown only while it has keyboard focus (the page is the accessible version). */
+body.playing .view-toggle:not(:focus-visible) { width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .project-card-region {
   position: absolute; left: 16px; right: 16px; bottom: max(16px, env(safe-area-inset-bottom));
   max-width: 28rem; margin: 0 auto; pointer-events: none;
@@ -178,7 +181,7 @@ body.loading .loader { opacity: 1; visibility: visible; pointer-events: auto; tr
 }
 .edit-toggle {
   position: absolute; padding: 6px 14px;
-  top: calc(max(12px, env(safe-area-inset-top)) + 84px); /* under the Bag chip */ right: max(12px, env(safe-area-inset-right));
+  top: calc(max(12px, env(safe-area-inset-top)) + 40px); /* under the Bag chip */ right: max(12px, env(safe-area-inset-right));
 }
 .edit-toggle kbd, .edit-bar kbd {
   display: inline-block; min-width: 20px; margin-right: 6px; padding: 0 5px; border-radius: 6px; text-align: center;
@@ -200,10 +203,10 @@ body.loading .loader { opacity: 1; visibility: visible; pointer-events: auto; tr
 .edit-bar .edit-done { background: #7a6449; color: #fdf5dc; }
 .edit-done kbd { background: #fdf5dc; color: #7a6449; }
 body.editing .joystick, body.editing .action-button { display: none; }
-/* The bag (inventory.ts): a chip under the view toggle, and a panel like the record player's. */
+/* The bag (inventory.ts): a chip at the top right, and a panel like the record player's. */
 .bag-toggle {
   position: absolute; padding: 6px 14px;
-  top: calc(max(12px, env(safe-area-inset-top)) + 44px); right: max(12px, env(safe-area-inset-right));
+  top: max(12px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right));
   border: 0; border-radius: 999px; background: #fdf5dc; color: #7a6449; cursor: pointer;
   font: 600 13px/1.3 ui-rounded, "SF Pro Rounded", "Nunito", system-ui, sans-serif;
   box-shadow: 0 2px 0 rgb(122 100 73 / .25); -webkit-tap-highlight-color: transparent;
@@ -220,12 +223,12 @@ body.editing .joystick, body.editing .action-button { display: none; }
 /* Put away rod (fishing.ts): the Bag chip's look, under it, or under the Edit room chip indoors. */
 .rod-toggle {
   position: absolute; padding: 6px 14px;
-  top: calc(max(12px, env(safe-area-inset-top)) + 84px); right: max(12px, env(safe-area-inset-right));
+  top: calc(max(12px, env(safe-area-inset-top)) + 40px); right: max(12px, env(safe-area-inset-right));
   border: 0; border-radius: 999px; background: #fdf5dc; color: #7a6449; cursor: pointer;
   font: 600 13px/1.3 ui-rounded, "SF Pro Rounded", "Nunito", system-ui, sans-serif;
   box-shadow: 0 2px 0 rgb(122 100 73 / .25); -webkit-tap-highlight-color: transparent;
 }
-body[data-scene="house"] .rod-toggle { top: calc(max(12px, env(safe-area-inset-top)) + 124px); }
+body[data-scene="house"] .rod-toggle { top: calc(max(12px, env(safe-area-inset-top)) + 80px); }
 .rod-toggle kbd {
   display: inline-block; min-width: 20px; margin-right: 6px; padding: 0 5px; border-radius: 6px; text-align: center;
   background: #7a6449; color: #fdf5dc; font: inherit;
