@@ -1,0 +1,39 @@
+/* Touch controls (Joystick.tsx, MenuPanel.tsx): the stick, A and B, the Start button, and what steps aside for them. */
+.joystick {
+  position: absolute; width: 112px; height: 112px; display: grid; place-items: center;
+  left: max(24px, env(safe-area-inset-left)); bottom: max(24px, env(safe-area-inset-bottom));
+  border: 2px solid var(--ink); border-radius: 50%; background: rgb(255 255 255 / .35); touch-action: none;
+}
+.joystick-knob { width: 48px; height: 48px; border-radius: 50%; background: #fff; border: 2px solid var(--ink); pointer-events: none; }
+.action-button {
+  position: absolute; width: 64px; height: 64px; border-radius: 50%;
+  /* vertically centred on the joystick (112px tall, 24px from the bottom) */
+  right: max(32px, env(safe-area-inset-right)); bottom: calc(max(24px, env(safe-area-inset-bottom)) + 24px);
+  border: 2px solid var(--ink); background: #2b2b2b; color: #fff;
+  box-shadow: inset 0 -4px 0 rgb(0 0 0 / .35), inset 0 2px 0 rgb(255 255 255 / .15);
+  font: 600 26px/1 system-ui, sans-serif; touch-action: none; user-select: none; -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent; cursor: pointer;
+}
+/* B sits down and to the left of A, like a controller's face buttons. */
+.action-button-b {
+  right: calc(max(32px, env(safe-area-inset-right)) + 72px); bottom: max(24px, env(safe-area-inset-bottom));
+}
+.action-button:active, .action-button[aria-pressed="true"] { transform: scale(.92); background: #444; box-shadow: inset 0 2px 0 rgb(0 0 0 / .35); }
+.action-button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+body.editing .joystick, body.editing .action-button { display: none; }
+/* While a panel is open, the joystick and buttons do nothing, so they step aside. */
+body[data-panel]:not([data-panel=""]) .joystick, body[data-panel]:not([data-panel=""]) .action-button { display: none; }
+/* Touch screens: the Start button and its menu (MenuPanel.tsx) hold what the top chips do on a
+   computer, so the chips are hidden and the top of a phone's screen stays clear. */
+.start-button {
+  position: absolute; left: calc(max(24px, env(safe-area-inset-left)) + 124px); bottom: max(16px, env(safe-area-inset-bottom));
+  width: 52px; height: 30px; padding: 0; border: 2px solid var(--ink); border-radius: 999px; background: #2b2b2b; color: #fff;
+  display: grid; place-items: center; box-shadow: inset 0 -3px 0 rgb(0 0 0 / .35); touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.start-button svg { width: 18px; height: 18px; }
+.start-button:active { transform: scale(.92); }
+.start-button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+@media (pointer: coarse) {
+  .hud-chip, .settings-toggle { display: none; }
+  .now-playing { top: calc(max(12px, env(safe-area-inset-top)) + 44px); } /* nothing above it but the hearts now */
+}

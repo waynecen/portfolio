@@ -1,0 +1,32 @@
+/* Island life: the reel (ReelBar.tsx) and Pip's shop (ShopPanel.tsx). */
+/* The reel (ReelBar.tsx): a bar with a green zone and a needle, and a catch meter under it.
+   Bottom centre, where the prompt sits; lifted above the touch controls on phones. */
+.reel {
+  position: absolute; left: 50%; transform: translateX(-50%); bottom: max(16px, env(safe-area-inset-bottom));
+  width: min(22rem, calc(100% - 32px)); padding: 12px 16px 10px; pointer-events: none;
+  background: #fdf5dc; color: #7a6449; border-radius: 22px; box-shadow: 0 4px 0 rgb(122 100 73 / .25), 0 8px 20px rgb(0 0 0 / .18);
+  font: 600 14px/1.3 ui-rounded, "SF Pro Rounded", "Nunito", system-ui, sans-serif; text-align: center;
+}
+@media (pointer: coarse) { .reel { bottom: calc(max(24px, env(safe-area-inset-bottom)) + 128px); } }
+.reel-title { margin: 0 0 8px; }
+.reel-bar { position: relative; height: 18px; border-radius: 9px; background: rgb(122 100 73 / .18); }
+.reel-zone { position: absolute; top: 0; bottom: 0; border-radius: 9px; background: #8cc084; transition: background .15s; }
+.reel-bar[data-out] .reel-zone { background: #c9d9a8; }
+.reel-needle {
+  position: absolute; top: -5px; width: 6px; height: 28px; margin-left: -3px; border-radius: 3px;
+  background: #7a6449; box-shadow: 0 0 0 2px #fdf5dc;
+}
+.reel-bar[data-out] .reel-needle { background: #d9473b; }
+.reel-meter { height: 6px; margin: 10px 0 8px; border-radius: 3px; background: rgb(122 100 73 / .15); overflow: hidden; }
+.reel-meter-fill { height: 100%; width: 0; background: #f2b233; }
+.reel-hint { margin: 0; font-size: 12px; font-weight: 500; opacity: .8; }
+body.big-text .reel { zoom: 1.2; }
+/* Pip's shop (ShopPanel.tsx): the bag's panel, with a row per thing for sale. */
+.shop-note { margin: 0 0 12px; font-weight: 500; font-size: 14px; }
+.shop-list { display: grid; gap: 6px; margin: 0 0 12px; padding: 0; list-style: none; }
+.shop-list li { display: flex; align-items: center; gap: 10px; padding: 6px 8px 6px 10px; border-radius: 14px; background: rgb(122 100 73 / .08); }
+.shop-name { flex: 1; font-size: 14px; }
+.shop-swatch { width: 14px; height: 14px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgb(0 0 0 / .15); }
+.shop-list button { padding: 5px 12px; border: 0; border-radius: 999px; background: #f2b233; color: #4a3a28; font-size: 13px; white-space: nowrap; }
+.shop-list button:disabled { background: rgb(122 100 73 / .15); color: inherit; cursor: default; }
+body.big-text .shop-panel { zoom: 1.2; }

@@ -1,4 +1,11 @@
 import { Canvas, useFrame } from '@react-three/fiber'
+// The game's CSS, in this order: later files override earlier ones (the first view's is in src/style.css).
+import './ui/hud.css'
+import './ui/touch.css'
+import './house/house.css'
+import './ui/panels.css'
+import './life/life.css'
+import './ui/photo.css'
 import { lazy, Suspense, useEffect, useState, type ComponentType, type ReactNode } from 'react'
 import { Atmosphere } from './world/Atmosphere'
 import { CameraRig, DISTANCE, HEIGHT } from './core/CameraRig'

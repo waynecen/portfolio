@@ -1,0 +1,86 @@
+/* The panels (Panel.tsx): the bag, the log, the settings and the touch menu; then the motion and text settings for everything over the game. */
+.bag-panel {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: min(20rem, calc(100% - 32px)); max-height: calc(100% - 32px); overflow: auto; padding: 18px 20px 18px;
+  background: #fdf5dc; color: #7a6449; border-radius: 28px;
+  box-shadow: 0 4px 0 rgb(122 100 73 / .25), 0 12px 32px rgb(0 0 0 / .22);
+  font: 600 15px/1.4 ui-rounded, "SF Pro Rounded", "Nunito", "Varela Round", system-ui, sans-serif;
+  animation: music-pop .2s ease-out both;
+}
+.bag-panel button { font: inherit; color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.bag-panel button:focus-visible { outline: 2px solid #f2b233; outline-offset: 2px; }
+.bag-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.bag-head h2 { margin: 0; font-size: 20px; }
+.bag-count { flex: 1; font-size: 13px; font-weight: 500; opacity: .75; }
+.bag-log { padding: 5px 12px; border: 0; border-radius: 999px; background: rgb(122 100 73 / .12); font-size: 13px; }
+.bag-log kbd { display: inline-block; min-width: 18px; margin-right: 4px; padding: 0 4px; border-radius: 6px; background: #7a6449; color: #fdf5dc; font: inherit; }
+/* The dialogue log (LogPanel.tsx): the bag's panel, with a scrolling list, newest at the bottom. */
+.log-list { margin: 0; padding: 0 4px 0 0; list-style: none; max-height: min(60vh, 28rem); overflow: auto; }
+.log-list li { padding: 8px 0; border-top: 1px solid rgb(122 100 73 / .15); }
+.log-list li:first-child { border-top: 0; }
+.log-list p { margin: 0 0 4px; font-weight: 500; font-size: 14px; }
+.log-list p:last-child { margin-bottom: 0; }
+.log-empty { margin: 0; font-weight: 500; opacity: .75; }
+.bag-close { width: 36px; height: 36px; border: 0; border-radius: 50%; background: rgb(122 100 73 / .12); font-size: 22px; line-height: 1; }
+.bag-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 0 0 14px; padding: 0; list-style: none; }
+.bag-slot {
+  display: grid; place-items: center; width: 100%; aspect-ratio: 1; padding: 0;
+  border: 2px solid transparent; border-radius: 18px; background: rgb(122 100 73 / .1); font-size: 24px;
+}
+.bag-slot[data-empty] { color: rgb(122 100 73 / .4); }
+.bag-slot[aria-pressed="true"] { border-color: #f2b233; background: rgb(242 178 51 / .2); }
+.bag-icon { width: 60%; height: 60%; }
+.bag-subhead { margin-bottom: 10px; }
+/* Places seen (seen.ts): one line each, ticked once seen; unseen ones dimmed. */
+.bag-places { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px; padding: 0; list-style: none; font-size: 13px; }
+.bag-places li { padding: 3px 10px; border-radius: 999px; background: rgb(122 100 73 / .1); opacity: .6; }
+.bag-places li[data-seen] { background: rgb(242 178 51 / .25); opacity: 1; }
+.bag-subhead h3 { margin: 0; font-size: 16px; }
+/* Pearls (pearls.ts): a dot for each, filled in once found. */
+.bag-pearls { display: flex; gap: 6px; margin: 0 0 14px; }
+.bag-pearls span { width: 14px; height: 14px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px rgb(122 100 73 / .35); }
+.bag-pearls span[data-found] { background: radial-gradient(circle at 35% 35%, #fff, #efe4da 55%, #cdbfb3); box-shadow: 0 0 0 1px rgb(122 100 73 / .3); }
+.bag-detail { min-height: 5.5em; }
+.bag-detail h3 { margin: 0 0 4px; font-size: 16px; }
+.bag-detail p { margin: 0; font-weight: 500; font-size: 14px; }
+/* Touch screens: the bag condensed to fit between the top chips and the touch controls, six slots
+   to a row (COLUMNS in InventoryPanel.tsx uses the same query). */
+@media (pointer: coarse) {
+  .bag-panel { width: min(24rem, calc(100% - 24px)); padding: 14px 14px 12px; border-radius: 22px; }
+  .bag-head { margin-bottom: 8px; }
+  .bag-head h2 { font-size: 18px; }
+  .bag-close { width: 32px; height: 32px; font-size: 20px; }
+  .bag-slots { grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 10px; }
+  .bag-slot { border-radius: 12px; font-size: 16px; }
+  .bag-icon { width: 70%; height: 70%; }
+  .bag-places { margin-bottom: 10px; font-size: 12px; }
+  .bag-detail { min-height: 4em; }
+  .bag-detail h3 { font-size: 15px; }
+  .bag-detail p { font-size: 13px; }
+}
+/* The settings panel (SettingsPanel.tsx): the bag's panel, with labelled rows. */
+.settings-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 12px; font-size: 14px; }
+.settings-row input[type="range"] { width: 9rem; accent-color: #7a6449; }
+.settings-row input[type="checkbox"] { width: 20px; height: 20px; accent-color: #7a6449; }
+.settings-row select { font: inherit; color: inherit; padding: 4px 8px; border: 0; border-radius: 10px; background: rgb(122 100 73 / .12); }
+.settings-note { margin: -6px 0 12px; font-size: 12px; font-weight: 500; opacity: .75; }
+/* The keys in the settings (SettingsPanel.tsx): a button per action that waits for the new key. */
+.settings-key { min-width: 5.5rem; padding: 4px 10px; border: 0; border-radius: 10px; background: rgb(122 100 73 / .12); font-size: 13px; }
+.settings-key[data-waiting] { background: #f2b233; color: #2b2b2b; }
+.settings-action { padding: 6px 14px; border: 0; border-radius: 999px; background: rgb(122 100 73 / .12); font-size: 13px; }
+.settings-action[data-confirm] { background: #d9473b; color: #fff; }
+.menu-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.menu-list button {
+  width: 100%; padding: 12px 16px; border: 0; border-radius: 16px; text-align: left; font-size: 16px;
+  background: rgb(122 100 73 / .1); display: flex; align-items: center; gap: 12px;
+}
+.menu-list button .bag-toggle-count { margin-left: auto; }
+.menu-icon { width: 22px; height: 22px; flex: none; }
+.menu-list button:active { background: rgb(242 178 51 / .25); }
+
+/* Settings (settings.ts): "reduce motion" chosen in the game does what the device setting does. */
+body.reduce-motion .dialogue, body.reduce-motion .dialogue[data-done] .dialogue-next, body.reduce-motion .music-panel,
+body.reduce-motion .bag-panel, body.reduce-motion .prompt[data-alert] { animation: none; }
+/* Larger text: the dialogue, prompts, cards and panels scaled up together. */
+body.big-text .dialogue-region, body.big-text .prompt-region, body.big-text .project-card-region,
+body.big-text .bag-panel, body.big-text .music-panel { zoom: 1.2; }

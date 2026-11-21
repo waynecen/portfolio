@@ -1,0 +1,121 @@
+/* Over the game (ui/, Game.tsx): the hearts, the prompt and dialogue, the project card, the chips at the top, the now-playing label, the shell counter, the fade and the settings gear. */
+.project-card-region {
+  position: absolute; left: 16px; right: 16px; bottom: max(16px, env(safe-area-inset-bottom));
+  max-width: 28rem; margin: 0 auto; pointer-events: none;
+}
+.project-card { pointer-events: auto; background: #fff; border: 2px solid var(--ink); border-radius: 0; padding: 20px; }
+.project-card h2 { margin: 0 0 8px; font-weight: 300; font-size: 25px; line-height: 1.27; letter-spacing: -.02em; }
+.project-card p { margin: 0 0 12px; }
+.project-card .project-card-action { margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: .2em; }
+.project-card a { color: var(--ink); }
+.project-card-links { display: flex; flex-wrap: wrap; gap: 4px 20px; margin: 0 0 12px; padding: 0; list-style: none; }
+.hud-hearts {
+  position: absolute; display: flex; gap: 4px; pointer-events: none;
+  top: max(12px, env(safe-area-inset-top)); left: max(12px, env(safe-area-inset-left));
+}
+.heart { width: 32px; height: auto; display: block; filter: drop-shadow(0 1px 1px rgb(0 0 0 / .3)); }
+/* Prompt chip and dialogue box share the card's bottom-centre spot; only one shows at a time. */
+.prompt-region, .dialogue-region {
+  position: absolute; left: 16px; right: 16px; bottom: max(16px, env(safe-area-inset-bottom));
+  margin: 0 auto; pointer-events: none; display: flex; justify-content: center;
+}
+.dialogue-region { max-width: 36rem; }
+.prompt {
+  margin: 0; padding: 6px 14px 6px 6px; background: #fff; border: 2px solid var(--ink);
+  font-size: 12px; text-transform: uppercase; letter-spacing: .2em;
+}
+/* Something is biting (fishing.ts): the prompt lights up and shakes. */
+.prompt[data-alert] { background: #f2b233; animation: prompt-shake .12s linear infinite alternate; }
+@keyframes prompt-shake { from { transform: rotate(-2deg); } to { transform: rotate(2deg); } }
+.prompt-assist { margin-left: 10px; padding: 1px 8px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 10px; letter-spacing: .1em; }
+.prompt kbd {
+  display: inline-block; min-width: 24px; margin-right: 8px; padding: 2px 6px; text-align: center;
+  background: var(--ink); color: #fff; font: 600 13px/1.4 system-ui, sans-serif; letter-spacing: 0;
+}
+/* Cloud speech bubble: an SVG outline stretched behind centred text. */
+.dialogue {
+  position: relative; width: 100%; min-height: 128px; padding: 30px 44px 38px;
+  display: grid; place-items: center; text-align: center; pointer-events: auto; cursor: pointer;
+  color: #7a6449; transform-origin: 50% 100%; isolation: isolate; /* keeps the cloud's z-index:-1 inside the bubble */
+  animation: dialogue-pop .32s cubic-bezier(.34, 1.56, .64, 1) both;
+  -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
+}
+.dialogue-cloud {
+  position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; overflow: visible;
+  fill: #fdf5dc; filter: drop-shadow(0 4px 0 rgb(122 100 73 / .25)) drop-shadow(0 8px 16px rgb(0 0 0 / .18));
+}
+.dialogue-text {
+  margin: 0; max-width: 30ch; font: 600 20px/1.5 ui-rounded, "SF Pro Rounded", "Nunito", "Varela Round", system-ui, sans-serif;
+  /* reserve the full height so the bubble doesn't grow as letters appear */
+  min-height: 3em; text-wrap: balance;
+}
+/* Bobbing "more" arrow, shown once the line has finished typing. */
+.dialogue-next {
+  position: absolute; left: 50%; bottom: 10px; width: 20px; height: 12px; margin-left: -10px;
+  fill: #f2b233; opacity: 0; transition: opacity .15s;
+}
+.dialogue[data-done] .dialogue-next { opacity: 1; animation: dialogue-bob .7s ease-in-out infinite alternate; }
+@keyframes dialogue-pop {
+  from { opacity: 0; transform: translateY(16px) scale(.6, .4); }
+  60% { opacity: 1; }
+  to { transform: none; }
+}
+@keyframes dialogue-bob { to { transform: translateY(4px); } }
+@media (pointer: coarse) {
+  /* Lift bottom-centre UI above the joystick and buttons. */
+  .project-card-region, .prompt-region, .dialogue-region { bottom: calc(max(24px, env(safe-area-inset-bottom)) + 128px); }
+}
+/* Now-playing chip under the hearts. */
+.now-playing {
+  position: absolute; display: flex; align-items: center; gap: 8px; max-width: calc(100% - 140px);
+  top: calc(max(12px, env(safe-area-inset-top)) + 44px); /* under the hearts */ left: max(12px, env(safe-area-inset-left));
+  padding: 4px 12px 4px 4px; background: #fdf5dc; color: #7a6449; border-radius: 999px;
+  box-shadow: 0 2px 0 rgb(122 100 73 / .25);
+  font: 600 13px/1.3 ui-rounded, "SF Pro Rounded", "Nunito", system-ui, sans-serif; font-variant-emoji: text;
+}
+.now-playing button {
+  flex: none; width: 28px; height: 28px; border: 0; border-radius: 50%; background: #7a6449; color: #fdf5dc;
+  font-size: 11px; cursor: pointer;
+}
+.now-playing-title { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+/* The chips at the top right (Chip.tsx): the Bag, Edit room indoors, and Put away rod under them. Same cream as the dialogue. */
+.hud-chip, .edit-bar button {
+  border: 0; border-radius: 999px; background: #fdf5dc; color: #7a6449; cursor: pointer;
+  font: 600 13px/1.3 ui-rounded, "SF Pro Rounded", "Nunito", system-ui, sans-serif;
+  box-shadow: 0 2px 0 rgb(122 100 73 / .25); -webkit-tap-highlight-color: transparent;
+}
+.hud-chip { position: absolute; padding: 6px 14px; right: max(12px, env(safe-area-inset-right)); }
+.hud-chip kbd, .edit-bar kbd {
+  display: inline-block; min-width: 20px; margin-right: 6px; padding: 0 5px; border-radius: 6px; text-align: center;
+  background: #7a6449; color: #fdf5dc; font: inherit;
+}
+.hud-chip:focus-visible, .edit-bar button:focus-visible { outline: 2px solid #f2b233; outline-offset: 2px; }
+.bag-toggle { top: max(12px, env(safe-area-inset-top)); }
+.edit-toggle, .rod-toggle { top: calc(max(12px, env(safe-area-inset-top)) + 40px); }
+body[data-scene="house"] .rod-toggle { top: calc(max(12px, env(safe-area-inset-top)) + 80px); }
+.bag-toggle-count {
+  display: inline-block; min-width: 18px; margin-left: 4px; padding: 0 5px; border-radius: 999px; text-align: center;
+  background: rgb(122 100 73 / .14); font-size: 12px;
+}
+/* Black fade between areas, over the canvas but under the HUD. Duration matches FADE in scene.ts. */
+.fade { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; transition: opacity .25s ease; }
+.fade-on { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .fade { transition: none; } }
+/* The settings chip: a round gear button to the right of the hearts. */
+.settings-toggle {
+  position: absolute; top: max(12px, env(safe-area-inset-top)); left: calc(max(12px, env(safe-area-inset-left)) + 116px);
+  width: 34px; height: 34px; padding: 0; border: 0; border-radius: 50%; background: #fdf5dc; color: #7a6449; cursor: pointer;
+  box-shadow: 0 2px 0 rgb(122 100 73 / .25); -webkit-tap-highlight-color: transparent; display: grid; place-items: center;
+}
+.settings-toggle svg { width: 20px; height: 20px; }
+.settings-toggle:focus-visible { outline: 2px solid #f2b233; outline-offset: 2px; }
+/* The "black and white" secret (secrets.ts): the whole island in greyscale. */
+body.secret-mono #game canvas { filter: grayscale(1); }
+/* The shell counter (GroundDrops.tsx): top centre for a moment after shells are picked up. */
+.shell-counter {
+  position: absolute; left: 50%; transform: translateX(-50%); top: max(12px, env(safe-area-inset-top));
+  display: flex; align-items: center; gap: 6px; padding: 5px 12px 5px 8px; pointer-events: none;
+  background: #fdf5dc; color: #7a6449; border-radius: 999px; box-shadow: 0 2px 0 rgb(122 100 73 / .25);
+  font: 600 13px/1.3 ui-rounded, "SF Pro Rounded", "Nunito", system-ui, sans-serif;
+}
+.shell-counter svg { width: 18px; height: 18px; }
