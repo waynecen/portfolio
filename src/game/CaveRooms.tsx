@@ -36,7 +36,7 @@ import {
 } from './cave'
 import { addCollider, type Collider } from './core/collision'
 import { addHittable } from './combat'
-import { burst } from './Dust'
+import { burst } from './player/Dust'
 import { block as box, flat, merge, pick, tint } from './core/geometry'
 import { damage, harm } from './health'
 import { Pearls } from './HiddenPearls'

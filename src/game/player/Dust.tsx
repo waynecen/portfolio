@@ -1,12 +1,12 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { Color, IcosahedronGeometry, MeshLambertMaterial, Object3D, type InstancedMesh } from 'three'
-import { secretOn } from './secrets'
-import { winter } from './world/season'
-import { sky } from './world/sky'
-import { playerPos, playerRoll, playerVel } from './core/state'
-import { useGame } from './core/store'
-import { reducedMotion } from './core/settings'
+import { secretOn } from '../secrets'
+import { winter } from '../world/season'
+import { sky } from '../world/sky'
+import { playerPos, playerRoll, playerVel } from '../core/state'
+import { useGame } from '../core/store'
+import { reducedMotion } from '../core/settings'
 
 // Little puffs of dust kicked up outdoors: a burst when a roll starts, and a trail while sprinting.
 // One instanced mesh of low-poly balls from a fixed pool; each puff swells, drifts and shrinks to

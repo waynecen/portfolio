@@ -1,9 +1,9 @@
 import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
 import { CanvasTexture, MeshBasicMaterial, PlaneGeometry, type Mesh, type PointLight } from 'three'
-import { sky } from './world/sky'
-import { playerRoll } from './core/state'
-import { useGame } from './core/store'
+import { sky } from '../world/sky'
+import { playerRoll } from '../core/state'
+import { useGame } from '../core/store'
 
 // What sits around the player rather than on them: a soft shadow that keeps the character on the
 // ground (the scene casts no real shadows), and at night a small warm light so a dark outfit still

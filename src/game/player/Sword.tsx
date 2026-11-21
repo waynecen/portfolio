@@ -1,9 +1,9 @@
 import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
 import { BoxGeometry, DoubleSide, MeshBasicMaterial, MeshLambertMaterial, RingGeometry, type Group, type Mesh } from 'three'
-import { CHARGE, SPIN_TIME, SWING_TIME, sword, updateSword } from './combat'
-import { reducedMotion } from './core/settings'
-import { playerFacing } from './core/state'
+import { CHARGE, SPIN_TIME, SWING_TIME, sword, updateSword } from '../combat'
+import { reducedMotion } from '../core/settings'
+import { playerFacing } from '../core/state'
 
 // The sword in the player's hand (combat.ts has the rules): out only while swinging, spinning or
 // charging. A swing sweeps it from the right side to the left across the front, leaving a pale arc;

@@ -15,7 +15,7 @@ import {
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js'
 import { CLIPS, PLAYER_HEIGHT, PLAYER_WIDTH } from './models'
-import { playerRoll, playerVel } from './core/state'
+import { playerRoll, playerVel } from '../core/state'
 
 // The player as a rigged 3D model (made in Tripo; see docs/CHARACTER.md), shown inside
 // PillCharacter's rig, which still turns it and tumbles it through rolls. Its own clips do the

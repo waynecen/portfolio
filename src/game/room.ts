@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { INTERIOR, ROOM } from './world/layout'
-import { PILL_RADIUS } from './PillCharacter'
+import { PILL_RADIUS } from './player/PillCharacter'
 import type { Spawn } from './core/scene'
 
 // The furniture in the house, on the room's tile grid. Every piece covers a set block of tiles

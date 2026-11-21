@@ -4,7 +4,7 @@ import { Color, ConeGeometry, CylinderGeometry, MeshLambertMaterial, Object3D, t
 import { addCollider } from './core/collision'
 import { addHittable } from './combat'
 import { maybeDrop } from './drops'
-import { burst } from './Dust'
+import { burst } from './player/Dust'
 import { merge } from './core/geometry'
 import { isInland } from './world/Island'
 import { PEARLS, revealPearl, usePearls } from './pearls'
