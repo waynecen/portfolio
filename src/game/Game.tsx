@@ -50,6 +50,11 @@ export function Game() {
   useEffect(() => {
     document.body.dataset.scene = scene
   }, [scene])
+  // The open panel, if any, so CSS can hide the touch controls under it (style.css).
+  const panel = useGame((s) => s.panel)
+  useEffect(() => {
+    document.body.dataset.panel = panel ?? ''
+  }, [panel])
   useEffect(() => {
     setActive(isGameView()) // catch a switch that happened before this effect attached
     const onVisibility = () => setVisible(!document.hidden)

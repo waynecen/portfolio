@@ -10,7 +10,10 @@ import { useGame } from './store'
 // once one's caught (fishing.ts), and the chosen slot's name and words below. Arrow keys move
 // between slots, across both grids; B, Escape or × closes it.
 
-const COLUMNS = 3 // slots per row; matches .bag-slots in style.css. Keep ITEMS a multiple of it, so arrows go straight down into the fish.
+// Slots per row: 3, or 6 on touch screens, where the bag is condensed to fit between the HUD and
+// the touch controls. Matches .bag-slots in style.css (same media query). Keep ITEMS a multiple of
+// both, so arrows go straight down into the fish.
+const COLUMNS = matchMedia('(pointer: coarse)').matches ? 6 : 3
 
 // A small picture of each item on a 24 × 24 grid, in its colour (`c`).
 const ICONS: Record<ItemId, (c: string) => ReactNode> = {

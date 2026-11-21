@@ -255,6 +255,23 @@ body[data-scene="house"] .rod-toggle { top: calc(max(12px, env(safe-area-inset-t
 .bag-detail { min-height: 5.5em; }
 .bag-detail h3 { margin: 0 0 4px; font-size: 16px; }
 .bag-detail p { margin: 0; font-weight: 500; font-size: 14px; }
+/* Touch screens: the bag condensed to fit between the top chips and the touch controls, six slots
+   to a row (COLUMNS in InventoryPanel.tsx uses the same query). */
+@media (pointer: coarse) {
+  .bag-panel { width: min(24rem, calc(100% - 24px)); padding: 14px 14px 12px; border-radius: 22px; }
+  .bag-head { margin-bottom: 8px; }
+  .bag-head h2 { font-size: 18px; }
+  .bag-close { width: 32px; height: 32px; font-size: 20px; }
+  .bag-slots { grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 10px; }
+  .bag-slot { border-radius: 12px; font-size: 16px; }
+  .bag-icon { width: 70%; height: 70%; }
+  .bag-places { margin-bottom: 10px; font-size: 12px; }
+  .bag-detail { min-height: 4em; }
+  .bag-detail h3 { font-size: 15px; }
+  .bag-detail p { font-size: 13px; }
+}
+/* While a panel is open, the joystick and buttons do nothing, so they step aside. */
+body[data-panel]:not([data-panel=""]) .joystick, body[data-panel]:not([data-panel=""]) .action-button { display: none; }
 /* Black fade between areas, over the canvas but under the HUD. Duration matches FADE in scene.ts. */
 .fade { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; transition: opacity .25s ease; }
 .fade-on { opacity: 1; }

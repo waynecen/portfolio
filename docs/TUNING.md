@@ -388,6 +388,8 @@ An item's `at` is only where it would like to be. If that tile is a road, a plac
 
 **Adding an item:** add its id to `ItemId` and an entry to `ITEMS`, then give it a shape in `SHAPES` (Pickups.tsx) and an icon in `ICONS` (InventoryPanel.tsx), a small picture on a 24 × 24 grid. Bag styles are `.bag-*` in [style.css](../src/style.css).
 
+On touch screens the bag is condensed to fit between the top chips and the touch controls: six slots to a row instead of three (`COLUMNS` in InventoryPanel.tsx and the `(pointer: coarse)` rules in style.css use the same media query). While any panel is open, the joystick and buttons are hidden (`data-panel` on `<body>`, set in Game.tsx).
+
 Below the items, the bag lists every kind of fish (see Fishing). Arrow keys run on from one grid into the other, so keep `ITEMS` a multiple of `COLUMNS`.
 
 ---
