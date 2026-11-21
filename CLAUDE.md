@@ -2,6 +2,25 @@
 
 React Three Fiber + Vite portfolio: an explorable 3D diorama world. Deployed on Vercel. Branch `main`.
 
+## Where things live
+
+| Path | What | Entry |
+| --- | --- | --- |
+| `src/main.tsx`, `index.html` | The first view: the HTML page, the loader, the page/game switch | `main.tsx` |
+| `src/game/Game.tsx` | The game's scene graph and HUD, put together | `mount.tsx` |
+| `src/game/core/` | Store, scenes, input, keys, controller, focus, collision, camera, sound, music, saving | `store.ts` |
+| `src/game/world/` | Island, roads and places, trees, city square, notice board, sky and weather | `Island.tsx`, `layout.ts` |
+| `src/game/player/` | Movement, the pill and model, hat, sword | `Player.tsx` |
+| `src/game/house/` | House, furniture, edit mode, record player | `House.tsx` |
+| `src/game/portfolio/` | Projects, stations, About sign, mailbox, project card, places seen | `projects.ts` |
+| `src/game/life/` | Villagers, bugs, fishing, shop, daily finds, things for the bag | `Villagers.tsx` |
+| `src/game/combat/` | Sword, grass and pots, slimes, hearts, shells | `combat.ts` |
+| `src/game/secrets/` | Pearls, cave, islet, trinkets, calendar | `pearls.ts` |
+| `src/game/ui/` | Dialogue, panels, touch controls, photo mode, welcome back | `Dialogue.tsx` |
+| `docs/` | `ROADMAP.md`, `CHARACTER.md`, `TUNING.md` (site-wide notes and the index) | |
+
+Before changing a folder, read its `NOTES.md`: its constants and rules. Don't read `docs/TUNING.md` or `src/style.css` whole; search them. Keep each `NOTES.md` current when its constants change.
+
 ## Commits
 
 - Use Conventional Commits: `feat:`, `fix:`, `docs:`, `refactor:`, `perf:`, `test:`, `chore:`.
