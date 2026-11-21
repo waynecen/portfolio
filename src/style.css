@@ -367,8 +367,10 @@ body.big-text .reel { zoom: 1.2; }
 .menu-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
 .menu-list button {
   width: 100%; padding: 12px 16px; border: 0; border-radius: 16px; text-align: left; font-size: 16px;
-  background: rgb(122 100 73 / .1); display: flex; align-items: center; justify-content: space-between;
+  background: rgb(122 100 73 / .1); display: flex; align-items: center; gap: 12px;
 }
+.menu-list button .bag-toggle-count { margin-left: auto; }
+.menu-icon { width: 22px; height: 22px; flex: none; }
 .menu-list button:active { background: rgb(242 178 51 / .25); }
 @media (pointer: coarse) {
   .bag-toggle, .settings-toggle, .guide-toggle, .rod-toggle, .edit-toggle { display: none; }
