@@ -154,6 +154,25 @@ The game has grown to 107 files in one flat folder, a 710-line TUNING.md and a 4
 
 Suggested order for Phase H: 47 → 49 → 48 (small and visible), then 35 → 36 → 37 (moves, while nothing else is changing), then 39 → 40 → 41 → 42 → 43, then 44, 45 → 46, and 38 last.
 
+## Phase I: Mini golf *(next)*
+
+A small putting course to wander into: four or five holes, each a little diorama, played with the controls the visitor already has. It's optional, quick (a hole is under a minute), and never stands between a visitor and the projects. The holes, art and names are our own; it borrows only the genre. It lives in a new `src/game/golf/` folder with its own NOTES.md, loads on demand like the cave (H45), and draws its frames with `useSceneFrame('golf', …)`.
+
+51. **The course and the way in.** A clubhouse hut and a flag on the island, reached by a road (a place in pois.ts), with a door into a new `'golf'` scene (scene.ts, like the cave). Each hole is a room-sized green with the camera held on it, as in the cave (CameraRig.tsx), sliding to the next hole once one is sunk. A villager at the hut explains it once (`sayFirst`). Leaving through the hut's door at any point is always allowed.
+52. **The ball.** A small physics step of its own in `golf/ball.ts`: a 2D ball on the green with rolling friction, fixed-step substeps so a hard putt can't tunnel, and bounces off walls that reflect the velocity, using the box and circle shapes collision.ts already has. It drops in when it rolls over the cup slowly enough, and lips out when it's too fast. Allocation-free, like everything per frame.
+53. **Putting with the controls already there.**
+    - **Keyboard and controller:** walk to the ball, turn to aim, hold the sword key or button to charge (the same hold as the sword's spin, combat.ts), and let go to putt. The stick or the walk keys fine-tune the aim while charging.
+    - **Mouse:** drag back from the ball and let go, like a slingshot, with left click.
+    - **Touch:** the same drag on the screen.
+    - **On every device:** a short dotted aim line shows the first bounce, and the power shows as a meter in the reel bar's style (ReelBar.tsx). Every input names its keys through `hint()`.
+54. **Holes that teach one idea each.** A straight first putt, a bank shot off a wall, a slope (tiles that push the ball, drawn as stripes), a moving gate timed with a swing of the sword, and a last hole with two routes. Each has a par, a tee and a cup, written as data (`golf/holes.ts`) so a hole is added without new code.
+55. **A scorecard that's kind.** Strokes per hole against par in a `<Panel>` at the end. There's no limit on strokes: after twice par, a "pick it up" button moves on with par plus two. The best round is saved (`readSaved`/`writeSaved`, a progress key). Shells for every hole at par or under, and a small trophy for the house the first time the course is finished under par.
+56. **Feel and feedback, with rules.** A soft tap on the putt (louder for harder ones), a rattle in the cup, and a short fanfare for a hole in one (sfx.ts, synthesized). A brief camera nudge toward the cup on a hole in one only, and never with reduced motion. Photo mode works on the course.
+57. **Assists, honestly.** A longer aim line, and a "gentle greens" setting that adds friction near the cup, in the settings with the fishing assist. While one is on, it shows on the scorecard, like "Assist on" on the fishing prompt.
+58. **Saved, counted, documented.** The best round and the trophy count as progress, so Start over forgets them. A `Golf finished` analytics event fires with the strokes against par. `golf/NOTES.md` gets the constants (friction, power, cup radius, lip-out speed) and the hole format.
+
+Suggested order for Phase I: 51 → 52 → 53 (one hole playable end to end), then 54, 55, 56, 57, 58.
+
 ## Suggested order
 
 A1 → A2 → A3 and A4 → B6–B9 → C10 → E18. Everything after that can follow appetite.
