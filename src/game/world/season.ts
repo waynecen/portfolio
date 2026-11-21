@@ -10,7 +10,7 @@ const BY_MONTH: Season[] = ['winter', 'winter', 'spring', 'spring', 'spring', 's
 const param = new URLSearchParams(location.search).get('season')
 
 /** The season now, fixed for the visit. */
-export const season: Season = BY_MONTH.includes(param as Season) ? (param as Season) : BY_MONTH[new Date().getMonth()]
+const season: Season = BY_MONTH.includes(param as Season) ? (param as Season) : BY_MONTH[new Date().getMonth()]
 
 export const winter = season === 'winter'
 export const spring = season === 'spring'

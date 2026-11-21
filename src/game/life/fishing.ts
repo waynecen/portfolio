@@ -92,8 +92,6 @@ export const FISH: Fish[] = [
   { id: 'snapper', name: 'Red snapper', description: 'Put up a real fight. Your arms are still shaking.', color: '#d9624a', weight: 10, size: [30, 70], fight: 0.8 },
   { id: 'carp', name: 'Golden carp', description: 'They say it grants a wish. It didn’t say which.', color: '#f2b233', weight: 5, size: [40, 90], fight: 1 },
 ]
-export const FISH_BY_ID = Object.fromEntries(FISH.map((f) => [f.id, f])) as Record<FishId, Fish>
-
 export type FishRecord = { count: number; best: number }
 const SAVE_KEY = 'fish-v1'
 

@@ -107,7 +107,7 @@ const floatGeometry = new SphereGeometry(0.055, 8, 6)
 const floatMaterial = new MeshLambertMaterial({ color: '#e0473b', emissive: '#e0473b', emissiveIntensity: 0.25 })
 
 /** The rod's tip in the world, written by <HeldRod> each frame; the line runs from here to the float. */
-export const rodTip = new Vector3()
+const rodTip = new Vector3()
 const floatPos = new Vector3()
 
 // The fishing line: two points, rewritten in place every frame.

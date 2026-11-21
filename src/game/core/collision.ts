@@ -8,7 +8,7 @@ export type Collider =
   | { kind: 'box'; x: number; z: number; hx: number; hz: number }
 
 // Flat list for now; swap for a spatial grid once the map has hundreds of obstacles.
-export const colliders: Collider[] = []
+const colliders: Collider[] = []
 
 /** Adds a collider; returns a function that removes it (use as an effect cleanup). */
 export function addCollider(c: Collider): () => void {

@@ -18,7 +18,7 @@ const within = (set: Set<string>, i: number, j: number, ring: number, behind = r
   return false
 }
 
-export const onRoad = (i: number, j: number) => roads.has(key(i, j))
+const onRoad = (i: number, j: number) => roads.has(key(i, j))
 
 /** True if a road, or a place or a tile round it, is within `ring` tiles: what slimes keep away from. */
 export function nearPath(i: number, j: number, ring: number) {

@@ -14,7 +14,7 @@ declare global {
 }
 
 const local = /^(localhost|127\.|\[::1\]|0\.0\.0\.0)/.test(location.hostname)
-export const enabled = import.meta.env.PROD && !local
+const enabled = import.meta.env.PROD && !local
 
 if (enabled) {
   // Calls made before the script arrives are queued, and sent once it loads.

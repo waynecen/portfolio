@@ -93,7 +93,7 @@ useKeymap.subscribe(rebuild)
 export const actionFor = (code: string): Action | undefined => byCode.get(code)
 
 /** The action's main key (its code). */
-export const mainKey = (a: Action): string => useKeymap.getState().main[a] ?? DEFAULTS[a][0]
+const mainKey = (a: Action): string => useKeymap.getState().main[a] ?? DEFAULTS[a][0]
 
 /** Every key that does this action, main first. */
 export function keysFor(a: Action): string[] {

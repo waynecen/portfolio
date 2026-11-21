@@ -30,7 +30,7 @@ type Slot = {
 }
 
 /** In start order. Night wraps past midnight to dawn. */
-export const SLOTS: Slot[] = [
+const SLOTS: Slot[] = [
   {
     name: 'dawn', start: 5, weather: 'mist',
     background: '#d9d0d6', fog: '#e4dde0', fogNear: 11, fogFar: 30,
@@ -69,7 +69,7 @@ export const SLOTS: Slot[] = [
 ]
 
 /** Hours each slot takes to blend in from the one before. */
-export const BLEND = 0.5
+const BLEND = 0.5
 
 /** The sampled look for one moment. Filled in place by sample(). */
 export type Sky = {
@@ -89,7 +89,7 @@ export type Sky = {
   weather: Record<Weather, number>
 }
 
-export function createSky(): Sky {
+function createSky(): Sky {
   return {
     background: new Color(), fog: new Color(), fogNear: 0, fogFar: 0,
     hemiSky: new Color(), hemiGround: new Color(), hemiIntensity: 0,

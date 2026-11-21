@@ -4,7 +4,7 @@ import { addShells } from '../combat/drops'
 import { DOCK } from '../life/fishing'
 import { say, sayFirst } from '../core/interact'
 import { ISLET } from '../world/Island'
-import { ISLET_BOAT, ISLET_SPAWN } from '../world/layout'
+import { ISLET_SPAWN } from '../world/layout'
 import { goTo, type Spawn } from '../core/scene'
 import { landed, splash } from '../core/sfx'
 import { readSaved, writeSaved } from '../core/persist'
@@ -16,7 +16,7 @@ import { readSaved, writeSaved } from '../core/persist'
 /** The boat at the dock: moored along its east side, near the shore end, out of the fishing spots' way. */
 export const DOCK_BOAT = { x: DOCK.x + DOCK.half + 0.55, z: 16.7 }
 /** Rowing back lands the player on the dock, facing the island (rowing out: ISLET_SPAWN in layout.ts). */
-export const DOCK_SPAWN: Spawn = { x: DOCK.x, z: DOCK_BOAT.z, heading: Math.PI }
+const DOCK_SPAWN: Spawn = { x: DOCK.x, z: DOCK_BOAT.z, heading: Math.PI }
 /** The chest, sign and buried pearl on the islet. */
 export const CHEST_AT = { x: ISLET.x + 2, z: ISLET.z + 2 }
 export const SIGN_AT = { x: ISLET.x - 1.3, z: ISLET.z - ISLET.r + 0.8 }

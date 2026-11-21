@@ -68,7 +68,7 @@ export function leavePhoto() {
   useGame.setState({ photo: false })
 }
 
-export function setPose(n: number) {
+function setPose(n: number) {
   const pose = ((n % POSES.length) + POSES.length) % POSES.length
   usePhoto.setState({ pose })
   playerFacing.heading = POSES[pose].heading

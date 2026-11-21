@@ -12,7 +12,7 @@ import { clear } from '../world/tiles'
 // with a few shells under it. Each can be used once a day; the browser remembers which day.
 
 /** Tips and fun facts, one a day in turn. Placeholders: write your own. */
-export const MESSAGES: string[][] = [
+const MESSAGES: string[][] = [
   ['“The fish bite more at dusk.”', 'Probably not true. But the evening light is nice on the water.'],
   ['“Every pillar on this island is a project.”', 'Walk up to one to read about it; use it to open it.'],
   ['“The roads all lead somewhere.”', 'So does the long grass, if you wade in.'],

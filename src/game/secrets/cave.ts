@@ -26,8 +26,6 @@ export const ROOM_OF = Object.fromEntries(ROOMS.map((r) => [r.id, r])) as Record
 export const centreOf = (r: Room) => ({ x: CAVE.x + r.i * CAVE_PITCH.x, z: CAVE.z + r.j * CAVE_PITCH.z })
 
 /** The room at grid position (i, j), if there is one. */
-export const roomAt = (i: number, j: number) => ROOMS.find((r) => r.i === i && r.j === j) ?? null
-
 /** Tiles inside a room, room-local: i from -I to I, j from -J to J. */
 export const I = ROOM.hx - 0.5
 export const J = ROOM.hz - 0.5
@@ -57,7 +55,6 @@ type CaveState = {
 }
 
 const KEY = 'cave-v1'
-const FRESH: CaveState = { solved: false, key: 'none', beaten: false, heart: false, oar: false }
 function load(): CaveState {
   const v = (readSaved(KEY) ?? {}) as Partial<CaveState>
   return {

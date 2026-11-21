@@ -87,7 +87,7 @@ export function putBack() {
 }
 
 /** Moves the cursor (and anything in hand) by whole tiles. */
-export function nudge(di: number, dj: number) {
+function nudge(di: number, dj: number) {
   const { cursor, held } = useEdit.getState()
   const t = { i: cursor.i + di, j: cursor.j + dj }
   if (held) return holdOver(t)
@@ -97,7 +97,7 @@ export function nudge(di: number, dj: number) {
 }
 
 /** The use key in edit mode: pick up what's under the cursor, or put down what's in hand. */
-export function use() {
+function use() {
   if (useEdit.getState().held) putDown()
   else if (!pickUp(useEdit.getState().cursor)) blip(0.6)
 }

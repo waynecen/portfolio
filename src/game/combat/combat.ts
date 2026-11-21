@@ -18,7 +18,7 @@ export type Hittable = {
   hit: (power: number, dx: number, dz: number) => void
 }
 
-export const hittables: Hittable[] = []
+const hittables: Hittable[] = []
 
 /** Adds a hittable; returns a function that removes it (use as an effect cleanup). */
 export function addHittable(h: Hittable): () => void {

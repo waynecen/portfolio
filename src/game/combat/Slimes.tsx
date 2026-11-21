@@ -61,7 +61,7 @@ function placeHomes() {
   }
   return homes
 }
-export const slimeHomes = placeHomes()
+const slimeHomes = placeHomes()
 
 // Each slime's state, in plain arrays: no allocation per frame.
 const n = slimeHomes.length

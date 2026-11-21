@@ -30,7 +30,7 @@ function settle(at: Secret['at']) {
   return { x: at.i, z: at.j }
 }
 /** Where each trinket waits. */
-export const secretSpots = Object.fromEntries(SECRETS.map((s) => [s.id, settle(s.at)]))
+const secretSpots = Object.fromEntries(SECRETS.map((s) => [s.id, settle(s.at)]))
 
 const geometry = new OctahedronGeometry(0.14, 0)
 

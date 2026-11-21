@@ -7,7 +7,7 @@ import { visit } from '../ui/visits'
 // changes nothing the visitor has done. Add ?date=MM-DD to the URL to try a given day.
 
 /** The island's birthday: the day the site went up. A placeholder; change it to the real day. */
-export const ISLAND_BIRTHDAY = { month: 11, day: 20 }
+const ISLAND_BIRTHDAY = { month: 11, day: 20 }
 
 const MILESTONES = [10, 25, 50, 100] // visits worth a word
 const NIGHT = [2, 5] // hours (from, to) when the About sign asks if you shouldn't be asleep

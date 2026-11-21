@@ -12,7 +12,7 @@ export type PoiKind = 'home' | 'project' | 'about' | 'contact' | 'dock' | 'fores
 export type Poi = { kind: PoiKind; x: number; z: number; label: string }
 
 /** The house at the centre of the map, where the game starts. Places sit on tile centres (whole numbers). */
-export const HUB = { x: 0, z: 0 }
+const HUB = { x: 0, z: 0 }
 
 export const pois: Poi[] = [
   { kind: 'home', ...HUB, label: 'Home' }, // signposts put this first (HOME below)
@@ -29,7 +29,7 @@ export const pois: Poi[] = [
 const key = (t: Tile) => `${t.i},${t.j}`
 
 /** True if tile (i, j) is under the waterfall's outcrop (Waterfall.tsx). */
-export const inOutcrop = (i: number, j: number) => i >= OUTCROP.i0 && i <= OUTCROP.i1 && j >= OUTCROP.j0 && j <= OUTCROP.j1
+const inOutcrop = (i: number, j: number) => i >= OUTCROP.i0 && i <= OUTCROP.i1 && j >= OUTCROP.j0 && j <= OUTCROP.j1
 
 /** True if tile (i, j) is under the house. */
 export function inHouse(i: number, j: number): boolean {
@@ -88,7 +88,7 @@ function nearestOnLoop(goal: Tile): Tile {
  * loop at the tile nearest the place and goes along the shorter axis first, so it arrives along
  * the longer one, facing the place. If that would cross another place's tile, it takes the other L.
  */
-export const roads: Tile[][] = pois
+const roads: Tile[][] = pois
   .filter((p) => p.kind !== 'home')
   .map((p) => {
     const goal = tileAt(p.x, p.z)

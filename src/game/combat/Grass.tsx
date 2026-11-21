@@ -151,7 +151,7 @@ function settle(at: { i: number; j: number }, taken: Set<string>) {
   return { x: at.i, z: at.j }
 }
 const taken = new Set<string>()
-export const potSpots = POT_SPOTS.map((p) => settle(p, taken))
+const potSpots = POT_SPOTS.map((p) => settle(p, taken))
 
 const potGeometry = merge([
   new CylinderGeometry(0.17, 0.13, 0.34, 10).translate(0, 0.17, 0),

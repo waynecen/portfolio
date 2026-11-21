@@ -9,8 +9,8 @@ import { DISTANCE } from './CameraRig'
 // Only the far side bends, and only past FLAT units behind the player, so the ground you walk on
 // (and the whole room indoors) stays flat. The bend is a parabola: CURVE × distance².
 
-export const CURVE = 0.02 // how fast the ground falls away past FLAT; 0 turns the curve off
-export const FLAT = 6 // units behind the player before it starts
+const CURVE = 0.02 // how fast the ground falls away past FLAT; 0 turns the curve off
+const FLAT = 6 // units behind the player before it starts
 
 // Where the camera looks is a fixed offset from where it sits (see CameraRig.tsx), so the shader
 // finds the player's depth from cameraPosition, which every material already has.

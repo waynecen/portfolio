@@ -57,7 +57,7 @@ export function bindKeys(): () => void {
       }
       if (!e.repeat && photoKey(e)) return
     }
-    // J or X (or the left mouse button, below): the sword. Down swings (and starts a charge), up lets a charged spin go (combat.ts).
+    // The sword's keys (J or X unless remapped; the left mouse button is below). Down swings (and starts a charge), up lets a charged spin go (combat.ts).
     if (action === 'attack') {
       if (isTyping(e.target) || !document.body.classList.contains('playing')) return
       if (down && !e.repeat) pressAttack()
