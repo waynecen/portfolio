@@ -1,7 +1,7 @@
 import { track } from '../analytics'
 import { useEffect } from 'react'
-import { addCollider } from './collision'
-import { register } from './interact'
+import { addCollider } from './core/collision'
+import { register } from './core/interact'
 import { CONTACT_AT, contactCard } from './places'
 
 // The Contact place: a mailbox. Walking up shows the contact card with every link; using it opens

@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Color, type Group } from 'three'
 import { bottleAt, bottleWaiting, dig, digAt, digWaiting, readBottle } from './daily'
 import { burst } from './Dust'
-import { register } from './interact'
-import { reducedMotion } from './settings'
+import { register } from './core/interact'
+import { reducedMotion } from './core/settings'
 import { useTreasureMap } from './shop'
 
 // Today's message bottle on the shore and dig spot in the grass (daily.ts). Each goes once used.

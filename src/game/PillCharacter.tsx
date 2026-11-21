@@ -2,8 +2,8 @@ import { useFrame } from '@react-three/fiber'
 import { useRef, type ReactNode } from 'react'
 import { MathUtils, MeshLambertMaterial, SphereGeometry, type Group, type Mesh } from 'three'
 import { photoPose } from './photo'
-import { playerFacing, playerRoll, playerVel } from './state'
-import { reducedMotion } from './settings'
+import { playerFacing, playerRoll, playerVel } from './core/state'
+import { reducedMotion } from './core/settings'
 
 // Procedural walk: everything is driven by playerVel each frame, no clips or bones.
 // Local +z is "forward"; at yaw 0 the pill faces the camera.

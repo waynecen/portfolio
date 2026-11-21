@@ -1,10 +1,10 @@
 import { useRef, type PointerEvent } from 'react'
 import { pressAttack, releaseAttack } from './combat'
 import { putAwayRod, useFishing } from './fishing'
-import { actions, buttons, stick } from './input'
-import { interact } from './interact'
-import { isTouch } from './quality'
-import { useGame } from './store'
+import { actions, buttons, stick } from './core/input'
+import { interact } from './core/interact'
+import { isTouch } from './core/quality'
+import { useGame } from './core/store'
 
 const TRAVEL = 40 // px the knob can move from center
 const DEAD_ZONE = 0.15

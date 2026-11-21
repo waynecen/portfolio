@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
-import { addCollider } from './collision'
-import { register, say } from './interact'
+import { addCollider } from './core/collision'
+import { register, say } from './core/interact'
 import { NOTICE_AT } from './layout'
 import { noticeLines } from './notice'
 

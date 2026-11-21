@@ -1,10 +1,10 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { CanvasTexture, Color, MeshBasicMaterial, MeshLambertMaterial, PlaneGeometry, RepeatWrapping, SphereGeometry, type BufferGeometry, type Mesh } from 'three'
-import { addCollider } from './collision'
-import { block, merge, pick, tint } from './geometry'
+import { addCollider } from './core/collision'
+import { block, merge, pick, tint } from './core/geometry'
 import { CAVE_MOUTH, OUTCROP } from './layout'
-import { reducedMotion } from './settings'
+import { reducedMotion } from './core/settings'
 import { winter } from './season'
 
 // A rocky outcrop on the island's north shore with a waterfall pouring down its front, over the

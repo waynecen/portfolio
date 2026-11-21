@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { heal, hurting } from './health'
-import { pickup } from './sfx'
+import { pickup } from './core/sfx'
 
 // What cut grass, broken pots and popped slimes leave behind (Drops.tsx draws them): a shell (the
 // island's currency, kept in this browser) or a heart. Walking over one picks it up. They wait a

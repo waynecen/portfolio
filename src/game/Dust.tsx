@@ -4,9 +4,9 @@ import { Color, IcosahedronGeometry, MeshLambertMaterial, Object3D, type Instanc
 import { secretOn } from './secrets'
 import { winter } from './season'
 import { sky } from './sky'
-import { playerPos, playerRoll, playerVel } from './state'
-import { useGame } from './store'
-import { reducedMotion } from './settings'
+import { playerPos, playerRoll, playerVel } from './core/state'
+import { useGame } from './core/store'
+import { reducedMotion } from './core/settings'
 
 // Little puffs of dust kicked up outdoors: a burst when a roll starts, and a trail while sprinting.
 // One instanced mesh of low-poly balls from a fixed pool; each puff swells, drifts and shrinks to

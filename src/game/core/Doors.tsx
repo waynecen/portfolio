@@ -1,6 +1,6 @@
 import { useFrame } from '@react-three/fiber'
-import { CAVE, CAVE_MOUTH, CAVE_SPAWN, DOOR, FRONT_DOOR, INSIDE_SPAWN, INTERIOR, OUTSIDE_SPAWN, ROOM, WATERFALL_SPAWN } from './layout'
-import { PILL_RADIUS } from './PillCharacter'
+import { CAVE, CAVE_MOUTH, CAVE_SPAWN, DOOR, FRONT_DOOR, INSIDE_SPAWN, INTERIOR, OUTSIDE_SPAWN, ROOM, WATERFALL_SPAWN } from '../layout'
+import { PILL_RADIUS } from '../PillCharacter'
 import { goTo } from './scene'
 import { playerPos, teleport } from './state'
 import { useGame } from './store'

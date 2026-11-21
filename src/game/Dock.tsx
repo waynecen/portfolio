@@ -16,14 +16,14 @@ import {
   type Group,
   type Mesh,
 } from 'three'
-import { addCollider } from './collision'
+import { addCollider } from './core/collision'
 import { BARREL_AT, CAST_TIME, DOCK, DOCK_TILES, line, SPOTS, tick, toggleRod, cast, useFishing } from './fishing'
-import { block, merge, pick, tint, unindexed } from './geometry'
-import { register } from './interact'
+import { block, merge, pick, tint, unindexed } from './core/geometry'
+import { register } from './core/interact'
 import { isLand, WATER_Y } from './Island'
 import { sky } from './sky'
-import { playerFacing, playerRoll } from './state'
-import { reducedMotion } from './settings'
+import { playerFacing, playerRoll } from './core/state'
+import { reducedMotion } from './core/settings'
 
 // The fishing dock at the island's bottom-left (rules and catches in fishing.ts): a plank walkway
 // on posts out over the water, a barrel of rods at its foot, and the ripple to fish at. While the

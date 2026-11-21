@@ -1,10 +1,10 @@
 import { useThree } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
-import { keyName } from './keymap'
+import { keyName } from './core/keymap'
 import { camera, download, leavePhoto, nextPose, POSES, setZoom, shoot, usePhoto, ZOOM_MAX, ZOOM_MIN, zoomBy } from './photo'
-import { isTouch } from './quality'
+import { isTouch } from './core/quality'
 import { secretOn } from './secrets'
-import { useGame } from './store'
+import { useGame } from './core/store'
 
 // Photo mode's buttons (photo.ts), along the bottom of the screen, with the rest of the HUD hidden
 // (style.css: body[data-photo]). PhotoCapture, inside the canvas, renders a fresh frame and saves it.

@@ -1,7 +1,7 @@
 import { useEffect, useRef, type KeyboardEvent } from 'react'
-import { closePanel, toggleLog } from './interact'
-import { useLog } from './log'
-import { useGame } from './store'
+import { closePanel, toggleLog } from './core/interact'
+import { useLog } from './core/log'
+import { useGame } from './core/store'
 
 // The dialogue log: everything said this visit, newest at the bottom, so a line that went by too
 // fast can be read again. Opened with L, or Log in the bag; L, Escape or × closes it.

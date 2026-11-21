@@ -1,13 +1,13 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useLayoutEffect, useRef } from 'react'
 import { Color, ConeGeometry, CylinderGeometry, MeshLambertMaterial, Object3D, Vector2, type InstancedMesh } from 'three'
-import { addCollider } from './collision'
-import { TILE, tileAt } from './grid'
+import { addCollider } from './core/collision'
+import { TILE, tileAt } from './core/grid'
 import { FOREST, ISLAND_RADIUS, ISLET, isInland } from './Island'
 import { HOUSE, OUTCROP, SQUARE } from './layout'
 import { pois, roadTiles } from './pois'
 import { autumn, spring, winter } from './season'
-import { playerPos } from './state'
+import { playerPos } from './core/state'
 
 // Placeholder trees: a trunk and a low-poly cone, drawn as instanced meshes (a draw call or two
 // for every tree on the island). Placed once at load from a fixed seed, so the layout is the same

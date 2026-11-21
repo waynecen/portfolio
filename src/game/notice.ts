@@ -1,6 +1,6 @@
 import { useFishing } from './fishing'
 import { ITEMS, useInventory } from './inventory'
-import { isTouch } from './quality'
+import { isTouch } from './core/quality'
 import { SECRETS, useSecrets } from './secrets'
 import { PLACES, useSeen } from './seen'
 import { sky } from './sky'
@@ -14,7 +14,7 @@ import { winter } from './season'
 
 type Notice = { when: () => boolean; lines: () => string[] }
 
-import { keyName } from './keymap'
+import { keyName } from './core/keymap'
 
 const key = (desktop: string, touch: string) => (isTouch ? touch : desktop)
 

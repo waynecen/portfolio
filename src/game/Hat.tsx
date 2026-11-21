@@ -3,7 +3,7 @@ import { useRef } from 'react'
 import { type Group } from 'three'
 import { PLAYER_HEIGHT } from './models'
 import { HATS, useHats, type HatId } from './shop'
-import { playerFacing, playerRoll } from './state'
+import { playerFacing, playerRoll } from './core/state'
 
 // The hat the player is wearing, if any (bought at Pip's shop, shop.ts), sat on top of the head.
 // Mounted in <Player>'s root like the rod and sword: it turns with the character and hides during

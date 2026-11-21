@@ -1,7 +1,7 @@
 import { create } from 'zustand'
-import { say } from './interact'
-import { isTouch } from './quality'
-import { chime } from './sfx'
+import { say } from './core/interact'
+import { isTouch } from './core/quality'
+import { chime } from './core/sfx'
 
 // Odd trinkets hidden around the island, each switching on a harmless, silly change to the world
 // (Halo's skulls, in spirit). Finding one switches its effect on; the settings panel switches each

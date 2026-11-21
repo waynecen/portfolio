@@ -3,13 +3,13 @@ import { useEffect, useRef } from 'react'
 import { DoubleSide, MeshLambertMaterial, PlaneGeometry, type Group } from 'three'
 import { BUGS, GOLDFLY, MORPHO, tryCatch, type BugId } from './bugs'
 import { fireflyNear, catchFirefly } from './Fireflies'
-import { register, type Interactable } from './interact'
+import { register, type Interactable } from './core/interact'
 import { isInland } from './Island'
 import { winter } from './season'
-import { reducedMotion } from './settings'
+import { reducedMotion } from './core/settings'
 import { sky } from './sky'
-import { playerPos } from './state'
-import { useGame } from './store'
+import { playerPos } from './core/state'
+import { useGame } from './core/store'
 
 // Butterflies flutter over the meadows on dry days (not in winter), each round its own patch of
 // grass, wings flapping. One "Catch" interactable follows whichever bug is nearest the player:

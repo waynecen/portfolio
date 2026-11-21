@@ -1,12 +1,12 @@
-import { say, sayFirst } from './interact'
-import { keysName } from './keymap'
-import { isTouch } from './quality'
+import { say, sayFirst } from './core/interact'
+import { keysName } from './core/keymap'
+import { isTouch } from './core/quality'
 import { BED_SPAWN } from './layout'
 import { clearSpawn } from './room'
-import { FADE, goTo } from './scene'
-import { hurt } from './sfx'
-import { playerVel } from './state'
-import { useGame } from './store'
+import { FADE, goTo } from './core/scene'
+import { hurt } from './core/sfx'
+import { playerVel } from './core/state'
+import { useGame } from './core/store'
 
 // Hearts that matter, gently. A bump (a slime, slimes.ts) costs half a heart, knocks the player
 // back and leaves them flickering and untouchable for a moment. At zero hearts, a soft fade and

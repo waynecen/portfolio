@@ -1,6 +1,6 @@
-import { fishing, reel } from './fishing'
+import { fishing, reel } from '../fishing'
 import { firstTime, record } from './log'
-import { markSeen } from './seen'
+import { markSeen } from '../seen'
 import { click } from './sfx'
 import { playerPos } from './state'
 import { useGame, type Panel } from './store'

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { line, reelZone, useFishing } from './fishing'
-import { isTouch } from './quality'
-import { useSettings } from './settings'
+import { isTouch } from './core/quality'
+import { useSettings } from './core/settings'
 
 // The reel (fishing.ts): a bar with a green zone in the middle and a needle the fish tugs back and
 // forth. Hold left and right to keep the needle in the green; the meter under it fills while it's

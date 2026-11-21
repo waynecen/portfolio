@@ -5,7 +5,7 @@ import { BOUND, isInland } from './Island'
 import { inHouse } from './pois'
 import { winter } from './season'
 import { sky } from './sky'
-import { reducedMotion } from './settings'
+import { reducedMotion } from './core/settings'
 
 // Night on the island: small warm lights drifting low over the grass, each wandering round its own
 // spot and twinkling on and off. One set of points, faded in and out with the night weather.

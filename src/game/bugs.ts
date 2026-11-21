@@ -1,7 +1,7 @@
 import { create } from 'zustand'
-import { say, sayFirst } from './interact'
-import { landed } from './sfx'
-import { playerVel } from './state'
+import { say, sayFirst } from './core/interact'
+import { landed } from './core/sfx'
+import { playerVel } from './core/state'
 
 // Catching bugs: butterflies over the meadows by day (Butterflies.tsx) and fireflies at night
 // (Fireflies.tsx). Walk up to one and catch it (E, Enter or A); come in at a sprint and it gets

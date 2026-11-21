@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react'
 import { useFishing } from './fishing'
-import { advance, typer } from './interact'
-import { keyName } from './keymap'
-import { blip } from './sfx'
-import { isTouch } from './quality'
-import { useGame } from './store'
-import { reducedMotion, useSettings } from './settings'
+import { advance, typer } from './core/interact'
+import { keyName } from './core/keymap'
+import { blip } from './core/sfx'
+import { isTouch } from './core/quality'
+import { useGame } from './core/store'
+import { reducedMotion, useSettings } from './core/settings'
 
 const CHARS_PER_SECOND = 40
 const PAUSE_SENTENCE = 0.25 // extra seconds after . ! ?

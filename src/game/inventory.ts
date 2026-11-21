@@ -1,9 +1,9 @@
 import { create } from 'zustand'
-import { closePanel, busy, openPanel, say } from './interact'
-import { isTouch } from './quality'
-import { chime, click } from './sfx'
-import { useGame } from './store'
-import { keyName } from './keymap'
+import { closePanel, busy, openPanel, say } from './core/interact'
+import { isTouch } from './core/quality'
+import { chime, click } from './core/sfx'
+import { useGame } from './core/store'
+import { keyName } from './core/keymap'
 
 // The bag: small things to find around the island. Each item waits at its spot (Pickups.tsx) until
 // the player picks it up; then it's in the bag (InventoryPanel.tsx) for good, saved in this browser.

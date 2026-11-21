@@ -3,11 +3,11 @@ import { useEffect, useRef } from 'react'
 import { Color, MeshBasicMaterial, Plane, PlaneGeometry, Raycaster, Vector2, Vector3, type BufferGeometry, type Group, type Mesh } from 'three'
 import { holdOver, pickUp, putBack, putDown, stopEdit, toggleEdit, useEdit } from './edit'
 import { inRoom, PIECE, pieceAt, resetRoom, TILES, useRoom, type Spot } from './room'
-import { flat, merge } from './geometry'
+import { flat, merge } from './core/geometry'
 import { INTERIOR } from './layout'
-import { isTouch } from './quality'
-import { useGame } from './store'
-import { keyName } from './keymap'
+import { isTouch } from './core/quality'
+import { useGame } from './core/store'
+import { keyName } from './core/keymap'
 
 // What edit mode shows: in the room, the tile grid and a highlight on the tiles the cursor or
 // the piece in hand covers; on screen, the button that starts it and the bar that ends it.

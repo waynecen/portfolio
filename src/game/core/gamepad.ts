@@ -1,13 +1,13 @@
-import { pressAttack, releaseAttack } from './combat'
-import { putAwayRod, reel } from './fishing'
+import { pressAttack, releaseAttack } from '../combat'
+import { putAwayRod, reel } from '../fishing'
 import { moveFocus, openPanelElement } from './focus'
 import { actions } from './input'
-import { toggleBag } from './inventory'
+import { toggleBag } from '../inventory'
 import { advance, closePanel, interact, toggleLog, toggleSettings } from './interact'
-import { leavePhoto, nextPose, shoot, togglePhoto, zoomBy } from './photo'
+import { leavePhoto, nextPose, shoot, togglePhoto, zoomBy } from '../photo'
 import { unlock } from './sfx'
 import { useGame } from './store'
-import { stopEdit } from './edit'
+import { stopEdit } from '../edit'
 
 // A controller, read once a frame (polled from <Gamepad> in Game.tsx; the browser has no events for
 // sticks). Standard layout, named for an Xbox pad:

@@ -1,9 +1,9 @@
 import { useFishing } from './fishing'
-import { busy, sayFirst } from './interact'
-import { isTouch } from './quality'
-import { hit as hitSound, whoosh } from './sfx'
-import { playerFacing, playerPos, playerRoll } from './state'
-import { keyName } from './keymap'
+import { busy, sayFirst } from './core/interact'
+import { isTouch } from './core/quality'
+import { hit as hitSound, whoosh } from './core/sfx'
+import { playerFacing, playerPos, playerRoll } from './core/state'
+import { keyName } from './core/keymap'
 
 // The sword (Sword.tsx draws it). A press swings it in an arc in front of the player; keep holding
 // after the swing to charge, and let go once charged for a spin attack all the way round, twice as

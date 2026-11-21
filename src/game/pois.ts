@@ -1,4 +1,4 @@
-import { tileAt, type Tile } from './grid'
+import { tileAt, type Tile } from './core/grid'
 import { DOCK_ROOT } from './fishing'
 import { FOREST, isInland } from './Island'
 import { CAVE_MOUTH, FOUNTAIN, HOUSE, inSquare, OUTCROP, SHOP_AT, SQUARE } from './layout'

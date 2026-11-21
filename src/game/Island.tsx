@@ -1,7 +1,7 @@
 import { useFrame } from '@react-three/fiber'
 import { BoxGeometry, Color, MeshBasicMaterial, MeshLambertMaterial, PlaneGeometry, type BufferGeometry } from 'three'
-import { flat, merge, pick, tint, unindexed } from './geometry'
-import { TILE } from './grid'
+import { flat, merge, pick, tint, unindexed } from './core/geometry'
+import { TILE } from './core/grid'
 import { autumn, spring, winter } from './season'
 
 // A blocky island centred on spawn, built from whole grid tiles: a grass plateau ringed by stone

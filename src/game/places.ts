@@ -1,4 +1,4 @@
-import type { Card } from './interact'
+import type { Card } from './core/interact'
 
 // The About sign and the Contact mailbox. Like the projects, their words and links come from the
 // HTML page (#about and #contact in index.html), so the page and the island always match.

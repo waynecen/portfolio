@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
-import { closePanel, toggleSettings } from './interact'
-import { ACTIONS, actionFor, codeName, keyName, keysFor, rebind, RESERVED, resetKeys, useKeymap, type Action } from './keymap'
-import { setVolume, useMusic } from './music'
-import { isTouch } from './quality'
+import { closePanel, toggleSettings } from './core/interact'
+import { ACTIONS, actionFor, codeName, keyName, keysFor, rebind, RESERVED, resetKeys, useKeymap, type Action } from './core/keymap'
+import { setVolume, useMusic } from './core/music'
+import { isTouch } from './core/quality'
 import { SECRETS, setSecret, useSecrets } from './secrets'
-import { startOver } from './save'
-import { setSetting, useSettings, type Motion } from './settings'
-import { useGame } from './store'
+import { startOver } from './core/save'
+import { setSetting, useSettings, type Motion } from './core/settings'
+import { useGame } from './core/store'
 
 // The settings: music and effects volumes, how much things move, larger text and the fishing
 // assist (settings.ts), the keys (keymap.ts) and starting over (save.ts). Opened with O or the gear

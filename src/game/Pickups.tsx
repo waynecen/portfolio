@@ -11,14 +11,14 @@ import {
   type BufferGeometry,
   type Group,
 } from 'three'
-import { tileAt } from './grid'
-import { register } from './interact'
+import { tileAt } from './core/grid'
+import { register } from './core/interact'
 import { collect, ITEMS, useInventory, type Item, type ItemId } from './inventory'
 import { isInland } from './Island'
 import { HOUSE } from './layout'
 import { built, pois, roadTiles } from './pois'
 import { trees } from './Trees'
-import { reducedMotion } from './settings'
+import { reducedMotion } from './core/settings'
 
 // The items still waiting to be found, floating and turning slowly over the grass so they catch
 // the eye. Walking up gives the "Pick up" prompt; picking one up puts it in the bag (inventory.ts).

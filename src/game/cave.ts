@@ -1,8 +1,8 @@
 import { create } from 'zustand'
-import { say } from './interact'
+import { say } from './core/interact'
 import { CAVE, CAVE_PITCH, ROOM } from './layout'
-import { chime, door, landed } from './sfx'
-import { useGame } from './store'
+import { chime, door, landed } from './core/sfx'
+import { useGame } from './core/store'
 
 // The cave behind the waterfall (CaveRooms.tsx draws it): a small dungeon of flip-screen rooms, the
 // camera sliding from one to the next as the player walks through a doorway. Gentle by design: a

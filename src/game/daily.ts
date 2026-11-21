@@ -1,10 +1,10 @@
 import { dayNumber } from './calendar'
 import { addShells } from './drops'
 import { isInland, isLand } from './Island'
-import { say } from './interact'
+import { say } from './core/interact'
 import { built, pois, roadTiles } from './pois'
-import { tileAt } from './grid'
-import { chime } from './sfx'
+import { tileAt } from './core/grid'
+import { chime } from './core/sfx'
 import { trees } from './Trees'
 import { DOCK } from './fishing'
 

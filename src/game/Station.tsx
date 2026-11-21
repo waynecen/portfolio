@@ -2,11 +2,11 @@ import { track } from '../analytics'
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import type { Mesh, MeshLambertMaterial } from 'three'
-import { addCollider } from './collision'
-import { register } from './interact'
+import { addCollider } from './core/collision'
+import { register } from './core/interact'
 import { projects, stationPos } from './projects'
 import { projectPlace, useSeen } from './seen'
-import { reducedMotion } from './settings'
+import { reducedMotion } from './core/settings'
 
 const RANGE = 1.5
 const BASE_RADIUS = 0.5 // widest part of the pedestal; also its collision radius

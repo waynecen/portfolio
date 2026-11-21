@@ -1,16 +1,16 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef, type RefObject } from 'react'
 import { Color, CylinderGeometry, MeshLambertMaterial, type BufferGeometry, type Group } from 'three'
-import { addCollider, type Collider } from './collision'
+import { addCollider, type Collider } from './core/collision'
 import { useEdit } from './edit'
 import { centreOf, PIECE, placed, useOwned, useRoom, type PieceId } from './room'
-import { block, merge, tint } from './geometry'
-import { register, say, type Interactable } from './interact'
-import { keyName, keysName, type Action } from './keymap'
+import { block, merge, tint } from './core/geometry'
+import { register, say, type Interactable } from './core/interact'
+import { keyName, keysName, type Action } from './core/keymap'
 import { INTERIOR } from './layout'
-import { isTouch } from './quality'
-import { useGame } from './store'
-import { reducedMotion } from './settings'
+import { isTouch } from './core/quality'
+import { useGame } from './core/store'
+import { reducedMotion } from './core/settings'
 
 // The room's furniture, one mesh per piece so each can be moved on its own (see room.ts and
 // edit.ts). Every piece is built from placeholder blocks around its footprint's centre, and

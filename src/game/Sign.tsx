@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
-import { addCollider } from './collision'
+import { addCollider } from './core/collision'
 import { lateNight } from './calendar'
-import { register, say } from './interact'
+import { register, say } from './core/interact'
 
 const WOOD = '#a0724a'
 

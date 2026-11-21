@@ -3,14 +3,14 @@ import { BUGS, useBugs } from './bugs'
 import { useCave } from './cave'
 import { useShells } from './drops'
 import { FISH, putAwayRod, SPOTS, useFishing } from './fishing'
-import { closePanel, toggleLog } from './interact'
+import { closePanel, toggleLog } from './core/interact'
 import { ITEM, ITEMS, toggleBag, useInventory, type ItemId } from './inventory'
 import { PEARLS, usePearls } from './pearls'
-import { isTouch } from './quality'
+import { isTouch } from './core/quality'
 import { PLACES, useSeen } from './seen'
 import { useTreasureMap } from './shop'
-import { useGame } from './store'
-import { keyName } from './keymap'
+import { useGame } from './core/store'
+import { keyName } from './core/keymap'
 
 // The bag: a slot for every item, filled once it's found, then one for every kind of fish, filled
 // once one's caught (fishing.ts), and the chosen slot's name and words below. Arrow keys move

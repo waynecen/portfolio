@@ -1,5 +1,5 @@
 import { ISLET } from './Island'
-import type { Spawn } from './scene'
+import type { Spawn } from './core/scene'
 
 // Where the house sits, inside and out. One set of numbers shared by the house models, the doors,
 // the camera and the roads.

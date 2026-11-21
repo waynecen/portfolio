@@ -1,12 +1,12 @@
 import { create } from 'zustand'
-import { pad } from './gamepad'
-import { closeDialogue, held } from './interact'
-import { keys, stick } from './input'
-import { actionFor } from './keymap'
-import { reducedMotion } from './settings'
-import { click } from './sfx'
-import { playerFacing } from './state'
-import { useGame } from './store'
+import { pad } from './core/gamepad'
+import { closeDialogue, held } from './core/interact'
+import { keys, stick } from './core/input'
+import { actionFor } from './core/keymap'
+import { reducedMotion } from './core/settings'
+import { click } from './core/sfx'
+import { playerFacing } from './core/state'
+import { useGame } from './core/store'
 
 // Photo mode (P, or Photo in the touch menu): the HUD steps aside, the player holds still, and the
 // camera can be slid around and zoomed, at the same angle (the curved world needs it facing north).

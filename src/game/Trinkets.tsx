@@ -1,11 +1,11 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { MeshLambertMaterial, OctahedronGeometry, type Group } from 'three'
-import { register } from './interact'
+import { register } from './core/interact'
 import { isInland } from './Island'
 import { built, roadTiles } from './pois'
 import { findSecret, SECRETS, useSecrets, type Secret } from './secrets'
-import { reducedMotion } from './settings'
+import { reducedMotion } from './core/settings'
 import { trees } from './Trees'
 
 // Where the odd trinkets wait (secrets.ts): small spinning stars, tucked into out-of-the-way spots
