@@ -21,7 +21,7 @@ This replaces the earlier feature roadmap. Its unfinished items are folded in be
 - **Tooling:** the snapshot skill, and the model pipeline (`npm run models`) with a model-ready character rig.
 - **Removed on purpose:** the minimap. The island is explored on foot. The treasure map (D17) is the only "map", and it marks dig spots, not the way.
 
-## Phase A: Character and feel *(next)*
+## Phase A: Character and feel
 
 1. **Tripo player character.** *(done: public/models/player.glb)* Generate, rig and import an original character to replace the pill. The code is ready: [CHARACTER.md](CHARACTER.md) is the whole process, and the final step is one constant in `src/game/models.ts`.
 2. **Curved world.** *(done: curve.ts)* Bend the world downward with distance from the camera, so the horizon rolls away, Animal Crossing-style.
@@ -108,6 +108,51 @@ Ten ideas taken from how acclaimed games look after their players, chosen for a 
 34. **Lines that react and hide real tips.** *(done for signs: the notice board, notice.ts; villagers still to come)* Signs and, later, villagers say different things by weather, hour or what you're carrying, with real tips tucked into the jokes. *(Smash's Palutena's Guidance, Valorant's agent voice lines)*
 
 Left out on purpose: a like-only guestbook (needs a backend; see F23), reshaping the island's terrain for Breath of the Wild's triangle rule (use it for new land instead), and a fake-crash gag (on a portfolio, a recruiter might believe it).
+
+## Phase H: Leaner code, a quieter guide *(next)*
+
+The game has grown to 107 files in one flat folder, a 710-line TUNING.md and a 426-line style.css, and the same patterns are written out again and again. Every change has to read more than it touches, which costs Claude tokens and makes mistakes likelier. This phase gives each part of the portfolio its own compartment, writes the shared patterns once, and lets the visitor explore rather than be led. Moves come first, so the refactors after them are small diffs.
+
+### Compartments (fewer tokens per change)
+
+35. **One folder per area.** Split `src/game` into:
+    - `core/`: store, scene, state, input, keymap, gamepad, focus, collision, curve, save, settings, sfx, music
+    - `world/`: island, trees, roads, grid, pois, layout, sky, season, weather
+    - `player/`: the player, its characters, the hat, the sword
+    - `house/`: the house, furniture, edit mode, the record player
+    - `secrets/`: pearls, the cave, the islet, trinkets, the calendar
+    - `life/`: villagers, bugs, fishing, the shop, daily finds
+    - `combat/`: slimes, grass and pots, hearts, drops
+    - `portfolio/`: projects, stations, places, the mailbox, the project card, places seen
+    - `ui/`: panels, HUD, dialogue, touch controls, photo mode
+
+    Only moves and import paths change, one commit per folder. Renames that only change case need two steps on Windows.
+36. **Tuning notes beside the code.** Each folder gets a short `NOTES.md` with its constants and rules, cut from TUNING.md, which becomes a one-page index. A change to fishing then reads about 40 lines, not 710.
+37. **A map in CLAUDE.md.** A "Where things live" table (folder, what's in it, entry file), and a rule to read that folder's NOTES.md first and never read TUNING.md or style.css whole. CLAUDE.md itself stays short.
+38. **CSS beside its component.** Split style.css into one file per area (`ui/panels.css`, `ui/hud.css`, `ui/touch.css`, `ui/photo.css`), each imported by the components that use it, and break up the one-line rules. Game CSS then loads with the 3D chunk instead of in the first view (4.7 KB gzip today).
+
+### One copy of each pattern
+
+39. **A `persisted()` store helper** replaces 19 hand-written localStorage load-and-save blocks: a key, a default and a check, saved on change and wrapped in try/catch. Each store registers its key, so save.ts's Start over can't miss one.
+40. **One `<Panel>` component** for the bag, log, settings, shop and touch menu: the header and ×, Escape and the panel's own key to close, and focus on open. That removes five copies of the same code.
+41. **One HUD chip component** for the buttons at the top left, with shared CSS in place of a rule block each.
+42. **One tile-occupancy module.** Roads, buildings, the square, trees and places are worked out once. Grass, pickups, slimes, pearls, daily finds and trees ask it `free(i, j, margin)` instead of each building its own blocked set.
+43. **One hint helper.** `hint('bag', 'Tap B')` names the bound key on a keyboard and the button on touch. It replaces 13 `isTouch ?` ternaries and notice.ts's local `key()`.
+44. **A dead-code sweep.** Run a one-off unused-export check (`npx knip`, not added as a dependency), then remove unused exports, files and comments that name old keys or positions.
+
+### Performance
+
+45. **A smaller 3D chunk.** It's 1.2 MB (346 KB gzip), over Vite's warning. Load rarely used parts on demand: the cave and islet, edit mode, photo mode and the shop. Check three.js is tree-shaken, and measure before and after.
+46. **Less work per frame.** Audit every `useFrame`: hidden scenes' components still run theirs. Skip them while their scene isn't shown, and merge static meshes where draw calls add up.
+
+### Explore, don't be led
+
+47. **Remove "Point me somewhere".** Drop G, the Where to? chip and menu item, the guide wind and the camera glide (guide.ts, GuideWind.tsx). Also drop the hints that mention it: on the notice board, in a bottle tip, in the keymap and on the controller's LB. The world keeps its own cues: signposts, the soft glow on unseen stations, and Bramble's tour for whoever asks. G26 becomes "removed on purpose".
+48. **Fewer instructions up front.** The welcome note covers walking and using things, and stops there. Everything else is met in the world, with first-time lines (`sayFirst`) and the Keys list in the settings. The notice board's lines hint rather than direct.
+49. **"View as page" moves into the settings.** While playing, the button at the top hides and the settings gain a View as a page row. A visually hidden skip link stays first in the tab order, because the page is the accessible version. On the page, Play the game stays where it is. Without WebGL or with reduced motion the page is still the starting view.
+50. **The bag and its inventory: to be decided.** Parked until you've settled what the inventory should be.
+
+Suggested order for Phase H: 47 → 49 → 48 (small and visible), then 35 → 36 → 37 (moves, while nothing else is changing), then 39 → 40 → 41 → 42 → 43, then 44, 45 → 46, and 38 last.
 
 ## Suggested order
 
