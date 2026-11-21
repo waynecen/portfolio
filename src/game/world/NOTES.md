@@ -1,0 +1,105 @@
+# World notes
+
+The island itself: tiles, roads and places, trees, the city square, the notice board, the sky, seasons and weather. The constants that tune it, and the rules it follows. Units and damp rates are explained in [docs/TUNING.md](../../../docs/TUNING.md). Change a value in its file, then here.
+
+---
+
+## Grid and roads: [grid.ts](../core/grid.ts), [pois.ts](./pois.ts), [Roads.tsx](./Roads.tsx)
+
+```ts
+export const TILE = 1 // grid.ts: size of one grid tile in world units; places, props and roads sit on tile centres
+```
+
+There's no map on purpose: the island is found by walking round it. `pois` in pois.ts is the one list of places: home, each project station, the About sign and the Contact mailbox. Add an entry, and place its object at the same whole-number x/z, to give it a road. A path one tile wide runs all the way round the house, and every road leaves it from the loop tile nearest its place. Roads are one tile wide and run in straight lines with at most one 90° corner. They go along the shorter axis first and stop on the tile next to the place. If that route would cross another place or the house, they take the other corner.
+
+---
+
+## Island, cliffs and trees: [Island.tsx](./Island.tsx), [Trees.tsx](./Trees.tsx)
+
+```ts
+export const ISLAND_RADIUS = 18 // Island.tsx: in tiles; every tile whose centre is closer than this to spawn is land, so the shore steps along tile edges
+export const FOREST = { x: -17, z: -15, r: 12 } // the forest's land to the north-west: every tile closer than r to (x, z) is land too
+const WATER_Y = -1.2            // water surface height, well below the grass; the cliffs fill the drop
+const COURSES = 3               // rows of stone blocks in each cliff face
+const UNDERWATER = 0.4          // the cliff carries on this far under the water so its foot never shows a gap
+const RIM_TOP = 0.04            // the pale capstone rim stands this far above the grass
+const RIM_DEPTH = 0.16          // rim thickness, top to bottom
+const RIM_IN = 0.14             // how far the rim reaches in over the grass
+const RIM_OUT = 0.08            // how far the rim overhangs the cliff face
+const STONE = [...]             // cliff block colours; each block picks one from a fixed hash, so the pattern never changes
+const RIM = ...                 // capstone colour
+const WATER_SIZE = 400          // water plane size; big enough that the camera never sees its edge
+const WATER_SEGMENTS = 160      // squares across the water, so it bends with the curved world (curve.ts); one big square tilts below the cliffs and shows the sky through
+const FOAM = 0.4                // width of the white surf border at the foot of the cliffs; keep under half a tile
+const FOAM_PULSE = 1.2          // how fast the surf fades in and out, rad/s
+const SEED = 7                  // Trees.tsx: change for a different (but still fixed) tree layout
+const MAX_TREES = 70            // upper limit on the main island's scattered trees
+const CLEARANCE = 1             // tiles kept free around every road tile, place and the house
+const SHORE_GAP = 1             // tiles kept free between trees and the cliff edge
+const MIN_SCALE = 0.8           // trees are randomly sized between these
+const MAX_SCALE = 1.3
+const MAX_TRUNK = 0.3           // most a trunk's collider grows, so the pill fits between forest trees corner to corner
+const FOREST_DENSITY = 0.85     // share of the forest's tree spots that get one
+const FOREST_SCALE = [1, 1.5]   // forest trees are sized between these: taller than the island's
+const CLEARING = 3.5            // radius of the open clearing in the middle of the forest, in tiles
+const FADE = 0.75               // how much of a tree standing in front of the player drops out
+```
+
+The island is two overlapping circles of land: the main one round the house, and the forest's to the north-west (top left). `BOUND` in Island.tsx is how far out either reaches, for anything that loops over every tile.
+
+On the main island, trees never touch each other, diagonals included, so there's always a gap to walk through. The forest is packed: a tree on every other tile, like a chessboard's dark squares (`FOREST_DENSITY` of them), so they only ever meet corner to corner and you can always slip through on the diagonals. In its middle is a clearing, and a road leads there from the house (a `forest` place in pois.ts); the pine cone waits in it.
+
+Every tree between the camera and the player thins out (`seeThrough` in Trees.tsx): its shader drops out a fixed noise pattern of pixels, up to `FADE` of them, so the player never vanishes behind a canopy. They're placeholders: a trunk and a cone, drawn as two instanced meshes.
+
+---
+
+## City square: [CitySquare.tsx](./CitySquare.tsx), [layout.ts](./layout.ts)
+
+```ts
+export const SQUARE = { i0: 9, i1: 15, j0: -3, j1: 3 } // layout.ts: the paved square east of the house, by the shop; FOUNTAIN is its middle
+export const NOTICE_AT = { x: 10, z: -2 } // layout.ts: the notice board, on the square's corner nearest the shop
+const BASIN_R = 1.15   // CitySquare.tsx: the fountain's basin (and its collider); BASIN_H = 0.42 tall
+const DROPS = 10       // droplets falling from the top bowl, each DROP_TIME = 0.7 s
+const LAMP_GLOW = 1.4  // the corner lamps' glow at night (× sky.weather.night)
+```
+
+The square is a place in pois.ts, so a road leads to it; the road stops where the paving starts, and no other road crosses it. Nothing scatters onto it (`built()` in pois.ts) and trees keep a tile back. Footsteps on it sound like the road. Benches face the fountain on three sides, with a lamp post at each corner. **Make a wish** at the fountain: it costs one shell and fills every heart.
+
+---
+
+## Time of day and weather: [sky.ts](./sky.ts), [Atmosphere.tsx](./Atmosphere.tsx), [Rain.tsx](./Rain.tsx), [Fireflies.tsx](../life/Fireflies.tsx)
+
+The island follows the visitor's own clock. `SLOTS` in sky.ts splits the day into five parts, each with a fixed look and weather:
+
+| Slot      | Starts | Weather                                        |
+| --------- | ------ | ---------------------------------------------- |
+| dawn      | 05:00  | mist: fog close in, so the far trees fade out  |
+| morning   | 08:00  | clear (the original look)                      |
+| afternoon | 12:00  | rain                                           |
+| evening   | 17:00  | golden: warm, low sun                          |
+| night     | 20:00  | night: dark blue, fireflies, lit house windows |
+
+Each slot sets the background, fog colour and distances, hemisphere light, sun colour, strength and direction, water and surf colour. Fog distances are measured from the camera; the ground under the player is about 17 away, so `fogNear` below that fogs the player too.
+
+```ts
+export const BLEND = 0.5           // sky.ts: hours each slot takes to blend in from the one before
+const RECHECK = 5                  // Atmosphere.tsx: seconds between reads of the clock
+const ROOM_DAY / ROOM_NIGHT        // Atmosphere.tsx: indoor lights by day and at night (blended by how much it's night)
+const COUNT = tier low ? 300 : 800 // Rain.tsx: streaks; SPEED = 14, LENGTH = 0.45, SLANT = 0.12, OPACITY = 0.5
+const SPREAD_X = 15, SPREAD_Z = 13 // Rain.tsx: area round the player that rain falls in
+const COUNT = 40                   // Fireflies.tsx: fireflies; SIZE = 0.3, WANDER = 0.5, HEIGHT = 0.45, BOB = 0.25
+const GLOW = 1.1                   // House.tsx: window glow at full night
+```
+
+**Seeing a given hour:** add `?hour=21` to the URL. Decimals work, so `?hour=16.75` is 4:45pm. The snapshot skill shoots each slot this way.
+
+**Seasons:** [season.ts](./season.ts) picks the season from the visitor's month (northern hemisphere: December to February is winter). Only winter changes the island so far:
+
+- snow on the ground, a snow cap on each tree and a snowed-over roof (`GROUND` in Island.tsx, `capGeometry` in Trees.tsx, `O.roof` in House.tsx)
+- snow falling all day instead of rain, heavier in the afternoon slot ([Snow.tsx](./Snow.tsx): `LIGHT`, `SPEED`, `SWAY`, `SIZE`)
+- a cooler, paler light with snow bouncing light up from the ground (`chill` and the `WINTER_*` colours in sky.ts)
+- crunchy footsteps (the `snow` sound in sfx.ts), puffs of snow instead of dust, and no fireflies
+
+Add `?season=winter` to the URL to see it (or `spring`, `summer`, `autumn`). The snapshot skill pins every shot to summer, plus one winter shot.
+
+With reduced motion, the colours and fog still change, but rain and fireflies hold still.

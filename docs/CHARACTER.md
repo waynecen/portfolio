@@ -71,7 +71,7 @@ Skip this step if the GLB already looks right in the game. Otherwise:
 
 ## 4. Switch it on
 
-In [src/game/models.ts](../src/game/models.ts):
+In [src/game/player/models.ts](../src/game/player/models.ts):
 
 ```ts
 export const PLAYER_MODEL: string | null = '/models/player.glb'
@@ -80,12 +80,12 @@ export const CLIPS = { idle: 'Idle', walk: 'Walk', run: 'Run' } // the clip name
 
 Clip names are in the `npm run models` report. A missing clip is skipped: with no run clip, the walk plays faster when sprinting.
 
-What the game does with the model ([ModelCharacter.tsx](../src/game/ModelCharacter.tsx)):
+What the game does with the model ([ModelCharacter.tsx](../src/game/player/ModelCharacter.tsx)):
 
 - **Size and position:** scales it to `PLAYER_HEIGHT` (1.2, about the pill's height) and stands it on the ground under the player. Collision stays the pill's circle.
 - **Materials:** swaps them for the Lambert material the island uses, keeping their texture and colour, so it's lit like everything else, including at night.
 - **Animation:** blends idle, walk and run by speed, and plays walk and run at the speed where the feet keep pace with the ground (from the pace `npm run models` records), so they don't skate.
-- **Turning, leaning and rolling:** the rig in [PillCharacter.tsx](../src/game/PillCharacter.tsx) turns it to face its direction, leans it forward as it moves and tumbles it through rolls.
+- **Turning, leaning and rolling:** the rig in [PillCharacter.tsx](../src/game/player/PillCharacter.tsx) turns it to face its direction, leans it forward as it moves and tumbles it through rolls.
 
 ## 5. Check it
 

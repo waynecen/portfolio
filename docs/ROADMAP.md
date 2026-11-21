@@ -5,7 +5,7 @@ Where the island is going: a top-down adventure in the tradition of Animal Cross
 Each item below is sized for one branch or a few commits. The rules in [CLAUDE.md](../CLAUDE.md) apply to all of them:
 - the first view stays under about 60 KB gzip
 - nothing is allocated in `useFrame`
-- models go through the pipeline in [CHARACTER.md](CHARACTER.md)
+- models go through the pipeline in [CHARACTER.md](./CHARACTER.md)
 
 This replaces the earlier feature roadmap. Its unfinished items are folded in below.
 
@@ -23,7 +23,7 @@ This replaces the earlier feature roadmap. Its unfinished items are folded in be
 
 ## Phase A: Character and feel
 
-1. **Tripo player character.** *(done: public/models/player.glb)* Generate, rig and import an original character to replace the pill. The code is ready: [CHARACTER.md](CHARACTER.md) is the whole process, and the final step is one constant in `src/game/models.ts`.
+1. **Tripo player character.** *(done: public/models/player.glb)* Generate, rig and import an original character to replace the pill. The code is ready: [CHARACTER.md](./CHARACTER.md) is the whole process, and the final step is one constant in `src/game/models.ts`.
 2. **Curved world.** *(done: curve.ts)* Bend the world downward with distance from the camera, so the horizon rolls away, Animal Crossing-style.
    - One shared `onBeforeCompile` patch is added to every material.
    - Lower the camera angle a little (`HEIGHT` and `DISTANCE` in CameraRig.tsx) so more horizon shows.
