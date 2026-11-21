@@ -19,6 +19,10 @@ export const FOREST = { x: -17, z: -15, r: 12 }
  * finds) lands on it by accident; what's on it is placed by hand.
  */
 export const ISLET = { x: -10, z: 35, r: 4.5 }
+/** The islet's east lobe, joined to it by a neck of land, where the mini golf green is (golf/). */
+export const LINKS = { x: -2, z: 35, r: 5.5 }
+/** The islet's circles of land: the islet itself and the links. */
+const ISLES = [ISLET, LINKS]
 export const WATER_Y = -1.2 // water surface, well below the grass; the cliff fills the drop
 const WATER_SIZE = 400 // wide enough that the camera never sees past it
 // Squares across the water. The world bends away from the camera (curve.ts) one vertex at a time,
@@ -50,9 +54,9 @@ const land = new Set<string>()
 for (let i = -N; i <= N; i++)
   for (let j = -N; j <= N; j++)
     if (Math.hypot(i, j) < ISLAND_RADIUS || Math.hypot(i - FOREST.x, j - FOREST.z) < FOREST.r) land.add(key(i, j))
-for (let i = Math.floor(ISLET.x - ISLET.r); i <= Math.ceil(ISLET.x + ISLET.r); i++)
-  for (let j = Math.floor(ISLET.z - ISLET.r); j <= Math.ceil(ISLET.z + ISLET.r); j++)
-    if (Math.hypot(i - ISLET.x, j - ISLET.z) < ISLET.r) land.add(key(i, j))
+for (const c of ISLES)
+  for (let i = Math.floor(c.x - c.r); i <= Math.ceil(c.x + c.r); i++)
+    for (let j = Math.floor(c.z - c.r); j <= Math.ceil(c.z + c.r); j++) if (Math.hypot(i - c.x, j - c.z) < c.r) land.add(key(i, j))
 
 /** True if tile (i, j) is land. */
 export function isLand(i: number, j: number): boolean {
@@ -84,11 +88,13 @@ function build() {
   const stoneParts: BufferGeometry[] = []
   const foamParts: BufferGeometry[] = []
 
-  // The island's square, then the islet's, the rows past the island's edge only so no tile is built twice.
+  // The island's square, then the islet's (both its circles), the rows past the island's edge only so no tile is built twice.
   const tiles: [number, number][] = []
   for (let i = -N - 1; i <= N + 1; i++) for (let j = -N - 1; j <= N + 1; j++) tiles.push([i, j])
-  for (let i = Math.floor(ISLET.x - ISLET.r) - 1; i <= Math.ceil(ISLET.x + ISLET.r) + 1; i++)
-    for (let j = N + 2; j <= Math.ceil(ISLET.z + ISLET.r) + 1; j++) tiles.push([i, j])
+  const i0 = Math.min(...ISLES.map((c) => Math.floor(c.x - c.r))) - 1
+  const i1 = Math.max(...ISLES.map((c) => Math.ceil(c.x + c.r))) + 1
+  const j1 = Math.max(...ISLES.map((c) => Math.ceil(c.z + c.r))) + 1
+  for (let i = i0; i <= i1; i++) for (let j = N + 2; j <= j1; j++) tiles.push([i, j])
 
   for (const [i, j] of tiles) {
     const x = i * TILE
