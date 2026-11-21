@@ -212,6 +212,8 @@ The projects themselves aren't constants. They're read from the `#projects artic
 
 **Welcome back** ([visits.ts](../src/game/visits.ts), [WelcomeBack.tsx](../src/game/WelcomeBack.tsx), [Leaves.tsx](../src/game/Leaves.tsx)): the browser keeps when the first and last visits were and how many there have been (`visits-v1`; a reload within `SAME_VISIT` = 30 minutes is the same visit). A returning visitor is greeted 1.5 s (`DELAY`) after the game shows, in words that depend on the days away (one, a few, over a week, a long time). From `MIN_DAYS = 2` days away, one pile of leaves per day blows in beside the roads within `NEAR = 9` tiles of the house, at most `PILES = 6`; walking within `SWEEP = 0.55` sweeps one up with a rustle, and the last plays the find chime. After a week or more, the greeting also points to Where to? if a project is still unseen. A first visit gets no greeting: the note by the bed does that.
 
+**Calendar moments** ([calendar.ts](../src/game/calendar.ts), [Festive.tsx](../src/game/Festive.tsx)): on arriving, the island says a line on its birthday (`ISLAND_BIRTHDAY`, a placeholder set to 20 November; change it to the day the site went up), New Year's Day, Valentine's Day, Halloween, Christmas Eve and Day, and New Year's Eve, and thanks visitors on their 10th, 25th, 50th and 100th visit (`MILESTONES`). Pumpkins (Halloween), presents (Christmas) or balloons (the birthday) stand by the front door on those days. Between 2 and 5am (`NIGHT`), the About sign asks if you shouldn't be asleep before its words. Add `?date=MM-DD` to the URL to try a day, with `?hour=` for the time.
+
 ---
 
 ## About sign and Contact mailbox: [src/game/places.ts](../src/game/places.ts), [src/game/Mailbox.tsx](../src/game/Mailbox.tsx)

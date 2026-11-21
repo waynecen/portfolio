@@ -1,14 +1,15 @@
 import { useEffect } from 'react'
+import { calendarLines } from './calendar'
 import { busy, say } from './interact'
 import { leafPiles } from './Leaves'
 import { PLACES, useSeen } from './seen'
 import { isTouch } from './quality'
 import { visit } from './visits'
 
-// A word on arriving: how long it's been since the last visit, in the island's own voice (visits.ts).
-// Being away never costs anything: at most a few leaves to sweep (Leaves.tsx). Said once, a moment
-// after the game first shows; a first visit gets nothing here, since the note by the bed does the
-// welcoming.
+// A word on arriving: anything the calendar has to say today (calendar.ts), and how long it's been
+// since the last visit, in the island's own voice (visits.ts). Being away never costs anything: at
+// most a few leaves to sweep (Leaves.tsx). Said once, a moment after the game first shows. A first
+// visit hears only the calendar, since the note by the bed does the welcoming.
 
 const DELAY = 1500 // ms after the game shows before it's said
 
@@ -33,7 +34,7 @@ function awayLines(): string[] {
 
 export function WelcomeBack() {
   useEffect(() => {
-    const lines = awayLines()
+    const lines = [...calendarLines(), ...awayLines()]
     if (!lines.length) return
     let timer = 0
     const start = () => {

@@ -1,12 +1,30 @@
 import { useEffect } from 'react'
 import { addCollider } from './collision'
+import { lateNight } from './calendar'
 import { register, say } from './interact'
 
 const WOOD = '#a0724a'
 
 /** A readable wooden sign. `lines` are shown one per press in the dialogue box. */
-export function Sign({ x, z, lines, seen }: { x: number; z: number; lines: string[]; /** Its place id (seen.ts), counted once read. */ seen?: string }) {
-  useEffect(() => register({ x, z, range: 1.4, prompt: 'Read', seen, onInteract: () => say(lines) }), [x, z, lines, seen])
+export function Sign({
+  x,
+  z,
+  lines,
+  seen,
+  night,
+}: {
+  x: number
+  z: number
+  lines: string[]
+  /** Its place id (seen.ts), counted once read. */
+  seen?: string
+  /** A line said first in the small hours (calendar.ts). */
+  night?: string
+}) {
+  useEffect(
+    () => register({ x, z, range: 1.4, prompt: 'Read', seen, onInteract: () => say(night && lateNight() ? [night, ...lines] : lines) }),
+    [x, z, lines, seen, night],
+  )
   // A little deeper than the board, so the pill bumps the sign rather than clipping its post.
   useEffect(() => addCollider({ kind: 'box', x, z, hx: 0.45, hz: 0.1 }), [x, z])
   return (

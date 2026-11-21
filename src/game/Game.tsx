@@ -9,6 +9,7 @@ import { Doors } from './Doors'
 import { Dust } from './Dust'
 import { EditHud, EditOverlay, EditPointer } from './EditRoom'
 import { Fade } from './Fade'
+import { Festive } from './Festive'
 import { Fireflies } from './Fireflies'
 import { GuideButton, GuideWind } from './GuideWind'
 import { clearSpawn } from './room'
@@ -89,11 +90,12 @@ export function Game() {
           <Trees />
           <Stations />
           <HouseExterior />
-          <Sign x={ABOUT_AT.x} z={ABOUT_AT.z} lines={aboutLines} seen="about" />
+          <Sign x={ABOUT_AT.x} z={ABOUT_AT.z} lines={aboutLines} seen="about" night="It’s the middle of the night… shouldn’t you be asleep? Well, since you’re here:" />
           <Mailbox />
           <Dock />
           <Pickups />
           <Leaves />
+          <Festive />
           <Rain />
           <Snow />
           <Fireflies />
