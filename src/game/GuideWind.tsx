@@ -6,6 +6,7 @@ import { guide, PEEK, pointMe, STREAKS_FOR } from './guide'
 import { isTouch } from './quality'
 import { playerPos, playerVel } from './state'
 import { useGame } from './store'
+import { keyName } from './keymap'
 
 // The wind streaks of "point me somewhere" (guide.ts): thin white strokes that rise around the
 // player and fly off toward the place, a few at a time. One instanced mesh from a fixed pool;
@@ -88,7 +89,7 @@ export function GuideButton() {
   if (away || fishing) return null
   return (
     <button type="button" className="guide-toggle" onClick={pointMe}>
-      {!isTouch && <kbd>G</kbd>} Where to?
+      {!isTouch && <kbd>{keyName('guide')}</kbd>} Where to?
     </button>
   )
 }

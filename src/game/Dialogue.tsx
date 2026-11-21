@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useFishing } from './fishing'
 import { advance, typer } from './interact'
+import { keyName } from './keymap'
 import { blip } from './sfx'
 import { isTouch } from './quality'
 import { useGame } from './store'
@@ -9,7 +10,7 @@ import { reducedMotion, useSettings } from './settings'
 const CHARS_PER_SECOND = 40
 const PAUSE_SENTENCE = 0.25 // extra seconds after . ! ?
 const PAUSE_COMMA = 0.15 // extra seconds after , ; :
-const KEY = isTouch ? 'A' : 'E'
+const key = () => (isTouch ? 'A' : keyName('interact'))
 
 // Seconds to wait after typing `ch` before the next letter.
 function delayAfter(ch: string) {
@@ -187,7 +188,7 @@ export function Dialogue() {
       {/* Screen readers get the whole line at once instead of every typed letter. */}
       <p className="sr-only" aria-live="polite">{line}</p>
       {d && (
-        <div ref={box} className="dialogue" aria-hidden="true" title={`${KEY} to continue`} onClick={() => advance()}>
+        <div ref={box} className="dialogue" aria-hidden="true" title={`${key()} to continue`} onClick={() => advance()}>
           <LiquidCloud />
           <p className="dialogue-text">
             <span ref={text} />
@@ -216,7 +217,7 @@ export function Prompt() {
     <div className="prompt-region" aria-live="polite">
       {show && (
         <p className="prompt" data-alert={phase === 'bite' ? '' : undefined}>
-          <kbd>{KEY}</kbd> {label}
+          <kbd>{key()}</kbd> {label}
           {/* The fishing assist shows while it's helping, like an assist light (settings.ts). */}
           {reel && assist && <span className="prompt-assist">Assist on</span>}
         </p>

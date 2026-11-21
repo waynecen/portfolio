@@ -7,6 +7,7 @@ import { flat, merge } from './geometry'
 import { INTERIOR } from './layout'
 import { isTouch } from './quality'
 import { useGame } from './store'
+import { keyName } from './keymap'
 
 // What edit mode shows: in the room, the tile grid and a highlight on the tiles the cursor or
 // the piece in hand covers; on screen, the button that starts it and the bar that ends it.
@@ -148,7 +149,7 @@ export function EditHud() {
   if (!editing) {
     return (
       <button type="button" className="edit-toggle" onClick={toggleEdit}>
-        {!isTouch && <kbd>F</kbd>} Edit room
+        {!isTouch && <kbd>{keyName('edit')}</kbd>} Edit room
       </button>
     )
   }
@@ -166,7 +167,7 @@ export function EditHud() {
           Reset
         </button>
         <button type="button" className="edit-done" onClick={stopEdit}>
-          {!isTouch && <kbd>F</kbd>} Done
+          {!isTouch && <kbd>{keyName('edit')}</kbd>} Done
         </button>
       </div>
     </div>

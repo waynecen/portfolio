@@ -393,6 +393,8 @@ body.big-text .reel { zoom: 1.2; }
 body.big-text .shop-panel { zoom: 1.2; }
 
 
-/* Buttons in the settings (SettingsPanel.tsx): Start over asks twice. */
+/* The keys in the settings (SettingsPanel.tsx): a button per action that waits for the new key. */
+.settings-key { min-width: 5.5rem; padding: 4px 10px; border: 0; border-radius: 10px; background: rgb(122 100 73 / .12); font-size: 13px; }
+.settings-key[data-waiting] { background: #f2b233; color: #2b2b2b; }
 .settings-action { padding: 6px 14px; border: 0; border-radius: 999px; background: rgb(122 100 73 / .12); font-size: 13px; }
 .settings-action[data-confirm] { background: #d9473b; color: #fff; }

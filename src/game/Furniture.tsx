@@ -6,6 +6,7 @@ import { useEdit } from './edit'
 import { centreOf, PIECE, placed, useOwned, useRoom, type PieceId } from './room'
 import { block, merge, tint } from './geometry'
 import { register, say, type Interactable } from './interact'
+import { keyName, keysName, type Action } from './keymap'
 import { INTERIOR } from './layout'
 import { isTouch } from './quality'
 import { useGame } from './store'
@@ -32,8 +33,8 @@ const C = {
   brass: new Color('#d9a441'),
 }
 
-/** Lines in the note on the table: the first thing to read, so it covers the controls. */
-const NOTE = isTouch
+/** Lines in the note on the table: the first thing to read, so it covers the controls (named as they're bound now, keymap.ts). */
+const note = () => isTouch
   ? [
       'Welcome home! This little world is my portfolio.',
       'Drag the joystick on the left to walk. Hold B to sprint, or tap it to swing your sword.',
@@ -46,14 +47,15 @@ const NOTE = isTouch
     ]
   : [
       'Welcome home! This little world is my portfolio.',
-      'Walk with WASD or the arrow keys. Hold Shift to sprint, and press Space to roll.',
-      'Click, or press J or X, to swing your sword. Hold it after a swing, then let go, to spin.',
-      'Press E or Enter to read, talk or use whatever is nearby.',
-      'The record player by the back wall plays music. Press E beside it to choose a song.',
-      'Press F to move the furniture around.',
-      'Little things are hidden around the island. Press B to see what you’ve found.',
+      `Walk with ${['forward', 'left', 'back', 'right'].map((a) => keyName(a as Action)).join('')} or the arrow keys. Hold ${keyName('sprint')} to sprint, and press ${keyName('roll')} to roll.`,
+      `Click, or press ${keysName('attack')}, to swing your sword. Hold it after a swing, then let go, to spin.`,
+      `Press ${keysName('interact')} to read, talk or use whatever is nearby.`,
+      `The record player by the back wall plays music. Press ${keyName('interact')} beside it to choose a song.`,
+      `Press ${keyName('edit')} to move the furniture around.`,
+      `Little things are hidden around the island. Press ${keyName('bag')} to see what you’ve found.`,
       'The door at the bottom of the room leads outside.',
-      'Each pillar out there is a project. Walk up to one to see it, then press E to open it.',
+      `Each pillar out there is a project. Walk up to one to see it, then press ${keyName('interact')} to open it.`,
+      `Every key can be changed in the settings (${keyName('settings')}).`,
     ]
 const NOTE_AT = { x: -0.1, z: 0 } // on the table, from its centre
 
@@ -184,7 +186,7 @@ const material = new MeshLambertMaterial({ vertexColors: true, flatShading: true
 
 /** Things to use on a piece, from its centre. */
 const USES: Partial<Record<PieceId, Omit<Interactable, 'x' | 'z'> & { dx: number; dz: number }>> = {
-  table: { dx: NOTE_AT.x, dz: NOTE_AT.z, range: 1.4, prompt: 'Read', onInteract: () => say(NOTE) },
+  table: { dx: NOTE_AT.x, dz: NOTE_AT.z, range: 1.4, prompt: 'Read', onInteract: () => say(note()) },
 }
 
 /**

@@ -10,6 +10,7 @@ import { isTouch } from './quality'
 import { PLACES, useSeen } from './seen'
 import { useTreasureMap } from './shop'
 import { useGame } from './store'
+import { keyName } from './keymap'
 
 // The bag: a slot for every item, filled once it's found, then one for every kind of fish, filled
 // once one's caught (fishing.ts), and the chosen slot's name and words below. Arrow keys move
@@ -184,7 +185,7 @@ export function InventoryPanel() {
           {found.length} of {ITEMS.length} found · {shells} {shells === 1 ? 'shell' : 'shells'}
         </span>
         <button type="button" className="bag-log" onClick={toggleLog}>
-          {!isTouch && <kbd>L</kbd>} Log
+          {!isTouch && <kbd>{keyName('log')}</kbd>} Log
         </button>
         <button type="button" className="bag-close" aria-label="Close" onClick={closePanel}>
           ×
@@ -277,7 +278,7 @@ export function BagButton() {
   if (hidden) return null
   return (
     <button type="button" className="bag-toggle" onClick={toggleBag} aria-label={`Bag, ${count} of ${ITEMS.length} found`}>
-      {!isTouch && <kbd>B</kbd>} Bag <span className="bag-toggle-count">{count}</span>
+      {!isTouch && <kbd>{keyName('bag')}</kbd>} Bag <span className="bag-toggle-count">{count}</span>
     </button>
   )
 }
@@ -296,7 +297,7 @@ export function RodButton() {
   if (!rod || away || fishing || atSpot) return null
   return (
     <button type="button" className="rod-toggle" onClick={putAwayRod}>
-      {!isTouch && <kbd>B</kbd>} Put away rod
+      {!isTouch && <kbd>{keyName('bag')}</kbd>} Put away rod
     </button>
   )
 }

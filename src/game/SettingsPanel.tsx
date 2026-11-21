@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { closePanel, toggleSettings } from './interact'
+import { ACTIONS, actionFor, codeName, keyName, keysFor, rebind, RESERVED, resetKeys, useKeymap, type Action } from './keymap'
 import { setVolume, useMusic } from './music'
 import { isTouch } from './quality'
 import { SECRETS, setSecret, useSecrets } from './secrets'
@@ -8,7 +9,7 @@ import { setSetting, useSettings, type Motion } from './settings'
 import { useGame } from './store'
 
 // The settings: music and effects volumes, how much things move, larger text and the fishing
-// assist (settings.ts) and starting over (save.ts). Opened with O or the gear
+// assist (settings.ts), the keys (keymap.ts) and starting over (save.ts). Opened with O or the gear
 // by the hearts; O, Escape or × closes it.
 
 export function SettingsPanel() {
@@ -17,21 +18,34 @@ export function SettingsPanel() {
   const s = useSettings()
   const secrets = useSecrets()
   const first = useRef<HTMLInputElement>(null)
+  useKeymap() // re-render when a key changes
+  const [waiting, setWaiting] = useState<Action | null>(null) // the action whose new key is awaited
   const [sure, setSure] = useState(false) // "Start over" asks once more before forgetting everything
 
   useEffect(() => {
     if (open) first.current?.focus()
-    else setSure(false)
+    else {
+      setWaiting(null)
+      setSure(false)
+    }
   }, [open])
 
   if (!open) return null
 
   const onKeyDown = (e: KeyboardEvent) => {
-    if (e.key !== 'Escape' && e.code !== 'KeyO') return
+    if (waiting) {
+      // The next key goes to the action waiting for it. Escape gives up; Tab can't be taken.
+      e.preventDefault()
+      e.stopPropagation()
+      if (e.code !== 'Escape' && !RESERVED.has(e.code)) rebind(waiting, e.code)
+      setWaiting(null)
+      return
+    }
+    if (e.key !== 'Escape' && actionFor(e.code) !== 'settings') return
     e.preventDefault()
     e.stopPropagation()
-    if (e.code === 'KeyO') toggleSettings()
-    else closePanel()
+    if (e.key === 'Escape') closePanel()
+    else toggleSettings()
   }
 
   return (
@@ -104,6 +118,33 @@ export function SettingsPanel() {
       {secrets.found.length < SECRETS.length && (
         <p className="settings-note">Odd trinkets are tucked away in quiet corners of the island. Each one changes something, harmlessly.</p>
       )}
+      {/* The keys (keymap.ts): press a button, then the new key. Not on touch screens, which have no keys. */}
+      {!isTouch && (
+        <>
+          <div className="bag-head bag-subhead">
+            <h3>Keys</h3>
+            <span className="bag-count" />
+            <button type="button" className="settings-action" onClick={resetKeys}>
+              Reset keys
+            </button>
+          </div>
+          {ACTIONS.map(({ id, label }) => (
+            <div key={id} className="settings-row">
+              {label}
+              <button
+                type="button"
+                className="settings-key"
+                data-waiting={waiting === id ? '' : undefined}
+                aria-label={`${label}: ${keysFor(id).map(codeName).join(' or ') || 'no key'}. Press to change.`}
+                onClick={() => setWaiting(waiting === id ? null : id)}
+              >
+                {waiting === id ? 'Press a key…' : keysFor(id).map(codeName).join(' / ') || '—'}
+              </button>
+            </div>
+          ))}
+          <p className="settings-note">Escape always closes things.</p>
+        </>
+      )}
       <div className="bag-head bag-subhead">
         <h3>Start over</h3>
         <span className="bag-count" />
@@ -119,7 +160,7 @@ export function SettingsPanel() {
       </div>
       <p className="settings-note">
         {sure
-          ? 'Everything found, caught, bought and moved is forgotten, and the island starts fresh. Settings stay.'
+          ? 'Everything found, caught, bought and moved is forgotten, and the island starts fresh. Settings and keys stay.'
           : 'What you’ve found and done is kept in this browser, ready for next time.'}
       </p>
     </div>
@@ -131,7 +172,7 @@ export function SettingsButton() {
   const hidden = useGame((st) => st.dialogue !== null || st.panel !== null || st.fading || st.editing)
   if (hidden) return null
   return (
-    <button type="button" className="settings-toggle" onClick={toggleSettings} aria-label={isTouch ? 'Settings' : 'Settings (O)'}>
+    <button type="button" className="settings-toggle" onClick={toggleSettings} aria-label={isTouch ? 'Settings' : `Settings (${keyName('settings')})`}>
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path
           fill="currentColor"

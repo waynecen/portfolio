@@ -14,6 +14,8 @@ import { winter } from './season'
 
 type Notice = { when: () => boolean; lines: () => string[] }
 
+import { keyName } from './keymap'
+
 const key = (desktop: string, touch: string) => (isTouch ? touch : desktop)
 
 const NOTICES: Notice[] = [
@@ -21,12 +23,12 @@ const NOTICES: Notice[] = [
     when: () => PLACES.some((p) => p.kind === 'project' && !useSeen.getState().seen.includes(p.id)),
     lines: () => [
       'LOST: one visitor. Last seen looking for the projects.',
-      `${key('Press G', 'Open the menu, tap Where to?,')} and the wind will show you one you haven’t seen.`,
+      `${key(`Press ${keyName('guide')}`, 'Open the menu, tap Where to?,')} and the wind will show you one you haven’t seen.`,
     ],
   },
   {
     when: () => useFishing.getState().rod,
-    lines: () => ['PLEASE do not poke the notice board with your fishing rod.', `${key('Right-click (or B)', 'A tap of B')} puts it back in the barrel.`],
+    lines: () => ['PLEASE do not poke the notice board with your fishing rod.', `${key(`Right-click (or ${keyName('bag')})`, 'A tap of B')} puts it back in the barrel.`],
   },
   {
     when: () => !winter && sky.weather.rain > 0.5,
@@ -40,7 +42,7 @@ const NOTICES: Notice[] = [
     when: () => useInventory.getState().found.length < ITEMS.length,
     lines: () => [
       'LOST PROPERTY: six small things, scattered. Finder may keep them.',
-      `${key('Press B', 'Open the menu and tap Bag')} to see what you’ve found so far.`,
+      `${key(`Press ${keyName('bag')}`, 'Open the menu and tap Bag')} to see what you’ve found so far.`,
     ],
   },
   {
@@ -49,7 +51,7 @@ const NOTICES: Notice[] = [
   },
   {
     when: () => true,
-    lines: () => ['NOTICE: there is nothing to notice. Have a nice day.', `${key('L', 'The log, in the menu,')} shows everything that’s been said, if you missed something.`],
+    lines: () => ['NOTICE: there is nothing to notice. Have a nice day.', `${key(keyName('log'), 'The log, in the menu,')} shows everything that’s been said, if you missed something.`],
   },
 ]
 

@@ -24,8 +24,11 @@ export const PROGRESS_KEYS = [
   'visits-v1', // visits.ts: when the last visit was
 ]
 
-/** Preferences, kept by "Start over": the settings (settings.ts) and the music volume (music.ts). */
-export const PREFERENCE_KEYS = ['settings-v1', 'portfolio.music.volume']
+/**
+ * Preferences, kept by "Start over": the settings (settings.ts), the music volume (music.ts) and the
+ * keys (keymap.ts).
+ */
+export const PREFERENCE_KEYS = ['settings-v1', 'portfolio.music.volume', 'keys-v1']
 
 /** Forgets every bit of progress and reloads, so the island starts fresh. Preferences stay. */
 export function startOver() {

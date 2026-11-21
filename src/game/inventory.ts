@@ -3,6 +3,7 @@ import { closePanel, busy, openPanel, say } from './interact'
 import { isTouch } from './quality'
 import { chime, click } from './sfx'
 import { useGame } from './store'
+import { keyName } from './keymap'
 
 // The bag: small things to find around the island. Each item waits at its spot (Pickups.tsx) until
 // the player picks it up; then it's in the bag (InventoryPanel.tsx) for good, saved in this browser.
@@ -59,7 +60,7 @@ export function collect(id: ItemId) {
   chime()
   const item = ITEM[id]
   const lines = [`You found the ${item.name.toLowerCase()}! ${item.description}`]
-  if (next.length === 1) lines.push(isTouch ? 'Tap the menu button at the bottom, then Bag, to see what you’ve found.' : 'Press B to look in your bag.')
+  if (next.length === 1) lines.push(isTouch ? 'Tap the menu button at the bottom, then Bag, to see what you’ve found.' : `Press ${keyName('bag')} to look in your bag.`)
   if (next.length === ITEMS.length) lines.push('That’s everything! Your bag is full.')
   say(lines)
 }

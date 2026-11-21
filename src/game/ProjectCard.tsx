@@ -1,5 +1,6 @@
 import { isTouch } from './quality'
 import { useGame } from './store'
+import { keyName } from './keymap'
 
 // Shows the focused interactable's card: a station's project, or the mailbox's contact links.
 // Using the interactable (E / Enter / A) opens the card's url.
@@ -28,7 +29,7 @@ export function ProjectCard() {
             <p className="project-card-action">
               {/* With a list of links the action is already among them, so here it's only the key hint. */}
               {card.links ? action : <a href={url} target="_blank" rel="noopener">{action}</a>}
-              <span aria-hidden="true"> · press {isTouch ? 'A' : 'E'}</span>
+              <span aria-hidden="true"> · press {isTouch ? 'A' : keyName('interact')}</span>
             </p>
           )}
         </article>

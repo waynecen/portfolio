@@ -6,6 +6,7 @@ import { click, landed, plop, reelClick, splash, whoosh } from './sfx'
 import { cameraZoom, playerFacing, playerPos } from './state'
 import { useGame } from './store'
 import { reducedMotion, useSettings } from './settings'
+import { keyName } from './keymap'
 
 // Fishing off the dock at the island's bottom-left corner (Dock.tsx draws it). Take a rod from the
 // barrel at the foot of the dock, walk out and use the ripple in the water: the line goes out, and
@@ -149,7 +150,7 @@ export function toggleRod() {
       'rod',
       [
         'You take a fishing rod from the barrel.',
-        `Look for ripples in the water off the end of the dock. ${isTouch ? 'Tap B' : 'Right-click or press B'} to put the rod away.`,
+        `Look for ripples in the water off the end of the dock. ${isTouch ? 'Tap B' : `Right-click or press ${keyName('bag')}`} to put the rod away.`,
       ],
       ['You take a fishing rod.'],
     )
