@@ -1,5 +1,5 @@
 import { editKey, toggleEdit } from './edit'
-import { reel, stopFishing } from './fishing'
+import { putAwayRod, reel, stopFishing } from './fishing'
 import { toggleBag } from './inventory'
 import { advance, closeDialogue, closePanel, interact } from './interact'
 import { unlock } from './sfx'
@@ -64,7 +64,9 @@ export function bindKeys(): () => void {
         closePanel()
         stopFishing()
       } else if (e.code === 'KeyF') toggleEdit()
-      else if (e.code === 'KeyB') toggleBag()
+      else if (e.code === 'KeyB') {
+        if (!putAwayRod()) toggleBag() // B puts away a rod in hand, otherwise opens the bag
+      }
       else interact()
       return
     }

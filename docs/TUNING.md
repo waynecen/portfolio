@@ -396,7 +396,7 @@ const POSTS = [17, 18.3, ...]              // z of each pair of posts under the 
 const ROD_LENGTH = 1.3                     // the rod in the player's hand; HOLD and FISHING_HOLD are how far it tips forward
 ```
 
-The road ends at the foot of the dock, beside the barrel. Using the barrel takes a rod (or puts it back); it isn't saved, so every visit starts without one. The ripple off the dock says to fetch a rod until you have one, then casts: the player turns to face it, the float flies out on its line, and after `WAIT` it nibbles, then bites with a splash and the prompt turns gold: **Reel in!** E, Space or A within `BITE_TIME` lands the fish; too late and it gets away, too early and the line comes back empty. Esc reels in quietly. The player stands still while the line is out.
+The road ends at the foot of the dock, beside the barrel. Using the barrel takes a rod (or puts it back), and so does B on the keyboard, which reels in first if the line is out. On phones the B button stays sprint, so put the rod back at the barrel. The rod isn't saved, so every visit starts without one. The ripple off the dock says to fetch a rod until you have one, then casts: the player turns to face it, the float flies out on its line, and after `WAIT` it nibbles, then bites with a splash and the prompt turns gold: **Reel in!** E, Space or A within `BITE_TIME` lands the fish; too late and it gets away, too early and the line comes back empty. Esc reels in quietly. The player stands still while the line is out.
 
 What bites is drawn by `weight`, and its length leans small, so big ones are rarer. Each catch is counted with its best size and shown in the bag.
 
@@ -432,7 +432,7 @@ const codes: Record<string, Dir> = {
   ShiftLeft: 'sprint',
   ShiftRight: 'sprint', // hold to sprint
 }
-// In bindKeys: Space = advance dialogue if open, else reel in a line that's out (fishing.ts), else roll; E / Enter = interact (interact.ts), or reel in; Esc = close dialogue and reel in; F = edit the room (indoors); B = open or close the bag (inventory.ts)
+// In bindKeys: Space = advance dialogue if open, else reel in a line that's out (fishing.ts), else roll; E / Enter = interact (interact.ts), or reel in; Esc = close dialogue and reel in; F = edit the room (indoors); B = put away the rod if one is in hand (fishing.ts), else open or close the bag (inventory.ts)
 // While editing, keys go to editKey() in edit.ts instead
 ```
 

@@ -1,7 +1,9 @@
 import { create } from 'zustand'
 import { say } from './interact'
+import { isTouch } from './quality'
 import { chime, click, plop, splash, whoosh } from './sfx'
 import { playerFacing, playerPos } from './state'
+import { useGame } from './store'
 
 // Fishing off the dock at the island's bottom-left corner (Dock.tsx draws it). Take a rod from the
 // barrel at the foot of the dock, walk out and use the ripple in the water: the line goes out, and
@@ -111,7 +113,26 @@ const setPhase = (phase: Phase) => {
 export function toggleRod() {
   const { rod } = useFishing.getState()
   useFishing.setState({ rod: !rod })
-  if (!rod) say(['You take a fishing rod from the barrel.', 'Look for ripples in the water off the end of the dock.'])
+  if (!rod)
+    say([
+      'You take a fishing rod from the barrel.',
+      isTouch
+        ? 'Look for ripples in the water off the end of the dock.'
+        : 'Look for ripples in the water off the end of the dock. Press B to put the rod away.',
+    ])
+}
+
+/**
+ * B on the keyboard: puts the rod away (back in the barrel, so another can be taken), reeling in
+ * first if the line is out. False if there's no rod in hand, so B opens the bag instead.
+ */
+export function putAwayRod(): boolean {
+  const s = useGame.getState()
+  if (!useFishing.getState().rod || s.dialogue || s.panel || s.editing || s.fading) return false
+  stopFishing()
+  click()
+  useFishing.setState({ rod: false })
+  return true
 }
 
 /** The ripple: casts the line there, if you have a rod. */
