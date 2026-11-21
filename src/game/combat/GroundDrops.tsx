@@ -2,9 +2,9 @@ import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef, useState } from 'react'
 import { ConeGeometry, MeshLambertMaterial, OctahedronGeometry, type Group } from 'three'
 import { DROP_LIFE, drops, updateDrops, useShells } from './drops'
-import { reducedMotion } from './core/settings'
-import { playerPos } from './core/state'
-import { useGame } from './core/store'
+import { reducedMotion } from '../core/settings'
+import { playerPos } from '../core/state'
+import { useGame } from '../core/store'
 
 // The drops on the ground (drops.ts): shells and hearts, bobbing and turning, blinking in their
 // last few seconds. One small group per slot of the pool, shown only while the slot is in use.

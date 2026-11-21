@@ -1,4 +1,4 @@
-import { pressAttack, releaseAttack } from '../combat'
+import { pressAttack, releaseAttack } from '../combat/combat'
 import { editKey, toggleEdit } from '../house/edit'
 import { putAwayRod, reel, stopFishing } from '../life/fishing'
 import { toggleBag } from '../life/inventory'

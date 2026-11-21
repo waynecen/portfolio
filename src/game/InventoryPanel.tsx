@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import { BUGS, useBugs } from './life/bugs'
 import { useCave } from './secrets/cave'
-import { useShells } from './drops'
+import { useShells } from './combat/drops'
 import { FISH, putAwayRod, SPOTS, useFishing } from './life/fishing'
 import { closePanel, toggleLog } from './core/interact'
 import { ITEM, ITEMS, toggleBag, useInventory, type ItemId } from './life/inventory'

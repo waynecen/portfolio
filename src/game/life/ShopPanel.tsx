@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
-import { useShells } from '../drops'
+import { useShells } from '../combat/drops'
 import { closePanel } from '../core/interact'
 import { useOwned } from '../house/room'
 import { buyHat, buyMap, buyPiece, canAfford, DECOR, HATS, MAP_PRICE, useHats, useTreasureMap, wearHat } from './shop'

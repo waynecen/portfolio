@@ -1,7 +1,7 @@
 import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
 import { BoxGeometry, DoubleSide, MeshBasicMaterial, MeshLambertMaterial, RingGeometry, type Group, type Mesh } from 'three'
-import { CHARGE, SPIN_TIME, SWING_TIME, sword, updateSword } from '../combat'
+import { CHARGE, SPIN_TIME, SWING_TIME, sword, updateSword } from '../combat/combat'
 import { reducedMotion } from '../core/settings'
 import { playerFacing } from '../core/state'
 

@@ -1,5 +1,5 @@
 import { dayNumber } from '../secrets/calendar'
-import { addShells } from '../drops'
+import { addShells } from '../combat/drops'
 import { isInland, isLand } from '../world/Island'
 import { say } from '../core/interact'
 import { built, pois, roadTiles } from '../world/pois'

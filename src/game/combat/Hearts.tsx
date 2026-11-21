@@ -1,5 +1,5 @@
 import { useId } from 'react'
-import { useGame } from './core/store'
+import { useGame } from '../core/store'
 
 // Vector heart drawn in a 32×30 box. Medium fidelity: gradient body, outline,
 // gloss highlight, and a dark "socket" that shows through when the heart is empty.

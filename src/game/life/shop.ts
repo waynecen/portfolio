@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { addShells, useShells } from '../drops'
+import { addShells, useShells } from '../combat/drops'
 import { pickup } from '../core/sfx'
 import { addPiece, PIECES, useOwned, type PieceId } from '../house/room'
 

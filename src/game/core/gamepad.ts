@@ -1,4 +1,4 @@
-import { pressAttack, releaseAttack } from '../combat'
+import { pressAttack, releaseAttack } from '../combat/combat'
 import { putAwayRod, reel } from '../life/fishing'
 import { moveFocus, openPanelElement } from './focus'
 import { actions } from './input'
