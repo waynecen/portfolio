@@ -1,7 +1,7 @@
-import { track } from '../analytics'
-import { isTouch } from './core/quality'
-import { useGame } from './core/store'
-import { keyName } from './core/keymap'
+import { track } from '../../analytics'
+import { isTouch } from '../core/quality'
+import { useGame } from '../core/store'
+import { keyName } from '../core/keymap'
 
 // Shows the focused interactable's card: a station's project, or the mailbox's contact links.
 // Using the interactable (E / Enter / A) opens the card's url.

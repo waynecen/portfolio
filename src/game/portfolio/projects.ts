@@ -1,4 +1,4 @@
-import { snap } from './core/grid'
+import { snap } from '../core/grid'
 
 export type Project = { title: string; url: string; description: string }
 

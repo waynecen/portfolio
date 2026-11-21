@@ -1,6 +1,6 @@
 import { fishing, reel } from '../life/fishing'
 import { firstTime, record } from './log'
-import { markSeen } from '../seen'
+import { markSeen } from '../portfolio/seen'
 import { click } from './sfx'
 import { playerPos } from './state'
 import { useGame, type Panel } from './store'

@@ -1,6 +1,6 @@
 import { useFrame } from '@react-three/fiber'
 import { closeDialogue, interactables, type Interactable } from './interact'
-import { markSeen } from '../seen'
+import { markSeen } from '../portfolio/seen'
 import { playerPos } from './state'
 import { useGame } from './store'
 
