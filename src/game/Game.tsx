@@ -192,9 +192,12 @@ export function Game() {
         <Controls />
       </Canvas>
       <Fade />
-      <Hearts />
+      {/* Top left: the hearts, then the settings gear after however many there are (hud.css). */}
+      <div className="hud-top-left">
+        <Hearts />
+        <SettingsButton />
+      </div>
       <ShellCounter />
-      <SettingsButton />
       <ProjectCard />
       <Prompt />
       <ReelBar />

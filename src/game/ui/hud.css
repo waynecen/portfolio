@@ -9,10 +9,12 @@
 .project-card .project-card-action { margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: .2em; }
 .project-card a { color: var(--ink); }
 .project-card-links { display: flex; flex-wrap: wrap; gap: 4px 20px; margin: 0 0 12px; padding: 0; list-style: none; }
-.hud-hearts {
-  position: absolute; display: flex; gap: 4px; pointer-events: none;
+/* Top left (Game.tsx): the hearts, then the settings gear after however many there are. */
+.hud-top-left {
+  position: absolute; display: flex; align-items: center; gap: 12px; pointer-events: none;
   top: max(12px, env(safe-area-inset-top)); left: max(12px, env(safe-area-inset-left));
 }
+.hud-hearts { display: flex; gap: 4px; }
 .heart { width: 32px; height: auto; display: block; filter: drop-shadow(0 1px 1px rgb(0 0 0 / .3)); }
 /* Prompt chip and dialogue box share the card's bottom-centre spot; only one shows at a time. */
 .prompt-region, .dialogue-region {
@@ -101,9 +103,9 @@ body[data-scene="house"] .rod-toggle { top: calc(max(12px, env(safe-area-inset-t
 .fade { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; transition: opacity .25s ease; }
 .fade-on { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .fade { transition: none; } }
-/* The settings chip: a round gear button to the right of the hearts. */
+/* The settings chip: a round gear button after the hearts, in their row (.hud-top-left). */
 .settings-toggle {
-  position: absolute; top: max(12px, env(safe-area-inset-top)); left: calc(max(12px, env(safe-area-inset-left)) + 116px);
+  flex: none; pointer-events: auto;
   width: 34px; height: 34px; padding: 0; border: 0; border-radius: 50%; background: #fdf5dc; color: #7a6449; cursor: pointer;
   box-shadow: 0 2px 0 rgb(122 100 73 / .25); -webkit-tap-highlight-color: transparent; display: grid; place-items: center;
 }
