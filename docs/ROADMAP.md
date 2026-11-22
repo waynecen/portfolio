@@ -154,7 +154,7 @@ The game has grown to 107 files in one flat folder, a 710-line TUNING.md and a 4
 
 Suggested order for Phase H: 47 → 49 → 48 (small and visible), then 35 → 36 → 37 (moves, while nothing else is changing), then 39 → 40 → 41 → 42 → 43, then 44, 45 → 46, and 38 last.
 
-## Phase I: Mini golf *(next: 54 onward)*
+## Phase I: Mini golf *(left: the moving gate, the round panel and trophy, the hole-in-one camera nudge)*
 
 A small putting course to wander into: four or five holes, each a little diorama, played with the controls the visitor already has. It's optional, quick (a hole is under a minute), and never stands between a visitor and the projects. The holes, art and names are our own; it borrows only the genre. It lives in `src/game/golf/` with its own NOTES.md and loads on demand like the cave (H45). It's on the islet, out in the open: the islet grew an east lobe for it (`LINKS` in Island.tsx), and rowing out is the way in.
 
@@ -165,11 +165,11 @@ A small putting course to wander into: four or five holes, each a little diorama
     - **Mouse:** drag back from the ball and let go, like a slingshot, with left click.
     - **Touch:** the same drag on the screen.
     - **On every device:** a short dotted aim line shows the first bounce, and the power shows as a meter in the reel bar's style (ReelBar.tsx). Every input names its keys through `hint()`.
-54. **Holes that teach one idea each.** A straight first putt, a bank shot off a wall, a slope (tiles that push the ball, drawn as stripes), a moving gate timed with a swing of the sword, and a last hole with two routes. Each has a par, a tee and a cup, written as data (`golf/holes.ts`) so a hole is added without new code.
-55. **A scorecard that's kind.** Strokes per hole against par in a `<Panel>` at the end. There's no limit on strokes: after twice par, a "pick it up" button moves on with par plus two. The best round is saved (`readSaved`/`writeSaved`, a progress key). Shells for every hole at par or under, and a small trophy for the house the first time the course is finished under par.
-56. **Feel and feedback, with rules.** A soft tap on the putt (louder for harder ones), a rattle in the cup, and a short fanfare for a hole in one (sfx.ts, synthesized). A brief camera nudge toward the cup on a hole in one only, and never with reduced motion. Photo mode works on the course.
-57. **Assists, honestly.** A longer aim line, and a "gentle greens" setting that adds friction near the cup, in the settings with the fishing assist. While one is on, it shows on the scorecard, like "Assist on" on the fishing prompt.
-58. **Saved, counted, documented.** The best round and the trophy count as progress, so Start over forgets them. A `Golf finished` analytics event fires with the strokes against par. `golf/NOTES.md` gets the constants (friction, power, cup radius, lip-out speed) and the hole format.
+54. **Holes that teach one idea each.** *(done but the moving gate: four holes, The Straight, Round the Wall (a bank), The Tilt (a slope) and Two Ways, on the one green, which changes round the player after each hole)* A straight first putt, a bank shot off a wall, a slope (tiles that push the ball, drawn as stripes), a moving gate timed with a swing of the sword, and a last hole with two routes. Each has a par, a tee and a cup, written as data (`golf/holes.ts`) so a hole is added without new code.
+55. **A scorecard that's kind.** *(mostly done: the round against par on the scorecard and in words at the end, "Pick it up" after twice par, the best round saved, a shell per hole at par or under; the end-of-round `<Panel>` and the house trophy are still to do)* Strokes per hole against par in a `<Panel>` at the end. There's no limit on strokes: after twice par, a "pick it up" button moves on with par plus two. The best round is saved (`readSaved`/`writeSaved`, a progress key). Shells for every hole at par or under, and a small trophy for the house the first time the course is finished under par.
+56. **Feel and feedback, with rules.** *(sounds done: the tap, the rattle and the hole-in-one fanfare; the camera nudge is still to do)* A soft tap on the putt (louder for harder ones), a rattle in the cup, and a short fanfare for a hole in one (sfx.ts, synthesized). A brief camera nudge toward the cup on a hole in one only, and never with reduced motion. Photo mode works on the course.
+57. **Assists, honestly.** *(done: Gentle greens in the settings, with "Assist on" on the scorecard)* A longer aim line, and a "gentle greens" setting that adds friction near the cup, in the settings with the fishing assist. While one is on, it shows on the scorecard, like "Assist on" on the fishing prompt.
+58. **Saved, counted, documented.** *(done)* The best round and the trophy count as progress, so Start over forgets them. A `Golf finished` analytics event fires with the strokes against par. `golf/NOTES.md` gets the constants (friction, power, cup radius, lip-out speed) and the hole format.
 
 Suggested order for Phase I: 51 → 52 → 53 (one hole playable end to end), then 54, 55, 56, 57, 58.
 

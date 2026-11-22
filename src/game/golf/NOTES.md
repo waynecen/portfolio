@@ -33,6 +33,9 @@ const STAND = 0.5      // how far behind the ball the player stands
 const DRAG_FULL = 0.32 // a drag this long (share of the screen's shorter side) is full power
 const SUNK_FOR = 1.2   // seconds the ball sits in the cup before it's back on the tee
 const NEAR = 2.5       // the scorecard shows within this of the green
+const PICK_UP = 2      // after this many times par, "Pick it up" moves on, scored as par + 2
+const GENTLE_NEAR = 0.7 // gentle greens (settings.ts: golfAssist): within this of the cup...
+const GENTLE_FRICTION = 1.6 // ...the ball slows by this much more (units/s²); the aim line is also 1.5× longer (Course.tsx: AIM_GENTLE)
 ```
 
 Use the resting ball (**Putt**) to step up to it: the player holds still behind it (store.ts: `putting`, so `held()` is true) and an aim line of dots shows the way, bouncing once off the kerb and growing with the power.
@@ -43,8 +46,8 @@ Use the resting ball (**Putt**) to step up to it: the player holds still behind 
 
 Core input reaches the golf through `putter` in [core/putt.ts](../core/putt.ts), since this folder loads later (Game.tsx). While putting, the joystick, the A and B buttons and the prompt step aside (`body[data-putting]` in [golf.css](./golf.css)), and the reel-style panel at the bottom shows the meter and how to putt. The scorecard at the top shows the hole, its par, the stroke and the best so far.
 
-Sinking the ball says the score (and "your best yet" when it is), chimes at par or better, keeps the best for each hole (`golf-v1`, progress, so Start over forgets it) and sets the ball back on the tee.
+Sinking the ball rattles in the cup, says the score (and "your best yet" when it is), plays the fanfare for a hole in one or chimes at par or better, gives a shell at par or better, keeps the best for each hole and moves on to the next hole. After the last it says the round against par, keeps the best round, fires the `Golf finished` analytics event (strokes, par, vs) and starts again at hole 1. After twice par, **Pick it up** on the scorecard moves on, scored as par + 2. The scorecard shows the round so far against par (E for level), and "Assist on" while gentle greens is on. Everything is in `golf-v1` (`best`, `bestRound`, `done`), progress, so Start over forgets it. The putt's tap is louder and duller for a harder putt (sfx.ts: `tap`).
 
 ## Holes: [holes.ts](./holes.ts)
 
-Each hole is data: a `name`, its `par`, the `green` (a rectangle, inside the kerb), the `tee`, the `cup`, and `blocks` (boxes on the green the ball bounces off). Hole 1, **The Straight**, is a plain 6.6 × 2.2 green, par 2. The sign by the tee names the hole.
+Each hole is data: a `name`, its `par`, the `green` (a rectangle, inside the kerb), the `tee`, the `cup`, `blocks` (boxes on the green the ball bounces off) and `slopes` (boxes that push a rolling ball by `ax`, `az` units/s², drawn as lighter stripes the way they push; friction holds a ball at rest on one). Every hole uses the same 6.6 × 2.2 green on the links, and the course changes round it after each hole, so nothing new has to fit on the land. The holes: **The Straight** (par 2), **Round the Wall** (par 3, a wall hides the cup: go round or bank), **The Tilt** (par 2, a slope pushes south) and **Two Ways** (par 3, round a block either side; a slope carries the south way on). In a simulation of every power and angle from the tee, no putt leaves the green, and holes 1, 3 and 4 can be holed in one. The sign by the tee names the hole.
