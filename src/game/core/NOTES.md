@@ -100,7 +100,7 @@ const DEFAULTS: Record<Action, string[]> = {
 // key (keyName), so they follow a change. Edit mode's own keys (edit.ts) don't change.
 // J or X = the sword: down swings, held after a swing charges, up lets a charged spin go (combat.ts)
 // The mouse, over the game (not the HUD): left button = the sword, like J; right button = put the rod away, like B (the browser's menu is kept off the game)
-// In bindKeys: Space = advance dialogue if open, else reel in a line that's out (fishing.ts), else roll; E / Enter = interact (interact.ts), or reel in; Esc = close dialogue and reel in; F = edit the room (indoors); L = open or close the dialogue log (log.ts); O = the settings; P = photo mode (photo.ts); B = put away the rod if one is in hand (fishing.ts), else open or close the bag (inventory.ts)
+// In bindKeys: Space = advance dialogue if open, else reel in a line that's out (fishing.ts), else roll; E / Enter = interact (interact.ts), or reel in; Esc = close whatever is open (dialogue, a panel, the line, the golf putt), or with nothing open (busy() is false), open the settings; F = edit the room (indoors); L = open or close the dialogue log (log.ts); O = the settings; P = photo mode (photo.ts); B = put away the rod if one is in hand (fishing.ts), else open or close the bag (inventory.ts)
 // While editing, keys go to editKey() in edit.ts instead; in photo mode, photoKey() in photo.ts goes first
 ```
 

@@ -19,7 +19,7 @@ const SHADE = 3    // tiles behind (north of) a tree that items keep clear of, s
 const COLUMNS = 3  // InventoryPanel.tsx: slots per row; matches .bag-slots in ui/panels.css
 ```
 
-B (or the Bag chip at the top right, which phones use since their B button sprints) opens the bag: a slot per item, a question mark until it's found, and the chosen item's name and words below. Arrow keys move between slots; B, Esc or × closes it.
+B (or the Bag button at the bottom centre, with its bag icon; phones use Bag in the touch menu, since their B button sprints) opens the bag: a slot per item, a question mark until it's found, and the chosen item's name and words below. Arrow keys move between slots; B, Esc or × closes it.
 
 An item's `at` is only where it would like to be. If that tile is a road, a place or its neighbours, the house, or near a tree, it moves to the nearest clear tile, so moving roads or reseeding trees never buries one. Picking one up plays `chime` (sfx.ts) and says what it is; the first find also says how to open the bag.
 

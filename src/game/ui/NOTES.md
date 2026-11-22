@@ -6,7 +6,7 @@ What sits over the game: dialogue, panels, touch controls, photo mode and the we
 
 ## Touch controls: [Joystick.tsx](./Joystick.tsx)
 
-On touch screens the **Start button** (`StartButton` in [MenuPanel.tsx](./MenuPanel.tsx), `.start-button` in [touch.css](./touch.css)) sits at the bottom, 12px right of the joystick and low enough to clear the B button. It opens the **menu**: Bag, Log, Photo, Settings, Edit room (indoors) and Put away rod (with a rod in hand). While any panel is open it shows × and closes it. The top chips that do these things on a computer (Bag, the settings gear, Edit room, Put away rod) are hidden on touch screens, so a phone's top edge only has the hearts, and the now-playing label. Messages written for touch point to the menu.
+On touch screens the **Start button** (`StartButton` in [MenuPanel.tsx](./MenuPanel.tsx), `.start-button` in [touch.css](./touch.css)) sits at the bottom, 12px right of the joystick and low enough to clear the B button. It opens the **menu**: Bag, Log, Photo, Settings, Edit room (indoors) and Put away rod (with a rod in hand). While any panel is open it shows × and closes it. The chips that do these things on a computer (the Bag button at the bottom centre, the settings gear, Edit room, Put away rod) are hidden on touch screens, so a phone's top edge only has the hearts and the now-playing label. Messages written for touch point to the menu.
 
 ```ts
 const TRAVEL = 40 // pixels the knob can move from centre; dragging this far = full speed
@@ -41,6 +41,10 @@ The welcome note on the table (Furniture.tsx) covers only walking and using thin
 
 ## Panels and chips: [Panel.tsx](./Panel.tsx), [Chip.tsx](./Chip.tsx)
 
-Every panel (the bag, the log, the settings, the shop, the touch menu) is a `<Panel title count toggle onKey>`: the heading row with its count and ×, Escape or the panel's own key (`toggle`, from keymap.ts) to close, and focus on its first control (not the ×) unless the panel has focused something itself. `onKey` handles the panel's own keys first. The chips at the top right are `<Chip action className>`, with the key in front on a keyboard; `.hud-chip` in hud.css is their look, and each `className` only places one.
+Every panel (the bag, the log, the settings, the shop, the touch menu) is a `<Panel title count toggle onKey>`: the heading row with its count and ×, Escape or the panel's own key (`toggle`, from keymap.ts) to close, and focus on its first control (not the ×) unless the panel has focused something itself. `onKey` handles the panel's own keys first. The chips are `<Chip action className>`, with the key in front on a keyboard; `.hud-chip` in hud.css is their look, and each `className` only places one. The **Bag** sits at the bottom centre with its bag icon (`LineIcon` in [LineIcon.tsx](./LineIcon.tsx), the touch menu's line drawings). The prompt and the project card sit 44px above it on a computer; the dialogue, the reel and the golf's putting panel keep the bottom, since the button hides while they're up. **Edit room** (indoors) and **Put away rod** are at the top right, the rod under Edit room indoors.
+
+The hearts and the settings gear share a row at the top left (`.hud-top-left` in Game.tsx and hud.css), so the gear always comes after the last heart, however many there are.
+
+**Escape** closes whatever has the player's attention (dialogue, a panel, the line, the golf putt). With nothing open (`busy()` is false) it opens the settings, as O does (input.ts). A panel that closes on Escape itself stops the key there (Panel.tsx, and the record player's panel in MusicPanel.tsx). Otherwise input.ts would find nothing open and open the settings straight after.
 
 CSS for everything over the game is in this folder (hud.css, touch.css, panels.css, photo.css), with house.css and life.css in their folders. Game.tsx imports them in that order: hud, touch, house, panels, life, photo; a later file overrides an earlier one, so keep an override after what it overrides.
