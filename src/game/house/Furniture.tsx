@@ -11,6 +11,7 @@ import { isTouch } from '../core/quality'
 import { useGame } from '../core/store'
 import { reducedMotion } from '../core/settings'
 import { useSceneFrame } from '../core/sceneFrame'
+import { shadeMaterial } from './RoomLights'
 
 // The room's furniture, one mesh per piece so each can be moved on its own (see room.ts and
 // edit.ts). Every piece is built from placeholder blocks around its footprint's centre, and
@@ -53,7 +54,8 @@ function cylinder(x: number, z: number, r0: number, r1: number, y0: number, y1: 
 
 // Each piece's look, centred on its footprint, and what you bump into. Pieces with the same
 // builder (the stools, the pots) share one geometry.
-type Build = { parts: (box: Box, add: (g: BufferGeometry) => void) => void; solid: Collider[] }
+// glow: parts drawn in the lit paper of RoomLights.tsx, which brightens at night.
+type Build = { parts: (box: Box, add: (g: BufferGeometry) => void) => void; glow?: BufferGeometry; solid: Collider[] }
 type Box = (c: Color, x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => void
 
 const BED: Build = {
@@ -119,8 +121,8 @@ const LAMP: Build = {
   parts: (box, add) => {
     add(cylinder(0, 0, 0.18, 0.18, 0, 0.04, new Color('#6b4a2e')))
     box(new Color('#6b4a2e'), -0.025, 0.025, 0.04, 0.9, -0.025, 0.025)
-    add(cylinder(0, 0, 0.2, 0.24, 0.9, 1.3, new Color('#f4e3c0')))
   },
+  glow: new CylinderGeometry(0.24, 0.2, 0.4, 10).translate(0, 1.1, 0), // the shade, lit from inside (and by RoomLights.tsx's light)
   solid: [{ kind: 'circle', x: 0, z: 0, r: 0.2 }],
 }
 const PLANT: Build = {
@@ -223,6 +225,7 @@ function Piece({ id, build }: { id: PieceId; build: Build }) {
   return (
     <group ref={group}>
       <mesh geometry={geometryOf(build)} material={material} />
+      {build.glow && <mesh geometry={build.glow} material={shadeMaterial} />}
     </group>
   )
 }

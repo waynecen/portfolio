@@ -29,6 +29,7 @@ import { Grass, Pots } from './combat/Grass'
 import { GroundDrops, ShellCounter } from './combat/GroundDrops'
 import { Hearts } from './combat/Hearts'
 import { HouseExterior, HouseInterior } from './house/House'
+import { Pendant, RoomLights } from './house/RoomLights'
 import { Interactions } from './core/Interactions'
 import { BagButton, InventoryPanel, RodButton } from './ui/InventoryPanel'
 import { Island } from './world/Island'
@@ -128,6 +129,7 @@ export function Game() {
         onCreated={() => requestAnimationFrame(() => requestAnimationFrame(() => dispatchEvent(new Event('gameready'))))}
       >
         <Atmosphere />
+        <RoomLights />
         {/* Both areas stay mounted (so nothing is rebuilt on each trip) but only one is drawn. */}
         <group visible={scene === 'world'}>
           <Island />
@@ -166,6 +168,7 @@ export function Game() {
         </group>
         <group visible={scene === 'house'}>
           <HouseInterior />
+          <Pendant />
           <Furniture />
           <RecordPlayer />
           <Later>
