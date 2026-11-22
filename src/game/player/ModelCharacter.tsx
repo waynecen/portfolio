@@ -1,19 +1,15 @@
-import { useFrame, useLoader } from '@react-three/fiber'
+import { useFrame } from '@react-three/fiber'
 import { useEffect, useMemo } from 'react'
 import {
   AnimationMixer,
   LoopOnce,
   Box3,
   MathUtils,
-  MeshLambertMaterial,
   Vector3,
   type AnimationAction,
-  type Material,
   type Mesh,
-  type MeshStandardMaterial,
 } from 'three'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js'
+import { toLambert, useGLB } from '../core/gltf'
 import { CLIPS, PLAYER_HEIGHT, PLAYER_WIDTH } from './models'
 import { playerRoll, playerVel } from '../core/state'
 
@@ -36,22 +32,8 @@ const RUN_MAX_RATE = 2.75 // the run looks frantic sooner; 2.75× keeps pace up 
 // (extras.travel, in body heights per second), or 0 if it has none.
 const paceOf = (a: AnimationAction | null) => ((a?.getClip().userData.travel as number | undefined) ?? 0) * PLAYER_HEIGHT
 
-// The island is lit with Lambert materials; the model's PBR ones would look out of place (and cost
-// more), so each keeps its texture and colour on a Lambert material instead.
-function toLambert(material: Material): Material {
-  const m = material as MeshStandardMaterial
-  return new MeshLambertMaterial({
-    map: m.map ?? null,
-    color: m.color ?? 0xffffff,
-    vertexColors: m.vertexColors,
-    transparent: m.transparent,
-    alphaTest: m.alphaTest,
-    side: m.side,
-  })
-}
-
 export default function ModelCharacter({ url }: { url: string }) {
-  const gltf = useLoader(GLTFLoader, url, (loader) => loader.setMeshoptDecoder(MeshoptDecoder))
+  const gltf = useGLB(url)
 
   const rig = useMemo(() => {
     const root = gltf.scene
