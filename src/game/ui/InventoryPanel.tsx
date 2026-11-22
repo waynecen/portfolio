@@ -13,6 +13,7 @@ import { useGame } from '../core/store'
 import { keyName } from '../core/keymap'
 import { Panel } from './Panel'
 import { Chip } from './Chip'
+import { LineIcon } from './LineIcon'
 
 // The bag: a slot for every item, filled once it's found, then one for every kind of fish, filled
 // once one's caught (fishing.ts), and the chosen slot's name and words below. Arrow keys move
@@ -265,22 +266,27 @@ export function InventoryPanel() {
   )
 }
 
-/** The Bag chip at the top right. Hidden while something else has the player's attention. */
+/**
+ * The Bag button at the bottom centre, with its icon; the prompt and the project card sit above it
+ * (hud.css). Hidden while something else has the player's attention, which gives the dialogue, the
+ * reel and the golf's putting panel the bottom.
+ */
 export function BagButton() {
-  const away = useGame((s) => s.dialogue !== null || s.panel !== null || s.fading || s.editing)
+  const away = useGame((s) => s.dialogue !== null || s.panel !== null || s.fading || s.editing || s.putting)
   const fishing = useFishing((s) => s.phase !== 'idle')
   const hidden = away || fishing
   const count = useInventory((s) => s.found.length)
   if (hidden) return null
   return (
     <Chip action="bag" className="bag-toggle" onClick={toggleBag} label={`Bag, ${count} of ${ITEMS.length} found`}>
+      <LineIcon name="bag" />
       Bag <span className="bag-toggle-count">{count}</span>
     </Chip>
   )
 }
 
 /**
- * The Put away chip, under the Bag chip (or the Edit room chip indoors), while a rod is in hand: the
+ * The Put away chip at the top right (under the Edit room chip indoors), while a rod is in hand: the
  * phone's way to do what B does on a keyboard. Hidden by the ripple, where the rod is for fishing,
  * while the line is out, and while something else has the player's attention.
  */

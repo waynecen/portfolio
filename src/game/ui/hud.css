@@ -1,4 +1,4 @@
-/* Over the game (ui/, Game.tsx): the hearts, the prompt and dialogue, the project card, the chips at the top, the now-playing label, the shell counter, the fade and the settings gear. */
+/* Over the game (ui/, Game.tsx): the hearts, the prompt and dialogue, the project card, the chips (the Bag at the bottom centre, the rest at the top right), the now-playing label, the shell counter, the fade and the settings gear. */
 .project-card-region {
   position: absolute; left: 16px; right: 16px; bottom: max(16px, env(safe-area-inset-bottom));
   max-width: 28rem; margin: 0 auto; pointer-events: none;
@@ -22,6 +22,9 @@
   margin: 0 auto; pointer-events: none; display: flex; justify-content: center;
 }
 .dialogue-region { max-width: 36rem; }
+/* The prompt and the card sit above the Bag button. The dialogue keeps the bottom: the button hides while it's open.
+   Touch screens have no Bag button, and lift all three above the controls instead (below). */
+.prompt-region, .project-card-region { bottom: calc(max(16px, env(safe-area-inset-bottom)) + 44px); }
 .prompt {
   margin: 0; padding: 6px 14px 6px 6px; background: #fff; border: 2px solid var(--ink);
   font-size: 12px; text-transform: uppercase; letter-spacing: .2em;
@@ -80,7 +83,7 @@
   font-size: 11px; cursor: pointer;
 }
 .now-playing-title { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-/* The chips at the top right (Chip.tsx): the Bag, Edit room indoors, and Put away rod under them. Same cream as the dialogue. */
+/* The chips (Chip.tsx): the Bag at the bottom centre; Edit room indoors at the top right, and Put away rod there or under it. Same cream as the dialogue. */
 .hud-chip, .edit-bar button {
   border: 0; border-radius: 999px; background: #fdf5dc; color: #7a6449; cursor: pointer;
   font: 600 13px/1.3 ui-rounded, "SF Pro Rounded", "Nunito", system-ui, sans-serif;
@@ -92,9 +95,15 @@
   background: #7a6449; color: #fdf5dc; font: inherit;
 }
 .hud-chip:focus-visible, .edit-bar button:focus-visible { outline: 2px solid #f2b233; outline-offset: 2px; }
-.bag-toggle { top: max(12px, env(safe-area-inset-top)); }
-.edit-toggle, .rod-toggle { top: calc(max(12px, env(safe-area-inset-top)) + 40px); }
-body[data-scene="house"] .rod-toggle { top: calc(max(12px, env(safe-area-inset-top)) + 80px); }
+.bag-toggle {
+  right: auto; left: 50%; transform: translateX(-50%); bottom: max(16px, env(safe-area-inset-bottom));
+  display: flex; align-items: center; gap: 6px; white-space: nowrap;
+}
+.bag-toggle kbd { margin-right: 0; }
+.bag-toggle .menu-icon { width: 18px; height: 18px; }
+.bag-toggle .bag-toggle-count { margin-left: 0; }
+.edit-toggle, .rod-toggle { top: max(12px, env(safe-area-inset-top)); }
+body[data-scene="house"] .rod-toggle { top: calc(max(12px, env(safe-area-inset-top)) + 40px); }
 .bag-toggle-count {
   display: inline-block; min-width: 18px; margin-left: 4px; padding: 0 5px; border-radius: 999px; text-align: center;
   background: rgb(122 100 73 / .14); font-size: 12px;
