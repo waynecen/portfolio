@@ -88,38 +88,39 @@ const bodyGeometry = new SphereGeometry(0.28, 12, 8).translate(0, 0.28, 0)
 const eyeGeometry = new SphereGeometry(0.035, 6, 4)
 const eyeMaterial = new MeshLambertMaterial({ color: '#1f1f1f' })
 const WHITE = new Color('#ffffff')
+const BASE = slimeHomes.map((_, k) => new Color(COLORS[k % COLORS.length])) // each slime's own colour
+
+// The hittable for each slime (combat.ts), its x and z kept up to date each frame below. They're made
+// here, with the rest of the slimes' state, rather than in an effect: R3F starts calling the frame
+// callback before React runs effects, and the first frame would find none to move.
+const hittable = slimeHomes.map((_, k) => ({
+  x: sx[k],
+  z: sz[k],
+  r: 0.28,
+  hit: (power: number, dx: number, dz: number) => {
+    if (goneAt[k] >= 0) return
+    hp[k] -= power
+    flash[k] = 0.15
+    knockX[k] = dx * KNOCK
+    knockZ[k] = dz * KNOCK
+    hopT[k] = -1
+    restT[k] = 0.5
+    if (hp[k] <= 0) {
+      goneAt[k] = performance.now() / 1000
+      pop()
+      burst(sx[k], sz[k], 8, BASE[k])
+      maybeDrop(sx[k], sz[k], DROP.heart, DROP.shell)
+    }
+  },
+}))
 
 export function Slimes() {
   const groups = useRef<(Group | null)[]>([])
   const bodies = useRef(slimeHomes.map((_, k) => new MeshLambertMaterial({ color: COLORS[k % COLORS.length], flatShading: true })))
-  const base = useRef(slimeHomes.map((_, k) => new Color(COLORS[k % COLORS.length])))
 
+  // The sword can reach the slimes only while they're mounted.
   useEffect(() => {
-    const removers = slimeHomes.map((_, k) => {
-      // A hittable that follows the slime: its x and z are kept up to date each frame below.
-      const h = {
-        x: sx[k],
-        z: sz[k],
-        r: 0.28,
-        hit: (power: number, dx: number, dz: number) => {
-          if (goneAt[k] >= 0) return
-          hp[k] -= power
-          flash[k] = 0.15
-          knockX[k] = dx * KNOCK
-          knockZ[k] = dz * KNOCK
-          hopT[k] = -1
-          restT[k] = 0.5
-          if (hp[k] <= 0) {
-            goneAt[k] = performance.now() / 1000
-            pop()
-            burst(sx[k], sz[k], 8, base.current[k])
-            maybeDrop(sx[k], sz[k], DROP.heart, DROP.shell)
-          }
-        },
-      }
-      hittable[k] = h
-      return addHittable(h)
-    })
+    const removers = hittable.map((h) => addHittable(h))
     return () => removers.forEach((r) => r())
   }, [])
 
@@ -158,7 +159,7 @@ export function Slimes() {
       g.scale.set(1 / Math.sqrt(squash), squash, 1 / Math.sqrt(squash))
       g.rotation.y = Math.atan2(dirX[k], dirZ[k])
       flash[k] = Math.max(0, flash[k] - dt)
-      bodies.current[k].color.copy(flash[k] > 0 ? WHITE : base.current[k])
+      bodies.current[k].color.copy(flash[k] > 0 ? WHITE : BASE[k])
     }
   })
 
@@ -179,9 +180,6 @@ export function Slimes() {
     </>
   )
 }
-
-// The hittable for each slime, moved with it every frame.
-const hittable: { x: number; z: number; r: number; hit: (power: number, dx: number, dz: number) => void }[] = []
 
 // One slime's move this frame: sliding off a knock, hopping, or sitting and choosing where next.
 function step(k: number, dt: number) {
