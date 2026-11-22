@@ -83,6 +83,11 @@ export function SettingsPanel() {
       </label>
       <p className="settings-note">Twice as long to reel in a bite. “Assist on” shows on the prompt while it helps.</p>
       <label className="settings-row">
+        Gentle greens
+        <input type="checkbox" checked={s.golfAssist} onChange={(e) => setSetting('golfAssist', e.currentTarget.checked)} />
+      </label>
+      <p className="settings-note">A longer aim line on the mini golf, and the ball slows near the cup. “Assist on” shows on the scorecard.</p>
+      <label className="settings-row">
         Slimes
         <input type="checkbox" checked={s.slimes} onChange={(e) => setSetting('slimes', e.currentTarget.checked)} />
       </label>

@@ -16,12 +16,14 @@ type Settings = {
   bigText: boolean
   /** A longer window to reel in a bite (fishing.ts), marked on the prompt while it's on. */
   fishAssist: boolean
+  /** Gentle greens (golf.ts): a longer aim line and more friction near the cup, marked on the scorecard. */
+  golfAssist: boolean
   /** Slimes in the meadows (Slimes.tsx); off for a visit with nothing to fight. */
   slimes: boolean
 }
 
 const KEY = 'settings-v1'
-const DEFAULTS: Settings = { effects: 1, motion: 'device', bigText: false, fishAssist: false, slimes: true }
+const DEFAULTS: Settings = { effects: 1, motion: 'device', bigText: false, fishAssist: false, golfAssist: false, slimes: true }
 
 function load(): Settings {
   const saved = (readSaved(KEY) ?? {}) as Partial<Settings>
@@ -30,6 +32,7 @@ function load(): Settings {
     motion: saved.motion === 'reduce' || saved.motion === 'full' ? saved.motion : DEFAULTS.motion,
     bigText: saved.bigText === true,
     fishAssist: saved.fishAssist === true,
+    golfAssist: saved.golfAssist === true,
     slimes: saved.slimes !== false,
   }
 }
