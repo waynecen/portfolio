@@ -257,5 +257,14 @@ export const landed = (first: boolean) => (first ? play('fanfare') : play('catch
 export const plop = () => play('plop', 0.8, 0.9 + Math.random() * 0.2)
 /** A fish biting. */
 export const splash = () => play('splash')
+/** A golf putt (golf.ts): a soft tap, louder and duller for a harder one. */
+export const tap = (power: number) => play('hit', 0.15 + 0.45 * power, 1.6 - 0.4 * power)
+/** The golf ball dropping into the cup: a little rattle. */
+export const rattle = () => {
+  play('click', 0.5, 0.7)
+  play('click', 0.3, 0.9)
+}
+/** A hole in one, or a new fish: the fanfare. */
+export const fanfare = () => play('fanfare')
 /** Furniture set down on the floor. */
 export const thud = () => play('wood', 1, 0.7)
