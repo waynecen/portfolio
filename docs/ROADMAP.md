@@ -31,7 +31,7 @@ This replaces the earlier feature roadmap. Its unfinished items are folded in be
    - Footsteps by surface (grass, road, tatami floor), a roll whoosh, the door, dialogue blips and UI clicks.
    - A small WebAudio synth like `placeholderTracks.ts`, so there are no audio files, sharing the mute with music.
 4. **Particles.** *(done: Dust.tsx, Sparkle.tsx, splashes in Rain.tsx)* Dust puffs on roll and sprint, a sparkle over whatever has focus, and splashes in the rain. All from preallocated pools.
-5. **Art pass on props.** Stations become small themed dioramas, one per project. The sign, mailbox and record player get models through the same pipeline as the character.
+5. **Art pass on props.** *(record player done: public/models/recordPlayer.glb)* Stations become small themed dioramas, one per project. The sign, mailbox and record player get models through the same pipeline as the character.
 
 ## Phase B: Light action (Zelda-style)
 

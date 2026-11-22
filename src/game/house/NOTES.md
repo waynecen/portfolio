@@ -7,9 +7,12 @@ The house: its rooms and doors, the furniture and edit mode, and the record play
 ## Record player and music: [RecordPlayer.tsx](./RecordPlayer.tsx), [music.ts](../core/music.ts)
 
 ```ts
-const BACK = -0.15 // how far towards the back of its tile it stands (where it is comes from room.ts, like the other furniture)
+const MODEL = '/models/recordPlayer.glb' // the Tripo model (models-src/recordPlayer.glb, through npm run models); the box cabinet stands in while it downloads
+const FILL = { day: 0.2, night: 0.12 } // RecordPlayerModel.tsx: a whisper of studio fill (its texture as emissive), so its front isn't lost in shadow; less at night
+const MODEL_W = 0.9 // the model is fitted to this width (it's then 0.8 deep, 0.78 tall); the collider is sized to it
+const BACK = -0.08 // how far towards the back of its tile it stands (where it is comes from room.ts, like the other furniture)
 const RANGE = 1.8 // how close the player must be to use it
-const SPIN = 3.5 // platter speed while playing, rad/s (about 33 rpm); it spins up and winds down
+const SPIN = 3.5 // the stand-in's platter speed while playing, rad/s (about 33 rpm); it spins up and winds down. The model's record is part of its mesh, so it doesn't spin
 const PULSE = 0.08 // how much the cabinet bounces to the music's low end (off with reduce motion)
 const DEFAULT_VOLUME = 0.6 // music.ts: starting volume before the visitor changes it (then remembered); 0.6 = two waves
 const WAVE_LEVELS = [0.33, 0.66] // MusicPanel.tsx: volume up to 0.33 shows 1 wave, up to 0.66 shows 2, above that 3; the icon toggles mute (0) and back

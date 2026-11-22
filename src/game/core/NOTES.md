@@ -126,7 +126,9 @@ Every part of a visit is kept in this browser's localStorage, each module under 
 
 ---
 
-## Shared helpers: [keymap.ts](./keymap.ts), [sceneFrame.ts](./sceneFrame.ts)
+## Shared helpers: [keymap.ts](./keymap.ts), [sceneFrame.ts](./sceneFrame.ts), [gltf.ts](./gltf.ts)
+
+**Models:** `useGLB(url)` loads a model from public/models with the meshopt decoder (suspending, so wrap it in `<Suspense>`), and `lambertAll(root)` or `toLambert(material)` swaps its PBR materials for Lambert ones, to match the island's lighting. `lambertAll` returns the materials with their texture as an emissive map at 0; raise `emissiveIntensity` for a soft fill that keeps a prop's true colours from every side (the record player uses it). Import gltf.ts only from a lazily loaded component, so the loader stays out of the game chunk until a model is shown.
 
 **Hints** name the controls the visitor has: `hint('Press {bag} to open it', 'Tap Bag in the menu')` gives the touch words on a touch screen, otherwise the keyboard words with `{action}` replaced by its main key and `{action*}` by all of its keys, so every hint follows a remap. Write new hints this way rather than with `isTouch ?`.
 
