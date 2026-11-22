@@ -4,6 +4,7 @@ import { ITEMS, useInventory } from '../life/inventory'
 import { togglePhoto } from './photo'
 import { isTouch } from '../core/quality'
 import { useGame } from '../core/store'
+import { LineIcon } from './LineIcon'
 import { Panel } from './Panel'
 
 // Touch screens: a Start button at the bottom, between the joystick and the A and B buttons, opens
@@ -11,22 +12,6 @@ import { Panel } from './Panel'
 // settings, photo mode, editing the room); a tap of B puts the fishing rod away, as B does on a keyboard. It
 // keeps the top of the screen clear on a phone: the chips that do these things on a computer are
 // hidden on touch screens (style.css).
-
-// A small line drawing beside each item, in the text's colour.
-const ICONS = {
-  bag: 'M6 9h12l-1 11H7L6 9Zm3 0V7a3 3 0 0 1 6 0v2',
-  log: 'M7 4h10v16H7zM10 8h4M10 12h4M10 16h2',
-  camera: 'M4 8h4l1.5-2h5L16 8h4v11H4V8Zm8 2.5a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z',
-  gear: 'M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm0-6v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1M5.6 18.4l2.1-2.1m8.6-8.6 2.1-2.1',
-  chair: 'M7 4v16M7 12h10v8M7 12V4h8v8M17 12v8',
-}
-function Icon({ name }: { name: keyof typeof ICONS }) {
-  return (
-    <svg className="menu-icon" viewBox="0 0 24 24" aria-hidden="true">
-      <path d={ICONS[name]} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
 
 export function MenuPanel() {
   const open = useGame((s) => s.panel === 'menu')
@@ -44,32 +29,32 @@ export function MenuPanel() {
       <ul className="menu-list">
         <li>
           <button type="button" onClick={() => openPanel('inventory')}>
-            <Icon name="bag" />
+            <LineIcon name="bag" />
             Bag <span className="bag-toggle-count">{found} of {ITEMS.length}</span>
           </button>
         </li>
         <li>
           <button type="button" onClick={() => openPanel('log')}>
-            <Icon name="log" />
+            <LineIcon name="log" />
             Log
           </button>
         </li>
         <li>
           <button type="button" onClick={then(togglePhoto)}>
-            <Icon name="camera" />
+            <LineIcon name="camera" />
             Photo
           </button>
         </li>
         <li>
           <button type="button" onClick={() => openPanel('settings')}>
-            <Icon name="gear" />
+            <LineIcon name="gear" />
             Settings
           </button>
         </li>
         {scene === 'house' && (
           <li>
             <button type="button" onClick={then(toggleEdit)}>
-              <Icon name="chair" />
+              <LineIcon name="chair" />
               Edit room
             </button>
           </li>
