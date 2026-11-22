@@ -4,10 +4,10 @@ import { Color, CylinderGeometry, DoubleSide, MeshBasicMaterial, MeshLambertMate
 import { block, merge, tint, unindexed } from '../core/geometry'
 import { register } from '../core/interact'
 import { useSceneFrame } from '../core/sceneFrame'
-import { reducedMotion } from '../core/settings'
+import { reducedMotion, useSettings } from '../core/settings'
 import { useGame } from '../core/store'
 import { Sign } from '../portfolio/Sign'
-import { aim, ball, BALL_R, ballSpot, CUP_R, currentHole, dragEnd, dragMove, dragStart, stepGolf, useGolf } from './golf'
+import { aim, ball, BALL_R, ballSpot, CUP_R, dragEnd, dragMove, dragStart, stepGolf, useGolf } from './golf'
 import { HOLES, type Hole } from './holes'
 
 // The mini golf on the links (golf.ts has the rules): a felt green with a wooden kerb, the cup and
@@ -20,6 +20,9 @@ const DOTS = 14
 const DOT_GAP = 0.2 // between aim dots
 const AIM_MIN = 0.8 // the aim line's length at no power...
 const AIM_MAX = 3 // ...and at full power
+const AIM_GENTLE = 1.5 // gentle greens (settings.ts) make the aim line this much longer
+const SLOPE_STRIPES = 5 // stripes across a slope, running the way it pushes
+const SLOPE = new Color('#7cc26f')
 
 const FELT = new Color('#5fae5a')
 const FELT_DARK = new Color('#4f9a4c')
@@ -47,6 +50,20 @@ function buildGreen(h: Hole): BufferGeometry {
   ]) {
     parts.push(tint(block(a, b, 0, KERB_H - 0.02, c, d), KERB))
     parts.push(tint(block(a, b, KERB_H - 0.02, KERB_H, c, d), KERB_TOP))
+  }
+  // Slopes: lighter stripes along the way they push, just proud of the felt.
+  for (const s of h.slopes ?? []) {
+    const along = Math.abs(s.ax) > Math.abs(s.az) // pushing along x: stripes run along x
+    for (let k = 0; k < SLOPE_STRIPES; k++) {
+      if (k % 2) continue
+      if (along) {
+        const z0 = s.z - s.hz + (k * 2 * s.hz) / SLOPE_STRIPES
+        parts.push(tint(block(s.x - s.hx, s.x + s.hx, FELT_Y, FELT_Y + 0.004, z0, z0 + (2 * s.hz) / SLOPE_STRIPES), SLOPE))
+      } else {
+        const x0 = s.x - s.hx + (k * 2 * s.hx) / SLOPE_STRIPES
+        parts.push(tint(block(x0, x0 + (2 * s.hx) / SLOPE_STRIPES, FELT_Y, FELT_Y + 0.004, s.z - s.hz, s.z + s.hz), SLOPE))
+      }
+    }
   }
   for (const b of h.blocks) parts.push(tint(block(b.x - b.hx, b.x + b.hx, 0, KERB_H * 1.6, b.z - b.hz, b.z + b.hz), KERB))
   return merge(parts.map(unindexed))
@@ -130,7 +147,8 @@ function Green({ hole }: { hole: Hole }) {
     if (!d) return
     d.visible = phase === 'aim'
     if (!d.visible) return
-    traceAim(hole, AIM_MIN + (AIM_MAX - AIM_MIN) * (charging ? aim.power : 0), at)
+    const gentle = useSettings.getState().golfAssist ? AIM_GENTLE : 1
+    traceAim(hole, (AIM_MIN + (AIM_MAX - AIM_MIN) * (charging ? aim.power : 0)) * gentle, at)
     let n = 0
     for (let k = 0; k < DOTS; k++) {
       const x = at[k * 2]
@@ -160,7 +178,7 @@ function Green({ hole }: { hole: Hole }) {
 
 /** The links: the hole, its sign at the tee, and the ball's use point. */
 export function Course() {
-  const hole = currentHole()
+  const hole = useGolf((s) => HOLES[s.hole])
   const gl = useThree((s) => s.gl)
   useEffect(() => register(ballSpot), [])
   // A drag on the game while lining up a putt (mouse or touch): pull back and let go.

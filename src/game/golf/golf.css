@@ -17,3 +17,16 @@
 /* While lining up a putt, a drag anywhere aims it, so the stick and buttons step aside. */
 body[data-putting] .joystick, body[data-putting] .action-button, body[data-putting] .prompt-region { display: none; }
 body.big-text .golf-card, body.big-text .golf-putt { zoom: 1.2; }
+
+/* "Pick it up" after twice par (golf.ts): a small button on the scorecard. */
+.golf-pickup {
+  pointer-events: auto;
+  padding: 0.15em 0.6em;
+  border: 0;
+  border-radius: 999px;
+  background: #7a6449;
+  color: #fdf5dc;
+  font: inherit;
+  font-size: 0.85em;
+  cursor: pointer;
+}

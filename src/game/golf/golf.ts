@@ -5,7 +5,10 @@ import { keys, stick } from '../core/input'
 import { hint } from '../core/keymap'
 import { readSaved, writeSaved } from '../core/persist'
 import { putter } from '../core/putt'
-import { chime, click, plop, reelClick } from '../core/sfx'
+import { track } from '../../analytics'
+import { addShells } from '../combat/drops'
+import { useSettings } from '../core/settings'
+import { chime, fanfare, plop, rattle, reelClick, tap } from '../core/sfx'
 import { playerPos, teleport } from '../core/state'
 import { useGame } from '../core/store'
 import { HOLES, type Box, type Hole } from './holes'
@@ -36,6 +39,9 @@ const DRAG_FULL = 0.32 // a drag this long (share of the screen's shorter side) 
 const SUNK_FOR = 1.2 // seconds the ball sits in the cup before it's back on the tee
 const STEP = 1 / 240 // physics step: short enough that a full-power putt can't pass through a kerb
 const NEAR = 2.5 // the scorecard shows within this of the green
+const PICK_UP = 2 // after this many times par, "Pick it up" moves on, scored as par + 2
+const GENTLE_NEAR = 0.7 // gentle greens (settings.ts): within this of the cup...
+const GENTLE_FRICTION = 1.6 // ...the ball slows by this much more (units/s²)
 
 type Phase = 'rest' | 'aim' | 'roll' | 'sunk'
 type State = {
@@ -48,16 +54,30 @@ type State = {
   best: (number | null)[]
   /** The player is by the green (GolfHud.tsx shows the scorecard). */
   near: boolean
+  /** Strokes for each hole of the round under way (null: not played yet). */
+  round: (number | null)[]
 }
 
 const KEY = 'golf-v1' // persist.ts: progress, so Start over forgets it
+type Saved = { best?: unknown; bestRound?: unknown; done?: unknown }
+const saved = () => (readSaved(KEY) ?? {}) as Saved
 function loadBest(): (number | null)[] {
-  const v = readSaved(KEY) as { best?: unknown } | undefined
-  const best = Array.isArray(v?.best) ? v.best : []
+  const v = saved()
+  const best = Array.isArray(v.best) ? v.best : []
   return HOLES.map((_, k) => (typeof best[k] === 'number' && best[k] > 0 ? (best[k] as number) : null))
 }
+const fresh = () => HOLES.map(() => null)
 
-export const useGolf = create<State>(() => ({ hole: 0, phase: 'rest', strokes: 0, charging: false, best: loadBest(), near: false }))
+export const useGolf = create<State>(() => ({ hole: 0, phase: 'rest', strokes: 0, charging: false, best: loadBest(), near: false, round: fresh() }))
+
+/** The best whole round so far (total strokes), or null. */
+export const bestRound = (): number | null => {
+  const b = saved().bestRound
+  return typeof b === 'number' && b > 0 ? b : null
+}
+export const PAR = HOLES.reduce((s, h) => s + h.par, 0)
+/** Whether "Pick it up" is on offer: the ball at rest after twice par. */
+export const canPickUp = (s: State) => (s.phase === 'rest' || s.phase === 'aim') && s.strokes >= HOLES[s.hole].par * PICK_UP
 
 /** Per-frame state, outside React: the ball, and the aim (an angle like playerFacing: 0 = toward the camera). */
 export const ball = { x: HOLES[0].tee.x, z: HOLES[0].tee.z, vx: 0, vz: 0, sunkFor: 0, lipped: false }
@@ -116,7 +136,7 @@ function putt(power: number) {
   ball.vx = Math.sin(aim.angle) * speed
   ball.vz = Math.cos(aim.angle) * speed
   ball.lipped = false
-  click()
+  tap(power)
   useGolf.setState({ phase: 'roll', strokes: useGolf.getState().strokes + 1 })
   useGame.setState({ putting: false })
 }
@@ -199,6 +219,20 @@ function roll(h: number): boolean {
     ball.vx *= slow / speed
     ball.vz *= slow / speed
   }
+  // Slopes push the ball while it's rolling (friction holds a ball at rest on one).
+  if (hole.slopes)
+    for (const s of hole.slopes)
+      if (Math.abs(ball.x - s.x) < s.hx && Math.abs(ball.z - s.z) < s.hz) {
+        ball.vx += s.ax * h
+        ball.vz += s.az * h
+      }
+  // Gentle greens: more friction near the cup, so a putt a little too firm still drops.
+  if (useSettings.getState().golfAssist && d < GENTLE_NEAR) {
+    const sp = Math.hypot(ball.vx, ball.vz)
+    const k = sp > 0 ? Math.max(0, sp - GENTLE_FRICTION * h) / sp : 0
+    ball.vx *= k
+    ball.vz *= k
+  }
   ball.x += ball.vx * h
   ball.z += ball.vz * h
   // The kerb round the green, then the blocks on it.
@@ -277,23 +311,64 @@ function sink() {
   ball.z = currentHole().cup.z
   ball.sunkFor = 0
   plop()
+  rattle()
   useGolf.setState({ phase: 'sunk' })
 }
 
-// In the cup: say the score, keep the best, and set the ball back on the tee to go again.
+// In the cup: say the score, keep the best, and move on to the next hole (after the last, the
+// round's score, and back to the first).
 function holeDone() {
-  const { hole, strokes, best } = useGolf.getState()
+  finish(useGolf.getState().strokes, false)
+}
+
+/** "Pick it up": moves on from a hole after twice par, scored as par + 2. */
+export function pickUp() {
+  const s = useGolf.getState()
+  if (!canPickUp(s)) return
+  if (s.phase === 'aim') leave()
+  finish(HOLES[s.hole].par + 2, true)
+}
+
+function finish(strokes: number, pickedUp: boolean) {
+  const { hole, best, round } = useGolf.getState()
   const h = HOLES[hole]
   const was = best[hole]
-  const next = best.slice()
-  if (was === null || strokes < was) next[hole] = strokes
-  writeSaved(KEY, { best: next })
-  const words =
-    strokes === 1 ? 'A hole in one!' : strokes < h.par ? `${strokes} strokes, under par!` : strokes === h.par ? `${strokes} strokes: par.` : `${strokes} strokes, par ${h.par}.`
-  const record = was !== null && strokes < was ? ' Your best yet.' : ''
-  if (strokes <= h.par) chime()
-  if (Math.hypot(playerPos.x - ball.x, playerPos.z - ball.z) < 8) say([`${words}${record}`, 'The ball’s back on the tee for another go.'])
-  ball.x = h.tee.x
-  ball.z = h.tee.z
-  useGolf.setState({ phase: 'rest', strokes: 0, best: next })
+  const nextBest = best.slice()
+  if (!pickedUp && (was === null || strokes < was)) nextBest[hole] = strokes
+  const nextRound = round.slice()
+  nextRound[hole] = strokes
+  const words = pickedUp
+    ? `Picked up: ${strokes} on the card.`
+    : strokes === 1
+      ? 'A hole in one!'
+      : strokes < h.par
+        ? `${strokes} strokes, under par!`
+        : strokes === h.par
+          ? `${strokes} strokes: par.`
+          : `${strokes} strokes, par ${h.par}.`
+  const record = !pickedUp && was !== null && strokes < was ? ' Your best yet.' : ''
+  if (!pickedUp && strokes === 1) fanfare()
+  else if (!pickedUp && strokes <= h.par) chime()
+  // A shell for every hole at par or under.
+  if (!pickedUp && strokes <= h.par) addShells(1)
+  const last = hole === HOLES.length - 1
+  const lines = [`${words}${record}`]
+  let save: Saved = { ...saved(), best: nextBest }
+  if (last) {
+    const total = nextRound.reduce<number>((s, n) => s + (n ?? 0), 0)
+    const vs = total - PAR
+    const prev = bestRound()
+    const newBest = prev === null || total < prev
+    lines.push(`That's the round: ${total} strokes, ${vs === 0 ? 'level par' : vs < 0 ? `${-vs} under par` : `${vs} over par`}.${newBest && prev !== null ? ' Your best round yet!' : ''} Back to hole 1 for another.`)
+    if (newBest) save = { ...save, bestRound: total }
+    save = { ...save, done: true }
+    track('Golf finished', { strokes: total, par: PAR, vs })
+  } else lines.push(`On to hole ${hole + 2}: ${HOLES[hole + 1].name}.`)
+  writeSaved(KEY, save)
+  if (Math.hypot(playerPos.x - ball.x, playerPos.z - ball.z) < 8) say(lines)
+  const next = last ? 0 : hole + 1
+  ball.x = HOLES[next].tee.x
+  ball.z = HOLES[next].tee.z
+  ball.vx = ball.vz = 0
+  useGolf.setState({ hole: next, phase: 'rest', strokes: 0, best: nextBest, round: last ? fresh() : nextRound })
 }

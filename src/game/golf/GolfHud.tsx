@@ -1,14 +1,17 @@
 import { useEffect, useRef } from 'react'
 import { hint } from '../core/keymap'
+import { useSettings } from '../core/settings'
 import { useGame } from '../core/store'
-import { aim, leave, useGolf } from './golf'
+import { aim, canPickUp, leave, pickUp, useGolf } from './golf'
 import { HOLES } from './holes'
 
 // The mini golf's HUD (golf.ts): a small scorecard at the top while the player is by the green, and
 // while lining up a putt, how to putt, a Step away button and the power meter (in the reel's look).
 
 export function GolfHud() {
-  const { hole, strokes, best, near, phase, charging } = useGolf()
+  const { hole, strokes, best, near, phase, charging, round } = useGolf()
+  const offer = useGolf(canPickUp)
+  const assist = useSettings((s) => s.golfAssist)
   const putting = useGame((s) => s.putting)
   const fill = useRef<HTMLDivElement>(null)
 
@@ -32,12 +35,28 @@ export function GolfHud() {
 
   if (!near && !putting) return null
   const h = HOLES[hole]
+  // The round so far, against the par of the holes played.
+  let total = 0
+  let par = 0
+  round.forEach((n, k) => {
+    if (n === null) return
+    total += n
+    par += HOLES[k].par
+  })
   return (
     <>
       <p className="golf-card" aria-live="polite">
         Hole {hole + 1} · {h.name} · Par {h.par}
         <span className="golf-strokes">{phase === 'sunk' ? 'In!' : `Stroke ${strokes + (phase === 'aim' ? 1 : 0)}`}</span>
         {best[hole] !== null && <span className="golf-best">Best {best[hole]}</span>}
+        {par > 0 && <span className="golf-best">Round {total - par === 0 ? 'E' : total - par > 0 ? `+${total - par}` : total - par}</span>}
+        {/* The assist shows while it's on, like the fishing prompt's (settings.ts). */}
+        {assist && <span className="golf-best">Assist on</span>}
+        {offer && (
+          <button type="button" className="golf-pickup" onClick={pickUp}>
+            Pick it up
+          </button>
+        )}
       </p>
       {putting && (
         <div className="reel golf-putt">
