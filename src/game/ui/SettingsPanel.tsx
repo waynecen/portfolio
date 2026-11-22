@@ -11,8 +11,8 @@ import { Panel } from './Panel'
 import { hint } from '../core/keymap'
 
 // The settings: music and effects volumes, how much things move, larger text and the fishing
-// assist (settings.ts), the keys (keymap.ts) and starting over (save.ts). Opened with O or the gear
-// by the hearts; O, Escape or × closes it.
+// assist (settings.ts), the keys (keymap.ts) and starting over (save.ts). Opened with O, Escape (when
+// nothing else is open: input.ts) or the gear after the hearts; O, Escape or × closes it.
 
 export function SettingsPanel() {
   const open = useGame((s) => s.panel === 'settings')
@@ -171,12 +171,12 @@ export function SettingsPanel() {
   )
 }
 
-/** The gear to the right of the hearts. Hidden while something else has the player's attention. */
+/** The gear after the hearts (Game.tsx puts them in a row). Hidden while something else has the player's attention. */
 export function SettingsButton() {
   const hidden = useGame((st) => st.dialogue !== null || st.panel !== null || st.fading || st.editing)
   if (hidden) return null
   return (
-    <button type="button" className="settings-toggle" onClick={toggleSettings} aria-label={hint('Settings ({settings})', 'Settings')}>
+    <button type="button" className="settings-toggle" onClick={toggleSettings} aria-label={hint('Settings ({settings} or Esc)', 'Settings')}>
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path
           fill="currentColor"

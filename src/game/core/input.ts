@@ -2,7 +2,7 @@ import { pressAttack, releaseAttack } from '../combat/combat'
 import { editKey, toggleEdit } from '../house/edit'
 import { putAwayRod, reel, stopFishing } from '../life/fishing'
 import { toggleBag } from '../life/inventory'
-import { advance, closeDialogue, closePanel, interact, toggleLog, toggleSettings } from './interact'
+import { advance, busy, closeDialogue, closePanel, interact, toggleLog, toggleSettings } from './interact'
 import { actionFor, type Action } from './keymap'
 import { photoKey, togglePhoto } from '../ui/photo'
 import { putter } from './putt'
@@ -77,10 +77,14 @@ export function bindKeys(): () => void {
       if (e.code === 'Space') e.preventDefault() // don't scroll the page
       if (!down || e.repeat) return
       if (e.code === 'Escape') {
-        if (useGame.getState().putting) putter.leave()
-        closeDialogue()
-        closePanel()
-        stopFishing()
+        // Escape closes whatever has the player's attention; with nothing open, it opens the settings.
+        if (!busy()) toggleSettings()
+        else {
+          if (useGame.getState().putting) putter.leave()
+          closeDialogue()
+          closePanel()
+          stopFishing()
+        }
       } else if (action === 'roll') {
         // Roll advances dialogue when it's open, reels in a line that's out, otherwise rolls.
         if (!advance() && !reel()) actions.roll = true

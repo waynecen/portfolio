@@ -4,8 +4,8 @@ import { readSaved, writeSaved } from './persist'
 
 // The keyboard's bindings, remappable in the settings (SettingsPanel.tsx). Every action has a main
 // key, which the visitor can change, and maybe a spare that always works too (the arrow keys,
-// Enter, X), unless the visitor gives that spare to something else. Escape always closes things and
-// can't be taken. Edit mode keeps its own keys (edit.ts). Hints in dialogue name the main key
+// Enter, X), unless the visitor gives that spare to something else. Escape always closes things (or,
+// with nothing open, opens the settings: input.ts) and can't be taken. Edit mode keeps its own keys (edit.ts). Hints in dialogue name the main key
 // (keyName), so they stay true after a change.
 
 export type Action =

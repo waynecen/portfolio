@@ -116,7 +116,7 @@ export function toggleLog() {
   }
 }
 
-/** O, or the gear by the hearts: opens the settings (SettingsPanel.tsx), or closes them if they're open. */
+/** O, Escape with nothing open (input.ts), or the gear after the hearts: opens the settings (SettingsPanel.tsx), or closes them if they're open. */
 export function toggleSettings() {
   const s = useGame.getState()
   if (s.panel === 'settings') {

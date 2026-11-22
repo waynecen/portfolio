@@ -24,7 +24,9 @@ export function MusicPanel() {
       role="dialog"
       aria-label="Record player"
       onKeyDown={(e) => {
-        if (e.key === 'Escape') closePanel()
+        if (e.key !== 'Escape') return
+        e.stopPropagation() // handled: input.ts would otherwise find nothing open and open the settings
+        closePanel()
       }}
     >
       <div className="music-head">
