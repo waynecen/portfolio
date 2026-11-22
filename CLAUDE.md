@@ -33,6 +33,7 @@ Before changing a folder, read its `NOTES.md`: its constants and rules. Don't re
 
 ## Workflow
 
+- Before you answer, list what you're assuming and ask about anything that's missing.
 - Show `git status` and `git diff` before committing.
 - Stage specific files, not `git add -A`.
 - Work on a branch (e.g. `feat/player-movement`); keep `main` for finished work.
