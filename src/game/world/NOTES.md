@@ -28,10 +28,6 @@ const RIM_IN = 0.14             // how far the rim reaches in over the grass
 const RIM_OUT = 0.08            // how far the rim overhangs the cliff face
 const STONE = [...]             // cliff block colours; each block picks one from a fixed hash, so the pattern never changes
 const RIM = ...                 // capstone colour
-const WATER_SIZE = 400          // water plane size; big enough that the camera never sees its edge
-const WATER_SEGMENTS = 160      // squares across the water, so it bends with the curved world (curve.ts); one big square tilts below the cliffs and shows the sky through
-const FOAM = 0.4                // width of the white surf border at the foot of the cliffs; keep under half a tile
-const FOAM_PULSE = 1.2          // how fast the surf fades in and out, rad/s
 const SEED = 7                  // Trees.tsx: change for a different (but still fixed) tree layout
 const MAX_TREES = 70            // upper limit on the main island's scattered trees
 const CLEARANCE = 1             // tiles kept free around every road tile, place and the house
@@ -122,6 +118,24 @@ const GRADE = {...}        // brightness, contrast, saturation per weather (blen
 Shadows are PCF (`shadows="percentage"` on the Canvas: three has dropped its soft variant), softened by the shadow's `radius` (3). The sun (Atmosphere.tsx) is the only light that casts; lanterns and the player's glow don't (a point light's shadow is six passes). Every opaque mesh casts and receives, set by the sweep, so new things need nothing. To keep something out, give it, or any group it sits in, `userData.noShadow`; transparent and unlit (basic) materials are left out already. The curve isn't applied in the shadow pass (core/curve.ts), so far shadows stay under their casters.
 
 PostFX draws every frame through one composer: the scene, then bloom, ACES tone mapping, the grade and the vignette in one merged pass. The renderer's own tone mapping and antialiasing are off (`flat` and `antialias: false` on the Canvas in Game.tsx), so neither is done twice. The `postprocessing` library is in the game chunk only.
+
+---
+
+## The sea: [Sea.tsx](./Sea.tsx)
+
+```ts
+const SIZE = 400, SEGMENTS = 160 // the plane, with vertices every 2.5 units so it bends with the curved world (one big square would tilt below the cliffs)
+const PER_UNIT = 4               // distance-to-land map texels per unit, baked once at load
+const REACH = 3                  // distances are stored up to this far from land
+const FOAM_EDGE = 0.25           // the solid foam line where water meets cliff
+const WAVES = 1.8                // how far out the rolling wave lines reach
+const WAVE_SPACING = 0.55, WAVE_SPEED = 0.6 // between wave lines, and how fast they roll in
+const RIPPLE = 0.12              // how much the ripples tilt the surface (the light shifts across it)
+const GLINT = { day: 2.4, night: 0.35 }, GLINT_TIGHT = 140 // sparkles off the ripples, thinned by a moving noise mask
+const OBSTACLES = [...]          // the dock's posts and the two moored boats, counted as land so they get foam rings
+```
+
+The sea is a Lambert plane with its own shader patch, so it keeps the island's light, shadows (it receives, never casts), curve and fog. Its colour is `waterMaterial`'s (Island.tsx), which Atmosphere.tsx tints for the time of day; the fountains use that material as it is. Foam follows the real coastline from the baked map: move a post or a boat and update `OBSTACLES`. With reduced motion the water holds still.
 
 ---
 
