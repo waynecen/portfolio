@@ -57,7 +57,7 @@ With a model set, the rig below still turns it and tumbles it through rolls (`TU
 
 ```ts
 const SHADOW_SIZE = 0.85 // PlayerGround.tsx: blob shadow diameter, world units (the scene casts no real shadows)
-const SHADOW_OPACITY = 0.35 // PlayerGround.tsx: how dark it is; it tightens and lightens a little mid-roll
+const SHADOW_OPACITY = 0.2 // PlayerGround.tsx: how dark it is (faint: the sun's real shadow does the rest, this is contact shade); it tightens and lightens a little mid-roll
 const NIGHT_GLOW = 2.5 // PlayerGround.tsx: the warm light on the player at full night outdoors (0 by day)
 const INDOOR_GLOW = 0.4 // PlayerGround.tsx: share of NIGHT_GLOW indoors, where the room is lamp-lit
 const COUNT = 16 // Dust.tsx: puffs in the pool

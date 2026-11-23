@@ -106,6 +106,25 @@ With reduced motion, the colours and fog still change, but rain and fireflies ho
 
 ---
 
+## Shadows and the finishing pass: [Shadows.tsx](./Shadows.tsx), [PostFX.tsx](./PostFX.tsx)
+
+```ts
+export const BOX = 13      // Shadows.tsx: half-size of the sun's shadow box, which follows the player everywhere (26 × 26 units)
+export const MAP = 2048    // shadow map size; one texel is BOX × 2 / MAP (about 1.3 cm), and the box snaps to whole texels so edges don't shimmer
+const BIAS = -0.0004, NORMAL_BIAS = 0.025 // against acne (stripes) without lifting shadows off their casters
+const SWEEP = 1            // seconds between sweeps that set new meshes casting and receiving
+const BLOOM = { threshold: 0.9, smoothing: 0.25, intensity: 0.7, radius: 0.65 } // PostFX.tsx: only what's brighter than white once lit blooms
+const VIGNETTE = { offset: 0.32, darkness: 0.42 }
+const SAMPLES = 4          // multisampling in the composer, in place of the canvas's antialiasing
+const GRADE = {...}        // brightness, contrast, saturation per weather (blended by sky.weather), and for the room and the cave
+```
+
+The sun (Atmosphere.tsx) is the only light that casts; lanterns and the player's glow don't (a point light's shadow is six passes). Every opaque mesh casts and receives, set by the sweep, so new things need nothing. To keep something out, give it, or its parent group, `userData.noShadow`; transparent and unlit (basic) materials are left out already. The curve isn't applied in the shadow pass (core/curve.ts), so far shadows stay under their casters.
+
+PostFX draws every frame through one composer: the scene, then bloom, ACES tone mapping, the grade and the vignette in one merged pass. The renderer's own tone mapping and antialiasing are off (`flat` and `antialias: false` on the Canvas in Game.tsx), so neither is done twice. The `postprocessing` library is in the game chunk only.
+
+---
+
 ## Free tiles: [tiles.ts](./tiles.ts)
 
 Everything scattered over the island (grass, pickups, slimes, pearls, the daily finds) asks `clear(i, j, margins)` whether a tile is free: on land (`inland` tiles in from the shore, default 1), off roads and built tiles, and clear of places (`place`, default 1 tile round), trees (`tree`, default 0, and `behind` for the canopy's shadow towards the camera) and the house (`house`, default 0). `nearPath(i, j, ring)` is for keeping away from roads and places. Trees place themselves (Trees.tsx), so they keep their own clearings.

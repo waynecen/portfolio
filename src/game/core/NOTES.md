@@ -28,7 +28,24 @@ export const CURVE = 0.02 // how fast the ground falls away behind the player; 0
 export const FLAT = 6 // units behind the player before the bend starts, so the ground you walk on (and the room indoors) stays flat
 ```
 
+The shadow pass is left unbent (`#ifndef DEPTH_PACKING`): there `cameraPosition` is the sun's, not the camera's. Shadows are looked up from unbent positions too, so they still land under their casters.
+
 Everything past `FLAT` drops by `CURVE × distance²`, so the island rolls away over a horizon like a small planet. It's a patch to three's shared vertex step, so every material bends alike. Only how things look bends: positions, collisions and interactions are unchanged. A stronger curve or a lower camera shows more sky.
+
+---
+
+## Shading: [shading.ts](./shading.ts)
+
+```ts
+const WRAP = 0.35            // how far light wraps past the side turned away from it; 0 = plain Lambert
+const SHADE = [0.62, 0.7, 1] // the colour shadows lean toward (cool)
+const SHADE_AMOUNT = 0.2     // how much of the sun's strength comes back into shade, in that colour
+const RIM = [1, 0.86, 0.66]  // the warm rim on silhouette edges
+const RIM_AMOUNT = 0.3       // its strength, as a share of the sun
+const RIM_POWER = 3          // how tight to the edge it stays
+```
+
+Every Lambert material (nearly everything) gets the game's soft, stylised shading from a patch to three's shared shader chunks, like the curve: wrapped diffuse, cool-tinted shade where the sun doesn't reach, and a warm rim. Only the sun tints shade and lights rims; lanterns and the player's glow just wrap. The patch keeps the sun's colour and shadow in two globals in the directional light loop, behind `SOFT_SHADING`, which only the Lambert material defines, so other material types compile as before. If a three update changes that loop, the module throws at load and says so.
 
 ---
 
@@ -123,6 +140,21 @@ Polled once a frame (`<Controls>` in Game.tsx). Left stick or d-pad walks; a tri
 ## What's kept: [save.ts](./save.ts)
 
 Every part of a visit is kept in this browser's localStorage, each module under its own key, read once and written on change. All of it goes through [persist.ts](./persist.ts): `readSaved(key)` gives the parsed value or undefined, and each module checks its shape; `writeSaved(key, value)` saves it, or forgets the key for undefined. Blocked or full storage just means nothing is kept. **Start over** in the settings (it asks twice) clears every key but `PREFERENCE_KEYS` in save.ts (the settings, the music volume and the keys) and reloads, so it can't miss a key, even one from a module that hasn't loaded yet.
+
+---
+
+## Resolution: [adaptive.ts](./adaptive.ts)
+
+```ts
+const STEPS = [1, 1.25, 1.5] // device pixel ratios to choose between, never above the screen's own
+const WINDOW = 2             // seconds of frames averaged per check
+const SLOW = 1 / 45          // slower than this on average: drop a step
+const FAST = 1 / 80          // faster than this: climb a step back
+const HOLD = 12              // seconds after a drop before it may climb again, so it settles
+const SKIP = 0.25            // longer frames (a tab coming back) aren't counted
+```
+
+Every device gets the same look; the resolution adapts instead of effects being cut.
 
 ---
 
