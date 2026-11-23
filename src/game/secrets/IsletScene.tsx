@@ -50,7 +50,7 @@ function Boat({ x, z, turn, oars, prompt, from, onUse }: { x: number; z: number;
   useSceneFrame('world', ({ clock }) => {
     if (!g.current || reducedMotion()) return
     const t = clock.elapsedTime + x
-    g.current.position.y = WATER_Y + 0.08 + Math.sin(t * 1.4) * BOB
+    g.current.position.y = Math.sin(t * 1.4) * BOB // the outer group already sits at the water line
     g.current.rotation.x = Math.sin(t * 1.1) * 0.03
   })
   return (
