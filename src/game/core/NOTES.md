@@ -88,7 +88,13 @@ const ZOOM = 0.18 // a catch's zoom: how much nearer the camera comes, as a shar
 const ZOOM_TIME = 0.9 // seconds in and back out
 const ROOM_MARGIN = 1 // indoors: black kept beside the room's side walls when the screen is wide enough
 const ROOM_SHIFT = -0.5 // indoors: aim this far behind the room's centre so the tall back wall stays in view
+const LEAD = 0.9 // outdoors, how far ahead of the player the camera looks at walking pace (more sprinting)
+const LEAD_EASE = 1.6 // how slowly the lead follows a turn: a slight lag, never a swing
+const SHAKE_TIME = 0.45, SHAKE_RATE = 38 // a shake's length and tremble (shakeCamera(amount), default 0.12)
+const NUDGE = 0.35, NUDGE_TIME = 1.4 // a nudge leans this share of the way toward its point, and back (nudgeCamera(x, z))
 ```
+
+Big moments only: the last pearl shakes the camera; a hole in one nudges it toward the cup with a small shake. Neither happens with reduced motion, and the lead is off then too (and in photo mode and indoors).
 
 To zoom, change `HEIGHT` and `DISTANCE` together. To make the view more top-down, raise `HEIGHT` relative to `DISTANCE`.
 

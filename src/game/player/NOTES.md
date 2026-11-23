@@ -32,6 +32,8 @@ Distance covered by one roll ≈ `ROLL_SPEED × 0.7 × ROLL_TIME`, about 2.8 uni
 
 ## Character model: [models.ts](./models.ts), [ModelCharacter.tsx](./ModelCharacter.tsx)
 
+**Looking:** the model's head (and a little of the neck: `LOOK_NECK = 0.4`) turns toward whatever has focus, up to `LOOK_MAX = 0.75` radians either way, easing at `LOOK_EASE = 6`. It's added on top of the clips after the mixer runs, never while rolling, and not for something behind its back. The bones are found by name (`…Head`, `…Neck`, Mixamo's rig); a model without them just doesn't look.
+
 ```ts
 export const PLAYER_MODEL: string | null = null // models.ts: path of the optimized model under public/, or null for the pill
 export const PLAYER_HEIGHT = 1.2 // models.ts: the model is scaled to this height (about the pill's)
@@ -50,6 +52,20 @@ const MODEL_LEAN = 0.12 // PillCharacter.tsx: the model's forward lean at full s
 Walk and run play at the speed where their feet keep pace with the ground: `npm run models` records each clip's pace (body heights per second) when it strips the root motion, and the game divides the player's speed by it, within `MIN_RATE` and `MAX_RATE` (`RUN_MAX_RATE` for the run).
 
 With a model set, the rig below still turns it and tumbles it through rolls (`TURN`, `ROLL_DROP`), and leans it into its movement (`MODEL_LEAN`, scaled up by `SPRINT_LEAN`), but the pill's body shape, walk cycle and feet no longer apply: the model's own clips do the walking. Making a model, the pipeline and the size budget are in [CHARACTER.md](../../../docs/CHARACTER.md).
+
+---
+
+## Footprints: [Footprints.tsx](./Footprints.tsx)
+
+```ts
+const POOL = 48                     // prints at most, reused oldest first
+const LIFE = { road: 6, snow: 14 }  // seconds a print lasts on a dirt path, and in snow
+const SPREAD = 0.09                 // how far left or right of the path each foot falls
+const OPACITY = 0.6
+const TINT = { road: '#5c4529', snow: '#7387a6' } // packed earth; the blue of a dent in snow
+```
+
+Each footstep on a path or in snow outdoors (Player.tsx, by distance, like the step sounds) leaves a small oval, turned with the player, alternating feet. Prints hold, then fade quickly. They sit at y = 0.03 with a polygon offset, above the roads (0.01). None on grass, wood or indoors.
 
 ---
 
@@ -77,6 +93,8 @@ Dust only shows outdoors and not in the rain. The light is always there, at 0 by
 ---
 
 ## Character animation: [PillCharacter.tsx](./PillCharacter.tsx)
+
+**Landing:** as a roll ends, the whole character (pill or model) squashes from the feet by `LAND_SQUASH = 0.14` and springs back over `LAND_TIME = 0.3` s, keeping its volume. Not with reduced motion.
 
 ### Body shape
 

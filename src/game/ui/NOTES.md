@@ -19,6 +19,8 @@ Joystick and A/B button sizes and positions are in [touch.css](./touch.css) (`.j
 
 ## Photo mode: [photo.ts](./photo.ts), [PhotoHud.tsx](./PhotoHud.tsx)
 
+**Tilt-shift:** while in photo mode the finishing pass (world/PostFX.tsx) adds a tilt-shift blur: a band in focus across the middle, where the player stands, and blur above and below, so the island reads as a miniature (`TILT = { focusArea: 0.32, feather: 0.22, offset: 0.04 }`). It's a pass of its own, off the rest of the time.
+
 ```ts
 const PAN_SPEED = 6          // units/s the camera slides with the walk keys or a stick
 const PAN_MAX = 9            // how far from the player it can slide
