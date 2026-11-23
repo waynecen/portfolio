@@ -173,6 +173,25 @@ A small putting course to wander into: four or five holes, each a little diorama
 
 Suggested order for Phase I: 51 → 52 → 53 (one hole playable end to end), then 54, 55, 56, 57, 58.
 
+## Phase J: Fidelity (stylised AAA)
+
+Closer to a big studio's finish, in the Animal Crossing / Tears of the Kingdom direction rather than photoreal: the cosy diorama stays, and gains soft shadows, glowing lamps, a grade per time of day, wind, better water and sky, and real models in place of placeholder blocks. One look for every device, tuned to stay smooth on a mid-range phone; the resolution adapts instead of effects being cut. Code does the rendering; models come from Tripo through `npm run models` (lit exports, a soft `FILL`, as with the record player).
+
+59. **Soft real-time shadows.** *(done: world/Shadows.tsx)* The sun casts soft shadows from everything solid, in a shadow box that follows the player (snapped to its texels so edges don't shimmer), fixed over the room indoors and the cave. The curve (curve.ts) is left out of the shadow pass, so casters and receivers agree everywhere. Lanterns and the player's glow don't cast (six passes each). The blob shadow under the player stays, fainter, as contact shade.
+60. **One post-processing pass.** *(done: world/PostFX.tsx)* Tone mapping, a colour grade per time-of-day slot (soft morning, warm evening, cool night), bloom on what glows (lantern shades, windows at night, fireflies, sparkles) and a light vignette, merged into one pass with the `postprocessing` library, in the game chunk only.
+61. **A steady frame rate.** *(done: core/adaptive.ts)* The resolution steps down when frames run slow and back up when there's room, with a gap between the two so it doesn't flap.
+62. **Ambient occlusion, baked.** Darker block bottoms and inner corners from the shared geometry helpers (core/geometry.ts), and contact shade where props meet the ground. No screen-space AO: too heavy for phones.
+63. **A soft stylised material.** *(done: core/shading.ts)* One shared patch on every Lambert material, beside the curve: wrapped diffuse, a warm rim light, and shadows tinted cool rather than grey.
+64. **Wind.** Trees, grass, flowers and the lantern sway from one shared time uniform in the same patch, and the grass parts round the player.
+65. **Water.** A stylised shader: shore foam, slow ripples, sun glints; wakes behind the boat and round the dock posts.
+66. **Sky and air.** A gradient sky dome with drifting clouds for each slot, height fog, light shafts at dawn and evening (cheap cards), and dust motes in the room's light.
+67. **Character polish.** Blinks, footprints in sand and snow, a squash on landing, and eyes that turn toward whatever has focus.
+68. **Camera and photo mode.** A tilt-shift depth of field in photo mode, a slight framing lag, and a small shake only for big moments (never with reduced motion).
+69. **Tripo art pass** (extends A5). A prompt list in [CHARACTER.md](./CHARACTER.md) for the stations (one diorama per project), villagers, trees, the house, the sign, the mailbox and the furniture. Each model swaps in behind its placeholder, as the record player did.
+70. **A fidelity budget.** Frame time and draw calls written down in [TUNING.md](./TUNING.md), and checked by the snapshot run on a slowed-down profile.
+
+Suggested order for Phase J: 59 → 60 → 61, then 63 → 62 → 64, 66 → 65, 67, 68. 69 runs alongside, as models arrive.
+
 ## Suggested order
 
 A1 → A2 → A3 and A4 → B6–B9 → C10 → E18. Everything after that can follow appetite.
