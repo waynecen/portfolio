@@ -3,7 +3,7 @@ import { useGame } from '../core/store'
 import { hint } from '../core/keymap'
 
 // Shows the focused interactable's card: a station's project, or the mailbox's contact links.
-// Using the interactable (E / Enter / A) opens the card's url.
+// Using the interactable (F / Enter / A: the interact keys) opens the card's url.
 export function ProjectCard() {
   const card = useGame((s) => (s.dialogue || s.panel ? undefined : s.focus?.card))
   const url = card?.url

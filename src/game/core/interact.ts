@@ -18,7 +18,7 @@ export type Card = {
   links?: { label: string; href: string }[]
 }
 
-/** Something in the world the player can walk up to and use with E / Enter / A. */
+/** Something in the world the player can walk up to and use with F / Enter / A (the interact keys, keymap.ts). */
 export type Interactable = {
   x: number
   z: number

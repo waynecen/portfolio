@@ -48,13 +48,13 @@ const DEFAULTS: Record<Action, string[]> = {
   right: ['KeyD', 'ArrowRight'],
   sprint: ['ShiftLeft', 'ShiftRight'],
   roll: ['Space'],
-  interact: ['KeyE', 'Enter'],
+  interact: ['KeyF', 'Enter'],
   attack: ['KeyJ', 'KeyX'],
   bag: ['KeyB'],
 
   log: ['KeyL'],
   settings: ['KeyO'],
-  edit: ['KeyF'],
+  edit: ['KeyG'],
   photo: ['KeyP'],
 }
 

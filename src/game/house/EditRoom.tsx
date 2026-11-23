@@ -155,10 +155,10 @@ export function EditHud() {
     )
   }
   const hint = held
-    ? held.problem ?? (held.dragged ? 'Let go to put it down.' : 'Arrows to move, E to put it down, Esc to put it back.')
+    ? held.problem ?? (held.dragged ? 'Let go to put it down.' : `Arrows to move, ${keyName('interact')} to put it down, Esc to put it back.`)
     : isTouch
       ? 'Drag a piece of furniture to move it.'
-      : 'Drag furniture, or use the arrows and E to pick it up.'
+      : `Drag furniture, or use the arrows and ${keyName('interact')} to pick it up.`
   return (
     <div className="edit-bar" role="region" aria-label="Edit room">
       <p className="edit-title">{held ? `Moving ${PIECE[held.id].name}` : 'Editing the room'}</p>

@@ -129,7 +129,7 @@ function LiquidCloud() {
   )
 }
 
-/** The dialogue bubble: pops in, types each line out, advanced with E / Enter / Space / A or a tap. */
+/** The dialogue bubble: pops in, types each line out, advanced with F / Enter / Space / A or a tap. */
 export function Dialogue() {
   const d = useGame((s) => s.dialogue)
   const line = d ? d.lines[d.index] : ''

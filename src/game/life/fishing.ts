@@ -249,7 +249,7 @@ function reeling(dt: number) {
   }
 }
 
-/** E, Space or A while fishing: hooks a biting fish (then it's reeled in with left and right), or reels in an empty line. False if not fishing. */
+/** F, Space or A (the interact keys) while fishing: hooks a biting fish (then it's reeled in with left and right), or reels in an empty line. False if not fishing. */
 export function reel(): boolean {
   const { phase } = useFishing.getState()
   if (phase === 'idle') return false

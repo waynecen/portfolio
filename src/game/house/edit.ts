@@ -1,12 +1,13 @@
 import { create } from 'zustand'
 import { clampSpot, inRoom, PIECE, pieceAt, place, tileAt, TILES, useRoom, whyNot, type PieceId, type Spot } from './room'
 import { busy } from '../core/interact'
+import { actionFor } from '../core/keymap'
 import { blip, click, thud } from '../core/sfx'
 import { playerPos } from '../core/state'
 import { useGame } from '../core/store'
 
 // Edit mode, indoors: the player stands still and the furniture can be picked up and put down on
-// the room's grid. With keys, a cursor moves a tile at a time and E picks up or puts down whatever
+// the room's grid. With keys, a cursor moves a tile at a time and the interact key (F) picks up or puts down whatever
 // is under it; with a mouse or finger, drag a piece. A piece is only put down where it fits
 // (room.ts says why not); otherwise it stays in hand (keys) or goes back (drag).
 
@@ -117,21 +118,22 @@ export function editKey(e: KeyboardEvent): boolean {
     nudge(move[0], move[1])
     return true
   }
-  switch (e.code) {
-    case 'KeyE':
-    case 'Enter':
-    case 'Space':
-      e.preventDefault() // Space would scroll the page
-      if (!e.repeat) use()
-      return true
-    case 'Escape':
-      if (e.repeat) return true
-      if (useEdit.getState().held) putBack()
-      else stopEdit()
-      return true
-    case 'KeyF':
-      if (!e.repeat) stopEdit()
-      return true
+  // The interact keys (or Space) pick up and put down; the edit keys end it. Both follow a remap.
+  const action = actionFor(e.code)
+  if (action === 'interact' || e.code === 'Space') {
+    e.preventDefault() // Space would scroll the page
+    if (!e.repeat) use()
+    return true
+  }
+  if (e.code === 'Escape') {
+    if (e.repeat) return true
+    if (useEdit.getState().held) putBack()
+    else stopEdit()
+    return true
+  }
+  if (action === 'edit') {
+    if (!e.repeat) stopEdit()
+    return true
   }
   return false
 }
