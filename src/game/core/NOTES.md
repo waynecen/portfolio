@@ -49,6 +49,21 @@ Every Lambert material (nearly everything) gets the game's soft, stylised shadin
 
 ---
 
+## Wind: [wind.ts](./wind.ts)
+
+```ts
+const SPEED = 1.3                 // the sway's base rate, rad/s
+const RAIN = 1.8                  // how much harder it blows in the rain
+const RIPPLE = [0.37, 0.23]       // how the phase changes across the island, per unit: the gusts' spacing
+// Per material, sway(material, { height, amount, rate?, part? }):
+// trees (Trees.tsx): { height: 1.65, amount: 0.07 }, shared by trunk, canopy and snow cap so they move together
+// grass (Grass.tsx): { height: 0.42, amount: 0.05, rate: 1.6, part: { radius: 0.9, amount: 0.2 } }, parting round the player
+```
+
+Trees and grass sway in the vertex shader, from one clock that Atmosphere.tsx ticks (`tickWind`), so nothing moves on the CPU. Each vertex bends by the square of its height, in one world direction for the whole island, with a phase from where it stands so gusts ripple across. With reduced motion the strength is 0. The shadow pass doesn't sway; the movement is too small for that to show. `sway()` keeps a material's own onBeforeCompile (the trees' see-through) and gives it its own program cache key.
+
+---
+
 ## Camera: [CameraRig.tsx](./CameraRig.tsx)
 
 ```ts
@@ -159,6 +174,8 @@ Every device gets the same look; the resolution adapts instead of effects being 
 ---
 
 ## Shared helpers: [keymap.ts](./keymap.ts), [sceneFrame.ts](./sceneFrame.ts), [gltf.ts](./gltf.ts)
+
+**Baked ambient occlusion:** `tint()` in [geometry.ts](./geometry.ts) darkens a piece toward the ground as it colours it: `AO = 0.32` darker right at y = 0, fading out by `AO_REACH = 0.4`. Pieces flatter than `AO_MIN_HEIGHT = 0.05` are the ground itself and stay even. A box only has vertices at its top and bottom, so a tall wall gets one long, soft gradient rather than a band at the floor. It's baked into the vertex colours once, so it costs nothing per frame.
 
 **Models:** `useGLB(url)` loads a model from public/models with the meshopt decoder (suspending, so wrap it in `<Suspense>`), and `lambertAll(root)` or `toLambert(material)` swaps its PBR materials for Lambert ones, to match the island's lighting. `lambertAll` returns the materials with their texture as an emissive map at 0; raise `emissiveIntensity` for a soft fill that keeps a prop's true colours from every side (the record player uses it). Import gltf.ts only from a lazily loaded component, so the loader stays out of the game chunk until a model is shown.
 

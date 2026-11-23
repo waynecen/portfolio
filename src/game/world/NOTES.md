@@ -119,7 +119,7 @@ const SAMPLES = 4          // multisampling in the composer, in place of the can
 const GRADE = {...}        // brightness, contrast, saturation per weather (blended by sky.weather), and for the room and the cave
 ```
 
-The sun (Atmosphere.tsx) is the only light that casts; lanterns and the player's glow don't (a point light's shadow is six passes). Every opaque mesh casts and receives, set by the sweep, so new things need nothing. To keep something out, give it, or its parent group, `userData.noShadow`; transparent and unlit (basic) materials are left out already. The curve isn't applied in the shadow pass (core/curve.ts), so far shadows stay under their casters.
+Shadows are PCF (`shadows="percentage"` on the Canvas: three has dropped its soft variant), softened by the shadow's `radius` (3). The sun (Atmosphere.tsx) is the only light that casts; lanterns and the player's glow don't (a point light's shadow is six passes). Every opaque mesh casts and receives, set by the sweep, so new things need nothing. To keep something out, give it, or its parent group, `userData.noShadow`; transparent and unlit (basic) materials are left out already. The curve isn't applied in the shadow pass (core/curve.ts), so far shadows stay under their casters.
 
 PostFX draws every frame through one composer: the scene, then bloom, ACES tone mapping, the grade and the vignette in one merged pass. The renderer's own tone mapping and antialiasing are off (`flat` and `antialias: false` on the Canvas in Game.tsx), so neither is done twice. The `postprocessing` library is in the game chunk only.
 

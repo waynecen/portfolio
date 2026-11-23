@@ -34,6 +34,7 @@ const PENDANT = { x: 0, y: 2.25, z: 0.3 } // the paper lantern hanging from the 
 const CEILING = { day: 2, night: 8, distance: 10 } // its warm light (candela), blended by how much it's night: a pool under it, fading to the walls
 const LAMP = { day: 0.5, night: 1.8, distance: 3.5, y: 1.1 } // the paper lamp's light, once it's bought; it follows the lamp, into the hand while moving it
 const GLOW = { day: 0.35, night: 1 } // how much both paper shades glow (shadeMaterial's emissive)
+const DRIFT = 0.025 // how far the ceiling lantern swings on its cord, radians, from the cord's top (still with reduced motion)
 const ROOM_DAY / ROOM_NIGHT // Atmosphere.tsx: indoors, mostly warm even fill bounced off a pale floor (hemi 1.4) and a faint key (0.3), for soft, low-contrast shading; at night both drop and the lamps do most of the lighting
 ```
 
