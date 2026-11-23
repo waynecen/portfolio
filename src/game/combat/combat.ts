@@ -3,6 +3,7 @@ import { busy, sayFirst } from '../core/interact'
 import { hit as hitSound, whoosh } from '../core/sfx'
 import { playerFacing, playerPos } from '../core/state'
 import { hint } from '../core/keymap'
+import { useArmed } from './armed'
 
 // The sword (Sword.tsx draws it). A press swings it in an arc in front of the player; keep holding
 // after the swing to charge, and let go once charged for a spin attack all the way round, twice as
@@ -44,8 +45,9 @@ export const CHARGE = 0.65 // seconds of holding after a swing before a spin is 
  */
 export const sword = { t: -1, spin: false, struck: false, holding: false, charge: 0 }
 
-/** The attack button went down: swing, unless something else has the player's hands. */
+/** The attack button went down: swing, unless the sword is still in its chest or something else has the player's hands. */
 export function pressAttack() {
+  if (!useArmed.getState().sword) return // still in the chest beside the bed (armed.ts)
   if (busy() || sword.t >= 0) return
   if (useFishing.getState().rod) {
     sayFirst(

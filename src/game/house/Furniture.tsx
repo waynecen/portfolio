@@ -5,7 +5,9 @@ import { useEdit } from './edit'
 import { centreOf, PIECE, placed, useOwned, useRoom, type PieceId } from './room'
 import { block, merge, tint } from '../core/geometry'
 import { register, say, type Interactable } from '../core/interact'
-import { keyName, keysName, type Action } from '../core/keymap'
+import { hint, keyName, keysName, type Action } from '../core/keymap'
+import { takeSword, useArmed } from '../combat/armed'
+import { fanfare } from '../core/sfx'
 import { INTERIOR } from '../world/layout'
 import { isTouch } from '../core/quality'
 import { useGame } from '../core/store'
@@ -190,6 +192,23 @@ const TROPHY_USE = {
   onInteract: () => say(['A little gold cup: Gull Rock Links, finished under par.', 'The islet’s just a row away if you fancy beating it.']),
 }
 
+// The sword starts in the chest beside the bed (combat/armed.ts): opening it hands it over, once.
+const CHEST_USE = { dx: 0, dz: 0.15, range: 1.3 }
+const CHEST_OPEN = {
+  ...CHEST_USE,
+  prompt: 'Open',
+  onInteract: () => {
+    takeSword()
+    fanfare()
+    say([
+      'You lift the lid. Under a folded blanket: a little wooden sword!',
+      `${hint('Click, or press {attack*},', 'Tap B')} to swing it. Hold it after a swing, then let go once it glows, to spin.`,
+      'Tall grass, pots and slimes had better watch out.',
+    ])
+  },
+}
+const CHEST_EMPTY = { ...CHEST_USE, prompt: 'Look', onInteract: () => say(['Just a spare blanket now. The sword’s with you.']) }
+
 const geometries = new Map<Build, BufferGeometry>()
 function geometryOf(b: Build) {
   let g = geometries.get(b)
@@ -250,7 +269,9 @@ export function usePiece(id: PieceId, group: RefObject<Group | null>, solid: Col
 function Piece({ id, build }: { id: PieceId; build: Build }) {
   const group = useRef<Group>(null)
   const cup = useTrophy((s) => s.golf) && id === 'dresser'
-  usePiece(id, group, build.solid, cup ? TROPHY_USE : USES[id])
+  const armed = useArmed((s) => s.sword)
+  const chest = id === 'chest' ? (armed ? CHEST_EMPTY : CHEST_OPEN) : undefined
+  usePiece(id, group, build.solid, cup ? TROPHY_USE : (chest ?? USES[id]))
   const model = MODELS[id]
   const blocks = <mesh geometry={geometryOf(build)} material={material} />
   return (

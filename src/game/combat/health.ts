@@ -6,6 +6,7 @@ import { hurt } from '../core/sfx'
 import { playerVel } from '../core/state'
 import { useGame } from '../core/store'
 import { hint } from '../core/keymap'
+import { useArmed } from './armed'
 
 // Hearts that matter, gently. A bump (a slime, slimes.ts) costs half a heart, knocks the player
 // back and leaves them flickering and untouchable for a moment. At zero hearts, a soft fade and
@@ -32,6 +33,8 @@ export function damage(halves: number, dx: number, dz: number) {
   playerVel.z = (dz / len) * KNOCK
   hurt()
   if (next === 0) faint()
+  else if (!useArmed.getState().sword)
+    sayFirst('bumped-unarmed', ['Oof! Slimes bump.', 'There’s a sword in the chest beside your bed, if you’d like to bump back.'], [])
   else
     sayFirst(
       'bumped',
