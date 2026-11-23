@@ -8,7 +8,7 @@ The house: its rooms and doors, the furniture and edit mode, and the record play
 
 ```ts
 const MODEL = '/models/recordPlayer.glb' // the Tripo model (models-src/recordPlayer.glb, through npm run models); the box cabinet stands in while it downloads
-const FILL = { day: 0.2, night: 0.12 } // RecordPlayerModel.tsx: a whisper of studio fill (its texture as emissive), so its front isn't lost in shadow; less at night
+const FILL = { day: 0.2, night: 0.12 } // PropModel.tsx (every room model): a whisper of studio fill (its texture as emissive), so its front isn't lost in shadow; less at night
 const MODEL_W = 0.9 // the model is fitted to this width (it's then 0.8 deep, 0.78 tall); the collider is sized to it
 const BACK = -0.08 // how far towards the back of its tile it stands (where it is comes from room.ts, like the other furniture)
 const RANGE = 1.8 // how close the player must be to use it
@@ -91,5 +91,7 @@ Press G indoors, or the Edit room button, to rearrange the room. The player stan
 A piece only goes down where it fits. It must stay inside the room and not overlap other furniture (rugs only clash with rugs, so furniture can stand on them). It can't block the doorway, cover the tiles the player stands on, or shut the player off from the door. A saved layout that breaks any of these rules on load (say, after the pieces change) is dropped in favour of `DEFAULT`, and in development the console warns if `DEFAULT` itself breaks one.
 
 **The golf trophy:** once Gull Rock Links is finished under par ([trophy.ts](./trophy.ts), set by golf/golf.ts), a small gold cup stands on the dresser between its left and middle jars (`TROPHY_AT` in Furniture.tsx, from the dresser's centre) and moves with it. Using it (**Look**) says what it's for. Start over forgets it with the rest of the golf.
+
+**Tripo models:** a piece with an entry in `MODELS` (Furniture.tsx) shows its model ([PropModel.tsx](./PropModel.tsx)) in place of its blocks, which stand in while it downloads: fitted to `width`, stretched to `depth` and `height` if given, nudged by `z`. The colliders stay the Build's. In so far: the bed (`width 0.98, depth 1.8, height 0.5`: its shape is stubbier than its 1 × 2 tiles, so it's lengthened and kept low). The models still to make, and their prompts, are in [docs/ART.md](../../../docs/ART.md).
 
 **Adding a piece:** add it to `PIECES` and `DEFAULT` in room.ts, then give it a `Build` in Furniture.tsx: its blocks around the footprint's centre, and its colliders relative to that centre. Something to use on it goes in `USES` there. A piece that draws itself (like the record player) calls `usePiece()` instead. Edit bar styles are `.edit-*` in [style.css](../../style.css).
