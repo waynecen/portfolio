@@ -128,7 +128,7 @@ export function Game() {
         // (world/Shadows.tsx, world/PostFX.tsx) are the same for everyone. PostFX tone-maps and antialiases,
         // so the renderer does neither (flat).
         dpr={[1, 1.5]}
-        shadows="soft"
+        shadows="percentage" // PCF; Shadows.tsx softens it with the shadow radius (three removed PCFSoftShadowMap)
         flat
         gl={{ antialias: false, powerPreference: 'high-performance' }}
         camera={{ position: [0, HEIGHT, DISTANCE], fov: 35 }}

@@ -37,7 +37,7 @@ export function setUpShadow(light: DirectionalLight) {
   s.mapSize.set(MAP, MAP)
   s.bias = BIAS
   s.normalBias = NORMAL_BIAS
-  s.radius = 3
+  s.radius = 3 // the blur that softens PCF's edges
   const c = s.camera
   c.left = -BOX
   c.right = BOX
