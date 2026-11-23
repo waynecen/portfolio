@@ -10,7 +10,7 @@ import { playerPos } from '../core/state'
 //
 // Every opaque mesh casts and receives, set by a light sweep of the scene each SWEEP seconds (things
 // arrive late: lazy areas, models, bought furniture). Skipped: transparent and unlit (basic)
-// materials, which are effects, glows and blob shadows, and anything with userData.noShadow (on the mesh or its parent group).
+// materials, which are effects, glows and blob shadows, and anything with userData.noShadow (on the mesh or any group it sits in).
 
 export const BOX = 13 // half-size of the shadow box, world units (26 × 26 round the player)
 export const MAP = 2048 // shadow map size; BOX × 2 / MAP is one texel (about 1.3 cm)
@@ -24,7 +24,7 @@ function mark(o: Object3D) {
   const mesh = o as Mesh
   if (!mesh.isMesh || o.userData.shadowSet) return
   o.userData.shadowSet = true
-  if (o.userData.noShadow || o.parent?.userData.noShadow) return
+  for (let up: Object3D | null = o; up; up = up.parent) if (up.userData.noShadow) return
   const on = Array.isArray(mesh.material) ? mesh.material.every(casts) : casts(mesh.material)
   mesh.castShadow = on
   mesh.receiveShadow = on
