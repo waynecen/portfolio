@@ -5,6 +5,7 @@ import { foamMaterial, waterMaterial } from './Island'
 import { currentHour, sample, sky } from './sky'
 import { useGame } from '../core/store'
 import { followPlayer, setUpShadow } from './Shadows'
+import { tickWind } from '../core/wind'
 
 // Lights, background and fog for the time of day (see sky.ts). Outdoors they follow the sky;
 // indoors the room is lit by a fixed lamp-like set, warmer and dimmer at night, on black.
@@ -49,6 +50,7 @@ export function Atmosphere() {
   }, [scene])
 
   useFrame((_, delta) => {
+    tickWind(delta, sky.weather.rain)
     clock.current += delta
     if (clock.current >= RECHECK) {
       clock.current = 0

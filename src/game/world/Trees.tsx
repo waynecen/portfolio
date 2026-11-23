@@ -8,6 +8,7 @@ import { pois, roadTiles } from './pois'
 import { autumn, spring, winter } from './season'
 import { playerPos } from '../core/state'
 import { useSceneFrame } from '../core/sceneFrame'
+import { sway, type Sway } from '../core/wind'
 
 // Placeholder trees: a trunk and a low-poly cone, drawn as instanced meshes (a draw call or two
 // for every tree on the island). Placed once at load from a fixed seed, so the layout is the same
@@ -153,9 +154,11 @@ function seeThrough(m: MeshLambertMaterial) {
 
 const trunkGeometry = new CylinderGeometry(0.08, 0.12, 0.5, 6).translate(0, 0.25, 0)
 const canopyGeometry = new ConeGeometry(0.5, 1.2, 7).translate(0, 1.05, 0)
-const trunkMaterial = seeThrough(new MeshLambertMaterial({ color: '#8a5a3b', flatShading: true }))
+// Trunk, canopy and snow cap share one bend, so they sway together (core/wind.ts).
+const SWAY: Sway = { height: 1.65, amount: 0.07 }
+const trunkMaterial = sway(seeThrough(new MeshLambertMaterial({ color: '#8a5a3b', flatShading: true })), SWAY)
 // White, so each tree's own colour shows (canopyColor): green, blossom in spring, turning in autumn.
-const canopyMaterial = seeThrough(new MeshLambertMaterial({ color: '#ffffff', flatShading: true }))
+const canopyMaterial = sway(seeThrough(new MeshLambertMaterial({ color: '#ffffff', flatShading: true })), SWAY)
 const GREEN = new Color('#3f7d4a')
 const SPRING_GREEN = new Color('#4f9a55')
 const BLOSSOM = [new Color('#f0a9c0'), new Color('#f6c6d4')]
@@ -170,7 +173,7 @@ function canopyColor(n: number): Color {
 }
 // Winter: a white cone over the canopy's top half, a little wider so no green shows through its rim.
 const capGeometry = new ConeGeometry(0.25, 0.56, 7).translate(0, 1.37, 0)
-const capMaterial = seeThrough(new MeshLambertMaterial({ color: '#f4f7fb', flatShading: true }))
+const capMaterial = sway(seeThrough(new MeshLambertMaterial({ color: '#f4f7fb', flatShading: true })), SWAY)
 
 export function Trees() {
   const trunks = useRef<InstancedMesh>(null)

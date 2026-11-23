@@ -1,10 +1,12 @@
 import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
-import { CylinderGeometry, MeshLambertMaterial, type PointLight } from 'three'
+import { CylinderGeometry, MeshLambertMaterial, type Group, type PointLight } from 'three'
 import { useEdit } from './edit'
 import { PIECE, useOwned, useRoom } from './room'
 import { useGame } from '../core/store'
 import { INTERIOR } from '../world/layout'
+import { reducedMotion } from '../core/settings'
+import { useSceneFrame } from '../core/sceneFrame'
 import { sky } from '../world/sky'
 
 // The room's own lights, for a softer, cosier room than the shared daylight alone (Atmosphere.tsx):
@@ -20,6 +22,8 @@ const CEILING = { day: 2, night: 8, distance: 10 } // its light, candela; it poo
 const LAMP = { day: 0.5, night: 1.8, distance: 3.5, y: 1.1 } // the paper lamp's light, at the height of its shade
 const WARM = '#ffc98a'
 const GLOW = { day: 0.35, night: 1 } // how much the paper shades glow (emissive)
+const DRIFT = 0.025 // how far the lantern swings on its cord, radians (still with reduced motion)
+const CORD = 3 // the cord's length above the lantern; it swings from the top
 
 /** The paper of both shades: lit from inside, more at night. Shared, and set once a frame here. */
 export const shadeMaterial = new MeshLambertMaterial({ color: '#fff3dc', emissive: WARM, emissiveIntensity: GLOW.day })
@@ -33,11 +37,23 @@ const mix = (a: number, b: number) => a + (b - a) * sky.weather.night
 
 /** The ceiling lantern; mount in the house's group (Game.tsx). */
 export function Pendant() {
+  const swing = useRef<Group>(null)
+  useSceneFrame('house', ({ clock }) => {
+    const g = swing.current
+    if (!g) return
+    const t = clock.elapsedTime
+    const k = reducedMotion() ? 0 : DRIFT
+    g.rotation.x = Math.sin(t * 0.7) * k
+    g.rotation.z = Math.sin(t * 0.53 + 1) * k * 0.6
+  })
+  const top = 0.23 + CORD
   return (
-    <group position={[INTERIOR.x + PENDANT.x, PENDANT.y, INTERIOR.z + PENDANT.z]} userData={{ noShadow: true }}>
-      <mesh geometry={lantern} material={shadeMaterial} />
-      <mesh geometry={cap} material={dark} position-y={0.23} />
-      <mesh geometry={cord} material={dark} position-y={0.23 + 1.5} />
+    <group ref={swing} position={[INTERIOR.x + PENDANT.x, PENDANT.y + top, INTERIOR.z + PENDANT.z]} userData={{ noShadow: true }}>
+      <group position-y={-top}>
+        <mesh geometry={lantern} material={shadeMaterial} />
+        <mesh geometry={cap} material={dark} position-y={0.23} />
+        <mesh geometry={cord} material={dark} position-y={0.23 + CORD / 2} />
+      </group>
     </group>
   )
 }

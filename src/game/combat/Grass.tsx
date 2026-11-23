@@ -10,6 +10,7 @@ import { winter } from '../world/season'
 import { pop } from '../core/sfx'
 import { playerPos } from '../core/state'
 import { clear } from '../world/tiles'
+import { sway } from '../core/wind'
 import { useSceneFrame } from '../core/sceneFrame'
 
 // Things to cut and break with the sword (combat.ts): tufts of tall grass scattered over the
@@ -72,7 +73,8 @@ function tuftGeometry(): BufferGeometry {
   return merge([blade(0.25, 0, 0.42), blade(0.3, 2.1, 0.36), blade(0.22, 4.2, 0.4), blade(0.05, 1, 0.3)])
 }
 const geometry = tuftGeometry()
-const material = new MeshLambertMaterial({ color: '#5f9e57', flatShading: true })
+// Quick in the wind, and parting round the player as they walk through (core/wind.ts).
+const material = sway(new MeshLambertMaterial({ color: '#5f9e57', flatShading: true }), { height: 0.42, amount: 0.05, rate: 1.6, part: { radius: 0.9, amount: 0.2 } })
 const CLIPPINGS = new Color('#7fbf6a')
 const dummy = new Object3D()
 
