@@ -38,7 +38,7 @@ const GRADE: Record<Weather | 'house' | 'cave', Grade> = {
   rain: { brightness: -0.02, contrast: 0.02, saturation: -0.14 }, // afternoon: muted
   golden: { brightness: -0.02, contrast: 0.05, saturation: 0.02 }, // evening: rich, but the sun is warm already
   night: { brightness: 0, contrast: 0.06, saturation: -0.06 }, // night: quiet colour, deep darks
-  house: { brightness: 0.01, contrast: 0.03, saturation: 0.06 }, // the room: warm and soft
+  house: { brightness: 0.02, contrast: -0.02, saturation: 0.06 }, // the room: warm and soft
   cave: { brightness: 0, contrast: 0.1, saturation: -0.12 },
 }
 const WEATHERS = Object.keys(sky.weather) as Weather[]

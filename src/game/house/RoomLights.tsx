@@ -18,7 +18,7 @@ import { sky } from '../world/sky'
 // on each trip through the door. So they're always there, and simply at 0 away from the house.
 
 const PENDANT = { x: 0, y: 2.25, z: 0.3 } // the hanging lantern, house-local; the cord runs up out of sight
-const CEILING = { day: 2, night: 8, distance: 10 } // its light, candela; it pools under the lantern and fades to the walls
+const CEILING = { day: 3, night: 10, distance: 13 } // its light, candela; it pools under the lantern and fades to the walls
 const LAMP = { day: 0.5, night: 1.8, distance: 3.5, y: 1.1 } // the paper lamp's light, at the height of its shade
 const WARM = '#ffc98a'
 const GLOW = { day: 0.35, night: 1 } // how much the paper shades glow (emissive)

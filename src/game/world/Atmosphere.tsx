@@ -17,8 +17,8 @@ const DARK = new Color('#000000') // indoors, everything past the room's walls
 // light seems to bounce off the floor into the sides of things, and only a faint key, so shading is
 // gentle and nothing looks harsh. At night the fill drops and the room's own lamps (house/RoomLights.tsx)
 // do most of the lighting, in warm pools.
-const ROOM_DAY = { sky: new Color('#fff3e4'), ground: new Color('#e6d2b4'), hemi: 1.4, sun: new Color('#fff0dc'), sunI: 0.3 }
-const ROOM_NIGHT = { sky: new Color('#e0c09a'), ground: new Color('#8a6e52'), hemi: 0.75, sun: new Color('#ffc890'), sunI: 0.15 }
+const ROOM_DAY = { sky: new Color('#fff3e4'), ground: new Color('#e6d2b4'), hemi: 1.85, sun: new Color('#fff0dc'), sunI: 0.3 }
+const ROOM_NIGHT = { sky: new Color('#e0c09a'), ground: new Color('#8a6e52'), hemi: 1.05, sun: new Color('#ffc890'), sunI: 0.15 }
 // The cave (CaveRooms.tsx): cool and dim, lit mostly by the player's own glow (PlayerGround.tsx) and the torches.
 const CAVE_LIGHT = { sky: new Color('#9aa8c8'), ground: new Color('#3a3540'), hemi: 0.75, sun: new Color('#c9d3f0'), sunI: 0.55 }
 const NO_FOG = 1e4 // fog pushed out of sight indoors (turning fog off would recompile every material)
