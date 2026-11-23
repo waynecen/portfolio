@@ -162,7 +162,7 @@ const SHELF: Build = {
 // tiles and `height` up or down; `z` nudges it back or forward on them. Colliders stay the Build's.
 const PropModel = lazy(() => import('./PropModel'))
 const MODELS: Partial<Record<PieceId, { url: string; width: number; depth?: number; height?: number; z?: number }>> = {
-  bed: { url: '/models/bed.glb', width: 0.98, depth: 1.8, height: 0.5, z: -0.03 }, // its shape is stubbier than the 1 × 2 tiles, so it's lengthened, and kept low
+  bed: { url: '/models/bed.glb', width: 0.98, depth: 1.8, z: -0.03 }, // its shape is stubbier than the 1 × 2 tiles, so it's lengthened
 }
 
 const BUILDS: Partial<Record<PieceId, Build>> = {
