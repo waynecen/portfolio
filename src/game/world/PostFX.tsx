@@ -8,6 +8,7 @@ import {
   EffectPass,
   HueSaturationEffect,
   RenderPass,
+  TiltShiftEffect,
   ToneMappingEffect,
   ToneMappingMode,
   VignetteEffect,
@@ -25,6 +26,9 @@ import { sky, type Weather } from './sky'
 const BLOOM = { threshold: 0.9, smoothing: 0.25, intensity: 0.7, radius: 0.65 }
 const VIGNETTE = { offset: 0.32, darkness: 0.42 }
 const SAMPLES = 4 // multisampling, in place of the canvas's own antialiasing (which a composer bypasses)
+// Photo mode's tilt-shift: a band in focus across the middle (where the player stands), blurring
+// above and below, so the island reads as a miniature. Only while taking photos.
+const TILT = { focusArea: 0.32, feather: 0.22, offset: 0.04 }
 
 type Grade = { brightness: number; contrast: number; saturation: number }
 /** Per weather (sky.ts), blended by how much of each is showing; then indoors and the cave. -1 to 1, 0 = no change. */
@@ -55,9 +59,12 @@ export function PostFX() {
     const light = new BrightnessContrastEffect()
     const colour = new HueSaturationEffect()
     const vignette = new VignetteEffect(VIGNETTE)
+    const tilt = new EffectPass(camera, new TiltShiftEffect(TILT))
+    tilt.enabled = false
     composer.addPass(new RenderPass(scene, camera))
+    composer.addPass(tilt)
     composer.addPass(new EffectPass(camera, bloom, tone, light, colour, vignette))
-    return { composer, light, colour }
+    return { composer, light, colour, tilt }
   }, [gl, scene, camera])
 
   useEffect(() => () => fx.composer.dispose(), [fx])
@@ -66,6 +73,7 @@ export function PostFX() {
   // Priority 1: R3F stops drawing the scene itself, and this draws it through the composer instead.
   useFrame((_, delta) => {
     const where = useGame.getState().scene
+    fx.tilt.enabled = useGame.getState().photo
     let b = 0
     let c = 0
     let s = 0
