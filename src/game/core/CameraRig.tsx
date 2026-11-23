@@ -26,8 +26,17 @@ const SHAKE_RATE = 38 // how fast it trembles, rad/s
 const NUDGE = 0.35 // a nudge leans this share of the way toward its point
 const NUDGE_TIME = 1.4 // seconds in and back
 
+// Editing the room (edit.ts): the camera rises to look down more steeply and backs off, so the
+// whole floor reads as a grid. It eases there and back.
+const EDIT_PITCH = MathUtils.degToRad(70) // degrees below level while editing (the usual is about 38°)
+const EDIT_FAR = 1.35 // and this much further from the room than usual
+const EDIT_SHIFT = -0.6 // and aimed this much further back, so the edit bar at the top clears the back row
+const EDIT_EASE = 5 // how quickly it moves between the two
+
 const SLANT = Math.hypot(HEIGHT, DISTANCE) // camera's distance to the point it looks at
+const PITCH = Math.atan2(HEIGHT, DISTANCE)
 const lead = { x: 0, z: 0 }
+const view = { edit: 0 } // 0 = the usual view, 1 = editing's
 
 /** Shakes the camera for a moment (a big find, a hole in one). Nothing with reduced motion. */
 export function shakeCamera(amount = 0.12) {
@@ -51,12 +60,20 @@ export function CameraRig() {
     let tx = playerPos.x
     let tz = playerPos.z
     const scene = useGame.getState().scene
+    // Blend toward editing's steeper, further view while editing (straight there with reduced motion).
+    const editing = useGame.getState().editing && scene === 'house'
+    view.edit = reducedMotion() ? +editing : MathUtils.damp(view.edit, +editing, EDIT_EASE, dt)
+    const e = view.edit * view.edit * (3 - 2 * view.edit) // smoothstep, so it starts and lands softly
+    const pitch = PITCH + (EDIT_PITCH - PITCH) * e
+    const slant = SLANT * (1 + (EDIT_FAR - 1) * e)
+    const height = Math.sin(pitch) * slant
+    const back = Math.cos(pitch) * slant
     if (scene === 'house' || scene === 'cave') {
       // Indoors the camera holds still on the room, like a diorama. On a narrow screen the room
       // doesn't fit, so it follows the player sideways, but never further than shows the walls.
       // In the cave it holds on whichever room the player is in, and slides over when they go through a door.
       const cam = camera as PerspectiveCamera
-      const halfWidth = SLANT * Math.tan(MathUtils.degToRad(cam.fov / 2)) * cam.aspect
+      const halfWidth = slant * Math.tan(MathUtils.degToRad(cam.fov / 2)) * cam.aspect
       const slack = Math.max(0, ROOM.hx + 0.5 + ROOM_MARGIN - halfWidth)
       let cx = INTERIOR.x
       let cz = INTERIOR.z
@@ -68,7 +85,7 @@ export function CameraRig() {
       // While editing, it follows the cursor instead, so every tile can be reached.
       const x = useGame.getState().editing ? useEdit.getState().cursor.i : playerPos.x - cx
       tx = cx + MathUtils.clamp(x, -slack, slack)
-      tz = cz + ROOM_SHIFT
+      tz = cz + ROOM_SHIFT + EDIT_SHIFT * e
     }
     // Outdoors, look a little ahead of the way the player walks, easing in and out so turns don't swing it.
     const photo = useGame.getState().photo
@@ -102,7 +119,7 @@ export function CameraRig() {
       else near = 1 - ZOOM * Math.sin((Math.PI * cameraZoom.t) / ZOOM_TIME)
     }
     if (photo) near *= photoCam.zoom
-    tz += DISTANCE * near
+    tz += back * near
     if (cameraSnap.pending) {
       // Just arrived somewhere (see scene.ts): cut straight there rather than gliding across the map.
       cameraSnap.pending = false
@@ -114,9 +131,9 @@ export function CameraRig() {
       p.x = MathUtils.damp(p.x, tx, lambda, dt)
       p.z = MathUtils.damp(p.z, tz, lambda, dt)
     }
-    p.y = HEIGHT * near
+    p.y = height * near
     // Look along a fixed offset so the view angle never swims while easing.
-    camera.lookAt(p.x, 0, p.z - DISTANCE * near)
+    camera.lookAt(p.x, 0, p.z - back * near)
     // A shake: a quick tremble that dies away, added after the look so it never builds up in the follow.
     if (cameraShake.t >= 0) {
       cameraShake.t += dt
