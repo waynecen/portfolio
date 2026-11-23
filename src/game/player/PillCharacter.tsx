@@ -30,6 +30,8 @@ const SPRINT_LEAN = 0.6 // extra forward lean at full sprint (+60%, about 16° t
 const SPRINT_STRIDE = 0.3 // longer foot swing at full sprint (+30%)
 const TUCK = 0.22 // how much the body squashes into a ball mid-roll
 const ROLL_DROP = 0.28 // how far the body's centre drops mid-roll so it tumbles along the floor
+const LAND_SQUASH = 0.14 // how much the whole character squashes as a roll lands, then springs back
+const LAND_TIME = 0.3 // seconds the landing squash takes
 
 const CENTER = BODY_BASE + PILL_HALF // tumble pivot: the middle of the body
 
@@ -49,11 +51,12 @@ export function PillCharacter({ model }: { model?: ReactNode }) {
   const yaw = useRef<Group>(null)
   const lean = useRef<Group>(null)
   const tumble = useRef<Group>(null)
+  const land = useRef<Group>(null)
   const body = useRef<Group>(null)
   const footL = useRef<Mesh>(null)
   const footR = useRef<Mesh>(null)
   // Starts facing wherever the player already faces, so swapping the pill for the model doesn't turn it.
-  const s = useRef({ w: 0, phase: 0, heading: playerFacing.heading, t: 0, lift: 0 }).current
+  const s = useRef({ w: 0, phase: 0, heading: playerFacing.heading, t: 0, lift: 0, rolling: false, landed: LAND_TIME }).current
 
   useFrame((_, delta) => {
     if (!yaw.current || !lean.current || !tumble.current) return
@@ -93,6 +96,16 @@ export function PillCharacter({ model }: { model?: ReactNode }) {
     s.lift = reducedMotion() ? photoPose.lift : MathUtils.damp(s.lift, photoPose.lift, 12, dt)
     tumble.current.position.y = CENTER - env * ROLL_DROP + s.lift
 
+    // Landing: as a roll ends, a quick squash from the feet that springs back, keeping its volume.
+    if (s.rolling && p < 0) s.landed = 0
+    s.rolling = p >= 0
+    s.landed = Math.min(LAND_TIME, s.landed + dt)
+    if (land.current) {
+      const k = s.landed / LAND_TIME
+      const squash = reducedMotion() ? 0 : LAND_SQUASH * Math.sin(Math.PI * k) * (1 - k * 0.5)
+      land.current.scale.set(1 / Math.sqrt(1 - squash), 1 - squash, 1 / Math.sqrt(1 - squash))
+    }
+
     // Lean into the direction of travel from the feet, more when sprinting, giving the walk weight.
     lean.current.rotation.x = (model ? MODEL_LEAN : LEAN) * w * motionScale() * (1 + SPRINT_LEAN * sprint)
 
@@ -126,20 +139,22 @@ export function PillCharacter({ model }: { model?: ReactNode }) {
   return (
     <group ref={yaw}>
       <group ref={lean}>
-        {/* Tumble pivots at the body's centre; the body inside pivots at its bottom so squash keeps it planted. */}
-        <group ref={tumble} position-y={CENTER}>
-          {model ? (
-            <group position-y={-CENTER}>{model}</group> // the model's feet on the ground
-          ) : (
-            <group ref={body} position-y={-PILL_HALF}>
-              <mesh position-y={PILL_HALF}>
-                <capsuleGeometry args={[PILL_RADIUS, PILL_LENGTH, 4, 12]} />
-                <meshLambertMaterial color="#f2c14e" />
-              </mesh>
-              <mesh geometry={eyeGeo} material={eyeMat} position={[-0.12, 0.72, 0.32]} />
-              <mesh geometry={eyeGeo} material={eyeMat} position={[0.12, 0.72, 0.32]} />
-            </group>
-          )}
+        <group ref={land}>
+          {/* Tumble pivots at the body's centre; the body inside pivots at its bottom so squash keeps it planted. */}
+          <group ref={tumble} position-y={CENTER}>
+            {model ? (
+              <group position-y={-CENTER}>{model}</group> // the model's feet on the ground
+            ) : (
+              <group ref={body} position-y={-PILL_HALF}>
+                <mesh position-y={PILL_HALF}>
+                  <capsuleGeometry args={[PILL_RADIUS, PILL_LENGTH, 4, 12]} />
+                  <meshLambertMaterial color="#f2c14e" />
+                </mesh>
+                <mesh geometry={eyeGeo} material={eyeMat} position={[-0.12, 0.72, 0.32]} />
+                <mesh geometry={eyeGeo} material={eyeMat} position={[0.12, 0.72, 0.32]} />
+              </group>
+            )}
+          </group>
         </group>
       </group>
       {!model && (
