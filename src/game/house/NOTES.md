@@ -31,13 +31,13 @@ Panel styles are `.music-*` in [house.css](./house.css); the now-playing label i
 
 ```ts
 const PENDANT = { x: 0, y: 2.25, z: 0.3 } // the paper lantern hanging from the ceiling, house-local; its cord runs up out of sight
-const CEILING = { day: 2, night: 8, distance: 10 } // its warm light (candela), blended by how much it's night: a pool under it, fading to the walls
+const CEILING = { day: 3, night: 10, distance: 13 } // its warm light (candela), blended by how much it's night: a pool under it, fading to the walls
 const LAMP = { day: 0.5, night: 1.8, distance: 3.5, y: 1.1 } // the paper lamp's light, once it's bought; it follows the lamp, into the hand while moving it
 const GLOW = { day: 0.35, night: 1 } // how much both paper shades glow (shadeMaterial's emissive)
 const DRIFT = 0.025 // how far the ceiling lantern swings on its cord, radians, from the cord's top (still with reduced motion)
 const COUNT = 60, SIZE = 0.075, SPEED = 0.06 // Motes.tsx: dust drifting in the room's air (0.3 to 2.2 up), wrapping round at the walls
 const OPACITY = { day: 0.35, night: 0.7 } // the motes catch the lantern more at night
-const ROOM_DAY / ROOM_NIGHT // Atmosphere.tsx: indoors, mostly warm even fill bounced off a pale floor (hemi 1.4) and a faint key (0.3), for soft, low-contrast shading; at night both drop and the lamps do most of the lighting
+const ROOM_DAY / ROOM_NIGHT // Atmosphere.tsx: indoors, mostly warm even fill bounced off a pale floor (hemi 1.85, 1.05 at night) and a faint key (0.3), for soft, low-contrast shading (the room's grade, PostFX.tsx, takes a little contrast off too); at night the fill drops and the lamps do most of the lighting
 ```
 
 The room's lights are mounted beside Atmosphere in Game.tsx, not in the house's group: that group is hidden outdoors, a hidden light drops out of the light count, and a change in the count recompiles every material on each trip through the door. So they're always mounted and sit at 0 away from the house. Keep any new room light the same way. A piece with a lit part gives its Build a `glow` geometry (Furniture.tsx), drawn in `shadeMaterial`.
@@ -92,6 +92,6 @@ A piece only goes down where it fits. It must stay inside the room and not overl
 
 **The golf trophy:** once Gull Rock Links is finished under par ([trophy.ts](./trophy.ts), set by golf/golf.ts), a small gold cup stands on the dresser between its left and middle jars (`TROPHY_AT` in Furniture.tsx, from the dresser's centre) and moves with it. Using it (**Look**) says what it's for. Start over forgets it with the rest of the golf.
 
-**Tripo models:** a piece with an entry in `MODELS` (Furniture.tsx) shows its model ([PropModel.tsx](./PropModel.tsx)) in place of its blocks, which stand in while it downloads: fitted to `width`, stretched to `depth` and `height` if given, nudged by `z`. The colliders stay the Build's. In so far: the bed (`width 0.98, depth 1.8, height 0.5`: its shape is stubbier than its 1 × 2 tiles, so it's lengthened and kept low). The models still to make, and their prompts, are in [docs/ART.md](../../../docs/ART.md).
+**Tripo models:** a piece with an entry in `MODELS` (Furniture.tsx) shows its model ([PropModel.tsx](./PropModel.tsx)) in place of its blocks, which stand in while it downloads: fitted to `width`, stretched to `depth` and `height` if given, nudged by `z`. The colliders stay the Build's. In so far: the bed (`width 0.98, depth 1.8`: its shape is stubbier than its 1 × 2 tiles, so it's lengthened). The models still to make, and their prompts, are in [docs/ART.md](../../../docs/ART.md).
 
 **Adding a piece:** add it to `PIECES` and `DEFAULT` in room.ts, then give it a `Build` in Furniture.tsx: its blocks around the footprint's centre, and its colliders relative to that centre. Something to use on it goes in `USES` there. A piece that draws itself (like the record player) calls `usePiece()` instead. Edit bar styles are `.edit-*` in [style.css](../../style.css).
