@@ -21,7 +21,7 @@ const W_H = 1.3 // cabinet height, to the top the turntable sits on
 
 // Round the model, which is bigger across than the stand-in cabinet.
 const SOLID: Collider[] = [{ kind: 'box', x: 0, z: BACK, hx: MODEL_W / 2 + 0.03, hz: 0.4 + 0.03 }]
-const Model = lazy(() => import('./RecordPlayerModel'))
+const Model = lazy(() => import('./PropModel'))
 
 const USE = { dx: 0, dz: BACK, range: RANGE, prompt: 'Play music', onInteract: () => openPanel('music') }
 

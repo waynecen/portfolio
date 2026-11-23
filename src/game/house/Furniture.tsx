@@ -1,4 +1,4 @@
-import { useEffect, useRef, type RefObject } from 'react'
+import { lazy, Suspense, useEffect, useRef, type RefObject } from 'react'
 import { Color, CylinderGeometry, MeshLambertMaterial, type BufferGeometry, type Group } from 'three'
 import { addCollider, type Collider } from '../core/collision'
 import { useEdit } from './edit'
@@ -68,7 +68,7 @@ const BED: Build = {
     box(C.blanket, -0.42, 0.42, 0.3, 0.46, -0.1, 0.88)
     box(C.sheet, -0.3, 0.3, 0.42, 0.53, -0.75, -0.45)
   },
-  solid: [{ kind: 'box', x: 0, z: -0.03, hx: 0.45, hz: 0.93 }],
+  solid: [{ kind: 'box', x: 0, z: -0.03, hx: 0.49, hz: 0.93 }], // as wide as the model (MODELS.bed)
 }
 const DRESSER: Build = {
   // Against the back of its tiles, with jars on top.
@@ -157,6 +157,14 @@ const SHELF: Build = {
   solid: [{ kind: 'box', x: 0, z: -0.3, hx: 0.45, hz: 0.15 }],
 }
 
+// Tripo models (models-src, through npm run models) in place of a piece's blocks, which stand in
+// while the model downloads. Fitted to `width` across; `depth` stretches it front to back to fill its
+// tiles and `height` up or down; `z` nudges it back or forward on them. Colliders stay the Build's.
+const PropModel = lazy(() => import('./PropModel'))
+const MODELS: Partial<Record<PieceId, { url: string; width: number; depth?: number; height?: number; z?: number }>> = {
+  bed: { url: '/models/bed.glb', width: 0.98, depth: 1.8, height: 0.5, z: -0.03 }, // its shape is stubbier than the 1 × 2 tiles, so it's lengthened, and kept low
+}
+
 const BUILDS: Partial<Record<PieceId, Build>> = {
   bed: BED, dresser: DRESSER, table: TABLE, stool1: STOOL, stool2: STOOL,
   pot1: POT, pot2: POT, pot3: POT, chest: CHEST, rug: RUG,
@@ -242,9 +250,17 @@ function Piece({ id, build }: { id: PieceId; build: Build }) {
   const group = useRef<Group>(null)
   const cup = useTrophy((s) => s.golf) && id === 'dresser'
   usePiece(id, group, build.solid, cup ? TROPHY_USE : USES[id])
+  const model = MODELS[id]
+  const blocks = <mesh geometry={geometryOf(build)} material={material} />
   return (
     <group ref={group}>
-      <mesh geometry={geometryOf(build)} material={material} />
+      {model ? (
+        <Suspense fallback={blocks}>
+          <PropModel {...model} />
+        </Suspense>
+      ) : (
+        blocks
+      )}
       {build.glow && <mesh geometry={build.glow} material={shadeMaterial} />}
       {cup && <mesh geometry={trophy} material={material} />}
     </group>
