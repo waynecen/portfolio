@@ -11,7 +11,7 @@ import { useGame } from '../core/store'
 // turns, leans or tumbles with the body.
 
 const SHADOW_SIZE = 0.85 // diameter on the ground, world units
-const SHADOW_OPACITY = 0.35
+const SHADOW_OPACITY = 0.2 // faint: the sun's real shadow (world/Shadows.tsx) does the rest; this is contact shade
 const NIGHT_GLOW = 2.5 // the light's intensity at full night outdoors (candela)
 const INDOOR_GLOW = 0.4 // share of that indoors, where the room is already lamp-lit
 const CAVE_GLOW = 2 // in the cave, day or night

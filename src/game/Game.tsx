@@ -9,6 +9,7 @@ import './ui/photo.css'
 import './golf/golf.css'
 import { lazy, Suspense, useEffect, useState, type ComponentType, type ReactNode } from 'react'
 import { Atmosphere } from './world/Atmosphere'
+import { ShadowSweep } from './world/Shadows'
 import { CameraRig, DISTANCE, HEIGHT } from './core/CameraRig'
 import './core/curve' // bends the world away; before anything is drawn
 import { Dialogue, Prompt } from './ui/Dialogue'
@@ -122,13 +123,16 @@ export function Game() {
     <>
       <Canvas
         frameloop={visible && active ? 'always' : 'never'}
+        // Soft shadows from the sun, the same for everyone (world/Shadows.tsx).
         dpr={tier === 'low' ? [1, 1.25] : [1, 1.5]}
+        shadows="soft"
         gl={{ antialias: true, powerPreference: 'high-performance' }}
         camera={{ position: [0, HEIGHT, DISTANCE], fov: 35 }}
         // Tell main.tsx to lift the loader once a frame is on screen (two frames: the scene's first draw lands in between).
         onCreated={() => requestAnimationFrame(() => requestAnimationFrame(() => dispatchEvent(new Event('gameready'))))}
       >
         <Atmosphere />
+        <ShadowSweep />
         <RoomLights />
         {/* Both areas stay mounted (so nothing is rebuilt on each trip) but only one is drawn. */}
         <group visible={scene === 'world'}>

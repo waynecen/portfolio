@@ -34,7 +34,7 @@ const mix = (a: number, b: number) => a + (b - a) * sky.weather.night
 /** The ceiling lantern; mount in the house's group (Game.tsx). */
 export function Pendant() {
   return (
-    <group position={[INTERIOR.x + PENDANT.x, PENDANT.y, INTERIOR.z + PENDANT.z]}>
+    <group position={[INTERIOR.x + PENDANT.x, PENDANT.y, INTERIOR.z + PENDANT.z]} userData={{ noShadow: true }}>
       <mesh geometry={lantern} material={shadeMaterial} />
       <mesh geometry={cap} material={dark} position-y={0.23} />
       <mesh geometry={cord} material={dark} position-y={0.23 + 1.5} />

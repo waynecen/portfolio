@@ -1,9 +1,10 @@
 import { useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
-import { Color, Fog, type DirectionalLight, type HemisphereLight } from 'three'
+import { Color, Fog, Vector3, type DirectionalLight, type HemisphereLight } from 'three'
 import { foamMaterial, waterMaterial } from './Island'
 import { currentHour, sample, sky } from './sky'
 import { useGame } from '../core/store'
+import { followPlayer, setUpShadow } from './Shadows'
 
 // Lights, background and fog for the time of day (see sky.ts). Outdoors they follow the sky;
 // indoors the room is lit by a fixed lamp-like set, warmer and dimmer at night, on black.
@@ -21,6 +22,9 @@ const ROOM_NIGHT = { sky: new Color('#e0c09a'), ground: new Color('#8a6e52'), he
 const CAVE_LIGHT = { sky: new Color('#9aa8c8'), ground: new Color('#3a3540'), hemi: 0.75, sun: new Color('#c9d3f0'), sunI: 0.55 }
 const NO_FOG = 1e4 // fog pushed out of sight indoors (turning fog off would recompile every material)
 
+const ROOM_SUN = new Vector3(5, 10, 4) // indoors, where the room's key light comes from
+const CAVE_SUN = new Vector3(2, 10, 6)
+
 const background = new Color()
 const fog = new Fog('#ffffff', NO_FOG, NO_FOG + 1)
 
@@ -31,11 +35,16 @@ export function Atmosphere() {
   const clock = useRef(0)
 
   useEffect(() => {
+    if (sun.current) {
+      setUpShadow(sun.current)
+      scene.add(sun.current.target) // so its matrix is kept up to date with the scene's
+    }
     scene.background = background
     scene.fog = fog
     return () => {
       scene.background = null
       scene.fog = null
+      if (sun.current) scene.remove(sun.current.target)
     }
   }, [scene])
 
@@ -55,7 +64,7 @@ export function Atmosphere() {
     const where = useGame.getState().scene
     if (where === 'cave') {
       background.copy(DARK)
-      s.position.set(2, 10, 6)
+      followPlayer(s, CAVE_SUN)
       fog.near = NO_FOG
       fog.far = NO_FOG + 1
       h.color.copy(CAVE_LIGHT.sky)
@@ -68,7 +77,7 @@ export function Atmosphere() {
     if (where === 'house') {
       const n = sky.weather.night
       background.copy(DARK)
-      s.position.set(5, 10, 4)
+      followPlayer(s, ROOM_SUN)
       fog.near = NO_FOG
       fog.far = NO_FOG + 1
       h.color.lerpColors(ROOM_DAY.sky, ROOM_NIGHT.sky, n)
@@ -79,7 +88,7 @@ export function Atmosphere() {
       return
     }
     background.copy(sky.background)
-    s.position.copy(sky.sunFrom)
+    followPlayer(s, sky.sunFrom)
     fog.color.copy(sky.fog)
     fog.near = sky.fogNear
     fog.far = sky.fogFar
