@@ -1,6 +1,7 @@
 import { track } from '../../analytics'
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
+import { useSceneFrame } from '../core/sceneFrame'
 import { CapsuleGeometry, ConeGeometry, MeshLambertMaterial, SphereGeometry, type Group } from 'three'
 import { addCollider, type Collider } from '../core/collision'
 import { useFishing } from './fishing'
@@ -265,14 +266,29 @@ const earGeometry = new CapsuleGeometry(0.05, 0.28, 3, 6)
 const bumpGeometry = new SphereGeometry(0.08, 8, 6)
 const spikeGeometry = new ConeGeometry(0.06, 0.16, 5)
 
+// Blinks: every BLINK_EVERY seconds or so (a little random), the eyes close for BLINK_TIME.
+const BLINK_EVERY = [2.5, 6]
+const BLINK_TIME = 0.12
+
 function Body({ kind }: { kind: Kind }) {
   const m = MATERIALS[kind]
+  const eyes = useRef<Group>(null)
+  const blink = useRef({ next: 1 + Math.random() * 3 }).current
+  useSceneFrame('world', ({ clock }) => {
+    if (!eyes.current) return
+    const t = clock.elapsedTime
+    if (t > blink.next + BLINK_TIME) blink.next = t + BLINK_EVERY[0] + Math.random() * (BLINK_EVERY[1] - BLINK_EVERY[0])
+    eyes.current.scale.y = t > blink.next ? 0.15 : 1
+  })
   return (
     <>
       <mesh geometry={bodyGeometry} material={m.body} />
       <mesh geometry={headGeometry} material={m.head} scale={kind === 'frog' ? [1.25, 0.85, 1] : 1} />
-      <mesh geometry={eyeGeometry} material={black} position={[-0.08, kind === 'frog' ? 0.96 : 0.82, kind === 'frog' ? 0.1 : 0.19]} />
-      <mesh geometry={eyeGeometry} material={black} position={[0.08, kind === 'frog' ? 0.96 : 0.82, kind === 'frog' ? 0.1 : 0.19]} />
+      {/* The eyes, in a group at their height so a blink squashes them in place. */}
+      <group ref={eyes} position-y={kind === 'frog' ? 0.96 : 0.82}>
+        <mesh geometry={eyeGeometry} material={black} position={[-0.08, 0, kind === 'frog' ? 0.1 : 0.19]} />
+        <mesh geometry={eyeGeometry} material={black} position={[0.08, 0, kind === 'frog' ? 0.1 : 0.19]} />
+      </group>
       {kind === 'frog' && (
         <>
           <mesh geometry={bumpGeometry} material={m.head} position={[-0.09, 0.9, 0.06]} />

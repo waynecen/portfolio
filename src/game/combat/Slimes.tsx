@@ -77,6 +77,8 @@ const knockX = new Float32Array(n)
 const knockZ = new Float32Array(n)
 const flash = new Float32Array(n) // seconds of white flash after a hit
 const goneAt = new Float32Array(n).fill(-1) // clock time when popped; -1 = here
+const blinkAt = new Float32Array(n).map(() => 1 + Math.random() * 4) // clock time of each one's next blink
+const BLINK_TIME = 0.12
 for (let k = 0; k < n; k++) {
   sx[k] = slimeHomes[k].x
   sz[k] = slimeHomes[k].z
@@ -160,6 +162,12 @@ export function Slimes() {
       g.rotation.y = Math.atan2(dirX[k], dirZ[k])
       flash[k] = Math.max(0, flash[k] - dt)
       bodies.current[k].color.copy(flash[k] > 0 ? WHITE : BASE[k])
+      // A blink every few seconds: both eyes (children 1 and 2) squash shut for a moment.
+      const now2 = clock.elapsedTime
+      if (now2 > blinkAt[k] + BLINK_TIME) blinkAt[k] = now2 + 2.5 + Math.random() * 4
+      const lid = now2 > blinkAt[k] ? 0.15 : 1
+      g.children[1].scale.y = lid
+      g.children[2].scale.y = lid
     }
   })
 
