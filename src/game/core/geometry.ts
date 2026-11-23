@@ -12,11 +12,36 @@ export const flat = (x0: number, x1: number, z0: number, z1: number, y: number) 
 export const block = (x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) =>
   new BoxGeometry(x1 - x0, y1 - y0, z1 - z0).translate((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2)
 
-/** Paints every vertex of `g` one colour, so pieces of different shades merge into one mesh. */
+// Baked ambient occlusion: a piece with some height gets darker toward the ground (y = 0), the way
+// light is blocked where things meet the floor. Flat pieces (the ground itself) are left alone. Baked
+// into the vertex colours once, so it costs nothing per frame.
+const AO = 0.32 // how much darker a piece is right at the ground
+const AO_REACH = 0.4 // how high above the ground the darkening fades out
+const AO_MIN_HEIGHT = 0.05 // pieces flatter than this are ground, not things on it
+
+/** Paints every vertex of `g` one colour, so pieces of different shades merge into one mesh, with baked AO near the ground. */
 export function tint(g: BufferGeometry, c: Color): BufferGeometry {
-  const n = g.getAttribute('position').count
+  const position = g.getAttribute('position')
+  const n = position.count
+  let low = Infinity
+  let high = -Infinity
+  for (let k = 0; k < n; k++) {
+    const y = position.getY(k)
+    low = Math.min(low, y)
+    high = Math.max(high, y)
+  }
+  const occlude = high - low > AO_MIN_HEIGHT
   const colors = new Float32Array(n * 3)
-  for (let k = 0; k < n; k++) c.toArray(colors, k * 3)
+  for (let k = 0; k < n; k++) {
+    let shade = 1
+    if (occlude) {
+      const t = Math.min(1, Math.max(0, position.getY(k) / AO_REACH))
+      shade = 1 - AO * (1 - t * t * (3 - 2 * t)) // smoothstep: soft at the top of the reach
+    }
+    colors[k * 3] = c.r * shade
+    colors[k * 3 + 1] = c.g * shade
+    colors[k * 3 + 2] = c.b * shade
+  }
   g.setAttribute('color', new Float32BufferAttribute(colors, 3))
   return g
 }
