@@ -4,11 +4,11 @@ import { Color, IcosahedronGeometry, MeshLambertMaterial, Object3D, type Instanc
 import { secretOn } from '../secrets/secrets'
 import { winter } from '../world/season'
 import { sky } from '../world/sky'
-import { playerPos, playerRoll, playerVel } from '../core/state'
+import { playerPos, playerVel } from '../core/state'
 import { useGame } from '../core/store'
 import { reducedMotion } from '../core/settings'
 
-// Little puffs of dust kicked up outdoors: a burst when a roll starts, and a trail while sprinting.
+// Little puffs of dust kicked up outdoors: a trail while sprinting.
 // One instanced mesh of low-poly balls from a fixed pool; each puff swells, drifts and shrinks to
 // nothing, so no transparency is needed. Off in the rain (the ground is wet) and indoors;
 // in winter they're puffs of snow, even while it snows.
@@ -16,7 +16,6 @@ import { reducedMotion } from '../core/settings'
 const COUNT = 32 // shared by the dust, confetti and bursts (cut grass, pots, slimes)
 const LIFE = 0.45 // seconds a puff lasts
 const SIZE = 0.09 // a puff's radius at its biggest
-const BURST = 6 // puffs when a roll starts
 const TRAIL = 0.12 // seconds between puffs while sprinting
 const SPRINTING = 1.5 // speed (relative to walking) above which the trail starts
 
@@ -61,7 +60,7 @@ export function burst(x: number, z: number, n: number, color: Color) {
 
 export function Dust() {
   const mesh = useRef<InstancedMesh>(null)
-  const s = useRef({ rolling: false, trail: 0 }).current
+  const s = useRef({ trail: 0 }).current
 
   useEffect(() => {
     // Start with every instance hidden.
@@ -84,21 +83,9 @@ export function Dust() {
     // Dust only outdoors on dry ground; confetti anywhere.
     const on = confetti || (useGame.getState().scene === 'world' && (winter || sky.weather.rain < 0.5))
 
-    // A roll just started: a ring of puffs at the feet, thrown out sideways and back.
-    const rolling = playerRoll.p >= 0
-    if (rolling && !s.rolling && on) {
-      const n = reducedMotion() ? BURST / 2 : BURST
-      for (let k = 0; k < n; k++) {
-        const a = (k / n) * Math.PI * 2 + Math.random() * 0.5
-        const out = 0.6 + Math.random() * 0.5
-        spawn(playerPos.x, playerPos.z, Math.cos(a) * out - playerRoll.dirX * 0.8, Math.sin(a) * out - playerRoll.dirZ * 0.8, SIZE * (0.8 + Math.random() * 0.4))
-      }
-    }
-    s.rolling = rolling
-
     // Sprinting: a puff behind the heels every TRAIL seconds.
     s.trail += dt
-    if (on && !rolling && !reducedMotion() && playerVel.speed > (confetti ? CONFETTI_STEP : SPRINTING) && s.trail >= TRAIL) {
+    if (on && !reducedMotion() && playerVel.speed > (confetti ? CONFETTI_STEP : SPRINTING) && s.trail >= TRAIL) {
       s.trail = 0
       const len = Math.hypot(playerVel.x, playerVel.z) || 1
       const bx = -playerVel.x / len

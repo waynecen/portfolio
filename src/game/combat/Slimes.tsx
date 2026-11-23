@@ -9,7 +9,7 @@ import { busy } from '../core/interact'
 import { isInland } from '../world/Island'
 import { reducedMotion, useSettings } from '../core/settings'
 import { pop } from '../core/sfx'
-import { playerPos, playerRoll } from '../core/state'
+import { playerPos } from '../core/state'
 import { useGame } from '../core/store'
 import { clear, nearPath } from '../world/tiles'
 
@@ -241,8 +241,8 @@ function step(k: number, dt: number) {
     }
   }
 
-  // A bump: half a heart, and the player is knocked away from the slime (not while rolling through).
-  if (toPlayer < BUMP && harm.invuln <= 0 && playerRoll.p < 0) damage(1, px, pz)
+  // A bump: half a heart, and the player is knocked away from the slime.
+  if (toPlayer < BUMP && harm.invuln <= 0) damage(1, px, pz)
 }
 
 // Moves a slime, unless that would put it on a road, by a place, under the house or off the island.

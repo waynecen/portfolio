@@ -13,14 +13,14 @@ import { isLand } from '../world/Island'
 import { inSquare } from '../world/layout'
 import { PLAYER_MODEL } from './models'
 import { pad } from '../core/gamepad'
-import { actions, bindKeys, buttons, keys, stick } from '../core/input'
+import { bindKeys, buttons, keys, stick } from '../core/input'
 import { PillCharacter, PILL_RADIUS } from './PillCharacter'
 import { PlayerGround } from './PlayerGround'
 import { roadTiles } from '../world/pois'
 import { winter } from '../world/season'
 import { sky } from '../world/sky'
-import { step, whoosh, type Surface } from '../core/sfx'
-import { playerFacing, playerPos, playerRoll, playerVel, teleport } from '../core/state'
+import { step, type Surface } from '../core/sfx'
+import { playerFacing, playerPos, playerVel, teleport } from '../core/state'
 import { held } from '../core/interact'
 import { useGame } from '../core/store'
 import { addPrint } from './Footprints'
@@ -33,9 +33,6 @@ const DECEL = 16 // a little snappier when letting go
 const SHORE = 0.15 // stop this far short of the cliff edge, so the feet stay on the rim
 const EDGE = PILL_RADIUS + SHORE // how close the pill's centre gets to a water tile; keep at most half a tile
 
-const ROLL_TIME = 0.45 // seconds for one tumble
-const ROLL_SPEED = 9 // burst speed at the start of a roll, eases down toward walk speed
-const ROLL_COOLDOWN = 0.2 // seconds after a roll before the next can start
 const STEP_LEN = [0.45, 0.7] // units travelled per footstep sound: walking, and at full sprint
 const TINY = 0.55 // the character's size with the "tiny you" secret on (secrets.ts)
 const SWING_SPEED = 0.35 // top speed while swinging the sword, as a share (combat.ts)
@@ -61,7 +58,6 @@ const ModelCharacter = lazy(() => import('./ModelCharacter'))
 
 export function Player() {
   const ref = useRef<Group>(null)
-  const cooldown = useRef(0)
   const stride = useRef(0) // distance since the last footstep sound
 
   useEffect(() => bindKeys(), [])
@@ -71,7 +67,6 @@ export function Player() {
     if (!root) return
     const dt = Math.min(delta, 0.1)
     const v = playerVel
-    const roll = playerRoll
 
     // Arrive somewhere new (see scene.ts): stand still, facing the way the door points.
     if (teleport.pending) {
@@ -79,7 +74,6 @@ export function Player() {
       root.position.x = teleport.x
       root.position.z = teleport.z
       v.x = v.z = v.speed = 0
-      roll.p = -1
       playerFacing.heading = teleport.heading
       playerFacing.snap = true
     }
@@ -87,19 +81,6 @@ export function Player() {
     // Stand still while a panel is open, fading between areas, editing or fishing. Not for dialogue:
     // the player can walk off mid-conversation, which closes it (Interactions.tsx).
     const talking = held()
-
-    // Start a roll in the direction the character is facing (works from standing still too).
-    cooldown.current -= dt
-    if (talking) actions.roll = false
-    if (actions.roll) {
-      actions.roll = false
-      if (roll.p < 0 && cooldown.current <= 0) {
-        roll.p = 0
-        roll.dirX = Math.sin(playerFacing.heading)
-        roll.dirZ = Math.cos(playerFacing.heading)
-        whoosh()
-      }
-    }
 
     // A bump (health.ts) takes control away for a moment while the knockback plays out.
     harm.invuln = Math.max(0, harm.invuln - dt)
@@ -115,30 +96,16 @@ export function Player() {
       z *= s
     }
 
-    if (roll.p >= 0) {
-      // Committed burst: input is ignored until the tumble finishes.
-      roll.p += dt / ROLL_TIME
-      if (roll.p >= 1) {
-        roll.p = -1
-        cooldown.current = ROLL_COOLDOWN
-      } else {
-        const burst = ROLL_SPEED * (1 - 0.6 * roll.p)
-        v.x = roll.dirX * burst
-        v.z = roll.dirZ * burst
-      }
-    }
-    if (roll.p < 0) {
-      // Ease velocity toward the input instead of snapping, so starts and stops feel weighty.
-      // Sprint eases in and out through the same damp, so pressing Shift ramps up rather than jumps.
-      const rate = harm.stagger > 0 ? KNOCK_DECEL : len2 > 0 ? ACCEL : DECEL
-      // Swinging the sword slows the player to SWING_SPEED, so a swing plants the feet.
-      const top = (keys.sprint || buttons.sprint || pad.sprint ? SPEED * SPRINT : SPEED) * (swinging() ? SWING_SPEED : 1)
-      v.x = MathUtils.damp(v.x, x * top, rate, dt)
-      v.z = MathUtils.damp(v.z, z * top, rate, dt)
-      if (len2 === 0 && v.x * v.x + v.z * v.z < 1e-4) v.x = v.z = 0
-    }
+    // Ease velocity toward the input instead of snapping, so starts and stops feel weighty.
+    // Sprint eases in and out through the same damp, so pressing Shift ramps up rather than jumps.
+    const rate = harm.stagger > 0 ? KNOCK_DECEL : len2 > 0 ? ACCEL : DECEL
+    // Swinging the sword slows the player to SWING_SPEED, so a swing plants the feet.
+    const top = (keys.sprint || buttons.sprint || pad.sprint ? SPEED * SPRINT : SPEED) * (swinging() ? SWING_SPEED : 1)
+    v.x = MathUtils.damp(v.x, x * top, rate, dt)
+    v.z = MathUtils.damp(v.z, z * top, rate, dt)
+    if (len2 === 0 && v.x * v.x + v.z * v.z < 1e-4) v.x = v.z = 0
 
-    // Move in substeps no longer than half the body's radius, so a fast roll can't tunnel through thin obstacles.
+    // Move in substeps no longer than half the body's radius, so a fast knockback can't tunnel through thin obstacles.
     const p = root.position
     const steps = Math.max(1, Math.ceil((Math.sqrt(v.x * v.x + v.z * v.z) * dt) / (PILL_RADIUS * 0.5)))
     const h = dt / steps
@@ -160,11 +127,11 @@ export function Player() {
             pushOutOfBox(p, EDGE, v, (ti + di) * TILE, (tj + dj) * TILE, TILE / 2, TILE / 2)
     }
 
-    // Relative to walking speed: 1 = walking, 2.5 = sprinting. Capped so the roll burst doesn't spin the legs.
+    // Relative to walking speed: 1 = walking, 2.5 = sprinting. Capped so a knockback doesn't spin the legs.
     v.speed = Math.min(SPRINT, Math.sqrt(v.x * v.x + v.z * v.z) / SPEED)
     // Footsteps by distance, so they suit any character and speed. The first lands soon after setting off.
     const len = STEP_LEN[0] + (STEP_LEN[1] - STEP_LEN[0]) * MathUtils.clamp(v.speed - 1, 0, 1)
-    if (roll.p >= 0 || v.speed < 0.1) stride.current = len * 0.7
+    if (v.speed < 0.1) stride.current = len * 0.7
     else if ((stride.current += v.speed * SPEED * dt) >= len) {
       stride.current -= len
       const surface = surfaceAt(p.x, p.z)

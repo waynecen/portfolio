@@ -14,7 +14,7 @@ export type Action =
   | 'left'
   | 'right'
   | 'sprint'
-  | 'roll'
+  | 'continue'
   | 'interact'
   | 'attack'
   | 'bag'
@@ -30,7 +30,7 @@ export const ACTIONS: { id: Action; label: string }[] = [
   { id: 'left', label: 'Walk left' },
   { id: 'right', label: 'Walk right' },
   { id: 'sprint', label: 'Sprint (hold)' },
-  { id: 'roll', label: 'Roll, reel in' },
+  { id: 'continue', label: 'Continue talking, reel in' },
   { id: 'interact', label: 'Talk, read, use' },
   { id: 'attack', label: 'Sword' },
   { id: 'bag', label: 'Bag, put the rod away' },
@@ -47,7 +47,7 @@ const DEFAULTS: Record<Action, string[]> = {
   left: ['KeyA', 'ArrowLeft'],
   right: ['KeyD', 'ArrowRight'],
   sprint: ['ShiftLeft', 'ShiftRight'],
-  roll: ['Space'],
+  continue: ['Space'],
   interact: ['KeyF', 'Enter'],
   attack: ['KeyJ', 'KeyX'],
   bag: ['KeyB'],

@@ -13,12 +13,12 @@ import {
 } from 'three'
 import { toLambert, useGLB } from '../core/gltf'
 import { CLIPS, PLAYER_HEIGHT, PLAYER_WIDTH } from './models'
-import { playerFacing, playerPos, playerRoll, playerVel } from '../core/state'
+import { playerFacing, playerPos, playerVel } from '../core/state'
 import { useGame } from '../core/store'
 import { reducedMotion } from '../core/settings'
 
 // The player as a rigged 3D model (made in Tripo; see docs/CHARACTER.md), shown inside
-// PillCharacter's rig, which still turns it and tumbles it through rolls. Its own clips do the
+// PillCharacter's rig, which turns it and leans it into its movement. Its own clips do the
 // walking: idle, walk and run blend by speed. Loaded lazily, only when PLAYER_MODEL is set, so the
 // loader code stays out of the game chunk until then.
 
@@ -32,7 +32,7 @@ const MIN_RATE = 0.3
 const MAX_RATE = 3
 const RUN_MAX_RATE = 2.75 // the run looks frantic sooner; 2.75× keeps pace up to a full sprint (5 units/s)
 // Looking: the head (and a little of the neck) turns toward whatever has focus (a sign, a villager),
-// on top of the clips, easing in and out. Only while standing or walking, never rolling.
+// on top of the clips, easing in and out.
 const LOOK_MAX = 0.75 // most it turns, radians either way (about 43°)
 const LOOK_EASE = 6 // how quickly it follows
 const LOOK_NECK = 0.4 // the neck's share of the turn; the head takes the rest
@@ -108,8 +108,7 @@ export default function ModelCharacter({ url }: { url: string }) {
   useFrame((_, delta) => {
     const dt = Math.min(delta, 0.1)
     const { idle, walk, run, w } = rig
-    // During a roll the rig tumbles the whole model; it holds its idle pose meanwhile.
-    const speed = playerRoll.p >= 0 ? 0 : playerVel.speed
+    const speed = playerVel.speed
     // speed 0 → idle, 1 → walk, 1.5 and up (sprint) → run. Without a run clip, walk covers sprinting too.
     const toRun = run ? MathUtils.clamp((speed - 1) * 2, 0, 1) : 0
     const toWalk = Math.min(1, speed) * (1 - toRun)
@@ -145,7 +144,7 @@ export default function ModelCharacter({ url }: { url: string }) {
     // Look toward the focus, relative to where the body faces, after the clips have posed the bones.
     const f = useGame.getState().focus
     let want = 0
-    if (f && playerRoll.p < 0) {
+    if (f) {
       let a = Math.atan2(f.x - playerPos.x, f.z - playerPos.z) - playerFacing.heading
       a = ((((a + Math.PI) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2)) - Math.PI
       want = Math.abs(a) < LOOK_FRONT ? MathUtils.clamp(a, -LOOK_MAX, LOOK_MAX) : 0 // only things roughly in front; no glancing over a shoulder

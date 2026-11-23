@@ -7,7 +7,7 @@ import { useSettings } from './settings'
 
 const LEVEL = 0.5 // effects at full on the settings slider, relative to full volume
 const STEP_VOLUME = 0.45 // footsteps relative to the other effects: they repeat constantly, so they sit low
-const ROLL_VOLUME = 0.2 // the roll's whoosh relative to the other effects
+const WHOOSH_VOLUME = 0.2 // the whoosh (a sword swing, a cast) relative to the other effects
 const WET_VOLUME = 0.7 // the splash layered under each footstep in the rain, relative to the step
 
 // Real recordings: put the files in public/sfx/ and their paths here. A sound with files plays them
@@ -234,7 +234,7 @@ export const step = (surface: Surface, wet = false) => {
   // Recorded steps play alone: the synthesised splash over them sounds like a second, different step.
   if (wet && !FILES[surface]) play('wet', STEP_VOLUME * WET_VOLUME * (0.8 + Math.random() * 0.4), 0.85 + Math.random() * 0.3)
 }
-export const whoosh = () => play('whoosh', ROLL_VOLUME, 0.95 + Math.random() * 0.1)
+export const whoosh = () => play('whoosh', WHOOSH_VOLUME, 0.95 + Math.random() * 0.1)
 export const door = () => play('door')
 /** A dialogue letter; `pitch` around 1 gives each line its own voice. */
 export const blip = (pitch: number) => play('blip', 1, pitch * (0.96 + Math.random() * 0.08))

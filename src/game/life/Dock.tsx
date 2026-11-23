@@ -22,7 +22,7 @@ import { block, merge, pick, tint, unindexed } from '../core/geometry'
 import { register } from '../core/interact'
 import { isLand, WATER_Y } from '../world/Island'
 import { sky } from '../world/sky'
-import { playerFacing, playerRoll } from '../core/state'
+import { playerFacing } from '../core/state'
 import { reducedMotion } from '../core/settings'
 
 // The fishing dock at the island's bottom-left (rules and catches in fishing.ts): a plank walkway
@@ -232,7 +232,7 @@ export function Dock() {
 }
 
 // The rod in the player's hand: a thin pole held out in front, tipped up. It turns with the
-// character (but stays out of the roll's tumble, hidden until it's over). Mounted in <Player>'s root.
+// character. Mounted in <Player>'s root.
 const ROD_LENGTH = 1.3
 const rodGeometry = new CylinderGeometry(0.012, 0.022, ROD_LENGTH, 5).translate(0, ROD_LENGTH / 2, 0)
 const rodMaterial = new MeshLambertMaterial({ color: '#c9a36a' })
@@ -251,7 +251,6 @@ export function HeldRod() {
     const g = turn.current
     const p = pole.current
     if (!g || !p || !tip.current) return
-    g.visible = playerRoll.p < 0
     g.rotation.y = playerFacing.heading
     const { phase } = useFishing.getState()
     let tilt = phase === 'idle' ? HOLD : FISHING_HOLD

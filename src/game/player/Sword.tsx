@@ -8,7 +8,7 @@ import { playerFacing } from '../core/state'
 // The sword in the player's hand (combat.ts has the rules): out only while swinging, spinning or
 // charging. A swing sweeps it from the right side to the left across the front, leaving a pale arc;
 // a spin carries it all the way round. Charged, the blade glows. Mounted in <Player>'s root, so it
-// turns with the character but stays out of the roll's tumble.
+// turns with the character.
 
 const LENGTH = 0.55
 const HAND_Y = 0.5 // height of the blade

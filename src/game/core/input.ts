@@ -16,7 +16,6 @@ export const keys = { forward: false, back: false, left: false, right: false, sp
 export const stick = { x: 0, z: 0 }
 
 // One-shot action requests, set by input and consumed (cleared) by the player each frame.
-export const actions = { roll: false }
 
 // Held on-screen buttons (touch). Kept apart from `keys` so a Shift keyup can't cancel a held B.
 export const buttons = { sprint: false }
@@ -32,7 +31,6 @@ function isTyping(t: EventTarget | null) {
 
 function reset() {
   keys.forward = keys.back = keys.left = keys.right = keys.sprint = false
-  actions.roll = false
   buttons.sprint = false
   releaseAttack()
 }
@@ -85,9 +83,9 @@ export function bindKeys(): () => void {
           closePanel()
           stopFishing()
         }
-      } else if (action === 'roll') {
-        // Roll advances dialogue when it's open, reels in a line that's out, otherwise rolls.
-        if (!advance() && !reel()) actions.roll = true
+      } else if (action === 'continue') {
+        // Space advances dialogue when it's open, or reels in a line that's out.
+        if (!advance()) reel()
       } else if (action === 'edit') toggleEdit()
       else if (action === 'log') toggleLog()
       else if (action === 'settings') toggleSettings()

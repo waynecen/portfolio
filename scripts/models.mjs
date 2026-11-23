@@ -23,7 +23,6 @@ const CLIP_NAMES = [
   [/walk/i, 'Walk'],
   [/run|sprint|jog/i, 'Run'],
   [/attack|slash|swing/i, 'Attack'],
-  [/roll|dodge/i, 'Roll'],
 ]
 
 if (!existsSync(SRC)) {

@@ -1,8 +1,7 @@
 import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
-import { CanvasTexture, MeshBasicMaterial, PlaneGeometry, type Mesh, type PointLight } from 'three'
+import { CanvasTexture, MeshBasicMaterial, PlaneGeometry, type PointLight } from 'three'
 import { sky } from '../world/sky'
-import { playerRoll } from '../core/state'
 import { useGame } from '../core/store'
 
 // What sits around the player rather than on them: a soft shadow that keeps the character on the
@@ -43,15 +42,9 @@ const shadowMat = new MeshBasicMaterial({
 })
 
 export function PlayerGround() {
-  const shadow = useRef<Mesh>(null)
   const light = useRef<PointLight>(null)
 
   useFrame(() => {
-    // Mid-roll the body tucks and drops, so the shadow tightens and lightens a little.
-    const p = playerRoll.p
-    const env = p >= 0 ? Math.sin(Math.PI * p) : 0
-    shadow.current?.scale.setScalar(SHADOW_SIZE * (1 - 0.2 * env))
-    shadowMat.opacity = SHADOW_OPACITY * (1 - 0.3 * env)
     // Always mounted, at 0 by day: adding or removing a light would recompile every material.
     const scene = useGame.getState().scene
     if (light.current) light.current.intensity = scene === 'cave' ? CAVE_GLOW : NIGHT_GLOW * sky.weather.night * (scene === 'house' ? INDOOR_GLOW : 1)
@@ -59,7 +52,7 @@ export function PlayerGround() {
 
   return (
     <>
-      <mesh ref={shadow} geometry={shadowGeo} material={shadowMat} position-y={0.02} scale={SHADOW_SIZE} renderOrder={1} />
+      <mesh geometry={shadowGeo} material={shadowMat} position-y={0.02} scale={SHADOW_SIZE} renderOrder={1} />
       {/* Above the head and toward the camera, so it lights the character's front and the ground round it. */}
       <pointLight ref={light} color="#ffd59a" intensity={0} distance={2.5} decay={2} position={[0, 1.3, 0.9]} />
     </>

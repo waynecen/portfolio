@@ -10,8 +10,6 @@ export const playerVel = { x: 0, z: 0, speed: 0 }
  */
 export const playerFacing = { heading: 0, snap: false }
 
-/** Roll progress 0..1 while rolling, -1 otherwise; dir is the committed roll direction. */
-export const playerRoll = { p: -1, dirX: 0, dirZ: 1 }
 
 /** One-shot request to move the player: applied (and cleared) by <Player> on its next frame. */
 export const teleport = { pending: false, x: 0, z: 0, heading: 0 }

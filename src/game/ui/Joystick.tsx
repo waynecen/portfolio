@@ -1,10 +1,9 @@
 import { useRef, type PointerEvent } from 'react'
 import { pressAttack, releaseAttack } from '../combat/combat'
 import { putAwayRod, useFishing } from '../life/fishing'
-import { actions, buttons, stick } from '../core/input'
+import { buttons, stick } from '../core/input'
 import { interact } from '../core/interact'
 import { isTouch } from '../core/quality'
-import { useGame } from '../core/store'
 
 const TRAVEL = 40 // px the knob can move from center
 const DEAD_ZONE = 0.15
@@ -58,32 +57,17 @@ function Stick() {
   )
 }
 
-// Controller-style A button: talks to / uses whatever is nearby, otherwise rolls.
-// The roll fires on press so it feels instant. Interactions wait for the click, because on touch
-// only the release grants the user activation that opening a project in a new tab needs.
+// Controller-style A button: talks to / uses whatever is nearby. It acts on the click rather than
+// the press, because on touch only the release grants the user activation that opening a project in
+// a new tab needs.
 function ActionButton() {
-  const pending = useRef(false)
-  const busy = () => {
-    const s = useGame.getState()
-    return s.dialogue !== null || s.focus !== null
-  }
   return (
     <button
       type="button"
       className="action-button"
-      aria-label="Action: talk, open or roll"
-      onPointerDown={(e) => {
-        e.preventDefault() // keep focus and the 300ms tap delay out of the way
-        pending.current = busy()
-        if (!pending.current) actions.roll = true
-      }}
-      onClick={(e) => {
-        if (e.detail === 0) {
-          // keyboard / assistive-tech activation, which has no pointerdown
-          if (!interact()) actions.roll = true
-        } else if (pending.current) interact()
-        pending.current = false
-      }}
+      aria-label="Action: talk or open"
+      onPointerDown={(e) => e.preventDefault() /* keep focus and the 300ms tap delay out of the way */}
+      onClick={() => interact()}
     >
       A
     </button>

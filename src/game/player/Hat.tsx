@@ -3,11 +3,10 @@ import { useRef } from 'react'
 import { type Group } from 'three'
 import { PLAYER_HEIGHT } from './models'
 import { HATS, useHats, type HatId } from '../life/shop'
-import { playerFacing, playerRoll } from '../core/state'
+import { playerFacing } from '../core/state'
 
 // The hat the player is wearing, if any (bought at Pip's shop, shop.ts), sat on top of the head.
-// Mounted in <Player>'s root like the rod and sword: it turns with the character and hides during
-// a roll's tumble rather than flying off.
+// Mounted in <Player>'s root like the rod and sword, so it turns with the character.
 
 const TOP = PLAYER_HEIGHT - 0.1 // where the hat sits, just into the hair
 
@@ -87,7 +86,6 @@ export function Hat() {
   useFrame(() => {
     const g = group.current
     if (!g) return
-    g.visible = playerRoll.p < 0
     g.rotation.y = playerFacing.heading
   })
   if (!worn) return null

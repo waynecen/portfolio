@@ -1,7 +1,7 @@
 import { useFishing } from '../life/fishing'
 import { busy, sayFirst } from '../core/interact'
 import { hit as hitSound, whoosh } from '../core/sfx'
-import { playerFacing, playerPos, playerRoll } from '../core/state'
+import { playerFacing, playerPos } from '../core/state'
 import { hint } from '../core/keymap'
 
 // The sword (Sword.tsx draws it). A press swings it in an arc in front of the player; keep holding
@@ -46,7 +46,7 @@ export const sword = { t: -1, spin: false, struck: false, holding: false, charge
 
 /** The attack button went down: swing, unless something else has the player's hands. */
 export function pressAttack() {
-  if (busy() || playerRoll.p >= 0 || sword.t >= 0) return
+  if (busy() || sword.t >= 0) return
   if (useFishing.getState().rod) {
     sayFirst(
       'sword-rod',

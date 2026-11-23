@@ -45,7 +45,7 @@ import { busy, held, register, say } from '../core/interact'
 import { caveRoom, DOOR, ROOM } from '../world/layout'
 import { reducedMotion, useSettings } from '../core/settings'
 import { pop, thud } from '../core/sfx'
-import { playerPos, playerRoll } from '../core/state'
+import { playerPos } from '../core/state'
 import { useGame } from '../core/store'
 import { useSceneFrame } from '../core/sceneFrame'
 
@@ -258,7 +258,7 @@ function Blocks() {
       const touching =
         (di !== 0 && Math.abs(pz) < 0.3 && px * di < 0 && Math.abs(px) < 0.47 + BODY + 0.06) ||
         (dj !== 0 && Math.abs(px) < 0.3 && pz * dj < 0 && Math.abs(pz) < 0.47 + BODY + 0.06)
-      blk.push = touching && playerRoll.p < 0 ? blk.push + dt : 0
+      blk.push = touching ? blk.push + dt : 0
       if (blk.push >= PUSH_TIME) {
         blk.push = 0
         if (!blockedTile(blk.i + di, blk.j + dj)) {
@@ -500,7 +500,7 @@ function BigSlime() {
       // Stay inside the room.
       boss.x = Math.max(-I + 0.2, Math.min(I - 0.2, boss.x))
       boss.z = Math.max(-J + 0.2, Math.min(J - 0.2, boss.z))
-      if (Math.hypot(px, pz) < BOSS_BUMP && harm.invuln <= 0 && playerRoll.p < 0) damage(1, px, pz)
+      if (Math.hypot(px, pz) < BOSS_BUMP && harm.invuln <= 0) damage(1, px, pz)
     }
     h.x = c.x + boss.x
     h.z = c.z + boss.z
