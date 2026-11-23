@@ -11,6 +11,7 @@ import { lazy, Suspense, useEffect, useState, type ComponentType, type ReactNode
 import { Atmosphere } from './world/Atmosphere'
 import { ShadowSweep } from './world/Shadows'
 import { PostFX } from './world/PostFX'
+import { AdaptiveResolution } from './core/adaptive'
 import { CameraRig, DISTANCE, HEIGHT } from './core/CameraRig'
 import './core/curve' // bends the world away; before anything is drawn
 import { Dialogue, Prompt } from './ui/Dialogue'
@@ -48,7 +49,6 @@ import { Pearls } from './secrets/HiddenPearls'
 import { Pickups } from './life/Pickups'
 import { Player } from './player/Player'
 import { ProjectCard } from './portfolio/ProjectCard'
-import { detectTier } from './core/quality'
 import { RecordPlayer } from './house/RecordPlayer'
 import { Rain } from './world/Rain'
 import { ReelBar } from './life/ReelBar'
@@ -68,7 +68,6 @@ import { Villagers } from './life/Villagers'
 import { Waterfall } from './secrets/Waterfall'
 import { WelcomeBack } from './ui/WelcomeBack'
 
-const tier = detectTier()
 
 // Parts most visits never reach load on their own, after the first frame: the cave and the islet,
 // edit mode, the shop and photo mode. Each waits behind its own Suspense, so nothing else waits for it.
@@ -124,9 +123,10 @@ export function Game() {
     <>
       <Canvas
         frameloop={visible && active ? 'always' : 'never'}
-        // Shadows and the finishing pass (world/Shadows.tsx, world/PostFX.tsx) are the same for everyone.
-        // PostFX tone-maps and antialiases, so the renderer does neither (flat).
-        dpr={tier === 'low' ? [1, 1.25] : [1, 1.5]}
+        // The resolution adapts to keep frames smooth (core/adaptive.ts); shadows and the finishing pass
+        // (world/Shadows.tsx, world/PostFX.tsx) are the same for everyone. PostFX tone-maps and antialiases,
+        // so the renderer does neither (flat).
+        dpr={[1, 1.5]}
         shadows="soft"
         flat
         gl={{ antialias: false, powerPreference: 'high-performance' }}
@@ -137,6 +137,7 @@ export function Game() {
         <Atmosphere />
         <ShadowSweep />
         <PostFX />
+        <AdaptiveResolution />
         <RoomLights />
         {/* Both areas stay mounted (so nothing is rebuilt on each trip) but only one is drawn. */}
         <group visible={scene === 'world'}>
