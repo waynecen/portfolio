@@ -11,6 +11,7 @@ import { lazy, Suspense, useEffect, useState, type ComponentType, type ReactNode
 import { Atmosphere } from './world/Atmosphere'
 import { ShadowSweep } from './world/Shadows'
 import { SkyDome } from './world/SkyDome'
+import { LightShafts } from './world/LightShafts'
 import { PostFX } from './world/PostFX'
 import { AdaptiveResolution } from './core/adaptive'
 import { CameraRig, DISTANCE, HEIGHT } from './core/CameraRig'
@@ -145,6 +146,7 @@ export function Game() {
         {/* Both areas stay mounted (so nothing is rebuilt on each trip) but only one is drawn. */}
         <group visible={scene === 'world'}>
           <SkyDome />
+          <LightShafts />
           <Island />
           <Roads />
           <Trees />
