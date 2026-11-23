@@ -18,7 +18,7 @@ React Three Fiber + Vite portfolio: an explorable 3D diorama world. Deployed on 
 | `src/game/secrets/` | Pearls, cave, islet, trinkets, calendar | `pearls.ts` |
 | `src/game/golf/` | Mini golf on the islet's east lobe: the ball, putting, holes | `golf.ts` |
 | `src/game/ui/` | Dialogue, panels, touch controls, photo mode, welcome back | `Dialogue.tsx` |
-| `docs/` | `ROADMAP.md`, `CHARACTER.md`, `TUNING.md` (site-wide notes and the index) | |
+| `docs/` | `ROADMAP.md`, `CHARACTER.md`, `ART.md` (models to make), `TUNING.md` (site-wide notes and the index) | |
 
 Before changing a folder, read its `NOTES.md`: its constants and rules. Don't read `docs/TUNING.md` whole; search it. Each area's CSS is beside its code (`src/game/<area>/*.css`), imported in order by `Game.tsx`; `src/style.css` holds only the page. Keep each `NOTES.md` current when its constants change.
 
