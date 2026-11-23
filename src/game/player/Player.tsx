@@ -27,7 +27,7 @@ import { addPrint } from './Footprints'
 import { secretOn } from '../secrets/secrets'
 
 const SPEED = 2.5 // walking speed, units per second (about 2 body heights a second, so a chibi's steps can keep up)
-const SPRINT = 2.5 // holding Shift (or B on touch) multiplies top speed by this (2.5 → 6.25 units/s)
+const SPRINT = 1.8 // holding Shift (or B on touch) multiplies top speed by this (1.8 → 4.5 units/s)
 const ACCEL = 12 // damp rate toward the input velocity while a direction is held
 const DECEL = 16 // a little snappier when letting go
 const SHORE = 0.15 // stop this far short of the cliff edge, so the feet stay on the rim
