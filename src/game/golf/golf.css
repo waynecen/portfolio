@@ -30,3 +30,17 @@ body.big-text .golf-card, body.big-text .golf-putt { zoom: 1.2; }
   font-size: 0.85em;
   cursor: pointer;
 }
+
+/* The end-of-round card (RoundPanel.tsx), in the bag's panel (ui/panels.css). */
+.golf-table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+.golf-table th, .golf-table td { padding: 6px 8px; text-align: right; }
+.golf-table th[scope="row"], .golf-table thead th:first-child { text-align: left; font-weight: 600; }
+.golf-table thead th { font-size: 12px; font-weight: 600; opacity: .7; }
+.golf-table tbody tr { border-top: 1px solid rgb(122 100 73 / .15); }
+.golf-table tbody tr[data-under] td:last-child { color: #4f8f4f; font-weight: 700; }
+.golf-table tbody tr[data-one] { background: rgb(242 178 51 / .2); }
+.golf-table tfoot tr { border-top: 2px solid rgb(122 100 73 / .35); font-weight: 700; }
+.golf-picked { font-size: 12px; font-weight: 500; opacity: .75; }
+.golf-words { margin: 12px 0 0; font-weight: 500; }
+.golf-trophy { margin: 8px 0 0; padding: 8px 12px; border-radius: 12px; background: rgb(242 178 51 / .3); font-weight: 600; }
+.bag-panel .golf-again { margin-top: 14px; padding: 6px 16px; border: 0; border-radius: 999px; background: #7a6449; color: #fdf5dc; }

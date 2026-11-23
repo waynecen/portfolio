@@ -2,8 +2,8 @@ import { create } from 'zustand'
 import type { Interactable } from './interact'
 import { readSaved, writeSaved } from './persist'
 
-/** A panel over the game: the record player's, the bag (inventory.ts), the dialogue log (log.ts), the settings (settings.ts), or the touch screen's menu (MenuPanel.tsx). */
-export type Panel = 'music' | 'inventory' | 'log' | 'settings' | 'menu' | 'shop'
+/** A panel over the game: the record player's, the bag (inventory.ts), the dialogue log (log.ts), the settings (settings.ts), the touch screen's menu (MenuPanel.tsx), the shop, or the golf round's card (golf/RoundPanel.tsx). */
+export type Panel = 'music' | 'inventory' | 'log' | 'settings' | 'menu' | 'shop' | 'golf'
 
 /** The area the player is in: inside the house, out on the island, or in the cave behind the waterfall. */
 export type Scene = 'house' | 'world' | 'cave'

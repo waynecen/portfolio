@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { pad } from '../core/gamepad'
-import { closeDialogue, held, say, sayFirst } from '../core/interact'
+import { closeDialogue, held, openPanel, say, sayFirst } from '../core/interact'
 import { keys, stick } from '../core/input'
 import { hint } from '../core/keymap'
 import { readSaved, writeSaved } from '../core/persist'
@@ -12,6 +12,7 @@ import { chime, fanfare, plop, rattle, reelClick, tap } from '../core/sfx'
 import { playerPos, teleport } from '../core/state'
 import { nudgeCamera, shakeCamera } from '../core/CameraRig'
 import { useGame } from '../core/store'
+import { awardTrophy, useTrophy } from '../house/trophy'
 import { HOLES, type Box, type Hole } from './holes'
 
 // Mini golf on the links (holes.ts has the holes, Course.tsx draws them, GolfHud.tsx the meter).
@@ -57,10 +58,24 @@ type State = {
   near: boolean
   /** Strokes for each hole of the round under way (null: not played yet). */
   round: (number | null)[]
+  /** Which holes of the round under way were picked up. */
+  picked: boolean[]
+  /** The last finished round, for its panel (RoundPanel.tsx). */
+  card: Card | null
+}
+type Card = {
+  holes: { strokes: number; picked: boolean }[]
+  total: number
+  vs: number
+  /** The best round before this one, or null. */
+  best: number | null
+  newBest: boolean
+  /** The trophy was won with this round (the first under par). */
+  trophy: boolean
 }
 
 const KEY = 'golf-v1' // persist.ts: progress, so Start over forgets it
-type Saved = { best?: unknown; bestRound?: unknown; done?: unknown }
+type Saved = { best?: unknown; bestRound?: unknown; done?: unknown; trophy?: unknown }
 const saved = () => (readSaved(KEY) ?? {}) as Saved
 function loadBest(): (number | null)[] {
   const v = saved()
@@ -68,8 +83,9 @@ function loadBest(): (number | null)[] {
   return HOLES.map((_, k) => (typeof best[k] === 'number' && best[k] > 0 ? (best[k] as number) : null))
 }
 const fresh = () => HOLES.map(() => null)
+const unpicked = () => HOLES.map(() => false)
 
-export const useGolf = create<State>(() => ({ hole: 0, phase: 'rest', strokes: 0, charging: false, best: loadBest(), near: false, round: fresh() }))
+export const useGolf = create<State>(() => ({ hole: 0, phase: 'rest', strokes: 0, charging: false, best: loadBest(), near: false, round: fresh(), picked: unpicked(), card: null }))
 
 /** The best whole round so far (total strokes), or null. */
 export const bestRound = (): number | null => {
@@ -331,13 +347,15 @@ export function pickUp() {
 }
 
 function finish(strokes: number, pickedUp: boolean) {
-  const { hole, best, round } = useGolf.getState()
+  const { hole, best, round, picked } = useGolf.getState()
   const h = HOLES[hole]
   const was = best[hole]
   const nextBest = best.slice()
   if (!pickedUp && (was === null || strokes < was)) nextBest[hole] = strokes
   const nextRound = round.slice()
   nextRound[hole] = strokes
+  const nextPicked = picked.slice()
+  nextPicked[hole] = pickedUp
   const words = pickedUp
     ? `Picked up: ${strokes} on the card.`
     : strokes === 1
@@ -359,21 +377,49 @@ function finish(strokes: number, pickedUp: boolean) {
   const last = hole === HOLES.length - 1
   const lines = [`${words}${record}`]
   let save: Saved = { ...saved(), best: nextBest }
+  let card: Card | null = null
   if (last) {
+    // The round's card goes in its panel (RoundPanel.tsx) rather than in words.
     const total = nextRound.reduce<number>((s, n) => s + (n ?? 0), 0)
     const vs = total - PAR
     const prev = bestRound()
     const newBest = prev === null || total < prev
-    lines.push(`That's the round: ${total} strokes, ${vs === 0 ? 'level par' : vs < 0 ? `${-vs} under par` : `${vs} over par`}.${newBest && prev !== null ? ' Your best round yet!' : ''} Back to hole 1 for another.`)
     if (newBest) save = { ...save, bestRound: total }
+    // The trophy, the first time the course is finished under par.
+    const trophy = vs < 0 && !useTrophy.getState().golf
+    if (trophy) {
+      save = { ...save, trophy: true }
+      awardTrophy()
+    }
     save = { ...save, done: true }
+    card = {
+      holes: HOLES.map((_, k) => ({ strokes: nextRound[k] ?? 0, picked: nextPicked[k] })),
+      total,
+      vs,
+      best: prev,
+      newBest: newBest && prev !== null,
+      trophy,
+    }
     track('Golf finished', { strokes: total, par: PAR, vs })
   } else lines.push(`On to hole ${hole + 2}: ${HOLES[hole + 1].name}.`)
   writeSaved(KEY, save)
-  if (Math.hypot(playerPos.x - ball.x, playerPos.z - ball.z) < 8) say(lines)
+  if (Math.hypot(playerPos.x - ball.x, playerPos.z - ball.z) < 8) {
+    if (card) {
+      closeDialogue()
+      openPanel('golf')
+    } else say(lines)
+  }
   const next = last ? 0 : hole + 1
   ball.x = HOLES[next].tee.x
   ball.z = HOLES[next].tee.z
   ball.vx = ball.vz = 0
-  useGolf.setState({ hole: next, phase: 'rest', strokes: 0, best: nextBest, round: last ? fresh() : nextRound })
+  useGolf.setState({
+    hole: next,
+    phase: 'rest',
+    strokes: 0,
+    best: nextBest,
+    round: last ? fresh() : nextRound,
+    picked: last ? unpicked() : nextPicked,
+    ...(card ? { card } : {}),
+  })
 }

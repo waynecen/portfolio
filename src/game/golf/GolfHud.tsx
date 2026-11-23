@@ -4,6 +4,7 @@ import { useSettings } from '../core/settings'
 import { useGame } from '../core/store'
 import { aim, canPickUp, leave, pickUp, useGolf } from './golf'
 import { HOLES } from './holes'
+import { RoundPanel } from './RoundPanel'
 
 // The mini golf's HUD (golf.ts): a small scorecard at the top while the player is by the green, and
 // while lining up a putt, how to putt, a Step away button and the power meter (in the reel's look).
@@ -13,6 +14,7 @@ export function GolfHud() {
   const offer = useGolf(canPickUp)
   const assist = useSettings((s) => s.golfAssist)
   const putting = useGame((s) => s.putting)
+  const outdoors = useGame((s) => s.scene === 'world')
   const fill = useRef<HTMLDivElement>(null)
 
   // While lining up, the joystick and buttons step aside for the drag (golf.css).
@@ -33,7 +35,7 @@ export function GolfHud() {
     return () => cancelAnimationFrame(raf)
   }, [charging])
 
-  if (!near && !putting) return null
+  if ((!near || !outdoors) && !putting) return <RoundPanel />
   const h = HOLES[hole]
   // The round so far, against the par of the holes played.
   let total = 0
@@ -45,6 +47,7 @@ export function GolfHud() {
   })
   return (
     <>
+      <RoundPanel />
       <p className="golf-card" aria-live="polite">
         Hole {hole + 1} · {h.name} · Par {h.par}
         <span className="golf-strokes">{phase === 'sunk' ? 'In!' : `Stroke ${strokes + (phase === 'aim' ? 1 : 0)}`}</span>

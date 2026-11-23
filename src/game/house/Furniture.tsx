@@ -12,6 +12,7 @@ import { useGame } from '../core/store'
 import { reducedMotion } from '../core/settings'
 import { useSceneFrame } from '../core/sceneFrame'
 import { shadeMaterial } from './RoomLights'
+import { useTrophy } from './trophy'
 
 // The room's furniture, one mesh per piece so each can be moved on its own (see room.ts and
 // edit.ts). Every piece is built from placeholder blocks around its footprint's centre, and
@@ -162,6 +163,24 @@ const BUILDS: Partial<Record<PieceId, Build>> = {
   lamp: LAMP, plant: PLANT, shelf: SHELF,
 } // the record player draws itself (RecordPlayer.tsx)
 
+// The golf trophy (trophy.ts), on the dresser between two jars once Gull Rock Links is finished under par.
+const TROPHY_AT = { x: -0.35, y: 1.06, z: -0.33 } // from the dresser's centre: its top, between the left and middle jars
+const GOLD = new Color('#ffd447') // brighter than the jars' amber, so it reads as the cup
+const trophy = merge([
+  tint(block(-0.11, 0.11, 0, 0.07, -0.09, 0.09), C.cap), // a wooden plinth
+  cylinder(0, 0, 0.05, 0.035, 0.07, 0.2, GOLD), // the stem
+  cylinder(0, 0, 0.055, 0.125, 0.2, 0.42, GOLD), // the cup, widening to the rim
+  tint(block(-0.165, -0.12, 0.25, 0.37, -0.018, 0.018), GOLD), // two handles
+  tint(block(0.12, 0.165, 0.25, 0.37, -0.018, 0.018), GOLD),
+]).translate(TROPHY_AT.x, TROPHY_AT.y, TROPHY_AT.z)
+const TROPHY_USE = {
+  dx: TROPHY_AT.x,
+  dz: TROPHY_AT.z,
+  range: 1.4,
+  prompt: 'Look',
+  onInteract: () => say(['A little gold cup: Gull Rock Links, finished under par.', 'The islet’s just a row away if you fancy beating it.']),
+}
+
 const geometries = new Map<Build, BufferGeometry>()
 function geometryOf(b: Build) {
   let g = geometries.get(b)
@@ -221,11 +240,13 @@ export function usePiece(id: PieceId, group: RefObject<Group | null>, solid: Col
 
 function Piece({ id, build }: { id: PieceId; build: Build }) {
   const group = useRef<Group>(null)
-  usePiece(id, group, build.solid, USES[id])
+  const cup = useTrophy((s) => s.golf) && id === 'dresser'
+  usePiece(id, group, build.solid, cup ? TROPHY_USE : USES[id])
   return (
     <group ref={group}>
       <mesh geometry={geometryOf(build)} material={material} />
       {build.glow && <mesh geometry={build.glow} material={shadeMaterial} />}
+      {cup && <mesh geometry={trophy} material={material} />}
     </group>
   )
 }
