@@ -21,3 +21,8 @@ export const cameraSnap = { pending: true }
 
 /** Set `t` to 0 for a brief camera zoom toward the player (a catch, fishing.ts); CameraRig.tsx counts it up and back to -1. */
 export const cameraZoom = { t: -1 }
+
+/** A short camera shake for a big moment (shakeCamera); CameraRig.tsx plays it out. Never with reduced motion. */
+export const cameraShake = { t: -1, amount: 0 }
+/** A brief lean of the camera toward a point (a hole in one: toward the cup); CameraRig.tsx plays it out. */
+export const cameraNudge = { t: -1, x: 0, z: 0 }

@@ -7,6 +7,7 @@ import { addTrack } from '../core/music'
 import { placeholderBonus } from '../core/placeholderTracks'
 import { winter } from '../world/season'
 import { chime, landed } from '../core/sfx'
+import { shakeCamera } from '../core/CameraRig'
 import { PEARL_TRACK } from '../core/tracks'
 import { inForest, trees } from '../world/Trees'
 import { readSaved, writeSaved } from '../core/persist'
@@ -118,6 +119,7 @@ export function findPearl(id: string) {
   const n = next.length
   if (n === PEARLS.length) {
     landed(true)
+    shakeCamera()
     record()
     say([
       `The last pearl! That’s all ${n}.`,
