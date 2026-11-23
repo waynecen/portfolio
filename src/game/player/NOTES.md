@@ -15,24 +15,19 @@ const SHORE = 0.15 // the pill stops this far short of the cliff edge, so its fe
 const EDGE = PILL_RADIUS + SHORE // derived, don't edit: how close the pill's centre gets to a water tile; must stay at most half a tile
 ```
 
-### Roll
+### Footsteps
 
 ```ts
-const ROLL_TIME = 0.45 // seconds one tumble lasts; movement input is ignored for this long
-const ROLL_SPEED = 9 // burst speed at the start of the roll, units/s
-const ROLL_COOLDOWN = 0.2 // seconds after a roll ends before another can start
 const STEP_LEN = [0.45, 0.7] // units travelled per footstep sound, walking and at full sprint
 ```
 
-Inside the roll, speed eases from `ROLL_SPEED` down to `ROLL_SPEED × 0.4` (the `0.6` in `1 - 0.6 * roll.p`). At 9 that ends at 3.6, just under `SPEED`, so the roll blends straight into walking. If you change `ROLL_SPEED` a lot, adjust that `0.6` too so the end speed stays close to `SPEED`.
-
-Distance covered by one roll ≈ `ROLL_SPEED × 0.7 × ROLL_TIME`, about 2.8 units with the defaults.
+There's no roll or dodge: it was taken out (2026-11-22) because the model had no way to animate it well. Space continues dialogue and reels in.
 
 ---
 
 ## Character model: [models.ts](./models.ts), [ModelCharacter.tsx](./ModelCharacter.tsx)
 
-**Looking:** the model's head (and a little of the neck: `LOOK_NECK = 0.4`) turns toward whatever has focus, up to `LOOK_MAX = 0.75` radians either way, easing at `LOOK_EASE = 6`. It's added on top of the clips after the mixer runs, never while rolling, and only for something within `LOOK_FRONT = 1.6` radians of straight ahead: no glancing over a shoulder. The bones are found by name (`…Head`, `…Neck`, Mixamo's rig); a model without them just doesn't look.
+**Looking:** the model's head (and a little of the neck: `LOOK_NECK = 0.4`) turns toward whatever has focus, up to `LOOK_MAX = 0.75` radians either way, easing at `LOOK_EASE = 6`. It's added on top of the clips after the mixer runs, and only for something within `LOOK_FRONT = 1.6` radians of straight ahead: no glancing over a shoulder. The bones are found by name (`…Head`, `…Neck`, Mixamo's rig); a model without them just doesn't look.
 
 ```ts
 export const PLAYER_MODEL: string | null = null // models.ts: path of the optimized model under public/, or null for the pill
@@ -51,7 +46,7 @@ const MODEL_LEAN = 0.12 // PillCharacter.tsx: the model's forward lean at full s
 
 Walk and run play at the speed where their feet keep pace with the ground: `npm run models` records each clip's pace (body heights per second) when it strips the root motion, and the game divides the player's speed by it, within `MIN_RATE` and `MAX_RATE` (`RUN_MAX_RATE` for the run).
 
-With a model set, the rig below still turns it and tumbles it through rolls (`TURN`, `ROLL_DROP`), and leans it into its movement (`MODEL_LEAN`, scaled up by `SPRINT_LEAN`), but the pill's body shape, walk cycle and feet no longer apply: the model's own clips do the walking. Making a model, the pipeline and the size budget are in [CHARACTER.md](../../../docs/CHARACTER.md).
+With a model set, the rig below still turns it (`TURN`) and leans it into its movement (`MODEL_LEAN`, scaled up by `SPRINT_LEAN`), but the pill's body shape, walk cycle and feet no longer apply: the model's own clips do the walking. Making a model, the pipeline and the size budget are in [CHARACTER.md](../../../docs/CHARACTER.md).
 
 ---
 
@@ -73,13 +68,12 @@ Each footstep on a path or in snow outdoors (Player.tsx, by distance, like the s
 
 ```ts
 const SHADOW_SIZE = 0.85 // PlayerGround.tsx: blob shadow diameter, world units (the scene casts no real shadows)
-const SHADOW_OPACITY = 0.2 // PlayerGround.tsx: how dark it is (faint: the sun's real shadow does the rest, this is contact shade); it tightens and lightens a little mid-roll
+const SHADOW_OPACITY = 0.2 // PlayerGround.tsx: how dark it is (faint: the sun's real shadow does the rest, this is contact shade)
 const NIGHT_GLOW = 2.5 // PlayerGround.tsx: the warm light on the player at full night outdoors (0 by day)
 const INDOOR_GLOW = 0.4 // PlayerGround.tsx: share of NIGHT_GLOW indoors, where the room is lamp-lit
 const COUNT = 16 // Dust.tsx: puffs in the pool
 const LIFE = 0.45 // Dust.tsx: seconds a puff lasts
 const SIZE = 0.09 // Dust.tsx: a puff's radius at its biggest
-const BURST = 6 // Dust.tsx: puffs when a roll starts
 const TRAIL = 0.12 // Dust.tsx: seconds between puffs while sprinting
 ```
 
@@ -94,7 +88,6 @@ Dust only shows outdoors and not in the rain. The light is always there, at 0 by
 
 ## Character animation: [PillCharacter.tsx](./PillCharacter.tsx)
 
-**Landing:** as a roll ends, the whole character (pill or model) squashes from the feet by `LAND_SQUASH = 0.14` and springs back over `LAND_TIME = 0.3` s, keeping its volume. Not with reduced motion.
 
 ### Body shape
 
@@ -123,20 +116,11 @@ const SPRINT_LEAN = 0.6 // extra forward lean at full sprint (+60%, about 16° i
 const SPRINT_STRIDE = 0.3 // longer foot swing at full sprint (+30%)
 ```
 
-Sprinting also speeds up the steps, because the walk cycle advances in proportion to speed (2.5× faster at full sprint). `SPRINT_LEAN` and `SPRINT_STRIDE` fade in between walking and full sprint, and they're switched off during a roll.
+Sprinting also speeds up the steps, because the walk cycle advances in proportion to speed (2.5× faster at full sprint). `SPRINT_LEAN` and `SPRINT_STRIDE` fade in between walking and full sprint.
 
 **Foot sliding:** a foot stays still on the floor only when its backward slide matches walking speed. That's roughly `SPEED ÷ (STEP_RATE / π) ≈ 2 × STRIDE`. With the defaults the feet slide (cartoony, intentional). To reduce it, raise `STRIDE` or `STEP_RATE`. Raising `STEP_RATE` too high makes the walk look frantic.
 
 The walk-weight fade (`MathUtils.damp(s.w, v.speed, 8, dt)`) uses a hard-coded rate of `8`. Lower it to make the walk ease in and out more gradually.
-
-### Roll visuals
-
-```ts
-const TUCK = 0.22 // how much the body squashes into a ball mid-roll (0.22 = 22% shorter, wider to keep its volume)
-const ROLL_DROP = 0.28 // how far the body's centre drops mid-roll so it tumbles along the floor instead of above it
-```
-
-The flip is one full turn (`flip * Math.PI * 2`). Change the `2` to `4` for a double flip.
 
 ### Feet
 

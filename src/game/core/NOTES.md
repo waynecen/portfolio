@@ -9,13 +9,13 @@ Shared state and plumbing: the store, scenes, input (keys, controller, focus), c
 ```ts
 const LEVEL = 0.5 // effects at full on the settings' Sound effects slider (settings.ts), apart from the music's volume and mute
 const STEP_VOLUME = 0.45 // footsteps relative to the other effects
-const ROLL_VOLUME = 0.2 // the roll's whoosh relative to the other effects
+const WHOOSH_VOLUME = 0.2 // the whoosh (a sword swing, a cast) relative to the other effects
 const WET_VOLUME = 0.7 // the splash layered under each synthesised footstep in the rain, relative to the step (Player.tsx: from WET_RAIN = 0.5 rain, outdoors, not in winter)
 const TONE = { grass: { lowpass: 1800, bass: 9 } } // a recording's filters: Hz it rolls off above, dB added below 300 Hz
 const STEP_PITCH = 0.03 // a recorded step's pitch varies by up to this share either way (synthesised ones by 0.1)
 ```
 
-Every sound is synthesised in `SOUNDS` (no audio files): footsteps for grass, snow, road and tatami, the furniture thud (`wood`), the roll whoosh, the door, dialogue blips and clicks. Change a sound's pitch or length there.
+Every sound is synthesised in `SOUNDS` (no audio files): footsteps for grass, snow, road and tatami, the furniture thud (`wood`), the whoosh (sword, casting), the door, dialogue blips and clicks. Change a sound's pitch or length there.
 
 To use real recordings instead, put the files in `public/sfx/` and list them in `FILES` in sfx.ts. Grass and tatami footsteps already do, e.g. `grass: ['/sfx/grass_L.wav', '/sfx/grass_R.wav']`. With several files a sound takes turns through them in order, so a left and a right step alternate. The names are `grass`, `snow`, `road`, `tatami`, `wood`, `whoosh`, `door`, `blip` and `click`. Any sound left out stays synthesised, and a file that fails to load falls back to it too. A sound with files plays nothing until they've loaded, rather than its synthesised stand-in, and recorded steps play alone, with no rain splash over them. So on grass you hear only `grass_L` and `grass_R`, taking turns. The grass recordings are bright (most of their energy is at 2–4 kHz), which sounds tinny at walking pace, so `TONE` darkens them and adds some low end. Its filters are made once and shared.
 
@@ -130,7 +130,7 @@ Anything the player can use calls `register({ x, z, range, prompt, onInteract })
 const BASE_RADIUS = 0.5 // Station.tsx: pedestal width, also its collision circle
 addCollider({ kind: 'box', x, z, hx: 0.45, hz: 0.1 }) // Sign.tsx: half-width and half-depth of the sign's solid box
 const TRUNK_RADIUS = 0.25 // Trees.tsx: tree collision circle at scale 1 (scaled with the tree)
-PILL_RADIUS * 0.5 // Player.tsx: longest move per substep, so fast rolls can't pass through thin obstacles
+PILL_RADIUS * 0.5 // Player.tsx: longest move per substep, so a fast knockback can't pass through thin obstacles
 ```
 
 The player is a circle of `PILL_RADIUS`. Obstacles are circles or axis-aligned boxes added with `addCollider(…)` in an effect (it returns its own cleanup). Each frame the player is pushed out of anything it overlaps, and the part of its velocity heading into the obstacle is dropped, so it slides along walls. Keep each interactable's `range` larger than its collider plus `PILL_RADIUS` (about 0.85 for a station), or the player won't be able to get close enough to use it.
@@ -144,7 +144,7 @@ The player is a circle of `PILL_RADIUS`. Obstacles are circles or axis-aligned b
 const DEFAULTS: Record<Action, string[]> = {
   forward: ['KeyW', 'ArrowUp'], back: ['KeyS', 'ArrowDown'], left: ['KeyA', 'ArrowLeft'], right: ['KeyD', 'ArrowRight'],
   sprint: ['ShiftLeft', 'ShiftRight'], // hold to sprint
-  roll: ['Space'], interact: ['KeyF', 'Enter'], attack: ['KeyJ', 'KeyX'], bag: ['KeyB'],
+  continue: ['Space'], interact: ['KeyF', 'Enter'], attack: ['KeyJ', 'KeyX'], bag: ['KeyB'],
   log: ['KeyL'], settings: ['KeyO'], edit: ['KeyG'], photo: ['KeyP'],
 }
 // Every main key can be changed under Keys in the settings (saved as keys-v1). The spares keep working
@@ -152,7 +152,7 @@ const DEFAULTS: Record<Action, string[]> = {
 // key (keyName), so they follow a change. Edit mode's own keys (edit.ts) don't change.
 // J or X = the sword: down swings, held after a swing charges, up lets a charged spin go (combat.ts)
 // The mouse, over the game (not the HUD): left button = the sword, like J; right button = put the rod away, like B (the browser's menu is kept off the game)
-// In bindKeys: Space = advance dialogue if open, else reel in a line that's out (fishing.ts), else roll; F / Enter = interact (interact.ts), or reel in; Esc = close whatever is open (dialogue, a panel, the line, the golf putt), or with nothing open (busy() is false), open the settings; G = edit the room (indoors); L = open or close the dialogue log (log.ts); O = the settings; P = photo mode (photo.ts); B = put away the rod if one is in hand (fishing.ts), else open or close the bag (inventory.ts)
+// In bindKeys: Space = advance dialogue if open, else reel in a line that's out (fishing.ts); F / Enter = interact (interact.ts), or reel in; Esc = close whatever is open (dialogue, a panel, the line, the golf putt), or with nothing open (busy() is false), open the settings; G = edit the room (indoors); L = open or close the dialogue log (log.ts); O = the settings; P = photo mode (photo.ts); B = put away the rod if one is in hand (fishing.ts), else open or close the bag (inventory.ts)
 // While editing, keys go to editKey() in edit.ts instead; in photo mode, photoKey() in photo.ts goes first
 ```
 
@@ -168,7 +168,7 @@ const NAV = 0.6      // in a panel, how far the stick must lean to move between 
 const TRIGGER = 0.3  // how far a trigger must go to count as held
 ```
 
-Polled once a frame (`<Controls>` in Game.tsx). Left stick or d-pad walks; a trigger or a stick click sprints. A uses, B rolls (or reels in), X is the sword (hold to charge), Y is the bag (or puts the rod away), LB points the way, RB is photo mode, View is the log and Menu the settings. In a panel the stick moves between controls (arrow keys for the bag's grid, left and right for a slider), A presses and B closes. In photo mode A takes the photo, B or RB leaves, X changes the pose, LB or LT zooms out and RT in.
+Polled once a frame (`<Controls>` in Game.tsx). Left stick or d-pad walks; a trigger or a stick click sprints. A uses, B continues dialogue (or reels in), X is the sword (hold to charge), Y is the bag (or puts the rod away), LB points the way, RB is photo mode, View is the log and Menu the settings. In a panel the stick moves between controls (arrow keys for the bag's grid, left and right for a slider), A presses and B closes. In photo mode A takes the photo, B or RB leaves, X changes the pose, LB or LT zooms out and RT in.
 
 ---
 

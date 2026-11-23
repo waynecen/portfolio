@@ -24,7 +24,7 @@ J, X or the left mouse button swings the sword in an arc in front of the player,
 
 Tall grass and a few clay pots (beside the house and by the dock) can be cut and broken, leaving a shell or, if the player is missing some, a heart. Shells are kept in this browser (`shells-v1`), counted in the bag's header and shown at the top for a moment when picked up; they're for the shop, later (ROADMAP C14). Pots can't be picked up and thrown yet.
 
-Five slimes hop about the outer meadows. A bump costs half a heart, knocks the player back and leaves them flickering and untouchable for a moment; rolling through one is safe. Slimes never hop onto a road, near a place or under the house, so every project stays one safe walk away, and the Slimes switch in the settings takes them away entirely. At zero hearts the screen fades and the player wakes in bed with every heart back, nothing lost.
+Five slimes hop about the outer meadows. A bump costs half a heart, knocks the player back and leaves them flickering and untouchable for a moment. Slimes never hop onto a road, near a place or under the house, so every project stays one safe walk away, and the Slimes switch in the settings takes them away entirely. At zero hearts the screen fades and the player wakes in bed with every heart back, nothing lost.
 
 ---
 

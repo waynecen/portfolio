@@ -11,7 +11,7 @@ This replaces the earlier feature roadmap. Its unfinished items are folded in be
 
 ## Done
 
-- **Core loop:** walk, sprint and roll; follow camera; dialogue; record player and music; hearts HUD; touch controls.
+- **Core loop:** walk and sprint (the roll was taken out on 2026-11-22: too hard to animate well); follow camera; dialogue; record player and music; hearts HUD; touch controls.
 - **The island:**
   - a tile grid with roads and an island ringed by cliffs and water
   - seeded trees, and a forest on the north-west land with a clearing in its middle
@@ -28,9 +28,9 @@ This replaces the earlier feature roadmap. Its unfinished items are folded in be
    - One shared `onBeforeCompile` patch is added to every material.
    - Lower the camera angle a little (`HEIGHT` and `DISTANCE` in CameraRig.tsx) so more horizon shows.
 3. **Sound effects.** *(done: sfx.ts)*
-   - Footsteps by surface (grass, road, tatami floor), a roll whoosh, the door, dialogue blips and UI clicks.
+   - Footsteps by surface (grass, road, tatami floor), a whoosh, the door, dialogue blips and UI clicks.
    - A small WebAudio synth like `placeholderTracks.ts`, so there are no audio files, sharing the mute with music.
-4. **Particles.** *(done: Dust.tsx, Sparkle.tsx, splashes in Rain.tsx)* Dust puffs on roll and sprint, a sparkle over whatever has focus, and splashes in the rain. All from preallocated pools.
+4. **Particles.** *(done: Dust.tsx, Sparkle.tsx, splashes in Rain.tsx)* Dust puffs while sprinting, a sparkle over whatever has focus, and splashes in the rain. All from preallocated pools.
 5. **Art pass on props.** *(record player done: public/models/recordPlayer.glb)* Stations become small themed dioramas, one per project. The sign, mailbox and record player get models through the same pipeline as the character.
 
 ## Phase B: Light action (Zelda-style)
@@ -185,7 +185,7 @@ Closer to a big studio's finish, in the Animal Crossing / Tears of the Kingdom d
 64. **Wind.** *(done: core/wind.ts; there are no flowers yet, and the lantern drifts on its cord)* Trees, grass, flowers and the lantern sway from one shared time uniform in the same patch, and the grass parts round the player.
 65. **Water.** *(done: world/Sea.tsx; the boats are moored, so they get foam rings rather than wakes)* A stylised shader: shore foam, slow ripples, sun glints; wakes behind the boat and round the dock posts.
 66. **Sky and air.** *(done: world/SkyDome.tsx, world/LightShafts.tsx, core/haze.ts, house/Motes.tsx)* A gradient sky dome with drifting clouds for each slot, height fog, light shafts at dawn and evening (cheap cards), and dust motes in the room's light.
-67. **Character polish.** *(done: the head turns to the focus (ModelCharacter.tsx), villagers and slimes blink, player/Footprints.tsx, a landing squash after a roll, which is the game's only landing; the Tripo model's eyes are painted on, so the player doesn't blink)* Blinks, footprints in sand and snow, a squash on landing, and eyes that turn toward whatever has focus.
+67. **Character polish.** *(done: the head turns to the focus (ModelCharacter.tsx), villagers and slimes blink, player/Footprints.tsx; the landing squash went with the roll; the Tripo model's eyes are painted on, so the player doesn't blink)* Blinks, footprints in sand and snow, a squash on landing, and eyes that turn toward whatever has focus.
 68. **Camera and photo mode.** *(done: tilt-shift in PostFX.tsx, LEAD and shakeCamera/nudgeCamera in CameraRig.tsx; the last pearl shakes, a hole in one nudges toward the cup)* A tilt-shift depth of field in photo mode, a slight framing lag, and a small shake only for big moments (never with reduced motion).
 69. **Tripo art pass** (extends A5). A prompt list in [CHARACTER.md](./CHARACTER.md) for the stations (one diorama per project), villagers, trees, the house, the sign, the mailbox and the furniture. Each model swaps in behind its placeholder, as the record player did.
 70. **A fidelity budget.** Frame time and draw calls written down in [TUNING.md](./TUNING.md), and checked by the snapshot run on a slowed-down profile.

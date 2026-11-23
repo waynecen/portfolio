@@ -21,7 +21,7 @@ Tripo's screens change often, so look for these options by name rather than posi
 - **Rig and animate.**
   - Use the **auto-rig** for a biped (humanoid).
   - Add the animation presets **idle**, **walk** and **run**.
-  - For later phases, also add **attack**, and **roll** or a jump if offered.
+  - For later phases, also add **attack**.
 - **Export as GLB.** Include the skin (rig) and the animations.
 
 If the rig or the animations disappoint, export the unrigged GLB instead, rig it with [Mixamo](https://www.mixamo.com/), download each animation as FBX "without skin", and combine them in Blender (step 2).
@@ -32,7 +32,7 @@ Skip this step if the GLB already looks right in the game. Otherwise:
 
 - Face it toward **+Z**, with the feet at height 0 and the origin between the feet.
 - Size doesn't matter: the game scales it to `PLAYER_HEIGHT`. Do **apply all transforms**, though (Object → Apply → All Transforms).
-- Name the actions `Idle`, `Walk` and `Run` (and later `Attack` and `Roll`), or put Tripo's names in `CLIPS` instead (step 4).
+- Name the actions `Idle`, `Walk` and `Run` (and later `Attack`), or put Tripo's names in `CLIPS` instead (step 4).
 - Delete unused bones, shape keys, extra materials and anything that isn't the character.
 - Export as **glTF Binary (.glb)** with skinning and animations on.
 
@@ -47,7 +47,7 @@ Skip this step if the GLB already looks right in the game. Otherwise:
    ```
 
    [scripts/models.mjs](../scripts/models.mjs) first prepares the clips:
-   - renames them by keyword to `Idle`, `Walk`, `Run`, `Attack` and `Roll` (Tripo names a clip after its motion prompt)
+   - renames them by keyword to `Idle`, `Walk`, `Run` and `Attack` (Tripo names a clip after its motion prompt)
    - makes them play in place, by removing any forward travel baked into the hips bone (the game moves the player itself), and records how fast that travel was so the game can match the steps to the ground
    - makes them loop seamlessly: if the last pose doesn't match the first (Tripo's run was 83° off), it trims the clip to the stretch that loops best, then spreads what difference remains across the clip so the last frame equals the first
 
@@ -85,11 +85,11 @@ What the game does with the model ([ModelCharacter.tsx](../src/game/player/Model
 - **Size and position:** scales it to `PLAYER_HEIGHT` (1.2, about the pill's height) and stands it on the ground under the player. Collision stays the pill's circle.
 - **Materials:** swaps them for the Lambert material the island uses, keeping their texture and colour, so it's lit like everything else, including at night.
 - **Animation:** blends idle, walk and run by speed, and plays walk and run at the speed where the feet keep pace with the ground (from the pace `npm run models` records), so they don't skate.
-- **Turning, leaning and rolling:** the rig in [PillCharacter.tsx](../src/game/player/PillCharacter.tsx) turns it to face its direction, leans it forward as it moves and tumbles it through rolls.
+- **Turning and leaning:** the rig in [PillCharacter.tsx](../src/game/player/PillCharacter.tsx) turns it to face its direction and leans it forward as it moves.
 
 ## 5. Check it
 
-1. Run `npm run dev` and walk around: stand, walk, sprint (Shift) and roll (Space), indoors and out.
+1. Run `npm run dev` and walk around: stand, walk and sprint (Shift), indoors and out.
 2. Load `?hour=21` to see it at night.
 3. Run the snapshot skill. `desktop-character.png` is a close-up of the player on the doorstep.
 4. Commit `public/models/player.glb` and the change to models.ts together.
