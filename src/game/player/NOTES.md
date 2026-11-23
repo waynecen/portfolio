@@ -32,7 +32,7 @@ Distance covered by one roll ≈ `ROLL_SPEED × 0.7 × ROLL_TIME`, about 2.8 uni
 
 ## Character model: [models.ts](./models.ts), [ModelCharacter.tsx](./ModelCharacter.tsx)
 
-**Looking:** the model's head (and a little of the neck: `LOOK_NECK = 0.4`) turns toward whatever has focus, up to `LOOK_MAX = 0.75` radians either way, easing at `LOOK_EASE = 6`. It's added on top of the clips after the mixer runs, never while rolling, and not for something behind its back. The bones are found by name (`…Head`, `…Neck`, Mixamo's rig); a model without them just doesn't look.
+**Looking:** the model's head (and a little of the neck: `LOOK_NECK = 0.4`) turns toward whatever has focus, up to `LOOK_MAX = 0.75` radians either way, easing at `LOOK_EASE = 6`. It's added on top of the clips after the mixer runs, never while rolling, and only for something within `LOOK_FRONT = 1.6` radians of straight ahead: no glancing over a shoulder. The bones are found by name (`…Head`, `…Neck`, Mixamo's rig); a model without them just doesn't look.
 
 ```ts
 export const PLAYER_MODEL: string | null = null // models.ts: path of the optimized model under public/, or null for the pill

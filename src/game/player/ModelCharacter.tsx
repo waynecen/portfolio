@@ -36,6 +36,7 @@ const RUN_MAX_RATE = 2.75 // the run looks frantic sooner; 2.75× keeps pace up 
 const LOOK_MAX = 0.75 // most it turns, radians either way (about 43°)
 const LOOK_EASE = 6 // how quickly it follows
 const LOOK_NECK = 0.4 // the neck's share of the turn; the head takes the rest
+const LOOK_FRONT = 1.6 // only for something within this angle of straight ahead (about 90°)
 const UP = new Vector3(0, 1, 0)
 const turnBy = new Quaternion()
 
@@ -147,7 +148,7 @@ export default function ModelCharacter({ url }: { url: string }) {
     if (f && playerRoll.p < 0) {
       let a = Math.atan2(f.x - playerPos.x, f.z - playerPos.z) - playerFacing.heading
       a = ((((a + Math.PI) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2)) - Math.PI
-      want = Math.abs(a) < Math.PI * 0.85 ? MathUtils.clamp(a, -LOOK_MAX, LOOK_MAX) : 0 // not behind its own back
+      want = Math.abs(a) < LOOK_FRONT ? MathUtils.clamp(a, -LOOK_MAX, LOOK_MAX) : 0 // only things roughly in front; no glancing over a shoulder
     }
     rig.look = reducedMotion() ? want : MathUtils.damp(rig.look, want, LOOK_EASE, dt)
     const h = rig.head as Bone | null
