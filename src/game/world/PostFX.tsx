@@ -1,0 +1,92 @@
+import { useFrame, useThree } from '@react-three/fiber'
+import { useEffect, useMemo } from 'react'
+import { HalfFloatType } from 'three'
+import {
+  BloomEffect,
+  BrightnessContrastEffect,
+  EffectComposer,
+  EffectPass,
+  HueSaturationEffect,
+  RenderPass,
+  ToneMappingEffect,
+  ToneMappingMode,
+  VignetteEffect,
+} from 'postprocessing'
+import { useGame } from '../core/store'
+import { sky, type Weather } from './sky'
+
+// The finish on every frame, in one pass after the scene is drawn: bloom on what glows, tone
+// mapping, a colour grade for the time of day (or the room, or the cave), and a light vignette.
+// The renderer's own tone mapping is off (Canvas `flat` in Game.tsx) so it isn't done twice.
+//
+// Bloom only catches what's brighter than white once lit: lantern shades and windows at night,
+// fireflies, sparkles. Lit surfaces by day stay under the threshold.
+
+const BLOOM = { threshold: 0.9, smoothing: 0.25, intensity: 0.7, radius: 0.65 }
+const VIGNETTE = { offset: 0.32, darkness: 0.42 }
+const SAMPLES = 4 // multisampling, in place of the canvas's own antialiasing (which a composer bypasses)
+
+type Grade = { brightness: number; contrast: number; saturation: number }
+/** Per weather (sky.ts), blended by how much of each is showing; then indoors and the cave. -1 to 1, 0 = no change. */
+const GRADE: Record<Weather | 'house' | 'cave', Grade> = {
+  clear: { brightness: 0, contrast: 0.06, saturation: 0.1 }, // morning: crisp and bright
+  mist: { brightness: 0.02, contrast: -0.06, saturation: -0.08 }, // dawn: soft and pale
+  rain: { brightness: -0.02, contrast: 0.02, saturation: -0.14 }, // afternoon: muted
+  golden: { brightness: -0.02, contrast: 0.05, saturation: 0.02 }, // evening: rich, but the sun is warm already
+  night: { brightness: 0, contrast: 0.06, saturation: -0.06 }, // night: quiet colour, deep darks
+  house: { brightness: 0.01, contrast: 0.03, saturation: 0.06 }, // the room: warm and soft
+  cave: { brightness: 0, contrast: 0.1, saturation: -0.12 },
+}
+const WEATHERS = Object.keys(sky.weather) as Weather[]
+
+export function PostFX() {
+  const { gl, scene, camera, size } = useThree()
+
+  const fx = useMemo(() => {
+    const composer = new EffectComposer(gl, { frameBufferType: HalfFloatType, multisampling: SAMPLES })
+    const bloom = new BloomEffect({
+      luminanceThreshold: BLOOM.threshold,
+      luminanceSmoothing: BLOOM.smoothing,
+      intensity: BLOOM.intensity,
+      radius: BLOOM.radius,
+      mipmapBlur: true,
+    })
+    const tone = new ToneMappingEffect({ mode: ToneMappingMode.ACES_FILMIC })
+    const light = new BrightnessContrastEffect()
+    const colour = new HueSaturationEffect()
+    const vignette = new VignetteEffect(VIGNETTE)
+    composer.addPass(new RenderPass(scene, camera))
+    composer.addPass(new EffectPass(camera, bloom, tone, light, colour, vignette))
+    return { composer, light, colour }
+  }, [gl, scene, camera])
+
+  useEffect(() => () => fx.composer.dispose(), [fx])
+  useEffect(() => fx.composer.setSize(size.width, size.height), [fx, size])
+
+  // Priority 1: R3F stops drawing the scene itself, and this draws it through the composer instead.
+  useFrame((_, delta) => {
+    const where = useGame.getState().scene
+    let b = 0
+    let c = 0
+    let s = 0
+    if (where === 'house' || where === 'cave') {
+      const g = GRADE[where]
+      b = g.brightness
+      c = g.contrast
+      s = g.saturation
+    } else {
+      for (const w of WEATHERS) {
+        const k = sky.weather[w]
+        b += GRADE[w].brightness * k
+        c += GRADE[w].contrast * k
+        s += GRADE[w].saturation * k
+      }
+    }
+    fx.light.brightness = b
+    fx.light.contrast = c
+    fx.colour.saturation = s
+    fx.composer.render(delta)
+  }, 1)
+
+  return null
+}
