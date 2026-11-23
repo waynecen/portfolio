@@ -92,6 +92,10 @@ const LEAD = 0.9 // outdoors, how far ahead of the player the camera looks at wa
 const LEAD_EASE = 1.6 // how slowly the lead follows a turn: a slight lag, never a swing
 const SHAKE_TIME = 0.45, SHAKE_RATE = 38 // a shake's length and tremble (shakeCamera(amount), default 0.12)
 const NUDGE = 0.35, NUDGE_TIME = 1.4 // a nudge leans this share of the way toward its point, and back (nudgeCamera(x, z))
+const EDIT_PITCH = 70° // editing the room: the camera looks down this steeply...
+const EDIT_FAR = 1.35 // ...from this much further away than usual, so the whole floor reads as a grid
+const EDIT_SHIFT = -0.6 // ...aimed this much further back, so the edit bar at the top clears the back row
+const EDIT_EASE = 5 // how quickly it moves there and back (straight there with reduced motion)
 ```
 
 Big moments only: the last pearl shakes the camera; a hole in one nudges it toward the cup with a small shake. Neither happens with reduced motion, and the lead is off then too (and in photo mode and indoors).

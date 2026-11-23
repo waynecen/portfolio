@@ -86,7 +86,7 @@ const LINE = 0.04            // EditRoom.tsx: width of the grid lines shown whil
 const OK / NO / AIM / OVER   // highlight colours: fits, doesn't fit, empty tile, a piece you could pick up
 ```
 
-Press G indoors, or the Edit room button, to rearrange the room. The player stands still while you edit. Drag a piece with the mouse or a finger, or move the cursor with the arrows or WASD and press F (or Enter or Space: the interact keys, which follow a remap) to pick it up and put it down. Esc puts the piece in hand back where it came from, or ends edit mode; G (the edit key) or Done ends it too. Reset puts everything back where `DEFAULT` has it.
+Press G indoors, or the Edit room button, to rearrange the room. The player stands still while you edit. The camera eases up to look down at 70° from further back, so the floor reads as a grid (`EDIT_PITCH`, `EDIT_FAR`, `EDIT_SHIFT` in core/CameraRig.tsx), and back down when you're done. Drag a piece with the mouse or a finger, or move the cursor with the arrows or WASD and press F (or Enter or Space: the interact keys, which follow a remap) to pick it up and put it down. Esc puts the piece in hand back where it came from, or ends edit mode; G (the edit key) or Done ends it too. Reset puts everything back where `DEFAULT` has it.
 
 A piece only goes down where it fits. It must stay inside the room and not overlap other furniture (rugs only clash with rugs, so furniture can stand on them). It can't block the doorway, cover the tiles the player stands on, or shut the player off from the door. A saved layout that breaks any of these rules on load (say, after the pieces change) is dropped in favour of `DEFAULT`, and in development the console warns if `DEFAULT` itself breaks one.
 
