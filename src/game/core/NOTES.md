@@ -64,6 +64,20 @@ Trees and grass sway in the vertex shader, from one clock that Atmosphere.tsx ti
 
 ---
 
+## Height fog: [haze.ts](./haze.ts)
+
+```ts
+const LOW = -1.3   // at and below this (curved) height the mist is full; the water is at -1.2
+const HIGH = -0.1  // above this, none: the ground you walk on stays clear
+const CLOSE = 10   // a slot whose fog starts this near (sky.ts fogNear) gets full strength...
+const OPEN = 30    // ...and one starting this far or further, none
+const MOST = 0.85  // never quite opaque
+```
+
+A patch to three's shared fog chunks, on top of the fog by distance. It reads the curved height (curve.ts marks it with `HAS_CURVED_WORLD`), so the far island, bending away, sinks into haze too. Its strength follows how near the slot's fog starts, since a shared chunk can't add a uniform: the misty dawn gets nearly all of it, rain and night a little, the clear morning, the evening and indoors none.
+
+---
+
 ## Camera: [CameraRig.tsx](./CameraRig.tsx)
 
 ```ts

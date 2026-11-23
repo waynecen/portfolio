@@ -35,6 +35,8 @@ const CEILING = { day: 2, night: 8, distance: 10 } // its warm light (candela), 
 const LAMP = { day: 0.5, night: 1.8, distance: 3.5, y: 1.1 } // the paper lamp's light, once it's bought; it follows the lamp, into the hand while moving it
 const GLOW = { day: 0.35, night: 1 } // how much both paper shades glow (shadeMaterial's emissive)
 const DRIFT = 0.025 // how far the ceiling lantern swings on its cord, radians, from the cord's top (still with reduced motion)
+const COUNT = 60, SIZE = 0.075, SPEED = 0.06 // Motes.tsx: dust drifting in the room's air (0.3 to 2.2 up), wrapping round at the walls
+const OPACITY = { day: 0.35, night: 0.7 } // the motes catch the lantern more at night
 const ROOM_DAY / ROOM_NIGHT // Atmosphere.tsx: indoors, mostly warm even fill bounced off a pale floor (hemi 1.4) and a faint key (0.3), for soft, low-contrast shading; at night both drop and the lamps do most of the lighting
 ```
 

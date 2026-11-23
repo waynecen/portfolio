@@ -125,6 +125,23 @@ PostFX draws every frame through one composer: the scene, then bloom, ACES tone 
 
 ---
 
+## Sky and air: [SkyDome.tsx](./SkyDome.tsx), [LightShafts.tsx](./LightShafts.tsx), [haze.ts](../core/haze.ts)
+
+```ts
+const RADIUS = 150                // SkyDome.tsx: the dome round the camera
+const ZENITH = '#7fb2e0', ZENITH_MIX = 0.35 // the zenith leans this way from the slot's background (not at night)
+const DRIFT = 0.006               // cloud drift per second
+const COVER = { clear: 0.55, rain: 0.25 } // noise level above which there's cloud: lower = more cloud
+const SPOTS = [...]               // LightShafts.tsx: where each shaft meets the ground, round the player (5)
+const LENGTH = 9, WIDTH = 0.45    // a shaft's size, up the sun's direction
+const STRENGTH = 0.1              // its brightness at full golden or misty light (additive)
+const BREATHE = 0.35              // how much each narrows and widens, slowly
+```
+
+The dome goes from the fog colour at the horizon, so the far island fades into it with no seam, up to a deeper zenith, with soft clouds; the camera looks down, so it shows as the strip above the curved horizon. Rain brings more, greyer cloud; at night they're faint. Light shafts show at dawn and in the evening, slanting down the sun's direction and turned to the camera about their length; none in the morning, in rain or at night. The height fog (core/haze.ts) pools mist low over the water and the far, curved-away land.
+
+---
+
 ## Free tiles: [tiles.ts](./tiles.ts)
 
 Everything scattered over the island (grass, pickups, slimes, pearls, the daily finds) asks `clear(i, j, margins)` whether a tile is free: on land (`inland` tiles in from the shore, default 1), off roads and built tiles, and clear of places (`place`, default 1 tile round), trees (`tree`, default 0, and `behind` for the canopy's shadow towards the camera) and the house (`house`, default 0). `nearPath(i, j, ring)` is for keeping away from roads and places. Trees place themselves (Trees.tsx), so they keep their own clearings.

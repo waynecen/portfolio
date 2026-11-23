@@ -184,7 +184,7 @@ Closer to a big studio's finish, in the Animal Crossing / Tears of the Kingdom d
 63. **A soft stylised material.** *(done: core/shading.ts)* One shared patch on every Lambert material, beside the curve: wrapped diffuse, a warm rim light, and shadows tinted cool rather than grey.
 64. **Wind.** *(done: core/wind.ts; there are no flowers yet, and the lantern drifts on its cord)* Trees, grass, flowers and the lantern sway from one shared time uniform in the same patch, and the grass parts round the player.
 65. **Water.** A stylised shader: shore foam, slow ripples, sun glints; wakes behind the boat and round the dock posts.
-66. **Sky and air.** A gradient sky dome with drifting clouds for each slot, height fog, light shafts at dawn and evening (cheap cards), and dust motes in the room's light.
+66. **Sky and air.** *(done: world/SkyDome.tsx, world/LightShafts.tsx, core/haze.ts, house/Motes.tsx)* A gradient sky dome with drifting clouds for each slot, height fog, light shafts at dawn and evening (cheap cards), and dust motes in the room's light.
 67. **Character polish.** Blinks, footprints in sand and snow, a squash on landing, and eyes that turn toward whatever has focus.
 68. **Camera and photo mode.** A tilt-shift depth of field in photo mode, a slight framing lag, and a small shake only for big moments (never with reduced motion).
 69. **Tripo art pass** (extends A5). A prompt list in [CHARACTER.md](./CHARACTER.md) for the stations (one diorama per project), villagers, trees, the house, the sign, the mailbox and the furniture. Each model swaps in behind its placeholder, as the record player did.
