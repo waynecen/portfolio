@@ -15,6 +15,7 @@ import { AdaptiveResolution } from './core/adaptive'
 import { CameraRig, DISTANCE, HEIGHT } from './core/CameraRig'
 import './core/curve' // bends the world away; before anything is drawn
 import './core/shading' // the soft stylised shading; before anything is drawn
+import './core/haze' // height fog, low over the water; before anything is drawn
 import { Dialogue, Prompt } from './ui/Dialogue'
 import { CitySquare } from './world/CitySquare'
 import { Dock } from './life/Dock'
