@@ -23,6 +23,7 @@ import { step, whoosh, type Surface } from '../core/sfx'
 import { playerFacing, playerPos, playerRoll, playerVel, teleport } from '../core/state'
 import { held } from '../core/interact'
 import { useGame } from '../core/store'
+import { addPrint } from './Footprints'
 import { secretOn } from '../secrets/secrets'
 
 const SPEED = 2.5 // walking speed, units per second (about 2 body heights a second, so a chibi's steps can keep up)
@@ -166,7 +167,9 @@ export function Player() {
     if (roll.p >= 0 || v.speed < 0.1) stride.current = len * 0.7
     else if ((stride.current += v.speed * SPEED * dt) >= len) {
       stride.current -= len
-      step(surfaceAt(p.x, p.z), wet())
+      const surface = surfaceAt(p.x, p.z)
+      step(surface, wet())
+      if ((surface === 'road' || surface === 'snow') && useGame.getState().scene === 'world') addPrint(p.x, p.z, playerFacing.heading, surface)
     }
     playerPos.x = p.x
     playerPos.z = p.z

@@ -15,6 +15,7 @@ import { Sea } from './world/Sea'
 import { waterMaterial } from './world/Island'
 import { LightShafts } from './world/LightShafts'
 import { Motes } from './house/Motes'
+import { Footprints } from './player/Footprints'
 import { PostFX } from './world/PostFX'
 import { AdaptiveResolution } from './core/adaptive'
 import { CameraRig, DISTANCE, HEIGHT } from './core/CameraRig'
@@ -152,6 +153,7 @@ export function Game() {
           <LightShafts />
           <Island />
           <Sea color={waterMaterial.color} />
+          <Footprints />
           <Roads />
           <Trees />
           <Stations />
