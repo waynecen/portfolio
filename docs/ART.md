@@ -34,7 +34,7 @@ The sizes are in floor tiles (1 tile = 1 unit), across × deep. The back of a pi
   > A round wooden stool with three short splayed legs and a thick cushioned seat in faded red linen with a button in the middle. Knee height.
 - [ ] **`pot.glb`** (1 × 1, three in the room)
   > A large terracotta floor pot, wider at the top, with a rolled rim and a simple painted band around it. Empty, or with a little soil showing.
-- [ ] **`chest.glb`** (1 × 1, at the back of its tile)
+- [x] **`chest.glb`** (1 × 1, at the back of its tile)
   > A small wooden storage chest with a domed lid, brass corner caps, a brass band around it and a chunky round brass latch on the front. Slightly chunky, toy-like proportions.
 - [ ] **`rug.glb`** (3 × 2, flat)
   > A flat rectangular woven rug, one and a half times as wide as deep. Terracotta border, a mustard-gold field and a simple cream diamond motif in the centre. Very thin, lying perfectly flat, with short tassels on the two short ends.
