@@ -10,6 +10,7 @@ import { addShells } from '../combat/drops'
 import { useSettings } from '../core/settings'
 import { chime, fanfare, plop, rattle, reelClick, tap } from '../core/sfx'
 import { playerPos, teleport } from '../core/state'
+import { nudgeCamera, shakeCamera } from '../core/CameraRig'
 import { useGame } from '../core/store'
 import { HOLES, type Box, type Hole } from './holes'
 
@@ -347,7 +348,11 @@ function finish(strokes: number, pickedUp: boolean) {
           ? `${strokes} strokes: par.`
           : `${strokes} strokes, par ${h.par}.`
   const record = !pickedUp && was !== null && strokes < was ? ' Your best yet.' : ''
-  if (!pickedUp && strokes === 1) fanfare()
+  if (!pickedUp && strokes === 1) {
+    fanfare()
+    nudgeCamera(h.cup.x, h.cup.z)
+    shakeCamera(0.06)
+  }
   else if (!pickedUp && strokes <= h.par) chime()
   // A shell for every hole at par or under.
   if (!pickedUp && strokes <= h.par) addShells(1)
