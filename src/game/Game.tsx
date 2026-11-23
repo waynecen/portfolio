@@ -11,6 +11,8 @@ import { lazy, Suspense, useEffect, useState, type ComponentType, type ReactNode
 import { Atmosphere } from './world/Atmosphere'
 import { ShadowSweep } from './world/Shadows'
 import { SkyDome } from './world/SkyDome'
+import { Sea } from './world/Sea'
+import { waterMaterial } from './world/Island'
 import { LightShafts } from './world/LightShafts'
 import { Motes } from './house/Motes'
 import { PostFX } from './world/PostFX'
@@ -149,6 +151,7 @@ export function Game() {
           <SkyDome />
           <LightShafts />
           <Island />
+          <Sea color={waterMaterial.color} />
           <Roads />
           <Trees />
           <Stations />

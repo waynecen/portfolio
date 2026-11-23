@@ -1,8 +1,7 @@
-import { BoxGeometry, Color, MeshBasicMaterial, MeshLambertMaterial, PlaneGeometry, type BufferGeometry } from 'three'
+import { BoxGeometry, Color, MeshLambertMaterial, PlaneGeometry, type BufferGeometry } from 'three'
 import { flat, merge, pick, tint, unindexed } from '../core/geometry'
 import { TILE } from '../core/grid'
 import { autumn, spring, winter } from './season'
-import { useSceneFrame } from '../core/sceneFrame'
 
 // A blocky island centred on spawn, built from whole grid tiles: a grass plateau ringed by stone
 // cliffs that drop into open water. It's two overlapping circles of land: the main island round the
@@ -24,20 +23,13 @@ export const LINKS = { x: -2, z: 35, r: 5.5 }
 /** The islet's circles of land: the islet itself and the links. */
 const ISLES = [ISLET, LINKS]
 export const WATER_Y = -1.2 // water surface, well below the grass; the cliff fills the drop
-const WATER_SIZE = 400 // wide enough that the camera never sees past it
-// Squares across the water. The world bends away from the camera (curve.ts) one vertex at a time,
-// so the water needs vertices every few units to bend with the land; as one big square it tilts
-// far below the cliffs and the background shows through. 2.5 units apart, it sags under 0.1 units
-// between them.
-const WATER_SEGMENTS = 160
+// The sea itself, its surf and its glints are in Sea.tsx.
 const COURSES = 3 // rows of stone blocks in the cliff face, between the rim and the water
 const UNDERWATER = 0.4 // the cliff carries on this far below the water so its foot never shows a gap
 const RIM_TOP = 0.04 // the capstone rim stands this proud of the grass
 const RIM_DEPTH = 0.16 // thickness of the rim, top to bottom
 const RIM_IN = 0.14 // how far the rim reaches in over the grass
 const RIM_OUT = 0.08 // how far the rim overhangs the cliff face
-const FOAM = 0.4 // width of the surf border at the foot of the cliffs; under half a tile
-const FOAM_PULSE = 1.2 // surf fades in and out at this rate (radians/s)
 
 const STONE = ['#c9bfa9', '#bdb29b', '#d3cab6'].map((c) => new Color(c)) // cliff blocks pick one of these
 const RIM = new Color('#e4ddca')
@@ -86,7 +78,6 @@ function build() {
 
   const grassParts: BufferGeometry[] = []
   const stoneParts: BufferGeometry[] = []
-  const foamParts: BufferGeometry[] = []
 
   // The island's square, then the islet's (both its circles), the rows past the island's edge only so no tile is built twice.
   const tiles: [number, number][] = []
@@ -125,47 +116,21 @@ function build() {
             : new BoxGeometry(length, RIM_DEPTH, across).translate(x + shift, rimMid, z + dj * rimOffset)
         stoneParts.push(tint(unindexed(rim), RIM))
       })
-    } else {
-      // Water tile: surf along each edge (and corner) that touches land. The tile is cut into a
-      // 3×3 of border strips and corners so pieces never overlap and double up the opacity.
-      const L = (di: number, dj: number) => isLand(i + di, j + dj)
-      const spans = [
-        [-h, -h + FOAM],
-        [-h + FOAM, h - FOAM],
-        [h - FOAM, h],
-      ]
-      for (let a = 0; a < 3; a++)
-        for (let b = 0; b < 3; b++) {
-          const di = a - 1
-          const dj = b - 1
-          if (di === 0 && dj === 0) continue
-          // Edge strip: foam if the tile across that edge is land. Corner: if any of the three
-          // tiles touching that corner is land.
-          const foam = di === 0 || dj === 0 ? L(di, dj) : L(di, 0) || L(0, dj) || L(di, dj)
-          if (foam)
-            foamParts.push(flat(x + spans[a][0], x + spans[a][1], z + spans[b][0], z + spans[b][1], WATER_Y + 0.01))
-        }
     }
   }
 
   return {
     grass: merge(grassParts),
     stone: merge(stoneParts),
-    foam: merge(foamParts),
   }
 }
 
 const geometry = build()
 
-/** Shared so Atmosphere.tsx can tint them with the time of day. */
+/** Water's colour for the time of day (Atmosphere.tsx tints it): the fountains use it, and the sea (Sea.tsx) shares its colour. */
 export const waterMaterial = new MeshLambertMaterial({ color: '#5aa7c7' })
-export const foamMaterial = new MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.5, depthWrite: false })
 
 export function Island() {
-  useSceneFrame('world', ({ clock }) => {
-    foamMaterial.opacity = 0.45 + 0.2 * Math.sin(clock.elapsedTime * FOAM_PULSE)
-  })
-
   return (
     <>
       {/* Grass (or snow): one square per land tile; its top is the floor at y = 0. */}
@@ -175,10 +140,6 @@ export function Island() {
       {/* Cliffs and their capstone rim, every block in one mesh coloured per vertex. */}
       <mesh geometry={geometry.stone}>
         <meshLambertMaterial vertexColors flatShading />
-      </mesh>
-      <mesh geometry={geometry.foam} material={foamMaterial} />
-      <mesh rotation-x={-Math.PI / 2} position-y={WATER_Y} material={waterMaterial}>
-        <planeGeometry args={[WATER_SIZE, WATER_SIZE, WATER_SEGMENTS, WATER_SEGMENTS]} />
       </mesh>
     </>
   )

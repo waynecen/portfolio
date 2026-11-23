@@ -1,7 +1,7 @@
 import { useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { Color, Fog, Vector3, type DirectionalLight, type HemisphereLight } from 'three'
-import { foamMaterial, waterMaterial } from './Island'
+import { waterMaterial } from './Island'
 import { currentHour, sample, sky } from './sky'
 import { useGame } from '../core/store'
 import { followPlayer, setUpShadow } from './Shadows'
@@ -61,7 +61,6 @@ export function Atmosphere() {
     if (!h || !s) return
 
     waterMaterial.color.copy(sky.water)
-    foamMaterial.color.copy(sky.foam)
 
     const where = useGame.getState().scene
     if (where === 'cave') {
