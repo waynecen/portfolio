@@ -12,6 +12,7 @@ import { Atmosphere } from './world/Atmosphere'
 import { ShadowSweep } from './world/Shadows'
 import { SkyDome } from './world/SkyDome'
 import { LightShafts } from './world/LightShafts'
+import { Motes } from './house/Motes'
 import { PostFX } from './world/PostFX'
 import { AdaptiveResolution } from './core/adaptive'
 import { CameraRig, DISTANCE, HEIGHT } from './core/CameraRig'
@@ -184,6 +185,7 @@ export function Game() {
         <group visible={scene === 'house'}>
           <HouseInterior />
           <Pendant />
+          <Motes />
           <Furniture />
           <RecordPlayer />
           <Later>
