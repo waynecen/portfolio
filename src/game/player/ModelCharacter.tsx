@@ -5,13 +5,17 @@ import {
   LoopOnce,
   Box3,
   MathUtils,
+  Quaternion,
   Vector3,
+  type Bone,
   type AnimationAction,
   type Mesh,
 } from 'three'
 import { toLambert, useGLB } from '../core/gltf'
 import { CLIPS, PLAYER_HEIGHT, PLAYER_WIDTH } from './models'
-import { playerRoll, playerVel } from '../core/state'
+import { playerFacing, playerPos, playerRoll, playerVel } from '../core/state'
+import { useGame } from '../core/store'
+import { reducedMotion } from '../core/settings'
 
 // The player as a rigged 3D model (made in Tripo; see docs/CHARACTER.md), shown inside
 // PillCharacter's rig, which still turns it and tumbles it through rolls. Its own clips do the
@@ -27,6 +31,13 @@ const WALK_RATE = [0.6, 1.25] // walk clip playback speed for a clip with no rec
 const MIN_RATE = 0.3
 const MAX_RATE = 3
 const RUN_MAX_RATE = 2.75 // the run looks frantic sooner; 2.75× keeps pace up to a full sprint (5 units/s)
+// Looking: the head (and a little of the neck) turns toward whatever has focus (a sign, a villager),
+// on top of the clips, easing in and out. Only while standing or walking, never rolling.
+const LOOK_MAX = 0.75 // most it turns, radians either way (about 43°)
+const LOOK_EASE = 6 // how quickly it follows
+const LOOK_NECK = 0.4 // the neck's share of the turn; the head takes the rest
+const UP = new Vector3(0, 1, 0)
+const turnBy = new Quaternion()
 
 // World units per second a clip covers at normal speed, from the pace npm run models recorded
 // (extras.travel, in body heights per second), or 0 if it has none.
@@ -75,7 +86,15 @@ export default function ModelCharacter({ url }: { url: string }) {
       idle.clampWhenFinished = true
     }
     if (!idle && !walk) console.warn(`Player model has none of the clips ${CLIPS.idle} / ${CLIPS.walk}; it will stand still.`)
-    return { root, mixer, idle, walk, run, walkPace: paceOf(walk), runPace: paceOf(run), w: { idle: 1, walk: 0, run: 0 }, rest: 0, height: s }
+    // The head and neck bones, for looking (Mixamo names; the loader drops the colon). Either may be missing.
+    let head: Bone | null = null
+    let neck: Bone | null = null
+    root.traverse((o) => {
+      if (!(o as Bone).isBone) return
+      if (/Head$/.test(o.name)) head = o as Bone
+      else if (/Neck$/.test(o.name)) neck = o as Bone
+    })
+    return { root, mixer, idle, walk, run, walkPace: paceOf(walk), runPace: paceOf(run), w: { idle: 1, walk: 0, run: 0 }, rest: 0, height: s, head, neck, look: 0 }
   }, [gltf])
 
   useEffect(
@@ -121,6 +140,20 @@ export default function ModelCharacter({ url }: { url: string }) {
         : MathUtils.lerp(WALK_RATE[0], WALK_RATE[1], Math.min(1, speed)) * (run ? 1 : Math.max(1, speed))
     if (run && rig.runPace) run.timeScale = MathUtils.clamp(ground / rig.runPace, MIN_RATE, RUN_MAX_RATE)
     rig.mixer.update(dt)
+
+    // Look toward the focus, relative to where the body faces, after the clips have posed the bones.
+    const f = useGame.getState().focus
+    let want = 0
+    if (f && playerRoll.p < 0) {
+      let a = Math.atan2(f.x - playerPos.x, f.z - playerPos.z) - playerFacing.heading
+      a = ((((a + Math.PI) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2)) - Math.PI
+      want = Math.abs(a) < Math.PI * 0.85 ? MathUtils.clamp(a, -LOOK_MAX, LOOK_MAX) : 0 // not behind its own back
+    }
+    rig.look = reducedMotion() ? want : MathUtils.damp(rig.look, want, LOOK_EASE, dt)
+    const h = rig.head as Bone | null
+    const n = rig.neck as Bone | null
+    if (h && Math.abs(rig.look) > 0.001) h.quaternion.multiply(turnBy.setFromAxisAngle(UP, rig.look * (n ? 1 - LOOK_NECK : 1)))
+    if (n && Math.abs(rig.look) > 0.001) n.quaternion.multiply(turnBy.setFromAxisAngle(UP, rig.look * LOOK_NECK))
   })
 
   return <primitive object={rig.root} />
