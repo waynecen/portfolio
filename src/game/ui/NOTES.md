@@ -6,14 +6,17 @@ What sits over the game: dialogue, panels, touch controls, photo mode and the we
 
 ## Touch controls: [Joystick.tsx](./Joystick.tsx)
 
-On touch screens the **Start button** (`StartButton` in [MenuPanel.tsx](./MenuPanel.tsx), `.start-button` in [touch.css](./touch.css)) sits at the bottom, 12px right of the joystick and low enough to clear the B button. It opens the **menu**: Bag, Log, Photo, Settings, Edit room (indoors) and Put away rod (with a rod in hand). While any panel is open it shows × and closes it. The chips that do these things on a computer (the Bag button at the bottom centre, the settings gear, Edit room, Put away rod) are hidden on touch screens, so a phone's top edge only has the hearts and the now-playing label. Messages written for touch point to the menu.
+On touch screens the **Start button** (`StartButton` in [MenuPanel.tsx](./MenuPanel.tsx), `.start-button` in [touch.css](./touch.css)) sits at the bottom left, low enough to clear the B button. It opens the **menu**: Bag, Log, Photo, Settings, Edit room (indoors) and Put away rod (with a rod in hand). While any panel is open it shows × and closes it. The chips that do these things on a computer (the Bag button at the bottom centre, the settings gear, Edit room, Put away rod) are hidden on touch screens, so a phone's top edge only has the hearts and the now-playing label. Messages written for touch point to the menu.
 
 ```ts
 const TRAVEL = 40 // pixels the knob can move from centre; dragging this far = full speed
 const DEAD_ZONE = 0.15 // the first 15% of travel does nothing, so a resting thumb doesn't creep
+const EDGE = 64 // the stick's centre stays this far from the screen's edges, so it's never cut off
 ```
 
-Joystick and A/B button sizes and positions are in [touch.css](./touch.css) (`.joystick`, `.joystick-knob`, `.action-button` for A, `.action-button-b` for B). B sits 72px left of A (button width 64 + an 8px gap) and 24px lower. If you resize the buttons, update that `72px` too. If you resize the joystick, also update the `.action-button` `bottom` offset (it's set to line up with the joystick's middle) and the touch-device `.project-card-region` `bottom` offset (it keeps the card above the controls).
+**The stick is hidden until a thumb goes down.** It then appears centred under the thumb, follows the drag, and fades out on release. Its area (`.joystick`, `TouchStick` in Joystick.tsx) covers the whole game. It's mounted straight after the canvas in Game.tsx, so every button, chip, panel and the dialogue sit above it and still take their own taps. Keep it there. It hides, like A and B, while editing the room, with a panel open and while lining up a putt, because there the canvas reads drags itself.
+
+Stick and A/B button sizes and positions are in [touch.css](./touch.css) (`.joystick-base`, `.joystick-knob`, `.action-button` for A, `.action-button-b` for B). B sits 72px left of A (button width 64 + an 8px gap) and 24px lower. If you resize the buttons, update that `72px` too. If you resize the stick (112px), update its negative margins and `EDGE`. The touch-device `.project-card-region` `bottom` offset in hud.css keeps the card above the buttons.
 
 ---
 
