@@ -7,11 +7,11 @@ The models for roadmap item 69, made in [Tripo](https://www.tripo3d.ai/), each r
 2. Save it as `models-src/<name>.glb`.
 3. Run `npm run models <name>.glb`. It writes `public/models/<name>.glb`, compressed (meshopt geometry, WebP textures at 1024 px or less).
 4. Wire it in:
-   - **Room pieces:** add a line to `MODELS` in [Furniture.tsx](../src/game/house/Furniture.tsx). [PropModel.tsx](../src/game/house/PropModel.tsx) fits the model to the piece's width, can stretch it to the depth of its tiles, and adds a soft fill so its front isn't lost in shadow.
+   - **Room pieces:** add a line to `MODELS` in [Furniture.tsx](../src/game/house/Furniture.tsx). [PropModel.tsx](../src/game/house/PropModel.tsx) fits the model to the piece's width, can stretch it to the depth of its tiles, and adds a soft fill so its front isn't lost in shadow. One file can serve several pieces (the three pots).
    - **Outdoor items:** each needs its own small loader.
 
 **Budget for each prop**
-- File size: about 150 KB or less. The bed is 113 KB.
+- File size: about 150 KB or less. The bed is 113 KB, the table 132 KB.
 - Triangles: 5,000 or fewer for a piece of furniture, and about 1,500 or fewer for anything drawn many times (trees, bushes, flowers, rocks).
 - Generation: one object per model, with nothing else in the scene.
 
@@ -28,13 +28,13 @@ The sizes are in floor tiles (1 tile = 1 unit), across × deep. The back of a pi
   > A small single bed with a low honey-wood frame and a rounded headboard, a thick cream mattress, a puffy sky-blue quilt folded back at the top, and one plump white pillow. Short stubby legs. About twice as long as it is wide, knee height apart from the headboard.
 - [ ] **`dresser.glb`** (3 × 1). The golf trophy stands on it, between its left and middle jars.
   > A long low wooden sideboard, three times as wide as it is deep, about waist height. Two rows of drawers with round wooden knobs and a slightly overhanging top. On top: three small amber glass jars with cork lids, evenly spaced.
-- [ ] **`table.glb`** (2 × 1). The welcome note on it is read, so keep the note in the model, or leave it off and the game will add it.
+- [x] **`table.glb`** (2 × 1). *In: `MODELS.table`, stretched to its blocks' footprint and height; its note is part of the model.*
   > A low rectangular wooden table, twice as wide as it is deep, with four sturdy square legs and a thick rounded top. A single folded paper note lies on top, slightly off centre.
-- [ ] **`stool.glb`** (1 × 1, two in the room: the loader will need to clone it)
+- [x] **`stool.glb`** (1 × 1). *In: `MODELS.stool`, in front of the table.*
   > A round wooden stool with three short splayed legs and a thick cushioned seat in faded red linen with a button in the middle. Knee height.
 - [ ] **`pot.glb`** (1 × 1, three in the room)
   > A large terracotta floor pot, wider at the top, with a rolled rim and a simple painted band around it. Empty, or with a little soil showing.
-- [x] **`chest.glb`** (1 × 1, at the back of its tile)
+- [x] **`chest.glb`** (1 × 1, at the back of its tile). *In: `MODELS.chest`; the sword starts inside it.*
   > A small wooden storage chest with a domed lid, brass corner caps, a brass band around it and a chunky round brass latch on the front. Slightly chunky, toy-like proportions.
 - [ ] **`rug.glb`** (3 × 2, flat)
   > A flat rectangular woven rug, one and a half times as wide as deep. Terracotta border, a mustard-gold field and a simple cream diamond motif in the centre. Very thin, lying perfectly flat, with short tassels on the two short ends.
