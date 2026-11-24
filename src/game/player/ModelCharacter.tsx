@@ -95,7 +95,7 @@ export default function ModelCharacter({ url }: { url: string }) {
       if (/Head$/.test(o.name)) head = o as Bone
       else if (/Neck$/.test(o.name)) neck = o as Bone
     })
-    return { root, mixer, idle, walk, run, walkPace: paceOf(walk), runPace: paceOf(run), w: { idle: 1, walk: 0, run: 0 }, rest: 0, height: s, head, neck, look: 0 }
+    return { root, mixer, idle, walk, run, walkPace: paceOf(walk), runPace: paceOf(run), w: { idle: 1, walk: 0, run: 0 }, rest: 0, height: s, head, neck, look: 0, turned: { head: 0, neck: 0 } }
   }, [gltf])
 
   useEffect(
@@ -139,6 +139,14 @@ export default function ModelCharacter({ url }: { url: string }) {
         ? MathUtils.clamp(ground / rig.walkPace, MIN_RATE, MAX_RATE)
         : MathUtils.lerp(WALK_RATE[0], WALK_RATE[1], Math.min(1, speed)) * (run ? 1 : Math.max(1, speed))
     if (run && rig.runPace) run.timeScale = MathUtils.clamp(ground / rig.runPace, MIN_RATE, RUN_MAX_RATE)
+    // Take off last frame's look first. The mixer only writes a bone when its animated value changes
+    // (PropertyMixer.apply), so while the idle holds a pose it leaves the head as we left it, and the
+    // look would add up frame after frame: the head spun round.
+    const h = rig.head as Bone | null
+    const n = rig.neck as Bone | null
+    if (h && rig.turned.head) h.quaternion.multiply(turnBy.setFromAxisAngle(UP, -rig.turned.head)).normalize()
+    if (n && rig.turned.neck) n.quaternion.multiply(turnBy.setFromAxisAngle(UP, -rig.turned.neck)).normalize()
+    rig.turned.head = rig.turned.neck = 0
     rig.mixer.update(dt)
 
     // Look toward the focus, relative to where the body faces, after the clips have posed the bones.
@@ -150,10 +158,12 @@ export default function ModelCharacter({ url }: { url: string }) {
       want = Math.abs(a) < LOOK_FRONT ? MathUtils.clamp(a, -LOOK_MAX, LOOK_MAX) : 0 // only things roughly in front; no glancing over a shoulder
     }
     rig.look = reducedMotion() ? want : MathUtils.damp(rig.look, want, LOOK_EASE, dt)
-    const h = rig.head as Bone | null
-    const n = rig.neck as Bone | null
-    if (h && Math.abs(rig.look) > 0.001) h.quaternion.multiply(turnBy.setFromAxisAngle(UP, rig.look * (n ? 1 - LOOK_NECK : 1)))
-    if (n && Math.abs(rig.look) > 0.001) n.quaternion.multiply(turnBy.setFromAxisAngle(UP, rig.look * LOOK_NECK))
+    if (Math.abs(rig.look) > 0.001) {
+      rig.turned.head = h ? rig.look * (n ? 1 - LOOK_NECK : 1) : 0
+      rig.turned.neck = n ? rig.look * LOOK_NECK : 0
+      if (h) h.quaternion.multiply(turnBy.setFromAxisAngle(UP, rig.turned.head))
+      if (n) n.quaternion.multiply(turnBy.setFromAxisAngle(UP, rig.turned.neck))
+    }
   })
 
   return <primitive object={rig.root} />
