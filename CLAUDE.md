@@ -20,7 +20,7 @@ React Three Fiber + Vite portfolio: an explorable 3D diorama world. Deployed on 
 | `src/game/ui/` | Dialogue, panels, touch controls, photo mode, welcome back | `Dialogue.tsx` |
 | `docs/` | `ROADMAP.md`, `CHARACTER.md`, `ART.md` (models to make), `TUNING.md` (site-wide notes and the index) | |
 
-Before changing a folder, read its `NOTES.md`: its constants and rules. Don't read `docs/TUNING.md` whole; search it. Each area's CSS is beside its code (`src/game/<area>/*.css`), imported in order by `Game.tsx`; `src/style.css` holds only the page. Keep each `NOTES.md` current when its constants change.
+Before changing a folder, read its `NOTES.md`: its constants and rules. Don't read `docs/TUNING.md` whole; search it. Each area's CSS is beside its code (`src/game/<area>/*.css`), imported in order by `Game.tsx`; `src/style.css` holds only the page. Keep each `NOTES.md` current when its constants change. A `.tsx` file exports only components (Vite's fast refresh needs that); put its constants, state and helpers in a `.ts` beside it, under a name that differs by more than case (`land.ts` for Island.tsx).
 
 ## Commits
 
