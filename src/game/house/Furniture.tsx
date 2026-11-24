@@ -56,7 +56,7 @@ function cylinder(x: number, z: number, r0: number, r1: number, y0: number, y1: 
 }
 
 // Each piece's look, centred on its footprint, and what you bump into. Pieces with the same
-// builder (the stools, the pots) share one geometry.
+// builder (the pots) share one geometry.
 // glow: parts drawn in the lit paper of RoomLights.tsx, which brightens at night.
 type Build = { parts: (box: Box, add: (g: BufferGeometry) => void) => void; glow?: BufferGeometry; solid: Collider[] }
 type Box = (c: Color, x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => void
@@ -167,10 +167,11 @@ const MODELS: Partial<Record<PieceId, { url: string; width: number; depth?: numb
   bed: { url: '/models/bed.glb', width: 0.98, depth: 1.8, z: -0.03 }, // its shape is stubbier than the 1 × 2 tiles, so it's lengthened
   chest: { url: '/models/chest.glb', width: 0.8, z: -0.15 }, // at the back of its tile, like its blocks
   table: { url: '/models/table.glb', width: 1.9, depth: 0.9, height: 0.6 }, // its blocks' footprint and height: the model is squarer and lower
+  stool: { url: '/models/stool.glb', width: 0.5 },
 }
 
 const BUILDS: Partial<Record<PieceId, Build>> = {
-  bed: BED, dresser: DRESSER, table: TABLE, stool1: STOOL, stool2: STOOL,
+  bed: BED, dresser: DRESSER, table: TABLE, stool: STOOL,
   pot1: POT, pot2: POT, pot3: POT, chest: CHEST, rug: RUG,
   lamp: LAMP, plant: PLANT, shelf: SHELF,
 } // the record player draws itself (RecordPlayer.tsx)

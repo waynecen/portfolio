@@ -8,8 +8,8 @@ import { sky } from '../world/sky'
 // on the floor and centred on its spot (offset by `z`). With `depth`, it's also stretched or squeezed
 // front to back to fill its tiles, which a bed or a rug can take without looking wrong, and with
 // `height` made taller or lower the same way. Loaded lazily;
-// whoever shows it keeps the placeholder blocks up until it's here. It uses the loaded scene itself,
-// so one model file is shown once; a piece used twice (the stools, the pots) would need a clone.
+// whoever shows it keeps the placeholder blocks up until it's here. Each one shows its own copy of the
+// loaded scene (sharing its geometry and textures), so one file can be several pieces (the pots, once they have one).
 
 // A soft studio fill (lambertAll), so it keeps the warm, bright look of its Tripo preview: the room's
 // key light comes from above and to the side, which leaves fronts near black. Less at night, so it
@@ -21,9 +21,7 @@ type Props = { url: string; width: number; depth?: number; height?: number; z?: 
 export default function PropModel({ url, width, depth, height, z = 0 }: Props) {
   const gltf = useGLB(url)
   const { root, materials } = useMemo(() => {
-    const root = gltf.scene
-    root.scale.setScalar(1)
-    root.position.set(0, 0, 0)
+    const root = gltf.scene.clone()
     root.updateMatrixWorld(true)
     const box = new Box3().setFromObject(root)
     const size = box.getSize(new Vector3())
