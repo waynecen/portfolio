@@ -27,7 +27,7 @@ Panel styles are `.music-*` in [house.css](./house.css); the now-playing label i
 
 ---
 
-## Room lights: [RoomLights.tsx](./RoomLights.tsx), [Atmosphere.tsx](../world/Atmosphere.tsx)
+## Room lights: [RoomLights.tsx](./RoomLights.tsx), [lights.ts](./lights.ts), [Atmosphere.tsx](../world/Atmosphere.tsx)
 
 ```ts
 const PENDANT = { x: 0, y: 2.25, z: 0.3 } // the paper lantern hanging from the ceiling, house-local; its cord runs up out of sight
@@ -37,8 +37,13 @@ const GLOW = { day: 0.35, night: 1 } // how much both paper shades glow (shadeMa
 const DRIFT = 0.025 // how far the ceiling lantern swings on its cord, radians, from the cord's top (still with reduced motion)
 const COUNT = 60, SIZE = 0.075, SPEED = 0.06 // Motes.tsx: dust drifting in the room's air (0.3 to 2.2 up), wrapping round at the walls
 const OPACITY = { day: 0.35, night: 0.7 } // the motes catch the lantern more at night
+const SNAP = 18 // how fast the lantern comes on or goes out at the switch (damp rate)
+const AT = { x: DOOR + 0.5, y: 0.19, z: ROOM.hz + 0.5 } // LightSwitch.tsx: the switch, on the front wall's outer face just right of the door
+const USE = { dz: -0.75, range: 0.8 } // used from inside at the wall; short, so it isn't in focus as you come in
 const ROOM_DAY / ROOM_NIGHT // Atmosphere.tsx: indoors, mostly warm even fill bounced off a pale floor (hemi 1.85, 1.05 at night) and a faint key (0.3), for soft, low-contrast shading (the room's grade, PostFX.tsx, takes a little contrast off too); at night the fill drops and the lamps do most of the lighting
 ```
+
+**The light switch** turns the ceiling lantern off and on (**Lights off** / **Lights on**, a click); the paper lamp keeps its light. It isn't saved, so every visit starts lit (`useLightSwitch` in lights.ts). It's on the front wall, not the door post, because the prompt and the Bag sit over the doorway on screen. The lantern has its own copy of `shadeMaterial`, so it goes dark without the lamp.
 
 The room's lights are mounted beside Atmosphere in Game.tsx, not in the house's group: that group is hidden outdoors, a hidden light drops out of the light count, and a change in the count recompiles every material on each trip through the door. So they're always mounted and sit at 0 away from the house. Keep any new room light the same way. A piece with a lit part gives its Build a `glow` geometry (Furniture.tsx), drawn in `shadeMaterial`.
 
