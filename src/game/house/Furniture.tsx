@@ -166,6 +166,7 @@ const PropModel = lazy(() => import('./PropModel'))
 const MODELS: Partial<Record<PieceId, { url: string; width: number; depth?: number; height?: number; z?: number }>> = {
   bed: { url: '/models/bed.glb', width: 0.98, depth: 1.8, z: -0.03 }, // its shape is stubbier than the 1 × 2 tiles, so it's lengthened
   chest: { url: '/models/chest.glb', width: 0.8, z: -0.15 }, // at the back of its tile, like its blocks
+  table: { url: '/models/table.glb', width: 1.9, depth: 0.9, height: 0.6 }, // its blocks' footprint and height: the model is squarer and lower
 }
 
 const BUILDS: Partial<Record<PieceId, Build>> = {
