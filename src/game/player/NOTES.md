@@ -50,12 +50,12 @@ With a model set, the rig below still turns it (`TURN`) and leans it into its mo
 
 ---
 
-## Footprints: [Footprints.tsx](./Footprints.tsx)
+## Footprints: [prints.ts](./prints.ts), [Footprints.tsx](./Footprints.tsx)
 
 ```ts
-const POOL = 48                     // prints at most, reused oldest first
+const POOL = 48                     // prints.ts: prints at most, reused oldest first
 const LIFE = { road: 6, snow: 14 }  // seconds a print lasts on a dirt path, and in snow
-const SPREAD = 0.09                 // how far left or right of the path each foot falls
+const SPREAD = 0.09                 // Footprints.tsx: how far left or right of the path each foot falls
 const OPACITY = 0.6
 const TINT = { road: '#5c4529', snow: '#7387a6' } // packed earth; the blue of a dent in snow
 ```
@@ -64,16 +64,16 @@ Each footstep on a path or in snow outdoors (Player.tsx, by distance, like the s
 
 ---
 
-## Around the player: [PlayerGround.tsx](./PlayerGround.tsx), [Dust.tsx](./Dust.tsx)
+## Around the player: [PlayerGround.tsx](./PlayerGround.tsx), [puffs.ts](./puffs.ts), [Dust.tsx](./Dust.tsx)
 
 ```ts
 const SHADOW_SIZE = 0.85 // PlayerGround.tsx: blob shadow diameter, world units (the scene casts no real shadows)
 const SHADOW_OPACITY = 0.2 // PlayerGround.tsx: how dark it is (faint: the sun's real shadow does the rest, this is contact shade)
 const NIGHT_GLOW = 2.5 // PlayerGround.tsx: the warm light on the player at full night outdoors (0 by day)
 const INDOOR_GLOW = 0.4 // PlayerGround.tsx: share of NIGHT_GLOW indoors, where the room is lamp-lit
-const COUNT = 16 // Dust.tsx: puffs in the pool
-const LIFE = 0.45 // Dust.tsx: seconds a puff lasts
-const SIZE = 0.09 // Dust.tsx: a puff's radius at its biggest
+const COUNT = 32 // puffs.ts: puffs in the pool, shared with the bursts (burst(): cut grass, pots, slimes)
+const LIFE = 0.45 // puffs.ts: seconds a puff lasts
+const SIZE = 0.09 // puffs.ts: a puff's radius at its biggest
 const TRAIL = 0.12 // Dust.tsx: seconds between puffs while sprinting
 ```
 

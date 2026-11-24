@@ -85,7 +85,7 @@ export const PIECES = [...]  // room.ts: every movable piece, its name and footp
 const DEFAULT = {...}        // where each piece starts: its top-left tile, house-local (tile i, j is centred on x = i, z = j)
 const DOORWAY = [...]        // tiles just inside the door, always kept clear of furniture
 const SAVE_KEY = 'room-layout-v1' // the visitor's layout is saved in their browser under this; bump it if you change the pieces
-const LIFT = 0.25            // Furniture.tsx: how high a piece floats while being moved
+const LIFT = 0.25            // piece.ts: how high a piece floats while being moved
 const BOB = 0.04             // and how much it bobs (off with reduce motion)
 const LINE = 0.04            // EditRoom.tsx: width of the grid lines shown while editing
 const OK / NO / AIM / OVER   // highlight colours: fits, doesn't fit, empty tile, a piece you could pick up
@@ -101,4 +101,4 @@ A piece only goes down where it fits. It must stay inside the room and not overl
 
 **Tripo models:** a piece with an entry in `MODELS` (Furniture.tsx) shows its model ([PropModel.tsx](./PropModel.tsx)) in place of its blocks, which stand in while it downloads: fitted to `width`, stretched to `depth` and `height` if given, nudged by `z`. The colliders stay the Build's. In so far: the bed (`width 0.98, depth 1.8`: its shape is stubbier than its 1 × 2 tiles, so it's lengthened), the chest (`width 0.8, z -0.15`: at the back of its tile, its own height), the table (`width 1.9, depth 0.9, height 0.6`: its blocks' footprint and height, as the model is squarer and lower; its note is in the model, and Read still uses `NOTE_AT`) and the stool (`width 0.5`). Each piece shows its own copy of a model, so one file can serve several pieces (the pots, later). The models still to make, and their prompts, are in [docs/ART.md](../../../docs/ART.md).
 
-**Adding a piece:** add it to `PIECES` and `DEFAULT` in room.ts, then give it a `Build` in Furniture.tsx: its blocks around the footprint's centre, and its colliders relative to that centre. Something to use on it goes in `USES` there. A piece that draws itself (like the record player) calls `usePiece()` instead. Edit bar styles are `.edit-*` in [style.css](../../style.css).
+**Adding a piece:** add it to `PIECES` and `DEFAULT` in room.ts, then give it a `Build` in Furniture.tsx: its blocks around the footprint's centre, and its colliders relative to that centre. Something to use on it goes in `USES` there. A piece that draws itself (like the record player) calls `usePiece()` ([piece.ts](./piece.ts)) instead. Edit bar styles are `.edit-*` in [style.css](../../style.css).

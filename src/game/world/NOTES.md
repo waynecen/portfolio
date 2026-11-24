@@ -14,13 +14,13 @@ There's no map on purpose: the island is found by walking round it. `pois` in po
 
 ---
 
-## Island, cliffs and trees: [Island.tsx](./Island.tsx), [Trees.tsx](./Trees.tsx)
+## Island, cliffs and trees: [land.ts](./land.ts), [Island.tsx](./Island.tsx), [forest.ts](./forest.ts), [Trees.tsx](./Trees.tsx)
 
 ```ts
-export const ISLAND_RADIUS = 18 // Island.tsx: in tiles; every tile whose centre is closer than this to spawn is land, so the shore steps along tile edges
+export const ISLAND_RADIUS = 18 // land.ts: in tiles; every tile whose centre is closer than this to spawn is land, so the shore steps along tile edges
 export const FOREST = { x: -17, z: -15, r: 12 } // the forest's land to the north-west: every tile closer than r to (x, z) is land too
-const WATER_Y = -1.2            // water surface height, well below the grass; the cliffs fill the drop
-const COURSES = 3               // rows of stone blocks in each cliff face
+export const WATER_Y = -1.2     // land.ts: water surface height, well below the grass; the cliffs fill the drop
+const COURSES = 3               // Island.tsx: rows of stone blocks in each cliff face
 const UNDERWATER = 0.4          // the cliff carries on this far under the water so its foot never shows a gap
 const RIM_TOP = 0.04            // the pale capstone rim stands this far above the grass
 const RIM_DEPTH = 0.16          // rim thickness, top to bottom
@@ -28,20 +28,20 @@ const RIM_IN = 0.14             // how far the rim reaches in over the grass
 const RIM_OUT = 0.08            // how far the rim overhangs the cliff face
 const STONE = [...]             // cliff block colours; each block picks one from a fixed hash, so the pattern never changes
 const RIM = ...                 // capstone colour
-const SEED = 7                  // Trees.tsx: change for a different (but still fixed) tree layout
+const SEED = 7                  // forest.ts: change for a different (but still fixed) tree layout
 const MAX_TREES = 70            // upper limit on the main island's scattered trees
 const CLEARANCE = 1             // tiles kept free around every road tile, place and the house
 const SHORE_GAP = 1             // tiles kept free between trees and the cliff edge
 const MIN_SCALE = 0.8           // trees are randomly sized between these
 const MAX_SCALE = 1.3
-const MAX_TRUNK = 0.3           // most a trunk's collider grows, so the pill fits between forest trees corner to corner
-const FOREST_DENSITY = 0.85     // share of the forest's tree spots that get one
+const MAX_TRUNK = 0.3           // Trees.tsx: most a trunk's collider grows, so the pill fits between forest trees corner to corner
+const FOREST_DENSITY = 0.85     // forest.ts: share of the forest's tree spots that get one
 const FOREST_SCALE = [1, 1.5]   // forest trees are sized between these: taller than the island's
 const CLEARING = 3.5            // radius of the open clearing in the middle of the forest, in tiles
-const FADE = 0.75               // how much of a tree standing in front of the player drops out
+const FADE = 0.75               // Trees.tsx: how much of a tree standing in front of the player drops out
 ```
 
-The island is two overlapping circles of land: the main one round the house, and the forest's to the north-west (top left). `BOUND` in Island.tsx is how far out either reaches, for anything that loops over every tile.
+The island is two overlapping circles of land: the main one round the house, and the forest's to the north-west (top left). `BOUND` in land.ts is how far out either reaches, for anything that loops over every tile.
 
 On the main island, trees never touch each other, diagonals included, so there's always a gap to walk through. The forest is packed: a tree on every other tile, like a chessboard's dark squares (`FOREST_DENSITY` of them), so they only ever meet corner to corner and you can always slip through on the diagonals. In its middle is a clearing, and a road leads there from the house (a `forest` place in pois.ts); the pine cone waits in it.
 
@@ -83,7 +83,7 @@ const RECHECK = 5                  // Atmosphere.tsx: seconds between reads of t
 const ROOM_DAY / ROOM_NIGHT        // Atmosphere.tsx: indoor lights by day and at night (blended by how much it's night)
 const COUNT = tier low ? 300 : 800 // Rain.tsx: streaks; SPEED = 14, LENGTH = 0.45, SLANT = 0.12, OPACITY = 0.5
 const SPREAD_X = 15, SPREAD_Z = 13 // Rain.tsx: area round the player that rain falls in
-const COUNT = 40                   // Fireflies.tsx: fireflies; SIZE = 0.3, WANDER = 0.5, HEIGHT = 0.45, BOB = 0.25
+const COUNT = 55                   // life/swarm.ts: fireflies; SIZE = 0.3, WANDER = 0.5, HEIGHT = 0.45, BOB = 0.25
 const GLOW = 1.1                   // House.tsx: window glow at full night
 ```
 
@@ -102,13 +102,13 @@ With reduced motion, the colours and fog still change, but rain and fireflies ho
 
 ---
 
-## Shadows and the finishing pass: [Shadows.tsx](./Shadows.tsx), [PostFX.tsx](./PostFX.tsx)
+## Shadows and the finishing pass: [shadowBox.ts](./shadowBox.ts), [Shadows.tsx](./Shadows.tsx), [PostFX.tsx](./PostFX.tsx)
 
 ```ts
-export const BOX = 13      // Shadows.tsx: half-size of the sun's shadow box, which follows the player everywhere (26 × 26 units)
+export const BOX = 13      // shadowBox.ts: half-size of the sun's shadow box, which follows the player everywhere (26 × 26 units)
 export const MAP = 2048    // shadow map size; one texel is BOX × 2 / MAP (about 1.3 cm), and the box snaps to whole texels so edges don't shimmer
 const BIAS = -0.0004, NORMAL_BIAS = 0.025 // against acne (stripes) without lifting shadows off their casters
-const SWEEP = 1            // seconds between sweeps that set new meshes casting and receiving
+const SWEEP = 1            // Shadows.tsx: seconds between sweeps that set new meshes casting and receiving
 const BLOOM = { threshold: 0.9, smoothing: 0.25, intensity: 0.7, radius: 0.65 } // PostFX.tsx: only what's brighter than white once lit blooms
 const VIGNETTE = { offset: 0.32, darkness: 0.42 }
 const SAMPLES = 4          // multisampling in the composer, in place of the canvas's antialiasing
@@ -135,7 +135,7 @@ const GLINT = { day: 2.4, night: 0.35 }, GLINT_TIGHT = 140 // sparkles off the r
 const OBSTACLES = [...]          // the dock's posts and the two moored boats, counted as land so they get foam rings
 ```
 
-The sea is a Lambert plane with its own shader patch, so it keeps the island's light, shadows (it receives, never casts), curve and fog. Its colour is `waterMaterial`'s (Island.tsx), which Atmosphere.tsx tints for the time of day; the fountains use that material as it is. Foam follows the real coastline from the baked map: move a post or a boat and update `OBSTACLES`. With reduced motion the water holds still.
+The sea is a Lambert plane with its own shader patch, so it keeps the island's light, shadows (it receives, never casts), curve and fog. Its colour is `waterMaterial`'s (land.ts), which Atmosphere.tsx tints for the time of day; the fountains use that material as it is. Foam follows the real coastline from the baked map: move a post or a boat and update `OBSTACLES`. With reduced motion the water holds still.
 
 ---
 

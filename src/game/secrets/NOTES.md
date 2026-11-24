@@ -19,8 +19,8 @@ export const ROOMS = [...] // cave.ts: the rooms on their grid, and the door on 
 export const BLOCK_START = { i: -1, j: 0 } // cave.ts: the push-block puzzle (PLATE, PILLARS, KEY_CHEST), in the blocks room's tiles
 const PUSH_TIME = 0.3  // CaveRooms.tsx: seconds of leaning on the block before it moves; SLIDE_TIME = 0.28 for one tile
 const BOSS_HP = 6      // CaveRooms.tsx: hits to pop the big slime; it hops faster below half
-export const ISLET = { x: -10, z: 35, r: 4.5 } // Island.tsx: the islet's land, past BOUND so nothing scatters onto it
-export const LINKS = { x: -2, z: 35, r: 5.5 } // Island.tsx: the islet's east lobe, joined by a neck of land, where the mini golf is (golf/NOTES.md)
+export const ISLET = { x: -10, z: 35, r: 4.5 } // land.ts: the islet's land, past BOUND so nothing scatters onto it
+export const LINKS = { x: -2, z: 35, r: 5.5 } // land.ts: the islet's east lobe, joined by a neck of land, where the mini golf is (golf/NOTES.md)
 const CHEST_SHELLS = 20 // islet.ts: shells in the islet's sea chest
 ```
 

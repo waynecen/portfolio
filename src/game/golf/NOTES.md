@@ -1,6 +1,6 @@
 # Golf notes
 
-The mini golf: Gull Rock Links, on the islet's east lobe (`LINKS` in [Island.tsx](../world/Island.tsx)), reached by rowing out with the oar from the cave. The constants that tune it, and the rules it follows. Units and damp rates are explained in [docs/TUNING.md](../../../docs/TUNING.md). Change a value in its file, then here.
+The mini golf: Gull Rock Links, on the islet's east lobe (`LINKS` in [land.ts](../world/land.ts)), reached by rowing out with the oar from the cave. The constants that tune it, and the rules it follows. Units and damp rates are explained in [docs/TUNING.md](../../../docs/TUNING.md). Change a value in its file, then here.
 
 ---
 
