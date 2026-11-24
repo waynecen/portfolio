@@ -1,13 +1,17 @@
 /* Touch controls (Joystick.tsx, MenuPanel.tsx): the stick, A and B, the Start button, and what steps aside for them. */
-.joystick {
-  position: absolute; width: 112px; height: 112px; display: grid; place-items: center;
-  left: max(24px, env(safe-area-inset-left)); bottom: max(24px, env(safe-area-inset-bottom));
-  border: 2px solid var(--ink); border-radius: 50%; background: rgb(255 255 255 / .35); touch-action: none;
+/* The stick's area covers the game; the stick itself is hidden until a thumb goes down, then appears
+   under it (Joystick.tsx sets its left and top) and fades out on release. */
+.joystick { position: absolute; inset: 0; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+.joystick-base {
+  position: absolute; width: 112px; height: 112px; margin: -56px 0 0 -56px; display: grid; place-items: center;
+  border: 2px solid var(--ink); border-radius: 50%; background: rgb(255 255 255 / .35); pointer-events: none;
+  opacity: 0; transition: opacity .2s;
 }
+.joystick[data-active] .joystick-base { opacity: 1; transition-duration: .06s; }
 .joystick-knob { width: 48px; height: 48px; border-radius: 50%; background: #fff; border: 2px solid var(--ink); pointer-events: none; }
 .action-button {
   position: absolute; width: 64px; height: 64px; border-radius: 50%;
-  /* vertically centred on the joystick (112px tall, 24px from the bottom) */
+  /* 24px up: B sits lower and to its left */
   right: max(32px, env(safe-area-inset-right)); bottom: calc(max(24px, env(safe-area-inset-bottom)) + 24px);
   border: 2px solid var(--ink); background: #2b2b2b; color: #fff;
   box-shadow: inset 0 -4px 0 rgb(0 0 0 / .35), inset 0 2px 0 rgb(255 255 255 / .15);

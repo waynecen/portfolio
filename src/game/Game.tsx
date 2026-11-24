@@ -44,7 +44,7 @@ import { Pendant, RoomLights } from './house/RoomLights'
 import { Interactions } from './core/Interactions'
 import { BagButton, InventoryPanel, RodButton } from './ui/InventoryPanel'
 import { Island } from './world/Island'
-import { Joystick } from './ui/Joystick'
+import { Joystick, TouchStick } from './ui/Joystick'
 import { Leaves } from './ui/Leaves'
 import { LogPanel } from './ui/LogPanel'
 import { BED_SPAWN } from './world/layout'
@@ -216,6 +216,8 @@ export function Game() {
           </Later>
         <Controls />
       </Canvas>
+      {/* Touch: the area the stick appears in, first so the rest of the HUD sits above it. */}
+      <TouchStick />
       <Fade />
       {/* Top left: the hearts, then the settings gear after however many there are (hud.css). */}
       <div className="hud-top-left">

@@ -7,17 +7,23 @@ import { isTouch } from '../core/quality'
 
 const TRAVEL = 40 // px the knob can move from center
 const DEAD_ZONE = 0.15
+const EDGE = 64 // the stick's centre stays this far from the screen's edges (its radius, 56, plus a margin), so it's never cut off
 
+// The stick is hidden until a thumb goes down: it then appears under it, follows the drag, and goes
+// again on release. The area it listens on covers the game behind the rest of the HUD (it's mounted
+// straight after the canvas, so every button and panel sits above it), and it steps aside where the
+// game reads drags itself (edit mode, a putt: touch.css, golf.css).
 function Stick() {
+  const zone = useRef<HTMLDivElement>(null)
   const base = useRef<HTMLDivElement>(null)
   const knob = useRef<HTMLDivElement>(null)
   const pointer = useRef<number | null>(null)
+  const centre = useRef({ x: 0, y: 0 })
 
   const move = (e: PointerEvent) => {
-    if (e.pointerId !== pointer.current || !base.current || !knob.current) return
-    const r = base.current.getBoundingClientRect()
-    let dx = e.clientX - (r.left + r.width / 2)
-    let dy = e.clientY - (r.top + r.height / 2)
+    if (e.pointerId !== pointer.current || !knob.current) return
+    let dx = e.clientX - centre.current.x
+    let dy = e.clientY - centre.current.y
     const len = Math.hypot(dx, dy)
     if (len > TRAVEL) {
       dx *= TRAVEL / len
@@ -30,6 +36,15 @@ function Stick() {
   }
 
   const start = (e: PointerEvent<HTMLDivElement>) => {
+    if (pointer.current !== null || !zone.current || !base.current) return // one thumb steers
+    const r = zone.current.getBoundingClientRect()
+    const x = Math.min(Math.max(e.clientX, r.left + EDGE), r.right - EDGE)
+    const y = Math.min(Math.max(e.clientY, r.top + EDGE), r.bottom - EDGE)
+    centre.current.x = x
+    centre.current.y = y
+    base.current.style.left = `${x - r.left}px`
+    base.current.style.top = `${y - r.top}px`
+    zone.current.dataset.active = ''
     pointer.current = e.pointerId
     e.currentTarget.setPointerCapture(e.pointerId)
     move(e)
@@ -40,21 +55,30 @@ function Stick() {
     pointer.current = null
     stick.x = stick.z = 0
     if (knob.current) knob.current.style.transform = ''
+    if (zone.current) delete zone.current.dataset.active
   }
 
   return (
     <div
-      ref={base}
+      ref={zone}
       className="joystick"
       aria-hidden="true"
       onPointerDown={start}
       onPointerMove={move}
       onPointerUp={end}
       onPointerCancel={end}
+      onLostPointerCapture={end}
     >
-      <div ref={knob} className="joystick-knob" />
+      <div ref={base} className="joystick-base">
+        <div ref={knob} className="joystick-knob" />
+      </div>
     </div>
   )
+}
+
+// On touch screens, the area the stick appears in (mounted right after the canvas, under the HUD).
+export function TouchStick() {
+  return isTouch ? <Stick /> : null
 }
 
 // Controller-style A button: talks to / uses whatever is nearby. It acts on the click rather than
@@ -125,11 +149,10 @@ function SprintButton() {
   )
 }
 
-// Only touch-first devices get on-screen controls; desktops use the keyboard.
+// Only touch-first devices get on-screen controls; desktops use the keyboard. The stick is TouchStick, above.
 export function Joystick() {
   return isTouch ? (
     <>
-      <Stick />
       <SprintButton />
       <ActionButton />
     </>
