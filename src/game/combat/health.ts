@@ -38,7 +38,7 @@ export function damage(halves: number, dx: number, dz: number) {
   else
     sayFirst(
       'bumped',
-      ['Oof! Slimes bump.', `${hint('Click, or press {attack*},', 'Tap B')} to swing your sword. Hold it after a swing, then let go, to spin.`],
+      ['Oof! Slimes bump.', `${hint('Click, or press {attack*},', 'Tap A')} to swing your sword. Hold it after a swing, then let go, to spin.`],
       [],
     )
 }

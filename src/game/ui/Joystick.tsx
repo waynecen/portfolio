@@ -2,7 +2,8 @@ import { useRef, type PointerEvent } from 'react'
 import { pressAttack, releaseAttack } from '../combat/combat'
 import { putAwayRod, useFishing } from '../life/fishing'
 import { buttons, stick } from '../core/input'
-import { interact } from '../core/interact'
+import { busy, interact } from '../core/interact'
+import { useGame } from '../core/store'
 import { isTouch } from '../core/quality'
 
 const TRAVEL = 40 // px the knob can move from center
@@ -81,25 +82,52 @@ export function TouchStick() {
   return isTouch ? <Stick /> : null
 }
 
-// Controller-style A button: talks to / uses whatever is nearby. It acts on the click rather than
-// the press, because on touch only the release grants the user activation that opening a project in
-// a new tab needs.
+// Controller-style A button: talks to / uses whatever is nearby, and with nothing nearby (and no
+// dialogue, panel, fishing or putt) swings the sword, like J or a click: the press swings, and holding
+// on after it charges a spin, let go on release (combat.ts). Using things acts on the click rather
+// than the press, because on touch only the release grants the user activation that opening a
+// project in a new tab needs. Pointer capture keeps a held swing tracked if the thumb slides off.
 function ActionButton() {
+  const pointer = useRef<number | null>(null) // the press that's swinging the sword, if one is
+  const swung = useRef(false) // this press swung, so its click doesn't use anything too
+  const end = (e: PointerEvent<HTMLButtonElement>) => {
+    if (e.pointerId !== pointer.current) return
+    pointer.current = null
+    releaseAttack()
+  }
   return (
     <button
       type="button"
       className="action-button"
-      aria-label="Action: talk or open"
-      onPointerDown={(e) => e.preventDefault() /* keep focus and the 300ms tap delay out of the way */}
-      onClick={() => interact()}
+      aria-label="Action: talk or open, or swing the sword"
+      onPointerDown={(e) => {
+        e.preventDefault() // keep focus and the 300ms tap delay out of the way
+        swung.current = false
+        if (pointer.current !== null || useGame.getState().focus || busy()) return
+        swung.current = true
+        pointer.current = e.pointerId
+        e.currentTarget.setPointerCapture(e.pointerId)
+        pressAttack()
+      }}
+      onPointerUp={end}
+      onPointerCancel={end}
+      onLostPointerCapture={end}
+      onClick={(e) => {
+        if (swung.current) return void (swung.current = false)
+        // Keyboard / assistive tech: no press came first, so swing here if there was nothing to use.
+        if (!interact() && e.detail === 0) {
+          pressAttack()
+          releaseAttack()
+        }
+      }}
     >
       A
     </button>
   )
 }
 
-// Hold to sprint; a quick tap (under TAP seconds) swings the sword (combat.ts), or with the fishing
-// rod in hand puts it away (not mid-reel, so a stray tap can't lose a fish). Pointer capture keeps
+// Hold to sprint; with the fishing rod in hand, a quick tap (under TAP seconds) puts it away (not
+// mid-reel, so a stray tap can't lose a fish). The sword is on A. Pointer capture keeps
 // the release tracked even if the thumb slides off the button.
 const TAP = 0.22
 function SprintButton() {
@@ -115,19 +143,14 @@ function SprintButton() {
     set(false, e.currentTarget)
     if (e.type === 'pointerup' && performance.now() - downAt.current < TAP * 1000) {
       const { rod, phase } = useFishing.getState()
-      if (rod) {
-        if (phase !== 'reel') putAwayRod()
-      } else {
-        pressAttack()
-        releaseAttack()
-      }
+      if (rod && phase !== 'reel') putAwayRod()
     }
   }
   return (
     <button
       type="button"
       className="action-button action-button-b"
-      aria-label="Sprint (hold); sword, or put away the rod (tap)"
+      aria-label="Sprint (hold); put away the rod (tap)"
       aria-pressed="false"
       onPointerDown={(e) => {
         e.preventDefault()

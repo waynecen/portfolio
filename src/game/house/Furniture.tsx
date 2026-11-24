@@ -204,7 +204,7 @@ const CHEST_OPEN = {
     fanfare()
     say([
       'You lift the lid. Under a folded blanket: a little wooden sword!',
-      `${hint('Click, or press {attack*},', 'Tap B')} to swing it. Hold it after a swing, then let go once it glows, to spin.`,
+      `${hint('Click, or press {attack*},', 'Tap A')} to swing it. Hold it after a swing, then let go once it glows, to spin.`,
       'Tall grass, pots and slimes had better watch out.',
     ])
   },
