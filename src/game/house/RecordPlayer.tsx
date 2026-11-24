@@ -6,6 +6,7 @@ import { openPanel } from '../core/interact'
 import { level, useMusic } from '../core/music'
 import { reducedMotion } from '../core/settings'
 import { useSceneFrame } from '../core/sceneFrame'
+import { Held } from '../core/Held'
 
 // In the house, on its own tile (see room.ts): it can be moved like the rest of the furniture.
 // It's a Tripo model (MODEL); the box cabinet below stands in while that downloads.
@@ -46,7 +47,13 @@ export function RecordPlayer() {
   return (
     <group ref={spot}>
       <group ref={body} position-z={BACK}>
-        <Suspense fallback={<Cabinet disc={disc} />}>
+        <Suspense
+          fallback={
+            <Held>
+              <Cabinet disc={disc} />
+            </Held>
+          }
+        >
           <Model url={MODEL} width={MODEL_W} />
         </Suspense>
       </group>

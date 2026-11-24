@@ -13,6 +13,7 @@ import { isTouch } from '../core/quality'
 import { useGame } from '../core/store'
 import { reducedMotion } from '../core/settings'
 import { useSceneFrame } from '../core/sceneFrame'
+import { Held } from '../core/Held'
 import { shadeMaterial } from './lights'
 import { useTrophy } from './trophy'
 
@@ -279,7 +280,7 @@ function Piece({ id, build }: { id: PieceId; build: Build }) {
   return (
     <group ref={group}>
       {model ? (
-        <Suspense fallback={blocks}>
+        <Suspense fallback={<Held>{blocks}</Held>}>
           <PropModel {...model} />
         </Suspense>
       ) : (

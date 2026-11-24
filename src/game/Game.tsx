@@ -71,6 +71,7 @@ import { Signposts } from './world/Signposts'
 import { arrive } from './core/scene'
 import { Stations } from './portfolio/Station'
 import { useGame } from './core/store'
+import { whenModelsIn } from './core/modelsIn'
 import { Trees } from './world/Trees'
 import { Trinkets } from './secrets/Trinkets'
 import { Villagers } from './life/Villagers'
@@ -140,8 +141,9 @@ export function Game() {
         flat
         gl={{ antialias: false, powerPreference: 'high-performance' }}
         camera={{ position: [0, HEIGHT, DISTANCE], fov: 35 }}
-        // Tell main.tsx to lift the loader once a frame is on screen (two frames: the scene's first draw lands in between).
-        onCreated={() => requestAnimationFrame(() => requestAnimationFrame(() => dispatchEvent(new Event('gameready'))))}
+        // Tell main.tsx to lift the loader once the models are in (core/Held.tsx) and a frame with them is
+        // on screen (two frames: their first draw lands in between).
+        onCreated={() => whenModelsIn().then(() => requestAnimationFrame(() => requestAnimationFrame(() => dispatchEvent(new Event('gameready')))))}
       >
         <Atmosphere />
         <ShadowSweep />

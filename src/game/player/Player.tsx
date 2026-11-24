@@ -25,6 +25,7 @@ import { held } from '../core/interact'
 import { useGame } from '../core/store'
 import { addPrint } from './Footprints'
 import { secretOn } from '../secrets/secrets'
+import { Held } from '../core/Held'
 
 const SPEED = 2.5 // walking speed, units per second (about 2 body heights a second, so a chibi's steps can keep up)
 const SPRINT = 1.8 // holding Shift (or B on touch) multiplies top speed by this (1.8 → 4.5 units/s)
@@ -153,8 +154,14 @@ export function Player() {
       <Sword />
       <Hat />
       {PLAYER_MODEL ? (
-        // The pill stands in while the model downloads.
-        <Suspense fallback={<PillCharacter />}>
+        // The pill stands in while the model downloads (behind the loader: Held).
+        <Suspense
+          fallback={
+            <Held>
+              <PillCharacter />
+            </Held>
+          }
+        >
           <PillCharacter model={<ModelCharacter url={PLAYER_MODEL} />} />
         </Suspense>
       ) : (
