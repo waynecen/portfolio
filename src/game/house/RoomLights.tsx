@@ -8,10 +8,12 @@ import { INTERIOR } from '../world/layout'
 import { reducedMotion } from '../core/settings'
 import { useSceneFrame } from '../core/sceneFrame'
 import { sky } from '../world/sky'
+import { GLOW, shadeMaterial, useLightSwitch, WARM } from './lights'
 
 // The room's own lights, for a softer, cosier room than the shared daylight alone (Atmosphere.tsx):
 // a paper lantern hanging from the ceiling, and the paper lamp from Pip's shop once it's bought.
-// Both glow brighter as night falls, when they're most of the light.
+// Both glow brighter as night falls, when they're most of the light. The switch by the door
+// (LightSwitch.tsx) turns the lantern off and on; the lamp stays as it is.
 //
 // The lights themselves (RoomLights) are mounted outside the house's group, which is hidden outdoors:
 // a hidden light drops out of the light count, and a change in that count recompiles every material
@@ -20,13 +22,13 @@ import { sky } from '../world/sky'
 const PENDANT = { x: 0, y: 2.25, z: 0.3 } // the hanging lantern, house-local; the cord runs up out of sight
 const CEILING = { day: 3, night: 10, distance: 13 } // its light, candela; it pools under the lantern and fades to the walls
 const LAMP = { day: 0.5, night: 1.8, distance: 3.5, y: 1.1 } // the paper lamp's light, at the height of its shade
-const WARM = '#ffc98a'
-const GLOW = { day: 0.35, night: 1 } // how much the paper shades glow (emissive)
 const DRIFT = 0.025 // how far the lantern swings on its cord, radians (still with reduced motion)
 const CORD = 3 // the cord's length above the lantern; it swings from the top
+const SNAP = 18 // how fast the lantern comes on or goes out at the switch (a damp rate, per second): a bulb's quick fade
 
-/** The paper of both shades: lit from inside, more at night. Shared, and set once a frame here. */
-export const shadeMaterial = new MeshLambertMaterial({ color: '#fff3dc', emissive: WARM, emissiveIntensity: GLOW.day })
+/** The ceiling lantern's paper: the same, but it goes dark with the switch. */
+const lanternMaterial = shadeMaterial.clone()
+let lit = 1 // the ceiling lantern, 0 (off) to 1 (on), easing after the switch
 
 const lantern = new CylinderGeometry(0.26, 0.3, 0.42, 12)
 const cap = new CylinderGeometry(0.1, 0.12, 0.05, 10)
@@ -50,7 +52,7 @@ export function Pendant() {
   return (
     <group ref={swing} position={[INTERIOR.x + PENDANT.x, PENDANT.y + top, INTERIOR.z + PENDANT.z]} userData={{ noShadow: true }}>
       <group position-y={-top}>
-        <mesh geometry={lantern} material={shadeMaterial} />
+        <mesh geometry={lantern} material={lanternMaterial} />
         <mesh geometry={cap} material={dark} position-y={0.23} />
         <mesh geometry={cord} material={dark} position-y={0.23 + CORD / 2} />
       </group>
@@ -63,13 +65,16 @@ export function RoomLights() {
   const ceiling = useRef<PointLight>(null)
   const lamp = useRef<PointLight>(null)
 
-  useFrame(() => {
+  useFrame((_, dt) => {
     const c = ceiling.current
     const l = lamp.current
     if (!c || !l) return
     const home = useGame.getState().scene === 'house'
+    const on = useLightSwitch.getState().on ? 1 : 0
+    lit += (on - lit) * Math.min(1, dt * SNAP)
     shadeMaterial.emissiveIntensity = mix(GLOW.day, GLOW.night)
-    c.intensity = home ? mix(CEILING.day, CEILING.night) : 0
+    lanternMaterial.emissiveIntensity = shadeMaterial.emissiveIntensity * lit
+    c.intensity = home ? mix(CEILING.day, CEILING.night) * lit : 0
     // The lamp's light follows it round the room, into the hand too while it's being moved.
     const owned = useOwned.getState().owned.includes('lamp')
     l.intensity = home && owned ? mix(LAMP.day, LAMP.night) : 0

@@ -13,7 +13,7 @@ import { isTouch } from '../core/quality'
 import { useGame } from '../core/store'
 import { reducedMotion } from '../core/settings'
 import { useSceneFrame } from '../core/sceneFrame'
-import { shadeMaterial } from './RoomLights'
+import { shadeMaterial } from './lights'
 import { useTrophy } from './trophy'
 
 // The room's furniture, one mesh per piece so each can be moved on its own (see room.ts and
