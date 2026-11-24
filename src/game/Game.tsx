@@ -12,13 +12,14 @@ import { Atmosphere } from './world/Atmosphere'
 import { ShadowSweep } from './world/Shadows'
 import { SkyDome } from './world/SkyDome'
 import { Sea } from './world/Sea'
-import { waterMaterial } from './world/Island'
+import { waterMaterial } from './world/land'
 import { LightShafts } from './world/LightShafts'
 import { Motes } from './house/Motes'
 import { Footprints } from './player/Footprints'
 import { PostFX } from './world/PostFX'
 import { AdaptiveResolution } from './core/adaptive'
-import { CameraRig, DISTANCE, HEIGHT } from './core/CameraRig'
+import { CameraRig } from './core/CameraRig'
+import { DISTANCE, HEIGHT } from './core/camera'
 import './core/curve' // bends the world away; before anything is drawn
 import './core/shading' // the soft stylised shading; before anything is drawn
 import './core/haze' // height fog, low over the water; before anything is drawn

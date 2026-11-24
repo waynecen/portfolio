@@ -1,7 +1,7 @@
 import { lazy, Suspense, useRef, type RefObject } from 'react'
 import { MathUtils, type Group, type Mesh } from 'three'
 import type { Collider } from '../core/collision'
-import { usePiece } from './Furniture'
+import { usePiece } from './piece'
 import { openPanel } from '../core/interact'
 import { level, useMusic } from '../core/music'
 import { reducedMotion } from '../core/settings'

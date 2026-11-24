@@ -1,7 +1,7 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useMemo, useRef } from 'react'
 import { Color, MeshBasicMaterial, MeshLambertMaterial, PlaneGeometry, SphereGeometry, type Group } from 'three'
-import { burst } from '../player/Dust'
+import { burst } from '../player/puffs'
 import { register } from '../core/interact'
 import { findPearl, hiddenBy, PEARLS, usePearls, type Pearl } from './pearls'
 import { reducedMotion } from '../core/settings'

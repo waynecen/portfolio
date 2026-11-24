@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, type RefObject } from 'react'
+import { lazy, Suspense, useRef } from 'react'
 import { Color, CylinderGeometry, MeshLambertMaterial, type BufferGeometry, type Group } from 'three'
 import { addCollider, type Collider } from '../core/collision'
 import { useEdit } from './edit'
@@ -16,13 +16,12 @@ import { useSceneFrame } from '../core/sceneFrame'
 import { Held } from '../core/Held'
 import { shadeMaterial } from './lights'
 import { useTrophy } from './trophy'
+import { usePiece } from './piece'
 
 // The room's furniture, one mesh per piece so each can be moved on its own (see room.ts and
 // edit.ts). Every piece is built from placeholder blocks around its footprint's centre, and
 // brings its colliders, and anything you can use on it, along when it moves.
 
-const LIFT = 0.25 // how high a piece floats while it's being moved
-const BOB = 0.04 // and how much it bobs
 
 const C = {
   wood: new Color('#8a5a3b'),
@@ -227,46 +226,6 @@ const material = new MeshLambertMaterial({ vertexColors: true, flatShading: true
 /** Things to use on a piece, from its centre. */
 const USES: Partial<Record<PieceId, Omit<Interactable, 'x' | 'z'> & { dx: number; dz: number }>> = {
   table: { dx: NOTE_AT.x, dz: NOTE_AT.z, range: 1.4, prompt: 'Read', onInteract: () => say(note()) },
-}
-
-/**
- * Keeps piece `id`'s group where the piece is (or floating in hand while it's being moved), and
- * moves `solid` colliders and the `use` interactable (both relative to its centre) along with it.
- */
-export function usePiece(id: PieceId, group: RefObject<Group | null>, solid: Collider[], use?: Omit<Interactable, 'x' | 'z'> & { dx: number; dz: number }) {
-  useEffect(() => {
-    const p = PIECE[id]
-    const world = solid.map((c) => ({ ...c }))
-    const item: Interactable | null = use ? { ...use, x: 0, z: 0 } : null
-    const follow = () => {
-      const at = centreOf(p, useRoom.getState().spots[id])
-      world.forEach((c, k) => {
-        c.x = at.x + solid[k].x
-        c.z = at.z + solid[k].z
-      })
-      if (item && use) {
-        item.x = at.x + use.dx
-        item.z = at.z + use.dz
-      }
-    }
-    follow()
-    const removers = world.map(addCollider)
-    if (item) removers.push(register(item))
-    removers.push(useRoom.subscribe(follow))
-    return () => removers.forEach((remove) => remove())
-  }, [id, solid, use])
-
-  useSceneFrame('house', ({ clock }) => {
-    const g = group.current
-    if (!g) return
-    const h = useEdit.getState().held
-    const held = h !== null && h.id === id && useGame.getState().editing
-    const at = held ? h.at : useRoom.getState().spots[id]
-    const p = PIECE[id]
-    g.position.x = INTERIOR.x + at.i + (p.w - 1) / 2 // centreOf(), without making an object each frame
-    g.position.z = INTERIOR.z + at.j + (p.d - 1) / 2
-    g.position.y = held ? LIFT + (reducedMotion() ? 0 : Math.sin(clock.elapsedTime * 5) * BOB) : 0
-  })
 }
 
 function Piece({ id, build }: { id: PieceId; build: Build }) {

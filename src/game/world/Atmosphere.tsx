@@ -1,10 +1,10 @@
 import { useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { Color, Fog, Vector3, type DirectionalLight, type HemisphereLight } from 'three'
-import { waterMaterial } from './Island'
+import { waterMaterial } from './land'
 import { currentHour, sample, sky } from './sky'
 import { useGame } from '../core/store'
-import { followPlayer, setUpShadow } from './Shadows'
+import { followPlayer, setUpShadow } from './shadowBox'
 import { tickWind } from '../core/wind'
 
 // Lights, background and fog for the time of day (see sky.ts). Outdoors they follow the sky;

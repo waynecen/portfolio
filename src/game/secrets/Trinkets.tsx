@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react'
 import { MeshLambertMaterial, OctahedronGeometry, type Group } from 'three'
 import { register } from '../core/interact'
-import { isInland } from '../world/Island'
+import { isInland } from '../world/land'
 import { built, roadTiles } from '../world/pois'
 import { findSecret, SECRETS, useSecrets, type Secret } from './secrets'
 import { reducedMotion } from '../core/settings'
-import { trees } from '../world/Trees'
+import { trees } from '../world/forest'
 import { useSceneFrame } from '../core/sceneFrame'
 
 // Where the odd trinkets wait (secrets.ts): small spinning stars, tucked into out-of-the-way spots

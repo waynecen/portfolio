@@ -1,5 +1,5 @@
 import { ShaderChunk } from 'three'
-import { DISTANCE } from './CameraRig'
+import { DISTANCE } from './camera'
 
 // The curved world: everything further from the camera than the player bends down out of sight,
 // so the horizon rolls away like the top of a small planet (Animal Crossing's look). It's done in

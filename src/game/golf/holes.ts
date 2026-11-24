@@ -1,4 +1,4 @@
-import { LINKS } from '../world/Island'
+import { LINKS } from '../world/land'
 
 // The holes of the mini golf on the links, the islet's east lobe (Island.tsx), written as data so a
 // hole is added without new code (ROADMAP I54). A green is a rectangle with a kerb round it; blocks

@@ -1,6 +1,6 @@
 import { dayNumber } from '../secrets/calendar'
 import { addShells } from '../combat/drops'
-import { isInland } from '../world/Island'
+import { isInland } from '../world/land'
 import { say } from '../core/interact'
 import { chime } from '../core/sfx'
 import { DOCK } from './fishing'

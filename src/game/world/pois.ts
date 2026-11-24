@@ -1,6 +1,6 @@
 import { tileAt, type Tile } from '../core/grid'
 import { DOCK_ROOT } from '../life/fishing'
-import { FOREST, isInland } from './Island'
+import { FOREST, isInland } from './land'
 import { CAVE_MOUTH, FOUNTAIN, HOUSE, inSquare, OUTCROP, SHOP_AT, SQUARE } from './layout'
 import { ABOUT_AT, CONTACT_AT } from '../portfolio/places'
 import { projects, stationPos } from '../portfolio/projects'

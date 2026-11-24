@@ -1,8 +1,8 @@
 import { tileAt } from '../core/grid'
-import { isInland, isLand } from './Island'
+import { isInland, isLand } from './land'
 import { HOUSE } from './layout'
 import { built, pois, roadTiles } from './pois'
-import { trees } from './Trees'
+import { trees } from './forest'
 
 // What stands on each tile, worked out once, for everything scattered over the island (grass,
 // pickups, slimes, pearls, the daily finds) to ask whether a tile is free. Trees place themselves

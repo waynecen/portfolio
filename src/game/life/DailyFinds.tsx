@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Color, type Group } from 'three'
 import { bottleAt, bottleWaiting, dig, digAt, digWaiting, readBottle } from './daily'
-import { burst } from '../player/Dust'
+import { burst } from '../player/puffs'
 import { register } from '../core/interact'
 import { reducedMotion } from '../core/settings'
 import { useTreasureMap } from './shop'

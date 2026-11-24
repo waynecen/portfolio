@@ -3,7 +3,7 @@ import { Color, DataTexture, LinearFilter, MeshLambertMaterial, RedFormat, Unsig
 import { useSceneFrame } from '../core/sceneFrame'
 import { reducedMotion } from '../core/settings'
 import { DOCK } from '../life/fishing'
-import { isLand, WATER_Y } from './Island'
+import { isLand, WATER_Y } from './land'
 import { ISLET_BOAT } from './layout'
 import { sky } from './sky'
 

@@ -3,7 +3,7 @@ import { Color, ConeGeometry, CylinderGeometry, MeshLambertMaterial, Object3D, t
 import { addCollider } from '../core/collision'
 import { addHittable } from './combat'
 import { maybeDrop } from './drops'
-import { burst } from '../player/Dust'
+import { burst } from '../player/puffs'
 import { merge } from '../core/geometry'
 import { PEARLS, revealPearl, usePearls } from '../secrets/pearls'
 import { winter } from '../world/season'

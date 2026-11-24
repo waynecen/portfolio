@@ -1,7 +1,8 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
-import { Color, IcosahedronGeometry, MeshLambertMaterial, Object3D, type InstancedMesh } from 'three'
+import { IcosahedronGeometry, MeshLambertMaterial, Object3D, type InstancedMesh } from 'three'
 import { secretOn } from '../secrets/secrets'
+import { age, colors, COUNT, DUST, LIFE, pos, SIZE, size, spawn, vel } from './puffs'
 import { winter } from '../world/season'
 import { sky } from '../world/sky'
 import { playerPos, playerVel } from '../core/state'
@@ -13,50 +14,14 @@ import { reducedMotion } from '../core/settings'
 // nothing, so no transparency is needed. Off in the rain (the ground is wet) and indoors;
 // in winter they're puffs of snow, even while it snows.
 
-const COUNT = 32 // shared by the dust, confetti and bursts (cut grass, pots, slimes)
-const LIFE = 0.45 // seconds a puff lasts
-const SIZE = 0.09 // a puff's radius at its biggest
 const TRAIL = 0.12 // seconds between puffs while sprinting
 const SPRINTING = 1.5 // speed (relative to walking) above which the trail starts
 
 const geometry = new IcosahedronGeometry(1, 0)
 // White, so each puff's own colour shows: dust (or snow), or confetti with that secret on (secrets.ts).
 const material = new MeshLambertMaterial({ color: '#ffffff', flatShading: true })
-const DUST = new Color(winter ? '#ffffff' : '#efe6d6')
-const CONFETTI = ['#e0566a', '#f2b233', '#5b9bd5', '#6cc27a', '#b07ad9'].map((c) => new Color(c))
 const CONFETTI_STEP = 0.3 // with confetti on, walking at this speed (relative to walking) leaves a trail too
-const colors: Color[] = Array.from({ length: COUNT }, () => DUST.clone())
-
-// The pool, preallocated: position, velocity, age and size per puff. age >= LIFE means unused.
-const pos = new Float32Array(COUNT * 3)
-const vel = new Float32Array(COUNT * 3)
-const age = new Float32Array(COUNT).fill(LIFE)
-const size = new Float32Array(COUNT)
-let next = 0
 const dummy = new Object3D()
-
-function spawn(x: number, z: number, vx: number, vz: number, s: number, color?: Color) {
-  const i = next
-  next = (next + 1) % COUNT
-  pos[i * 3] = x
-  pos[i * 3 + 1] = 0.08
-  pos[i * 3 + 2] = z
-  vel[i * 3] = vx
-  vel[i * 3 + 1] = 0.4 + Math.random() * 0.3
-  vel[i * 3 + 2] = vz
-  age[i] = 0
-  size[i] = s
-  colors[i].copy(color ?? (secretOn('confetti') ? CONFETTI[Math.floor(Math.random() * CONFETTI.length)] : DUST))
-}
-
-/** A puff of `n` bits thrown out from (x, z) in `color`: cut grass, a broken pot, a popped slime. */
-export function burst(x: number, z: number, n: number, color: Color) {
-  for (let k = 0; k < n; k++) {
-    const a = (k / n) * Math.PI * 2 + Math.random() * 0.6
-    const out = 0.8 + Math.random() * 0.8
-    spawn(x, z, Math.cos(a) * out, Math.sin(a) * out, SIZE * (0.6 + Math.random() * 0.5), color)
-  }
-}
 
 export function Dust() {
   const mesh = useRef<InstancedMesh>(null)

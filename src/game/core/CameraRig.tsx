@@ -5,10 +5,9 @@ import { useEdit } from '../house/edit'
 import { panPhoto, photoCam } from '../ui/photo'
 import { reducedMotion } from './settings'
 import { cameraNudge, cameraShake, cameraSnap, cameraZoom, playerPos, playerVel } from './state'
+import { DISTANCE, HEIGHT } from './camera'
 import { useGame } from './store'
 
-export const HEIGHT = 8
-export const DISTANCE = 10.25 // about 38°, well under 45°, so the curved horizon shows (curve.ts)
 const LAMBDA = 4 // higher = snappier follow
 const FLIP = 9 // in the cave, how quickly the camera slides from one room to the next
 const STEADY = 30 // with reduced motion: close enough to locked on that nothing seems to drift or sway
@@ -37,21 +36,6 @@ const SLANT = Math.hypot(HEIGHT, DISTANCE) // camera's distance to the point it 
 const PITCH = Math.atan2(HEIGHT, DISTANCE)
 const lead = { x: 0, z: 0 }
 const view = { edit: 0 } // 0 = the usual view, 1 = editing's
-
-/** Shakes the camera for a moment (a big find, a hole in one). Nothing with reduced motion. */
-export function shakeCamera(amount = 0.12) {
-  if (reducedMotion()) return
-  cameraShake.t = 0
-  cameraShake.amount = amount
-}
-
-/** Leans the camera toward (x, z) and back (a hole in one, toward the cup). Nothing with reduced motion. */
-export function nudgeCamera(x: number, z: number) {
-  if (reducedMotion()) return
-  cameraNudge.t = 0
-  cameraNudge.x = x
-  cameraNudge.z = z
-}
 
 export function CameraRig() {
   useFrame(({ camera }, delta) => {

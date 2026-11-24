@@ -1,7 +1,7 @@
 import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
 import { BufferAttribute, BufferGeometry, LineBasicMaterial, MeshBasicMaterial, Object3D, RingGeometry, type InstancedMesh, type LineSegments } from 'three'
-import { isLand } from './Island'
+import { isLand } from './land'
 import { detectTier } from '../core/quality'
 import { winter } from './season'
 import { sky } from './sky'
