@@ -172,7 +172,7 @@ const MODELS: Partial<Record<PieceId, { url: string; width: number; depth?: numb
 
 const BUILDS: Partial<Record<PieceId, Build>> = {
   bed: BED, dresser: DRESSER, table: TABLE, stool: STOOL,
-  pot1: POT, pot2: POT, pot3: POT, chest: CHEST, rug: RUG,
+  pot2: POT, pot3: POT, chest: CHEST, rug: RUG,
   lamp: LAMP, plant: PLANT, shelf: SHELF,
 } // the record player draws itself (RecordPlayer.tsx)
 

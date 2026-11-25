@@ -10,7 +10,7 @@ import { readSaved, writeSaved } from '../core/persist'
 // The layout is saved in the visitor's browser; a bad or missing save falls back to DEFAULT.
 
 export type PieceId =
-  | 'bed' | 'dresser' | 'table' | 'stool' | 'pot1' | 'pot2' | 'pot3' | 'chest' | 'rug' | 'recordPlayer'
+  | 'bed' | 'dresser' | 'table' | 'stool' | 'pot2' | 'pot3' | 'chest' | 'rug' | 'recordPlayer'
   | 'lamp' | 'plant' | 'shelf'
 
 export type Spot = { i: number; j: number }
@@ -35,7 +35,6 @@ export const PIECES: Piece[] = [
   { id: 'dresser', name: 'the dresser', w: 3, d: 1 },
   { id: 'table', name: 'the table', w: 2, d: 1 },
   { id: 'stool', name: 'the stool', w: 1, d: 1 },
-  { id: 'pot1', name: 'a pot', w: 1, d: 1 },
   { id: 'pot2', name: 'a pot', w: 1, d: 1 },
   { id: 'pot3', name: 'a pot', w: 1, d: 1 },
   { id: 'recordPlayer', name: 'the record player', w: 1, d: 1 },
@@ -53,7 +52,6 @@ const DEFAULT: Record<PieceId, Spot> = {
   dresser: { i: -1, j: -3 },
   table: { i: 3, j: -3 },
   stool: { i: 3, j: -2 },
-  pot1: { i: -5, j: -1 },
   pot2: { i: -5, j: 0 },
   pot3: { i: -5, j: 1 },
   recordPlayer: { i: 5, j: -3 },
