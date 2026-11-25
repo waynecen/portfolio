@@ -5,6 +5,18 @@ import { winter } from './season'
 // fixed look and weather and blends in from the previous slot over its first BLEND hours.
 // Add ?hour=21 to the URL to see a given hour (decimals work: 16.75 is 4:45pm).
 
+// The sun (and the moon) always shines from the same side: from the left and a little toward the
+// camera, so shadows fall to the right (and a touch up the screen) at every hour, and never swing
+// across between slots. Only its height changes: low at dawn and in the evening (long shadows),
+// high through the day. SUN_HEADING is the direction it shines from along the ground (x, z).
+const SUN_HEADING = [-1, 0.4] as const
+/** Where the sun shines from, `elevation` degrees above the ground, along SUN_HEADING. */
+function sunAt(elevation: number): [number, number, number] {
+  const e = (elevation * Math.PI) / 180
+  const h = Math.hypot(SUN_HEADING[0], SUN_HEADING[1])
+  return [(SUN_HEADING[0] / h) * Math.cos(e), Math.sin(e), (SUN_HEADING[1] / h) * Math.cos(e)]
+}
+
 export type Weather = 'mist' | 'clear' | 'rain' | 'golden' | 'night'
 
 type Slot = {
@@ -35,35 +47,35 @@ const SLOTS: Slot[] = [
     name: 'dawn', start: 5, weather: 'mist',
     background: '#d9d0d6', fog: '#e4dde0', fogNear: 11, fogFar: 30,
     hemiSky: '#f3dfe3', hemiGround: '#8a9a88', hemiIntensity: 1,
-    sun: '#ffc9a8', sunIntensity: 1, sunFrom: [-8, 4, 3],
+    sun: '#ffc9a8', sunIntensity: 1, sunFrom: sunAt(28),
     water: '#7ea3b5', foam: '#ffffff',
   },
   {
     name: 'morning', start: 8, weather: 'clear',
     background: '#cfe8d5', fog: '#cfe8d5', fogNear: 60, fogFar: 140,
     hemiSky: '#ffffff', hemiGround: '#88aa77', hemiIntensity: 1.2,
-    sun: '#ffffff', sunIntensity: 1.5, sunFrom: [5, 10, 4],
+    sun: '#ffffff', sunIntensity: 1.5, sunFrom: sunAt(52),
     water: '#5aa7c7', foam: '#ffffff',
   },
   {
     name: 'afternoon', start: 12, weather: 'rain',
     background: '#a9b7bf', fog: '#a9b7bf', fogNear: 22, fogFar: 58,
     hemiSky: '#d6e0e6', hemiGround: '#7d9077', hemiIntensity: 1.05,
-    sun: '#e6eef5', sunIntensity: 0.8, sunFrom: [3, 10, 5],
+    sun: '#e6eef5', sunIntensity: 0.8, sunFrom: sunAt(58),
     water: '#4f8aa3', foam: '#e8eef2',
   },
   {
     name: 'evening', start: 17, weather: 'golden',
     background: '#f2d3a6', fog: '#f0cfa0', fogNear: 40, fogFar: 100,
     hemiSky: '#fff0dc', hemiGround: '#8a9a70', hemiIntensity: 1.1,
-    sun: '#ffc58a', sunIntensity: 1.4, sunFrom: [-7, 5, 6],
+    sun: '#ffc58a', sunIntensity: 1.4, sunFrom: sunAt(32),
     water: '#6a9fb8', foam: '#fff1dc',
   },
   {
     name: 'night', start: 20, weather: 'night',
     background: '#0f1a2e', fog: '#0f1a2e', fogNear: 24, fogFar: 60,
     hemiSky: '#7389c0', hemiGround: '#2a3a34', hemiIntensity: 0.95,
-    sun: '#a9bcff', sunIntensity: 0.8, sunFrom: [4, 10, -3],
+    sun: '#a9bcff', sunIntensity: 0.8, sunFrom: sunAt(55),
     water: '#1f3c5c', foam: '#6f86a8',
   },
 ]
