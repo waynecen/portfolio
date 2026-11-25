@@ -2,9 +2,10 @@ import { snap } from '../core/grid'
 
 export type Project = { title: string; url: string; description: string }
 
-// The HTML page is the single source of truth: read projects from its markup.
+// The HTML page is the single source of truth: read projects from its markup. An article marked
+// data-game="hidden" stays on the page but gets no station in the game (nor a stop on the tour).
 function readProjects(): Project[] {
-  return Array.from(document.querySelectorAll('#projects article'), (el) => {
+  return Array.from(document.querySelectorAll('#projects article:not([data-game="hidden"])'), (el) => {
     const link = el.querySelector<HTMLAnchorElement>('h3 a')
     return {
       title: el.querySelector('h3')?.textContent?.trim() ?? '',
