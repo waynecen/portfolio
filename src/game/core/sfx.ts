@@ -18,6 +18,7 @@ const FILES: Partial<Record<Sound, string[]>> = {
   grass: ['/sfx/grass_L.wav', '/sfx/grass_R.wav'],
   tatami: ['/sfx/tatami_L.wav', '/sfx/tatami_R.wav'],
   road: ['/sfx/sand_L.wav', '/sfx/sand_R.wav'], // the island's dirt roads
+  wood: ['/sfx/wood_L.wav', '/sfx/wood_R.wav'], // the dock's boards
   homeDoor: ['/sfx/open-door.wav'],
 }
 
@@ -26,6 +27,10 @@ const FILES: Partial<Record<Sound, string[]>> = {
 // soft, so they're darkened and given some body.
 const TONE: Partial<Record<Sound, { lowpass: number; bass: number }>> = {
   grass: { lowpass: 1800, bass: 9 }, // Hz above which it rolls off; dB added below 300 Hz
+}
+// Recorded steps that come out louder than the grass, turned down to sit with it.
+const STEP_LEVEL: Partial<Record<Surface, number>> = {
+  wood: 0.5, // about twice the grass's level
 }
 const STEP_PITCH = 0.03 // a recorded step's pitch varies by up to this share either way (synthesised ones by 0.1)
 
@@ -87,7 +92,9 @@ const SOUNDS = {
     const lp = lowpass(0.9)
     return render(0.1, (t, n) => lp(n) * Math.exp(-t * 38) * 2)
   },
-  wood: () => {
+  wood: () => SOUNDS.thud(), // until its recordings load (FILES)
+  thud: () => {
+    // Furniture set down, a box shoved: a dull knock.
     const lp = lowpass(0.7)
     return render(0.1, (t, n) => (Math.sin(2 * Math.PI * 150 * t) * 0.8 + lp(n) * 0.5) * Math.exp(-t * 40))
   },
@@ -235,7 +242,7 @@ export type Surface = 'grass' | 'snow' | 'road' | 'stone' | 'tatami' | 'wood'
 /** One footstep, slightly different every time (and left, right, left with recordings). */
 export const step = (surface: Surface, wet = false) => {
   const pitch = recorded[surface] ? STEP_PITCH : 0.1
-  play(surface, STEP_VOLUME * (0.85 + Math.random() * 0.3), 1 - pitch + Math.random() * 2 * pitch)
+  play(surface, STEP_VOLUME * (STEP_LEVEL[surface] ?? 1) * (0.85 + Math.random() * 0.3), 1 - pitch + Math.random() * 2 * pitch)
   // Recorded steps play alone: the synthesised splash over them sounds like a second, different step.
   if (wet && !FILES[surface]) play('wet', STEP_VOLUME * WET_VOLUME * (0.8 + Math.random() * 0.4), 0.85 + Math.random() * 0.3)
 }
@@ -274,4 +281,4 @@ export const rattle = () => {
 /** A hole in one, or a new fish: the fanfare. */
 export const fanfare = () => play('fanfare')
 /** Furniture set down on the floor. */
-export const thud = () => play('wood', 1, 0.7)
+export const thud = () => play('thud', 1, 0.7)
