@@ -3,7 +3,7 @@ import { Box3, Float32BufferAttribute, MeshLambertMaterial, Object3D, type Buffe
 import { useGLB } from '../core/gltf'
 import { sway } from '../core/wind'
 import { autumn, spring, winter } from './season'
-import { canopyColor, drawn, GREEN, seeThrough, SWAY } from './treeLook'
+import { canopyColor, drawn, GREEN, SWAY } from './treeLook'
 
 // The Tripo pine (models-src/pine.glb, through npm run models), drawn once per tree as one instanced
 // mesh. Loaded lazily; Trees.tsx shows the placeholder cones until it's here.
@@ -87,7 +87,6 @@ export default function PineModel() {
       if (!source && (o as Mesh).isMesh) source = (o as Mesh).material as MeshStandardMaterial
     })
     const material = new MeshLambertMaterial({ map: source?.map ?? null })
-    seeThrough(material)
     seasons(material)
     sway(material, SWAY)
     return { geometry: fit(gltf.scene), material }

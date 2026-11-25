@@ -38,7 +38,6 @@ const MAX_TRUNK = 0.3           // Trees.tsx: most a trunk's collider grows, so 
 const FOREST_DENSITY = 0.85     // forest.ts: share of the forest's tree spots that get one
 const FOREST_SCALE = [1, 1.5]   // forest trees are sized between these: taller than the island's
 const CLEARING = 3.5            // radius of the open clearing in the middle of the forest, in tiles
-const FADE = 0.75               // treeLook.ts: how much of a tree standing in front of the player drops out
 const HEIGHT = 2, WIDTH = 0.8   // PineModel.tsx: the pine model at scale 1, taller and narrower than its own shape (2 : 1) so it reads as a pine from above
 const BRIGHT = 1.3              // its texture lifted to sit with the island's palette (not the snow)
 const SNOW_FROM = 0.3, UP = [0.3, 0.6] // winter: whatever faces up above this share of its height holds snow
@@ -47,8 +46,6 @@ const SNOW_FROM = 0.3, UP = [0.3, 0.6] // winter: whatever faces up above this s
 The island is two overlapping circles of land: the main one round the house, and the forest's to the north-west (top left). `BOUND` in land.ts is how far out either reaches, for anything that loops over every tile.
 
 On the main island, trees never touch each other, diagonals included, so there's always a gap to walk through. The forest is packed: a tree on every other tile, like a chessboard's dark squares (`FOREST_DENSITY` of them), so they only ever meet corner to corner and you can always slip through on the diagonals. In its middle is a clearing, and a road leads there from the house (a `forest` place in pois.ts); the pine cone waits in it.
-
-Every tree between the camera and the player thins out (`seeThrough` in treeLook.ts): its shader drops out a fixed noise pattern of pixels, up to `FADE` of them, so the player never vanishes behind a canopy.
 
 **The pine model** (PineModel.tsx) is every tree, drawn as one instanced mesh; while it downloads, placeholder cones stand in (a trunk and a cone, two instanced meshes, in Trees.tsx). It isn't behind the loader (the game starts indoors). Its foliage is the only green in its texture, so in spring and autumn that alone takes the tree's `canopyColor` (keeping the texture's light and dark, scaled from `GREEN`); in summer and winter the texture shows as it is. Its positions are turned to floats before it's stretched: the pipeline stores them as 16-bit integers that only reach -1 to 1. A new tree model needs green foliage and a trunk that isn't green. Trunk colliders don't change with the model.
 
