@@ -7,7 +7,7 @@ The models for roadmap item 69, made in [Tripo](https://www.tripo3d.ai/), each r
 2. Save it as `models-src/<name>.glb`.
 3. Run `npm run models <name>.glb`. It writes `public/models/<name>.glb`, compressed (meshopt geometry, WebP textures at 1024 px or less).
 4. Wire it in:
-   - **Room pieces:** add a line to `MODELS` in [Furniture.tsx](../src/game/house/Furniture.tsx). [PropModel.tsx](../src/game/house/PropModel.tsx) fits the model to the piece's width, can stretch it to the depth of its tiles, and adds a soft fill so its front isn't lost in shadow. One file can serve several pieces (the three pots).
+   - **Room pieces:** add a line to `MODELS` in [Furniture.tsx](../src/game/house/Furniture.tsx). [PropModel.tsx](../src/game/house/PropModel.tsx) fits the model to the piece's width, can stretch it to the depth of its tiles, and adds a soft fill so its front isn't lost in shadow. One file can serve several pieces (the two pots).
    - **Outdoor items:** each needs its own small loader. PropModel works outdoors too, with `scene="world"` (the house does this).
 
 **Budget for each prop**
@@ -26,13 +26,11 @@ The sizes are in floor tiles (1 tile = 1 unit), across × deep. The back of a pi
 
 - [x] **`bed.glb`** (1 × 2). *In: `MODELS.bed`, lengthened to fill its two tiles.*
   > A small single bed with a low honey-wood frame and a rounded headboard, a thick cream mattress, a puffy sky-blue quilt folded back at the top, and one plump white pillow. Short stubby legs. About twice as long as it is wide, knee height apart from the headboard.
-- [ ] **`dresser.glb`** (3 × 1). The golf trophy stands on it, between its left and middle jars.
-  > A long low wooden sideboard, three times as wide as it is deep, about waist height. Two rows of drawers with round wooden knobs and a slightly overhanging top. On top: three small amber glass jars with cork lids, evenly spaced.
 - [x] **`table.glb`** (2 × 1). *In: `MODELS.table`, stretched to its blocks' footprint and height; its note is part of the model.*
   > A low rectangular wooden table, twice as wide as it is deep, with four sturdy square legs and a thick rounded top. A single folded paper note lies on top, slightly off centre.
 - [x] **`stool.glb`** (1 × 1). *In: `MODELS.stool`, in front of the table.*
   > A round wooden stool with three short splayed legs and a thick cushioned seat in faded red linen with a button in the middle. Knee height.
-- [ ] **`pot.glb`** (1 × 1, three in the room)
+- [ ] **`pot.glb`** (1 × 1, two in the room)
   > A large terracotta floor pot, wider at the top, with a rolled rim and a simple painted band around it. Empty, or with a little soil showing.
 - [x] **`chest.glb`** (1 × 1, at the back of its tile). *In: `MODELS.chest`; the sword starts inside it.*
   > A small wooden storage chest with a domed lid, brass corner caps, a brass band around it and a chunky round brass latch on the front. Slightly chunky, toy-like proportions.
@@ -44,6 +42,24 @@ The sizes are in floor tiles (1 tile = 1 unit), across × deep. The back of a pi
   > A leafy fern in a small round clay pot, with fronds arching out evenly on all sides. Fresh green leaves, about knee height.
 - [ ] **`shelf.glb`** (1 × 1, sold in the shop)
   > A narrow, tall wooden bookshelf with three shelves of chunky books in soft red, blue, mustard, green and purple. A few books lean over, and there's a tiny plant on the top shelf.
+- [ ] **`fireplace.glb`** (3 × 1, against the back wall, where the dresser was). In the room as blocks. Make the flames a separate part, or leave them out: the game draws its own flickering flames (`Fire` in Furniture.tsx) and lights the room from them. The golf trophy stands on the mantel, right of the middle.
+  > A cosy stone hearth fireplace, three times as wide as it is deep, with rounded river-stone masonry in warm greys, a chimney breast rising behind, a thick wooden mantel beam and an arched opening. Inside, a few small logs and glowing embers. Two cream candles at the ends of the mantel. The back is flat so it sits against a wall.
+- [ ] **`armchair.glb`** (1 × 1, two in the room, facing each other in front of the fire). In the room as blocks. Make it facing +x (its back on the left). The right-hand chair faces the other way, so wiring it in needs PropModel to mirror it (a scale of -1 across).
+  > A small, squashy armchair upholstered in sage-green fabric, with fat rounded arms, a plump seat cushion and short wooden feet. A knitted cream throw blanket is draped over one arm.
+- [ ] **`sidetable.glb`** (1 × 1, beside the left armchair). In the room as blocks.
+  > A small round wooden side table on a single turned pedestal leg, with a sage-green teapot and a little cup on top.
+- [ ] **`logs.glb`** (1 × 1, beside the fire). In the room as blocks.
+  > A round woven wicker basket full of split firewood logs, a few poking out at angles. Warm honey wicker, pale split wood with darker bark.
+- [ ] **`coatstand.glb`** (1 × 1, in the back left corner). In the room as blocks.
+  > A tall wooden coat stand on four short curved feet, with round-tipped pegs at the top. A red knitted scarf hangs from one peg and a straw sun hat sits on another.
+- [ ] **`kotatsu.glb`** (2 × 2, the right of the room). In the room as blocks.
+  > A low square kotatsu table with a thick quilted futon blanket in a red and cream pattern draped over all four sides to the floor, a square wooden top, and a bowl of mandarin oranges in the middle.
+- [ ] **`zabuton.glb`** (1 × 1, flat, two by the kotatsu; you walk over them like the rug). In the room as blocks.
+  > A square Japanese floor cushion (zabuton) in indigo fabric with a small white tied tassel at the centre. Plump but low, lying flat.
+- [ ] **`basket.glb`** (1 × 1, the left of the room). In the room as blocks.
+  > A round woven wicker basket holding rolled-up blankets and a ball of yarn with knitting needles.
+- [ ] **`shiba.glb`** (Kinako, the house dog: about 0.5 long, 0.65 tall to the ear tips). In the room as blocks (Dog.tsx). Its legs and tail move, so make them separate parts if Tripo allows, or the model will slide rather than trot.
+  > A small, chubby shiba inu dog standing on all fours, side-on friendly pose. Warm orange-tan fur with a cream muzzle, cheeks, chest, belly and paws, pointed upright ears, small black nose and dot eyes, and a fluffy tail curled up over its back. Cute chibi proportions with a slightly big head.
 - [ ] **`lantern.glb`** (the paper lantern hanging from the ceiling, RoomLights.tsx; seen from above)
   > A round Japanese paper ceiling lantern, cream rice paper over a thin bamboo frame, with a short dark cord at the top. Glowing softly from inside.
 - [x] **`recordPlayer.glb`** (1 × 1). *In: RecordPlayer.tsx.*
@@ -53,25 +69,13 @@ Each needs an entry in `PIECES` and `DEFAULT` (or a price) in room.ts, as well a
 
 - [ ] **`chair.glb`** (1 × 1)
   > A small wooden dining chair with a rounded back made of three vertical slats, a woven rush seat and slightly splayed legs. Honey wood, chunky and friendly.
-- [ ] **`armchair.glb`** (1 × 1)
-  > A small, squashy armchair upholstered in sage-green fabric, with fat rounded arms, a plump seat cushion and short wooden feet. A knitted cream throw blanket is draped over one arm.
-- [ ] **`fireplace.glb`** (2 × 1, against a wall). Make the flames a separate part, so the game can flicker them and light the room from them.
-  > A cosy stone hearth fireplace with rounded river-stone masonry in warm greys, a thick wooden mantel beam on top and an arched opening. Inside, small logs with soft orange flames and glowing embers. On the mantel: a candle and a tiny framed picture. The back is flat so it sits against a wall.
-- [ ] **`sidetable.glb`** (1 × 1)
-  > A small round wooden side table on a single turned pedestal leg, with a cup of tea on a saucer and a stack of two books on top.
-- [ ] **`zabuton.glb`** (1 × 1, flat)
-  > A square Japanese floor cushion (zabuton) in indigo fabric with a small white tied tassel at the centre. Plump but low, lying flat.
-- [ ] **`kotatsu.glb`** (2 × 2)
-  > A low square kotatsu table with a thick quilted futon blanket in a red and cream pattern draped over all four sides to the floor, a square wooden top, and a bowl of mandarin oranges in the middle.
-- [ ] **`basket.glb`** (1 × 1)
-  > A round woven wicker basket holding rolled-up blankets and a ball of yarn with knitting needles.
 - [ ] **`clock.glb`** (on the wall)
   > A round wooden wall clock with a cream face, simple dark numerals, and a small pendulum in a little glass window below. Flat back.
 - [ ] **`painting.glb`** (on the wall)
   > A small framed landscape painting in a chunky wooden frame showing a little island with a red-roofed house under a pale sky. Flat back.
 - [ ] **`window.glb`** (on the wall)
   > A small wooden-framed window with four panes, cream curtains tied back at each side, and a window box of tiny flowers below. The panes show a soft blue sky. Flat back.
-- [ ] **`candles.glb`** (small, for a table or the dresser)
+- [ ] **`candles.glb`** (small, for a table or the mantel)
   > A cluster of three cream pillar candles of different heights on a small wooden tray, with softly glowing flames.
 - [ ] **`teaset.glb`** (small, for a table)
   > A small ceramic teapot with a bamboo handle, two little cups and a saucer on a wooden tray, in sage-green glaze.
@@ -85,7 +89,7 @@ Outdoors the camera is further away, so shapes should read at a glance: bold sil
 ### Trees and plants
 Hundreds of these are drawn with instancing (Trees.tsx).
 - **Shape:** keep them simple, with no texture if possible: flat colours, so the seasons can tint them.
-- **Parts:** make the trunk and the foliage separate parts. The wind sways the leaves, autumn turns them, winter caps them with snow, and the forest turns see-through near the player.
+- **Parts:** make the trunk and the foliage separate parts. The wind sways the leaves, autumn turns them and winter caps them with snow.
 - **Size:** about 1,500 triangles or fewer.
 
 - [x] **`pine.glb`**: the island's main tree. *In: PineModel.tsx, every tree as one instanced mesh, stretched taller and narrower (`HEIGHT`, `WIDTH`); its foliage takes the season's colour.*
