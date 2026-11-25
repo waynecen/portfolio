@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Color, DataTexture, LinearFilter, MeshLambertMaterial, RedFormat, UnsignedByteType } from 'three'
 import { useSceneFrame } from '../core/sceneFrame'
 import { reducedMotion } from '../core/settings'
-import { DOCK } from '../life/fishing'
+import { BOAT_HALF, DOCK, DOCK_BOAT } from '../life/fishing'
 import { isLand, WATER_Y } from './land'
 import { ISLET_BOAT } from './layout'
 import { sky } from './sky'
@@ -31,13 +31,13 @@ const GLINT = { day: 2.4, night: 0.35 } // sparkle strength (the noise mask thin
 const GLINT_TIGHT = 140 // how small the sparkles are (a specular power)
 
 // What else stands in the water, as rounded boxes [x, z, half-x, half-z]: the dock's posts and the
-// two moored boats. The dock boat lies along z beside the dock (DOCK_BOAT in secrets/islet.ts).
+// two moored boats. The dock boat lies along z beside the dock (DOCK_BOAT in life/fishing.ts).
 const POST_XS = [DOCK.x - DOCK.half + 0.04, DOCK.x + DOCK.half - 0.04]
 const POST_ZS = [17, 18.3, DOCK.z1 - 0.1] // POSTS in life/Dock.tsx
 const OBSTACLES: [number, number, number, number][] = [
   ...POST_XS.flatMap((x) => POST_ZS.map((z) => [x, z, 0.09, 0.09] as [number, number, number, number])),
-  [DOCK.x + DOCK.half + 0.55, 16.7, 0.32, 0.78],
-  [ISLET_BOAT.x, ISLET_BOAT.z, 0.78, 0.32],
+  [DOCK_BOAT.x, DOCK_BOAT.z, BOAT_HALF.width, BOAT_HALF.length],
+  [ISLET_BOAT.x, ISLET_BOAT.z, BOAT_HALF.length, BOAT_HALF.width],
 ]
 
 /** The distance-to-land map: land tiles (and OBSTACLES) are 0, water grows outward, capped at REACH. */

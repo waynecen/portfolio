@@ -78,6 +78,6 @@ export function caveRoom(x: number, z: number) {
 export const CAVE_SPAWN: Spawn = { x: CAVE.x, z: CAVE.z + ROOM.hz - 1, heading: Math.PI }
 
 /** The islet's boat, pulled up in the water off its north shore (islet.ts, IsletScene.tsx). */
-export const ISLET_BOAT = { x: ISLET.x, z: ISLET.z - ISLET.r - 0.5 }
+export const ISLET_BOAT = { x: ISLET.x, z: ISLET.z - ISLET.r - 0.7 }
 /** Where rowing out lands the player: on the islet's north shore, facing in. */
 export const ISLET_SPAWN: Spawn = { x: ISLET.x, z: ISLET.z - ISLET.r + 0.9, heading: 0 }

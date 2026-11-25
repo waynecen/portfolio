@@ -7,6 +7,7 @@ import { useGame } from '../core/store'
 import { reducedMotion, useSettings } from '../core/settings'
 import { readSaved, writeSaved } from '../core/persist'
 import { hint } from '../core/keymap'
+import { WATER_Y } from '../world/land'
 
 // Fishing off the dock at the island's bottom-left corner (Dock.tsx draws it). Take a rod from the
 // barrel at the foot of the dock, walk out and use the ripple in the water: the line goes out, and
@@ -17,13 +18,34 @@ import { hint } from '../core/keymap'
 export const DOCK = { x: -9, half: 0.7, z0: 15.5, z1: 19.5 }
 /** The land tile the dock leaves from. A road leads here (pois.ts). */
 export const DOCK_ROOT = { x: -9, z: 15 }
+/**
+ * The dock's levels: a landing at the grass, a flight of steps down from STAIRS.z0, and a low deck
+ * close to the water from there to the end, where the boat ties up.
+ */
+export const DECK_Y = 0.06 // top of the landing's planks, just proud of the grass
+export const LOW_Y = WATER_Y + 0.3 // top of the low deck's planks
+export const STAIRS = { z0: 16.2, steps: 6, depth: 0.2 } // where the flight starts, its steps and each one's depth
+/** Height of the dock's walking surface at z: the landing, down the stairs (smoothly, through each step's middle), the low deck. */
+export function dockHeight(z: number): number {
+  const drop = (DECK_Y - LOW_Y) / (STAIRS.steps + 1)
+  const k = Math.min(Math.max((z - STAIRS.z0) / STAIRS.depth + 0.5, 0), STAIRS.steps + 1)
+  return DECK_Y - drop * k
+}
+/** How high the player stands at (x, z): down on the dock's stairs and low deck, else on the ground. */
+export const groundAt = (x: number, z: number) => (onDock(x, z) ? Math.min(0, dockHeight(z)) : 0)
+
+/** The rowing boat, drawn BOAT_SCALE times its built size (IsletScene.tsx), moored along the low deck's west side. */
+export const BOAT_SCALE = 1.45
+export const BOAT_HALF = { length: 0.78 * BOAT_SCALE, width: 0.32 * BOAT_SCALE }
+export const DOCK_BOAT = { x: DOCK.x - DOCK.half - 0.1 - BOAT_HALF.width, z: 18.65 }
+
 /** The barrel of rods, on the grass beside the foot of the dock. */
 export const BARREL_AT = { x: -8, z: 15.1 }
 
 /** Where the ripple can be, in the water within a cast of the dock. It moves on after each catch. */
 export const SPOTS = [
   { x: -9, z: 20.6 },
-  { x: -10.55, z: 18.7 },
+  { x: -7.5, z: 19.5 },
   { x: -7.45, z: 18.1 },
   { x: -10.5, z: 16.9 },
 ]

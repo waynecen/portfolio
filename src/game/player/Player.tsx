@@ -7,7 +7,7 @@ import { HeldRod } from '../life/Dock'
 import { harm } from '../combat/health'
 import { Sword } from './Sword'
 import { Hat } from './Hat'
-import { dockOpens, onDock } from '../life/fishing'
+import { dockOpens, groundAt, onDock } from '../life/fishing'
 import { TILE } from '../core/grid'
 import { isLand } from '../world/land'
 import { inSquare } from '../world/layout'
@@ -143,6 +143,7 @@ export function Player() {
     }
     playerPos.x = p.x
     playerPos.z = p.z
+    p.y = groundAt(p.x, p.z) // down the dock's stairs to its low deck
     // The "tiny you" secret: the character (and its shadow and light) shrink; collisions don't change.
     root.scale.setScalar(secretOn('tiny') ? TINY : 1)
     // After a bump, the character flickers while nothing can hurt it.

@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { useCave } from './cave'
 import { addShells } from '../combat/drops'
-import { DOCK } from '../life/fishing'
+import { DOCK, DOCK_BOAT } from '../life/fishing'
 import { say, sayFirst } from '../core/interact'
 import { ISLET } from '../world/land'
 import { ISLET_SPAWN } from '../world/layout'
@@ -13,8 +13,7 @@ import { readSaved, writeSaved } from '../core/persist'
 // the player has the oar from the cave (cave.ts), and a second boat on the islet's shore brings them
 // back. On the islet: a few trees, an old chest of shells and the last of the pearls (pearls.ts).
 
-/** The boat at the dock: moored along its east side, near the shore end, out of the fishing spots' way. */
-export const DOCK_BOAT = { x: DOCK.x + DOCK.half + 0.55, z: 16.7 }
+export { DOCK_BOAT } // the boat at the dock: moored along the low deck's west side (fishing.ts)
 /** Rowing back lands the player on the dock, facing the island (rowing out: ISLET_SPAWN in layout.ts). */
 const DOCK_SPAWN: Spawn = { x: DOCK.x, z: DOCK_BOAT.z, heading: Math.PI }
 /** The chest, sign and buried pearl on the islet. */

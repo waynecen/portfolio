@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { BoxGeometry, Color, CylinderGeometry, MeshLambertMaterial, type BufferGeometry, type Group } from 'three'
 import { useCave } from './cave'
 import { addCollider } from '../core/collision'
-import { DOCK } from '../life/fishing'
+import { BOAT_HALF, BOAT_SCALE, DOCK } from '../life/fishing'
 import { block, merge, tint, unindexed } from '../core/geometry'
 import { register } from '../core/interact'
 import { WATER_Y } from '../world/land'
@@ -57,7 +57,7 @@ function Boat({ x, z, turn, oars, prompt, from, onUse }: { x: number; z: number;
     g.current.rotation.x = Math.sin(t * 1.1) * 0.03
   })
   return (
-    <group position={[x, WATER_Y + 0.08, z]} rotation-y={turn}>
+    <group position={[x, WATER_Y + 0.08, z]} rotation-y={turn} scale={BOAT_SCALE}>
       <group ref={g} position-y={0}>
         <mesh geometry={boatGeometry} material={wood} />
         {Array.from({ length: oars }, (_, k) => (
@@ -123,7 +123,7 @@ export function Islet() {
         turn={Math.PI / 2}
         oars={oar ? 2 : 1}
         prompt={oar ? 'Row out' : 'Look'}
-        from={{ x: DOCK.x + 0.3, z: DOCK_BOAT.z }}
+        from={{ x: DOCK.x - 0.3, z: DOCK_BOAT.z }}
         onUse={rowOut}
       />
       <Boat x={ISLET_BOAT.x} z={ISLET_BOAT.z} turn={0} oars={2} prompt="Row back" from={ISLET_FROM} onUse={rowBack} />
@@ -132,4 +132,4 @@ export function Islet() {
     </>
   )
 }
-const ISLET_FROM = { x: ISLET_BOAT.x, z: ISLET_BOAT.z + 0.95 }
+const ISLET_FROM = { x: ISLET_BOAT.x, z: ISLET_BOAT.z + BOAT_HALF.width + 0.65 }

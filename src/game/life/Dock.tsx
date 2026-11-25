@@ -17,7 +17,7 @@ import {
   type Mesh,
 } from 'three'
 import { addCollider } from '../core/collision'
-import { BARREL_AT, CAST_TIME, DOCK, DOCK_TILES, line, SPOTS, tick, toggleRod, cast, useFishing } from './fishing'
+import { BARREL_AT, CAST_TIME, DECK_Y, DOCK, DOCK_TILES, dockHeight, line, LOW_Y, SPOTS, STAIRS, tick, toggleRod, cast, useFishing } from './fishing'
 import { block, merge, pick, tint, unindexed } from '../core/geometry'
 import { register } from '../core/interact'
 import { isLand, WATER_Y } from '../world/land'
@@ -25,12 +25,11 @@ import { sky } from '../world/sky'
 import { playerFacing } from '../core/state'
 import { reducedMotion } from '../core/settings'
 
-// The fishing dock at the island's bottom-left (rules and catches in fishing.ts): a plank walkway
-// on posts out over the water, a barrel of rods at its foot, and the ripple to fish at. While the
+// The fishing dock at the island's bottom-left (rules and catches in fishing.ts): a plank landing at
+// the grass, steps down, and a low deck on posts close to the water (the boat ties up beside it), a barrel of rods at its foot, and the ripple to fish at. While the
 // line is out, a float sits on the water joined to the rod's tip by a thin line. The rod itself is
 // drawn in the player's hand by <HeldRod>.
 
-const DECK_Y = 0.06 // top of the planks, just proud of the grass
 const PLANK = 0.24 // depth of each plank along the dock
 const GAP = 0.035 // between planks
 const START = DOCK.z0 - 0.2 // the first plank rests on the grass
@@ -50,17 +49,34 @@ function buildDock() {
   const parts: BufferGeometry[] = []
   const x0 = DOCK.x - DOCK.half
   const x1 = DOCK.x + DOCK.half
-  // Planks across the walkway, each a slightly different brown.
+  const s1 = STAIRS.z0 + STAIRS.steps * STAIRS.depth // where the stairs meet the low deck
+  const drop = (DECK_Y - LOW_Y) / (STAIRS.steps + 1)
+  // Planks across the landing and the low deck, each a slightly different brown.
   let n = 0
-  for (let z = START; z + PLANK <= DOCK.z1 + 0.001; z += PLANK + GAP, n++)
-    parts.push(tint(unindexed(block(x0, x1, DECK_Y - 0.06, DECK_Y, z, z + PLANK)), pick(PLANKS, n, 3)))
-  // Two beams underneath, along its length.
-  for (const x of [x0 + 0.15, x1 - 0.15])
-    parts.push(tint(unindexed(block(x - 0.06, x + 0.06, DECK_Y - 0.2, DECK_Y - 0.06, START, DOCK.z1)), BEAM))
-  // Posts down into the water, standing a little above the deck.
+  const planks = (from: number, to: number, y: number) => {
+    for (let z = from; z + PLANK <= to + 0.001; z += PLANK + GAP, n++)
+      parts.push(tint(unindexed(block(x0, x1, y - 0.06, y, z, z + PLANK)), pick(PLANKS, n, 3)))
+  }
+  planks(START, STAIRS.z0, DECK_Y)
+  planks(s1, DOCK.z1, LOW_Y)
+  // The steps: solid treads, each a drop lower, with a board along either side.
+  for (let k = 0; k < STAIRS.steps; k++) {
+    const top = DECK_Y - drop * (k + 1)
+    const z = STAIRS.z0 + k * STAIRS.depth
+    parts.push(tint(unindexed(block(x0 + 0.08, x1 - 0.08, top - drop - 0.04, top, z, z + STAIRS.depth - 0.02)), pick(PLANKS, n++, 3)))
+    for (const x of [x0, x1 - 0.08]) parts.push(tint(unindexed(block(x, x + 0.08, top - drop - 0.12, top + 0.06, z, z + STAIRS.depth)), BEAM))
+  }
+  // Two beams under the landing and two under the low deck, along their length.
+  for (const x of [x0 + 0.15, x1 - 0.15]) {
+    parts.push(tint(unindexed(block(x - 0.06, x + 0.06, DECK_Y - 0.2, DECK_Y - 0.06, START, STAIRS.z0)), BEAM))
+    parts.push(tint(unindexed(block(x - 0.06, x + 0.06, LOW_Y - 0.2, LOW_Y - 0.06, s1, DOCK.z1)), BEAM))
+  }
+  // Posts down into the water, standing a little above the walking surface where they are.
   for (const z of POSTS)
     for (const x of [x0 + 0.04, x1 - 0.04]) {
-      const post = new CylinderGeometry(0.075, 0.085, 2.1, 6).translate(x, WATER_Y - 0.6 + 1.05, z)
+      const bottom = WATER_Y - 0.6
+      const height = dockHeight(z) + 0.24 - bottom
+      const post = new CylinderGeometry(0.075, 0.085, height, 6).translate(x, bottom + height / 2, z)
       parts.push(tint(unindexed(post), POST))
     }
   return merge(parts)
