@@ -9,7 +9,8 @@ import { pois, roadTiles } from './pois'
 
 const SEED = 7 // change for a different layout
 const MAX_TREES = 70 // on the main island; the forest has its own
-const CLEARANCE = 1 // tiles kept free around every road tile, place and the house
+const CLEARANCE = 1 // tiles kept free around every road tile and place
+const HOUSE_CLEARANCE = 3 // and round the house: past the path round it, a unit of open grass before any canopy
 const SHORE_GAP = 1 // tiles kept free between the trees and the beach
 const MIN_SCALE = 0.8
 const MAX_SCALE = 1.3
@@ -48,16 +49,15 @@ function place(): Tree[] {
 
   // Tiles near roads and places stay clear so paths and doorsteps are never blocked.
   const blocked = new Set<string>()
-  const keepClear = (i: number, j: number) => {
-    for (let di = -CLEARANCE; di <= CLEARANCE; di++)
-      for (let dj = -CLEARANCE; dj <= CLEARANCE; dj++) blocked.add(key(i + di, j + dj))
+  const keepClear = (i: number, j: number, r = CLEARANCE) => {
+    for (let di = -r; di <= r; di++) for (let dj = -r; dj <= r; dj++) blocked.add(key(i + di, j + dj))
   }
   for (const t of roadTiles) keepClear(t.i, t.j)
   for (const p of pois) {
     const t = tileAt(p.x, p.z)
     keepClear(t.i, t.j)
   }
-  for (let i = HOUSE.i0; i <= HOUSE.i1; i++) for (let j = HOUSE.j0; j <= HOUSE.j1; j++) keepClear(i, j)
+  for (let i = HOUSE.i0; i <= HOUSE.i1; i++) for (let j = HOUSE.j0; j <= HOUSE.j1; j++) keepClear(i, j, HOUSE_CLEARANCE)
   for (let i = OUTCROP.i0; i <= OUTCROP.i1; i++) for (let j = OUTCROP.j0; j <= OUTCROP.j1; j++) keepClear(i, j)
   for (let i = SQUARE.i0; i <= SQUARE.i1; i++) for (let j = SQUARE.j0; j <= SQUARE.j1; j++) keepClear(i, j)
 
