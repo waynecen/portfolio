@@ -9,8 +9,8 @@ import { canopyColor, drawn, GREEN, SWAY } from './treeLook'
 // mesh. Loaded lazily; Trees.tsx shows the placeholder cones until it's here.
 
 const URL = '/models/pine.glb'
-const HEIGHT = 2 // the model is fitted to this height and WIDTH at scale 1: taller and narrower than its own shape
-const WIDTH = 0.8 // (2 : 1), so it reads as a pine from the camera's height, not a bush; the cones were 1.65 by 1
+const HEIGHT = 2 // the model is fitted to this height and WIDTH at scale 1: a touch wider than its own shape
+const WIDTH = 1.1 // (about 2 : 1), so the trees read full from the camera; the cones were 1.65 by 1
 const BRIGHT = 1.3 // the texture's foliage is darker than the island's palette; lifted to sit with it (not the snow)
 
 // Its foliage is the only green in its texture (the trunk is orange-brown), so the season's colour
