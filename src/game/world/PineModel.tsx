@@ -1,5 +1,5 @@
 import { useLayoutEffect, useMemo, useRef } from 'react'
-import { Box3, MeshLambertMaterial, Object3D, type BufferGeometry, type InstancedMesh, type Mesh, type MeshStandardMaterial } from 'three'
+import { Box3, Float32BufferAttribute, MeshLambertMaterial, Object3D, type BufferGeometry, type InstancedMesh, type Mesh, type MeshStandardMaterial } from 'three'
 import { useGLB } from '../core/gltf'
 import { sway } from '../core/wind'
 import { autumn, spring, winter } from './season'
@@ -64,7 +64,14 @@ function fit(root: Object3D): BufferGeometry {
   root.traverse((o) => {
     if (!mesh && (o as Mesh).isMesh) mesh = o as Mesh
   })
-  const geometry = mesh!.geometry.clone().applyMatrix4(mesh!.matrixWorld)
+  const geometry = mesh!.geometry.clone()
+  // The pipeline stores positions as 16-bit integers that only reach -1 to 1; stretched to HEIGHT, the
+  // top of the tree would wrap round and vanish. Floats first.
+  const position = geometry.getAttribute('position')
+  const floats = new Float32BufferAttribute(position.count * 3, 3)
+  for (let i = 0; i < position.count; i++) floats.setXYZ(i, position.getX(i), position.getY(i), position.getZ(i))
+  geometry.setAttribute('position', floats)
+  geometry.applyMatrix4(mesh!.matrixWorld)
   const box = new Box3().setFromBufferAttribute(geometry.getAttribute('position') as never)
   const s = WIDTH / Math.max(box.max.x - box.min.x, box.max.z - box.min.z, 1e-3)
   const sy = HEIGHT / (box.max.y - box.min.y || 1)

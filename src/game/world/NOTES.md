@@ -50,7 +50,7 @@ On the main island, trees never touch each other, diagonals included, so there's
 
 Every tree between the camera and the player thins out (`seeThrough` in treeLook.ts): its shader drops out a fixed noise pattern of pixels, up to `FADE` of them, so the player never vanishes behind a canopy.
 
-**The pine model** (PineModel.tsx) is every tree, drawn as one instanced mesh; while it downloads, placeholder cones stand in (a trunk and a cone, two instanced meshes, in Trees.tsx). It isn't behind the loader (the game starts indoors). Its foliage is the only green in its texture, so in spring and autumn that alone takes the tree's `canopyColor` (keeping the texture's light and dark, scaled from `GREEN`); in summer and winter the texture shows as it is. A new tree model needs green foliage and a trunk that isn't green. Trunk colliders don't change with the model.
+**The pine model** (PineModel.tsx) is every tree, drawn as one instanced mesh; while it downloads, placeholder cones stand in (a trunk and a cone, two instanced meshes, in Trees.tsx). It isn't behind the loader (the game starts indoors). Its foliage is the only green in its texture, so in spring and autumn that alone takes the tree's `canopyColor` (keeping the texture's light and dark, scaled from `GREEN`); in summer and winter the texture shows as it is. Its positions are turned to floats before it's stretched: the pipeline stores them as 16-bit integers that only reach -1 to 1. A new tree model needs green foliage and a trunk that isn't green. Trunk colliders don't change with the model.
 
 ---
 
