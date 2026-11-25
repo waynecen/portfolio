@@ -18,14 +18,15 @@ const WALL = 0.5 // wall thickness
 const WALL_H = 1.6 // back and side walls
 const FRONT_H = 0.35 // the front wall stays low so it never hides the room
 const CAP = 0.08 // the wooden cap along the top of every wall
-const SEAM = 0.02 // dark gap left between tatami mats
-const HERI = 0.045 // width of the cloth border along a mat's long sides
-const WEAVE = 9 // rush stripes across each tile of a mat
+const SEAM = 0.015 // dark gap left between tatami mats
+const HERI = 0.05 // width of the cloth border along a mat's long sides, for mats lying across the room
+const HERI_UP = 0.025 // and for mats running up the room: the camera's tilt makes those borders look thicker, so they're thinner
+const WEAVE = 9 // rush stripes across each tile's length of a mat
 
-const MAT = ['#c9c288', '#bfb87b', '#cfc792'].map((c) => new Color(c)) // tatami pick one of these, fresh to sun-faded
+const MAT = ['#d3cf9a', '#c9c48e', '#d9d5a6'].map((c) => new Color(c)) // tatami pick one of these, fresh to sun-faded
 const C = {
   seams: new Color('#4a4630'),
-  heri: new Color('#2f3a33'),
+  heri: new Color('#263552'), // dark navy cloth
   plaster: new Color('#e3d3b0'),
   frontWall: new Color('#8a6040'),
   cap: new Color('#6e4a30'),
@@ -44,28 +45,62 @@ const SOLIDS: Collider[] = [
   { kind: 'box', x: 0, z: D + WALL + 0.5, hx: DOOR, hz: 0.25 }, // backstop past the doorstep
 ]
 
-// Floor: tatami, each mat one tile deep and two long (so they line up with the edit grid), laid
-// in rows shifted by a tile so four corners never meet, with half mats filling the row ends.
-// The mats' faces carry the rush weave texture; their cloth borders and the dark base showing
-// through the seams are a second, plain mesh.
+// Floor: tatami laid the traditional way. Each mat is two tiles long and one wide (on the edit grid),
+// with its cloth border along its long sides and the weave running across it. They're laid in rings
+// from the walls inwards, each ring turning like a pinwheel (along the top, down the right, back
+// along the bottom, up the left), so no four corners ever meet; a half mat sits in the very middle.
+// The mats' faces carry the rush weave texture; their borders and the dark base showing through the
+// seams are a second, plain mesh.
+
+/** A mat, by its tiles (inclusive, house-local). */
+type Mat = { i0: number; i1: number; j0: number; j1: number }
+function layMats(): Mat[] {
+  const mats: Mat[] = []
+  for (let k = 0; ; k++) {
+    const i0 = -(H - 0.5) + k
+    const i1 = H - 0.5 - k
+    const j0 = -(D - 0.5) + k
+    const j1 = D - 0.5 - k
+    if (i0 > i1 || j0 > j1) break
+    if (j0 === j1) {
+      // The last row: mats in from both ends, a half mat in the middle if one tile is left over.
+      let a = i0
+      let b = i1
+      while (b - a >= 1) {
+        mats.push({ i0: a, i1: a + 1, j0, j1 }, ...(b - 1 > a + 1 ? [{ i0: b - 1, i1: b, j0, j1 }] : []))
+        a += 2
+        b -= 2
+      }
+      if (a === b) mats.push({ i0: a, i1: a, j0, j1 })
+      break
+    }
+    for (let i = i0; i < i1; i += 2) mats.push({ i0: i, i1: i + 1, j0, j1: j0 }) // along the top
+    for (let j = j0; j < j1; j += 2) mats.push({ i0: i1, i1, j0: j, j1: j + 1 }) // down the right
+    for (let i = i0 + 1; i < i1; i += 2) mats.push({ i0: i, i1: i + 1, j0: j1, j1 }) // along the bottom
+    for (let j = j0 + 1; j < j1; j += 2) mats.push({ i0, i1: i0, j0: j, j1: j + 1 }) // up the left
+  }
+  return mats
+}
+
 function buildFloor(): { mats: BufferGeometry; trim: BufferGeometry } {
   const mats: BufferGeometry[] = []
   const trim: BufferGeometry[] = []
-  const rows = Math.round(2 * D)
-  const cols = Math.round(2 * H)
-  for (let r = 0; r < rows; r++) {
-    const z0 = -D + r + SEAM / 2
-    const z1 = -D + r + 1 - SEAM / 2
-    for (let c = -(r % 2), n = 0; c < cols; c += 2, n++) {
-      const x0 = -H + Math.max(0, c) + SEAM / 2
-      const x1 = -H + Math.min(cols, c + 2) - SEAM / 2
-      const face = flat(x0, x1, z0 + HERI, z1 - HERI, 0)
-      const uv = face.getAttribute('uv')
-      for (let k = 0; k < uv.count; k++) uv.setX(k, uv.getX(k) * (x1 - x0)) // one weave repeat per tile
-      mats.push(tint(face, pick(MAT, r, n)))
-      trim.push(tint(flat(x0, x1, z0, z0 + HERI, 0.002), C.heri), tint(flat(x0, x1, z1 - HERI, z1, 0.002), C.heri))
-    }
-  }
+  layMats().forEach((m, n) => {
+    const x0 = m.i0 - 0.5 + SEAM / 2
+    const x1 = m.i1 + 0.5 - SEAM / 2
+    const z0 = m.j0 - 0.5 + SEAM / 2
+    const z1 = m.j1 + 0.5 - SEAM / 2
+    const long = m.j1 > m.j0 ? 'z' : 'x' // a half mat counts as lying along x
+    const face = long === 'x' ? flat(x0, x1, z0 + HERI, z1 - HERI, 0) : flat(x0 + HERI_UP, x1 - HERI_UP, z0, z1, 0)
+    // The weave's stripes run across the mat: they change along its length, one repeat per tile.
+    const uv = face.getAttribute('uv')
+    const length = long === 'x' ? m.i1 - m.i0 + 1 : m.j1 - m.j0 + 1
+    for (let k = 0; k < uv.count; k++) uv.setX(k, (long === 'x' ? uv.getX(k) : uv.getY(k)) * length)
+    mats.push(tint(face, pick(MAT, n, m.i0 + m.j0)))
+    // The cloth borders, along the long sides.
+    if (long === 'x') trim.push(tint(flat(x0, x1, z0, z0 + HERI, 0.002), C.heri), tint(flat(x0, x1, z1 - HERI, z1, 0.002), C.heri))
+    else trim.push(tint(flat(x0, x0 + HERI_UP, z0, z1, 0.002), C.heri), tint(flat(x1 - HERI_UP, x1, z0, z1, 0.002), C.heri))
+  })
   trim.push(tint(flat(-H, H, -D, D + WALL, -0.005), C.seams)) // base, running out under the doorstep
   return { mats: merge(mats), trim: merge(trim) }
 }
