@@ -17,6 +17,7 @@ const WET_VOLUME = 0.7 // the splash layered under each footstep in the rain, re
 const FILES: Partial<Record<Sound, string[]>> = {
   grass: ['/sfx/grass_L.wav', '/sfx/grass_R.wav'],
   tatami: ['/sfx/tatami_L.wav', '/sfx/tatami_R.wav'],
+  homeDoor: ['/sfx/open-door.wav'],
 }
 
 // A recording's tone, shaped on the way out. The grass recordings are bright (most of their energy is
@@ -97,6 +98,7 @@ const SOUNDS = {
   },
   door: () =>
     render(0.22, (t, n) => (Math.sin(2 * Math.PI * 95 * t) + n * Math.exp(-t * 200) * 0.6) * Math.exp(-t * 18) * 0.8),
+  homeDoor: () => SOUNDS.door(), // the house's front door, going in or out; its recording is in FILES
   blip: () => render(0.05, (t) => Math.sign(Math.sin(2 * Math.PI * 520 * t)) * 0.18 * Math.exp(-t * 50)),
   chime: () =>
     // Two bright notes, rising: something found.
@@ -236,6 +238,8 @@ export const step = (surface: Surface, wet = false) => {
 }
 export const whoosh = () => play('whoosh', WHOOSH_VOLUME, 0.95 + Math.random() * 0.1)
 export const door = () => play('door')
+/** The house's front door opening, going in or out. */
+export const homeDoor = () => play('homeDoor')
 /** A dialogue letter; `pitch` around 1 gives each line its own voice. */
 export const blip = (pitch: number) => play('blip', 1, pitch * (0.96 + Math.random() * 0.08))
 export const click = () => play('click')

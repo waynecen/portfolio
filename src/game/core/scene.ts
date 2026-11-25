@@ -28,10 +28,10 @@ export function arrive(scene: Scene, at: Spawn) {
   useGame.setState({ scene })
 }
 
-/** Takes the player to `scene`, placing them at `at`. Ignored while a fade is already running. */
-export function goTo(scene: Scene, at: Spawn) {
+/** Takes the player to `scene`, placing them at `at`, with `sound` as they go. Ignored while a fade is already running. */
+export function goTo(scene: Scene, at: Spawn, sound = door) {
   if (useGame.getState().fading) return
-  door()
+  sound()
   if (reducedMotion()) {
     arrive(scene, at)
     return
