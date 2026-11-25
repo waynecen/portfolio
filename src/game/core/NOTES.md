@@ -15,9 +15,9 @@ const TONE = { grass: { lowpass: 1800, bass: 9 } } // a recording's filters: Hz 
 const STEP_PITCH = 0.03 // a recorded step's pitch varies by up to this share either way (synthesised ones by 0.1)
 ```
 
-Every sound is synthesised in `SOUNDS` (no audio files): footsteps for grass, snow, road and tatami, the furniture thud (`wood`), the whoosh (sword, casting), the door, dialogue blips and clicks. Change a sound's pitch or length there.
+Every sound is synthesised in `SOUNDS` (no audio files): footsteps for grass, snow, road, stone (the cave and the city square) and tatami, the furniture thud (`wood`), the whoosh (sword, casting), the door, dialogue blips and clicks. Change a sound's pitch or length there.
 
-To use real recordings instead, put the files in `public/sfx/` and list them in `FILES` in sfx.ts. Grass and tatami footsteps already do, e.g. `grass: ['/sfx/grass_L.wav', '/sfx/grass_R.wav']`. With several files a sound takes turns through them in order, so a left and a right step alternate. The names are `grass`, `snow`, `road`, `tatami`, `wood`, `whoosh`, `door`, `blip` and `click`. Any sound left out stays synthesised, and a file that fails to load falls back to it too. A sound with files plays nothing until they've loaded, rather than its synthesised stand-in, and recorded steps play alone, with no rain splash over them. So on grass you hear only `grass_L` and `grass_R`, taking turns. The grass recordings are bright (most of their energy is at 2–4 kHz), which sounds tinny at walking pace, so `TONE` darkens them and adds some low end. Its filters are made once and shared.
+To use real recordings instead, put the files in `public/sfx/` and list them in `FILES` in sfx.ts. Grass, tatami and road footsteps already do (the roads with sand_L and sand_R; the cave floor and the city square are `stone`, still synthesised), and so does the house's front door (`homeDoor`: open-door.wav, going in or out; the cave and boat trips keep the synthesised `door`), e.g. `grass: ['/sfx/grass_L.wav', '/sfx/grass_R.wav']`. With several files a sound takes turns through them in order, so a left and a right step alternate. The names are `grass`, `snow`, `road`, `stone`, `tatami`, `wood`, `whoosh`, `door`, `homeDoor`, `blip` and `click`. Any sound left out stays synthesised, and a file that fails to load falls back to it too. A sound with files plays nothing until they've loaded, rather than its synthesised stand-in, and recorded steps play alone, with no rain splash over them. So on grass you hear only `grass_L` and `grass_R`, taking turns. The grass recordings are bright (most of their energy is at 2–4 kHz), which sounds tinny at walking pace, so `TONE` darkens them and adds some low end. Its filters are made once and shared.
 
 ---
 
@@ -60,7 +60,7 @@ const RIPPLE = [0.37, 0.23]       // how the phase changes across the island, pe
 // grass (Grass.tsx): { height: 0.42, amount: 0.05, rate: 1.6, part: { radius: 0.9, amount: 0.2 } }, parting round the player
 ```
 
-Trees and grass sway in the vertex shader, from one clock that Atmosphere.tsx ticks (`tickWind`), so nothing moves on the CPU. Each vertex bends by the square of its height, in one world direction for the whole island, with a phase from where it stands so gusts ripple across. With reduced motion the strength is 0. The shadow pass doesn't sway; the movement is too small for that to show. `sway()` keeps a material's own onBeforeCompile (the trees' see-through) and gives it its own program cache key.
+Trees and grass sway in the vertex shader, from one clock that Atmosphere.tsx ticks (`tickWind`), so nothing moves on the CPU. Each vertex bends by the square of its height, in one world direction for the whole island, with a phase from where it stands so gusts ripple across. With reduced motion the strength is 0. Three's shared shadow (depth) material doesn't sway, so a swaying mesh takes `swayShadow(s)` as its `customDepthMaterial` (the pines and the grass do), and its shadow moves with it. `sway()` keeps a material's own onBeforeCompile (the pine's seasons) and gives it its own program cache key.
 
 ---
 

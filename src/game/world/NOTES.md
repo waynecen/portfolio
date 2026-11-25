@@ -30,7 +30,8 @@ const STONE = [...]             // cliff block colours; each block picks one fro
 const RIM = ...                 // capstone colour
 const SEED = 7                  // forest.ts: change for a different (but still fixed) tree layout
 const MAX_TREES = 70            // upper limit on the main island's scattered trees
-const CLEARANCE = 1             // tiles kept free around every road tile, place and the house
+const CLEARANCE = 1             // tiles kept free around every road tile and place
+const HOUSE_CLEARANCE = 3       // forest.ts: and round the house: past the path round it, a unit of open grass before any canopy
 const SHORE_GAP = 1             // tiles kept free between trees and the cliff edge
 const MIN_SCALE = 0.8           // trees are randomly sized between these
 const MAX_SCALE = 1.3
@@ -38,7 +39,7 @@ const MAX_TRUNK = 0.3           // Trees.tsx: most a trunk's collider grows, so 
 const FOREST_DENSITY = 0.85     // forest.ts: share of the forest's tree spots that get one
 const FOREST_SCALE = [1, 1.5]   // forest trees are sized between these: taller than the island's
 const CLEARING = 3.5            // radius of the open clearing in the middle of the forest, in tiles
-const HEIGHT = 2, WIDTH = 0.8   // PineModel.tsx: the pine model at scale 1, taller and narrower than its own shape (2 : 1) so it reads as a pine from above
+const HEIGHT = 2, WIDTH = 1.1   // PineModel.tsx: the pine model at scale 1, a touch wider than its own shape (about 2 : 1) so it reads full from above
 const BRIGHT = 1.3              // its texture lifted to sit with the island's palette (not the snow)
 const SNOW_FROM = 0.3, UP = [0.3, 0.6] // winter: whatever faces up above this share of its height holds snow
 ```
@@ -77,7 +78,7 @@ The island follows the visitor's own clock. `SLOTS` in sky.ts splits the day int
 | evening   | 17:00  | golden: warm, low sun                          |
 | night     | 20:00  | night: dark blue, fireflies, lit house windows |
 
-Each slot sets the background, fog colour and distances, hemisphere light, sun colour, strength and direction, water and surf colour. Fog distances are measured from the camera; the ground under the player is about 17 away, so `fogNear` below that fogs the player too.
+Each slot sets the background, fog colour and distances, hemisphere light, sun colour, strength and height, water and surf colour. The sun (and the moon) always shines from the same side, `SUN_HEADING = [-1, 0.4]` in sky.ts: from the left and a little toward the camera, so shadows always fall to the right; only its height changes per slot (`sunAt(degrees)`: 28 at dawn, 52 morning, 58 afternoon, 32 evening, 55 night), so shadows lengthen and shorten but never swing across. Fog distances are measured from the camera; the ground under the player is about 17 away, so `fogNear` below that fogs the player too.
 
 ```ts
 export const BLEND = 0.5           // sky.ts: hours each slot takes to blend in from the one before

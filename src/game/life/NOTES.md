@@ -78,6 +78,11 @@ The dock is a walkway: the water either side of it doesn't stop the player (`doc
 
 ```ts
 const GUIDE_WALK = 1.5 // Villagers.tsx: Bramble's pace on the tour (a little under the player's); Mochi strolls at WALK = 1.2
+const GIVE_WAY = 1.8   // units/s a villager steps aside at when the player presses into them
+const TOUCH = 0.1      // how near counts as pressing, beyond the two bodies' radii
+const EASE = 8         // how quickly stepping aside starts and stops (damp rate)
+const AROUND = 0.7     // a walking villager starts curving round the player this far before reaching them
+const TURN = 10        // how quickly a villager turns to face where it's going (damp rate)
 const CATCH_UP = 2.6   // on the tour, how close the player comes before Bramble introduces a project; LOST = 14 for LOST_FOR = 10 s calls it off
 const WANDER = 9       // Mochi strolls to road tiles this near the house, pausing PAUSE = 2–5 s
 export const SHOP_AT = { x: 7, z: -1 } // layout.ts: Pip's stall; a road leads there (a 'shop' place in pois.ts)
@@ -89,6 +94,8 @@ const BLOSSOMING = 0.35 // Trees.tsx: share of trees in blossom in spring; AUTUM
 ```
 
 **Villagers.** Three neighbours walk the roads, finding their way with a breadth-first search over the road tiles, and never stand on the step outside the front door. **Bramble** (a frog) waits by the house; talk to Bramble for the guided tour: Bramble walks to the road beside each project in turn, waits until the player catches up, introduces it (its title and words from the HTML page), and moves on, walking only while the player keeps up. Wander more than `LOST` away for `LOST_FOR` seconds and the tour is off, to be picked up next time. **Mochi** (a rabbit) strolls about and chats; what Mochi says depends on what's in hand, the rain, the night and the season, with a real tip in each line. **Pip** (a hedgehog) keeps the shop at the stall east of the house.
+
+Nobody can get stuck on a villager. Press into one and it walks aside, easing in and out, across the way the player faces (to whichever side it's already on) and a little away, never into anything solid or off the land. A walking villager curves round the player instead of into them, sliding round obstacles only while it curves (the roads are kept clear otherwise), and counts a tile as reached from a little way off so it never circles one. Villagers don't block each other. They turn smoothly to face where they're going. Pip, behind the stall, has no collider and needn't.
 
 **Catching.** Butterflies flutter over the meadows by day (not in rain or winter) and fireflies glow at night. One "Catch" prompt follows whichever is nearest; walk up and use it. Rush in at a sprint and the bug gets away. Catches are counted in the bag's Bugs section (`bugs-v1`), beside the fish.
 
