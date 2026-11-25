@@ -10,7 +10,8 @@ import { readSaved, writeSaved } from '../core/persist'
 // The layout is saved in the visitor's browser; a bad or missing save falls back to DEFAULT.
 
 export type PieceId =
-  | 'bed' | 'dresser' | 'table' | 'stool' | 'pot2' | 'pot3' | 'chest' | 'rug' | 'recordPlayer'
+  | 'bed' | 'fireplace' | 'table' | 'stool' | 'pot2' | 'pot3' | 'chest' | 'rug' | 'recordPlayer'
+  | 'armchair' | 'armchair2' | 'sideTable' | 'logs' | 'coatStand' | 'kotatsu' | 'zabuton' | 'zabuton2' | 'basket'
   | 'lamp' | 'plant' | 'shelf'
 
 export type Spot = { i: number; j: number }
@@ -32,12 +33,21 @@ export const PIECES: Piece[] = [
   { id: 'rug', name: 'the rug', w: 3, d: 2, floor: true },
   { id: 'bed', name: 'the bed', w: 1, d: 2 },
   { id: 'chest', name: 'the chest', w: 1, d: 1 },
-  { id: 'dresser', name: 'the dresser', w: 3, d: 1 },
+  { id: 'fireplace', name: 'the fireplace', w: 3, d: 1 },
   { id: 'table', name: 'the table', w: 2, d: 1 },
   { id: 'stool', name: 'the stool', w: 1, d: 1 },
   { id: 'pot2', name: 'a pot', w: 1, d: 1 },
   { id: 'pot3', name: 'a pot', w: 1, d: 1 },
   { id: 'recordPlayer', name: 'the record player', w: 1, d: 1 },
+  { id: 'armchair', name: 'an armchair', w: 1, d: 1 },
+  { id: 'armchair2', name: 'an armchair', w: 1, d: 1 },
+  { id: 'sideTable', name: 'the side table', w: 1, d: 1 },
+  { id: 'logs', name: 'the log basket', w: 1, d: 1 },
+  { id: 'coatStand', name: 'the coat stand', w: 1, d: 1 },
+  { id: 'kotatsu', name: 'the kotatsu', w: 2, d: 2 },
+  { id: 'zabuton', name: 'a cushion', w: 1, d: 1, floor: true },
+  { id: 'zabuton2', name: 'a cushion', w: 1, d: 1, floor: true },
+  { id: 'basket', name: 'the blanket basket', w: 1, d: 1 },
   { id: 'lamp', name: 'the paper lamp', w: 1, d: 1, price: 10 },
   { id: 'plant', name: 'the fern', w: 1, d: 1, price: 6 },
   { id: 'shelf', name: 'the bookshelf', w: 1, d: 1, price: 15 },
@@ -49,16 +59,29 @@ const DEFAULT: Record<PieceId, Spot> = {
   rug: { i: -1, j: 1 },
   bed: { i: -4, j: -3 },
   chest: { i: -3, j: -3 },
-  dresser: { i: -1, j: -3 },
+  fireplace: { i: -1, j: -3 }, // in the middle of the back wall
   table: { i: 3, j: -3 },
   stool: { i: 3, j: -2 },
   pot2: { i: -5, j: 0 },
   pot3: { i: -5, j: 1 },
   recordPlayer: { i: 5, j: -3 },
+  // Round the fire: an armchair either side facing in, the tea beside the left one, the logs beside the right.
+  armchair: { i: -2, j: -2 },
+  armchair2: { i: 2, j: -2 },
+  sideTable: { i: -2, j: -3 },
+  logs: { i: 2, j: -3 },
+  coatStand: { i: -5, j: -3 }, // in the back corner, out of the way of the door and the view
+  // The kotatsu on the right with a cushion either side, and a basket of blankets on the left. The
+  // column below the bed (i = -3) and the front row left of the door stay clear: the snapshot skill
+  // walks out that way.
+  kotatsu: { i: 2, j: 0 },
+  zabuton: { i: 4, j: 0 },
+  zabuton2: { i: 2, j: 2 },
+  basket: { i: -4, j: 1 },
   // Where bought pieces go if there's room there (otherwise the nearest free tile: addPiece).
   lamp: { i: 5, j: 0 },
   plant: { i: -5, j: 2 },
-  shelf: { i: -2, j: -3 },
+  shelf: { i: -5, j: -2 },
 }
 
 // Pieces bought at the shop, kept in this browser. Only these (and everything that came with the
@@ -84,7 +107,7 @@ const ROWS = TILES.j1 - TILES.j0 + 1
 const DOOR_TILE = { i: 0, j: TILES.j1 }
 const DOORWAY: Spot[] = [DOOR_TILE, { i: 0, j: TILES.j1 - 1 }]
 
-const SAVE_KEY = 'room-layout-v1'
+const SAVE_KEY = 'room-layout-v2' // v2: the dresser became the fireplace, and more furniture came
 
 /** A piece's centre in world units, when its top-left tile is `at`. */
 export function centreOf(p: Piece, at: Spot) {

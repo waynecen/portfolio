@@ -11,7 +11,7 @@ import { sky } from '../world/sky'
 import { GLOW, shadeMaterial, useLightSwitch, WARM } from './lights'
 
 // The room's own lights, for a softer, cosier room than the shared daylight alone (Atmosphere.tsx):
-// a paper lantern hanging from the ceiling, and the paper lamp from Pip's shop once it's bought.
+// a paper lantern hanging from the ceiling, the fire, and the paper lamp from Pip's shop once it's bought.
 // Both glow brighter as night falls, when they're most of the light. The switch by the door
 // (LightSwitch.tsx) turns the lantern off and on; the lamp stays as it is.
 //
@@ -22,6 +22,8 @@ import { GLOW, shadeMaterial, useLightSwitch, WARM } from './lights'
 const PENDANT = { x: 0, y: 2.25, z: 0.3 } // the hanging lantern, house-local; the cord runs up out of sight
 const CEILING = { day: 3, night: 10, distance: 13 } // its light, candela; it pools under the lantern and fades to the walls
 const LAMP = { day: 0.5, night: 1.8, distance: 3.5, y: 1.1 } // the paper lamp's light, at the height of its shade
+const FIRE = { day: 1.2, night: 3.5, distance: 5, y: 0.5, z: 0.25, color: '#ff9a4a' } // the fireplace's light, just out of its opening (from the piece's centre), flickering
+const FLICKER = 0.15 // how much the fire's light flickers either way (a third of it with reduced motion)
 const DRIFT = 0.025 // how far the lantern swings on its cord, radians (still with reduced motion)
 const CORD = 3 // the cord's length above the lantern; it swings from the top
 const SNAP = 18 // how fast the lantern comes on or goes out at the switch (a damp rate, per second): a bulb's quick fade
@@ -64,8 +66,9 @@ export function Pendant() {
 export function RoomLights() {
   const ceiling = useRef<PointLight>(null)
   const lamp = useRef<PointLight>(null)
+  const fire = useRef<PointLight>(null)
 
-  useFrame((_, dt) => {
+  useFrame(({ clock }, dt) => {
     const c = ceiling.current
     const l = lamp.current
     if (!c || !l) return
@@ -84,12 +87,24 @@ export function RoomLights() {
       const p = PIECE.lamp
       l.position.set(INTERIOR.x + at.i + (p.w - 1) / 2, LAMP.y, INTERIOR.z + at.j + (p.d - 1) / 2)
     }
+    // The fire's light, flickering, follows the fireplace like the lamp's.
+    const f = fire.current
+    if (f) {
+      const t = clock.elapsedTime
+      const flick = 1 + FLICKER * (reducedMotion() ? 0.3 : 1) * (Math.sin(t * 9) * 0.6 + Math.sin(t * 23 + 1) * 0.4)
+      f.intensity = home ? mix(FIRE.day, FIRE.night) * flick : 0
+      const h = useEdit.getState().held
+      const at = h && h.id === 'fireplace' && useGame.getState().editing ? h.at : useRoom.getState().spots.fireplace
+      const p = PIECE.fireplace
+      f.position.set(INTERIOR.x + at.i + (p.w - 1) / 2, FIRE.y, INTERIOR.z + at.j + (p.d - 1) / 2 + FIRE.z)
+    }
   })
 
   return (
     <>
       <pointLight ref={ceiling} color={WARM} intensity={0} distance={CEILING.distance} decay={2} position={[INTERIOR.x + PENDANT.x, PENDANT.y - 0.15, INTERIOR.z + PENDANT.z]} />
       <pointLight ref={lamp} color={WARM} intensity={0} distance={LAMP.distance} decay={2} />
+      <pointLight ref={fire} color={FIRE.color} intensity={0} distance={FIRE.distance} decay={2} />
     </>
   )
 }

@@ -1,5 +1,5 @@
 import { lazy, Suspense, useRef } from 'react'
-import { Color, CylinderGeometry, MeshLambertMaterial, type BufferGeometry, type Group } from 'three'
+import { Color, ConeGeometry, CylinderGeometry, MeshBasicMaterial, MeshLambertMaterial, SphereGeometry, type BufferGeometry, type Group } from 'three'
 import { addCollider, type Collider } from '../core/collision'
 import { useEdit } from './edit'
 import { centreOf, PIECE, placed, useOwned, useRoom, type PieceId } from './room'
@@ -35,6 +35,21 @@ const C = {
   rugField: new Color('#e2b56c'),
   paper: new Color('#fffaf0'),
   brass: new Color('#d9a441'),
+  stone: new Color('#a59d93'),
+  stoneDark: new Color('#8c847b'),
+  soot: new Color('#2b2522'),
+  log: new Color('#6b4429'),
+  fabric: new Color('#7f9e78'), // sage-green upholstery
+  cushion: new Color('#94b38c'),
+  wicker: new Color('#c7a06a'),
+  tea: new Color('#9cb79a'),
+  candle: new Color('#f3ead6'),
+  quilt: new Color('#c4553f'),
+  quiltEdge: new Color('#efe3cc'),
+  orange: new Color('#f08a2c'),
+  indigo: new Color('#3f5a8a'),
+  blanketRoll: new Color('#e9dcc2'),
+  yarn: new Color('#e08aa0'),
 }
 
 /**
@@ -72,14 +87,120 @@ const BED: Build = {
   },
   solid: [{ kind: 'box', x: 0, z: -0.03, hx: 0.49, hz: 0.93 }], // as wide as the model (MODELS.bed)
 }
-const DRESSER: Build = {
-  // Against the back of its tiles, with jars on top.
+const FIREPLACE: Build = {
+  // A stone hearth against the back wall: a chimney breast, a dark opening with logs (the flames are
+  // <Fire>), a wooden mantel with two candles, and a hearthstone out in front.
   parts: (box, add) => {
-    box(C.wood, -1.2, 1.2, 0, 1.0, -0.5, -0.15)
-    box(C.cap, -1.25, 1.25, 1.0, 1.06, -0.52, -0.12)
-    for (const x of [-0.7, 0, 0.7]) add(cylinder(x, -0.33, 0.12, 0.1, 1.06, 1.3, C.jar))
+    box(C.stoneDark, -1.35, 1.35, 0, 0.08, -0.5, 0.35) // the hearthstone
+    box(C.stone, -1.2, -0.55, 0.08, 1.12, -0.5, 0.1) // the sides of the opening
+    box(C.stone, 0.55, 1.2, 0.08, 1.12, -0.5, 0.1)
+    box(C.stone, -0.55, 0.55, 0.8, 1.12, -0.5, 0.1) // over the opening
+    box(C.soot, -0.55, 0.55, 0.08, 0.8, -0.5, -0.3) // inside, at the back
+    box(C.cap, -1.35, 1.35, 1.12, 1.22, -0.5, 0.2) // the mantel
+    box(C.stone, -0.85, 0.85, 1.22, 1.6, -0.5, -0.2) // the chimney breast, up to the top of the wall
+    for (const [turn, y] of [[0.12, 0.15], [-0.1, 0.27]] as const)
+      add(tint(new CylinderGeometry(0.07, 0.07, 0.85, 7).rotateZ(Math.PI / 2).rotateY(turn).translate(0, y, -0.12), C.log))
+    for (const x of [-1.05, 0.95]) add(cylinder(x, -0.15, 0.045, 0.045, 1.22, 1.38 + (x < 0 ? 0.06 : 0), C.candle))
   },
-  solid: [{ kind: 'box', x: 0, z: -0.33, hx: 1.2, hz: 0.18 }],
+  solid: [{ kind: 'box', x: 0, z: -0.15, hx: 1.3, hz: 0.45 }],
+}
+// The flames: three cones in the opening, flickering (Fire, below). Bright enough to bloom.
+const FLAMES = [
+  { x: -0.2, h: 0.36, r: 0.11 },
+  { x: 0.02, h: 0.5, r: 0.14 },
+  { x: 0.22, h: 0.32, r: 0.1 },
+]
+const flame = new ConeGeometry(1, 1, 7).translate(0, 0.5, 0)
+const flameMaterial = new MeshBasicMaterial({ color: new Color('#ff9a3c').multiplyScalar(1.6) })
+const coreMaterial = new MeshBasicMaterial({ color: new Color('#ffe08a').multiplyScalar(1.4) })
+const FIRE_Y = 0.2 // the flames' base, on the logs
+const FIRE_Z = -0.1
+const FIRE_USE = {
+  dx: 0,
+  dz: 0.5,
+  range: 1.3,
+  prompt: 'Look',
+  onInteract: () => say(['The fire crackles and pops.', 'It’s always lit in here, rain or shine. Pull up an armchair.']),
+}
+/** An armchair facing +x (`side` 1) or -x (-1): its back on the other side. */
+function armchair(side: 1 | -1): Build {
+  return {
+    parts: (box) => {
+      // x from the back (a) toward the front (b), mirrored for a chair facing -x.
+      const along = (c: Color, a: number, b: number, y0: number, y1: number, z0: number, z1: number) =>
+        box(c, Math.min(a * side, b * side), Math.max(a * side, b * side), y0, y1, z0, z1)
+      box(C.wood, -0.36, 0.36, 0, 0.08, -0.36, 0.36) // the feet's frame
+      box(C.fabric, -0.38, 0.38, 0.08, 0.3, -0.38, 0.38) // the base
+      along(C.cushion, -0.24, 0.36, 0.3, 0.4, -0.27, 0.27) // the seat cushion
+      along(C.fabric, -0.4, -0.24, 0.3, 0.86, -0.38, 0.38) // the back
+      for (const z of [-1, 1]) along(C.fabric, -0.24, 0.38, 0.3, 0.55, Math.min(z * 0.27, z * 0.37), Math.max(z * 0.27, z * 0.37)) // the arms, in from the back
+    },
+    solid: [{ kind: 'circle', x: 0, z: 0, r: 0.38 }],
+  }
+}
+const SIDE_TABLE: Build = {
+  // A round top on one leg, with a teapot and a cup on it.
+  parts: (_, add) => {
+    add(cylinder(0, 0, 0.18, 0.18, 0, 0.04, C.cap))
+    add(cylinder(0, 0, 0.05, 0.05, 0.04, 0.5, C.wood))
+    add(cylinder(0, 0, 0.3, 0.3, 0.5, 0.56, C.wood))
+    add(tint(new SphereGeometry(0.1, 10, 7).scale(1, 0.85, 1).translate(-0.06, 0.64, -0.04), C.tea)) // the teapot
+    add(cylinder(-0.06, -0.04, 0.025, 0.025, 0.71, 0.75, C.tea)) // its lid knob
+    add(tint(new CylinderGeometry(0.02, 0.025, 0.12, 5).rotateZ(-0.9).translate(0.06, 0.66, -0.04), C.tea)) // its spout
+    add(cylinder(0.13, 0.12, 0.045, 0.04, 0.56, 0.63, C.candle)) // a cup
+  },
+  solid: [{ kind: 'circle', x: 0, z: 0, r: 0.3 }],
+}
+const LOGS: Build = {
+  // A wicker basket of split logs for the fire.
+  parts: (_, add) => {
+    add(cylinder(0, 0, 0.26, 0.3, 0, 0.34, C.wicker))
+    for (const [x, z, turn] of [[-0.08, -0.06, 0.3], [0.09, 0.05, -0.4], [0, 0.1, 1.2], [-0.02, -0.12, 2]] as const)
+      add(tint(new CylinderGeometry(0.06, 0.06, 0.46, 6).rotateZ(Math.PI / 2).rotateY(turn).translate(x, 0.36, z), C.log))
+  },
+  solid: [{ kind: 'circle', x: 0, z: 0, r: 0.3 }],
+}
+const KOTATSU: Build = {
+  // A low square table under a quilt that falls to the floor all round, a bowl of oranges on top.
+  parts: (box, add) => {
+    box(C.quilt, -0.85, 0.85, 0, 0.3, -0.85, 0.85)
+    box(C.quiltEdge, -0.87, 0.87, 0.3, 0.34, -0.87, 0.87) // the quilt's top edge
+    box(C.wood, -0.72, 0.72, 0.34, 0.42, -0.72, 0.72) // the tabletop
+    add(cylinder(0, 0, 0.13, 0.17, 0.42, 0.5, C.candle)) // the bowl
+    for (const [x, z] of [[-0.06, -0.04], [0.07, -0.03], [0, 0.07]]) add(tint(new SphereGeometry(0.065, 8, 6).translate(x, 0.53, z), C.orange))
+  },
+  solid: [{ kind: 'box', x: 0, z: 0, hx: 0.87, hz: 0.87 }],
+}
+const ZABUTON: Build = {
+  // A flat floor cushion with a tassel tied in the middle. On the floor, like the rug: walk over it.
+  parts: (box) => {
+    box(C.indigo, -0.34, 0.34, 0, 0.07, -0.34, 0.34)
+    box(C.quiltEdge, -0.04, 0.04, 0.07, 0.09, -0.04, 0.04)
+  },
+  solid: [],
+}
+const BASKET: Build = {
+  // A wicker basket of rolled blankets, with a ball of yarn on top.
+  parts: (_, add) => {
+    add(cylinder(0, 0, 0.26, 0.3, 0, 0.32, C.wicker))
+    add(tint(new CylinderGeometry(0.1, 0.1, 0.5, 8).rotateZ(Math.PI / 2).translate(0, 0.36, -0.08), C.blanketRoll))
+    add(tint(new CylinderGeometry(0.09, 0.09, 0.46, 8).rotateZ(Math.PI / 2).rotateY(0.3).translate(0, 0.38, 0.1), C.blanket))
+    add(tint(new SphereGeometry(0.08, 8, 6).translate(0.12, 0.5, 0), C.yarn))
+  },
+  solid: [{ kind: 'circle', x: 0, z: 0, r: 0.3 }],
+}
+const COAT_STAND: Build = {
+  // A tall pole on a cross of feet, a scarf and a hat on its pegs.
+  parts: (box, add) => {
+    box(C.wood, -0.25, 0.25, 0, 0.05, -0.04, 0.04)
+    box(C.wood, -0.04, 0.04, 0, 0.05, -0.25, 0.25)
+    add(cylinder(0, 0, 0.035, 0.03, 0.05, 1.55, C.wood))
+    for (const a of [0.4, 2.0, 3.6, 5.2]) box(C.cap, Math.cos(a) * 0.12 - 0.02, Math.cos(a) * 0.12 + 0.02, 1.38, 1.42, Math.sin(a) * 0.12 - 0.02, Math.sin(a) * 0.12 + 0.02)
+    box(new Color('#c45a4a'), 0.04, 0.12, 0.85, 1.38, 0.0, 0.08) // a red scarf hanging down
+    add(cylinder(-0.1, -0.05, 0.13, 0.13, 1.4, 1.43, new Color('#d9b24a'))) // a straw hat's brim
+    add(cylinder(-0.1, -0.05, 0.07, 0.08, 1.43, 1.53, new Color('#d9b24a'))) // and crown
+  },
+  solid: [{ kind: 'circle', x: 0, z: 0, r: 0.22 }],
 }
 const TABLE: Build = {
   // Top, four legs and the note.
@@ -171,13 +292,15 @@ const MODELS: Partial<Record<PieceId, { url: string; width: number; depth?: numb
 }
 
 const BUILDS: Partial<Record<PieceId, Build>> = {
-  bed: BED, dresser: DRESSER, table: TABLE, stool: STOOL,
+  bed: BED, fireplace: FIREPLACE, table: TABLE, stool: STOOL,
+  armchair: armchair(1), armchair2: armchair(-1), sideTable: SIDE_TABLE, logs: LOGS, coatStand: COAT_STAND,
+  kotatsu: KOTATSU, zabuton: ZABUTON, zabuton2: ZABUTON, basket: BASKET,
   pot2: POT, pot3: POT, chest: CHEST, rug: RUG,
   lamp: LAMP, plant: PLANT, shelf: SHELF,
 } // the record player draws itself (RecordPlayer.tsx)
 
-// The golf trophy (trophy.ts), on the dresser between two jars once Gull Rock Links is finished under par.
-const TROPHY_AT = { x: -0.35, y: 1.06, z: -0.33 } // from the dresser's centre: its top, between the left and middle jars
+// The golf trophy (trophy.ts), on the mantelpiece once Gull Rock Links is finished under par.
+const TROPHY_AT = { x: 0.45, y: 1.22, z: 0 } // from the fireplace's centre: on the mantel, right of the middle
 const GOLD = new Color('#ffd447') // brighter than the jars' amber, so it reads as the cup
 const trophy = merge([
   tint(block(-0.11, 0.11, 0, 0.07, -0.09, 0.09), C.cap), // a wooden plinth
@@ -226,11 +349,12 @@ const material = new MeshLambertMaterial({ vertexColors: true, flatShading: true
 /** Things to use on a piece, from its centre. */
 const USES: Partial<Record<PieceId, Omit<Interactable, 'x' | 'z'> & { dx: number; dz: number }>> = {
   table: { dx: NOTE_AT.x, dz: NOTE_AT.z, range: 1.4, prompt: 'Read', onInteract: () => say(note()) },
+  fireplace: FIRE_USE,
 }
 
 function Piece({ id, build }: { id: PieceId; build: Build }) {
   const group = useRef<Group>(null)
-  const cup = useTrophy((s) => s.golf) && id === 'dresser'
+  const cup = useTrophy((s) => s.golf) && id === 'fireplace'
   const armed = useArmed((s) => s.sword)
   const chest = id === 'chest' ? (armed ? CHEST_EMPTY : CHEST_OPEN) : undefined
   usePiece(id, group, build.solid, cup ? TROPHY_USE : (chest ?? USES[id]))
@@ -247,6 +371,38 @@ function Piece({ id, build }: { id: PieceId; build: Build }) {
       )}
       {build.glow && <mesh geometry={build.glow} material={shadeMaterial} />}
       {cup && <mesh geometry={trophy} material={material} />}
+      {id === 'fireplace' && <Fire />}
+    </group>
+  )
+}
+
+/** The fireplace's flames, flickering (gently with reduced motion). Its light is RoomLights.tsx's. */
+function Fire() {
+  const flames = useRef<(Group | null)[]>([])
+  useSceneFrame('house', ({ clock }) => {
+    const t = clock.elapsedTime
+    const k = reducedMotion() ? 0.3 : 1
+    flames.current.forEach((g, n) => {
+      if (!g) return
+      const f = FLAMES[n]
+      const flick = 1 + k * (0.18 * Math.sin(t * 9 + n * 2.1) + 0.1 * Math.sin(t * 23 + n * 5.3))
+      g.scale.set(f.r * (2 - flick) ** 0.5, f.h * flick, f.r * (2 - flick) ** 0.5)
+    })
+  })
+  return (
+    <group position={[0, FIRE_Y, FIRE_Z]} userData={{ noShadow: true }}>
+      {FLAMES.map((f, n) => (
+        <group
+          key={n}
+          position-x={f.x}
+          ref={(el) => {
+            flames.current[n] = el
+          }}
+        >
+          <mesh geometry={flame} material={flameMaterial} />
+          <mesh geometry={flame} material={coreMaterial} scale={[0.5, 0.6, 0.5]} position-z={0.03} />
+        </group>
+      ))}
     </group>
   )
 }

@@ -60,7 +60,7 @@ export function RoundPanel() {
       <p className="golf-words">
         {words} {card.newBest ? 'Your best round yet!' : card.best !== null ? `Your best is ${card.best}.` : ''}
       </p>
-      {card.trophy && <p className="golf-trophy">A trophy for the house! It's waiting on the dresser at home.</p>}
+      {card.trophy && <p className="golf-trophy">A trophy for the house! It's waiting on the mantelpiece at home.</p>}
       <button type="button" className="golf-again" onClick={closePanel}>
         Play again
       </button>
