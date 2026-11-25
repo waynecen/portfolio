@@ -8,7 +8,7 @@ The models for roadmap item 69, made in [Tripo](https://www.tripo3d.ai/), each r
 3. Run `npm run models <name>.glb`. It writes `public/models/<name>.glb`, compressed (meshopt geometry, WebP textures at 1024 px or less).
 4. Wire it in:
    - **Room pieces:** add a line to `MODELS` in [Furniture.tsx](../src/game/house/Furniture.tsx). [PropModel.tsx](../src/game/house/PropModel.tsx) fits the model to the piece's width, can stretch it to the depth of its tiles, and adds a soft fill so its front isn't lost in shadow. One file can serve several pieces (the three pots).
-   - **Outdoor items:** each needs its own small loader.
+   - **Outdoor items:** each needs its own small loader. PropModel works outdoors too, with `scene="world"` (the house does this).
 
 **Budget for each prop**
 - File size: about 150 KB or less. The bed is 113 KB, the table 132 KB.
@@ -108,7 +108,7 @@ Hundreds of these are drawn with instancing (Trees.tsx).
   > A smooth rounded low-poly boulder in warm grey, slightly mossy on top, with soft facets.
 
 ### Buildings and landmarks
-- [ ] **`house.glb`**: the player's house from outside (5 × 3 tiles; the front door is at the centre of the long side).
+- [x] **`house.glb`**: the player's house from outside (5 × 3 tiles; the front door is at the centre of the long side). *In: `MODEL` in House.tsx, over the footprint and eaves, a little lower than its own shape; its blue panes glow at night (house/windows.ts).*
   > A small cosy cottage, wider than deep: cream plaster walls, a warm red-orange tiled gable roof with slight overhangs, a wooden front door in the centre of the long side, a square window either side of it with blue panes, and a little doorstep. Chunky toy-like proportions.
 - [ ] **`shop.glb`**: Pip's market stall.
   > A small wooden market stall with a red-and-white striped awning, a wooden counter at the front with a few baskets of fruit and goods, and a hand-painted sign board on top.

@@ -69,10 +69,14 @@ const MAT = [...]       // tatami colours, fresh to sun-faded; each mat picks on
 const OUT_WALL_H = 1.4  // outside: wall height
 const RISE = 1          // outside: height of the roof's ridge above the walls
 const EAVES = 0.25      // outside: how far the roof overhangs the walls
+const MODEL = { url: '/models/house.glb', width: X1 - X0 + 2 * EAVES, depth: Z1 - Z0 + 2 * EAVES, height: 2.9, ... } // the Tripo house over the footprint and eaves, lower than its own shape (4 tall) so it fits the view from the door; the blocks stand in while it downloads, the collider stays the walls' box
+const BRIGHT = 0.45     // windows.ts: how warm its windows glow at full night (its blue panes, found by colour in its texture)
 const WAY_OUT = ROOM.hz + 0.25     // Doors.tsx: step this far down the room through the doorway to leave
 const PRESS = PILL_RADIUS + 0.1    // walk this close to the front door from outside to go in
 export const FADE = 0.25           // scene.ts: seconds to fade to black, and again to fade back (instant with reduce motion)
 ```
+
+**The house model** isn't behind the loader (the game starts indoors). Its roof stays red in winter, where the blocks' roof was snowed over. Its window glow picks texels bluer than they are red, so a new house model needs blue (or teal) panes and nothing else cool-coloured.
 
 Both areas stay loaded and only one is drawn, so trips are instant. Each arrival spot is clear of the doorway it came through, so arriving never sends you straight back; keep it that way if you move a spawn or a door. The fade's look is `.fade` in [style.css](../../style.css); keep its transition time equal to `FADE`.
 
