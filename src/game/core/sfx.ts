@@ -17,6 +17,7 @@ const WET_VOLUME = 0.7 // the splash layered under each footstep in the rain, re
 const FILES: Partial<Record<Sound, string[]>> = {
   grass: ['/sfx/grass_L.wav', '/sfx/grass_R.wav'],
   tatami: ['/sfx/tatami_L.wav', '/sfx/tatami_R.wav'],
+  road: ['/sfx/sand_L.wav', '/sfx/sand_R.wav'], // the island's dirt roads
   homeDoor: ['/sfx/open-door.wav'],
 }
 
@@ -75,7 +76,9 @@ const SOUNDS = {
     const lp = lowpass(0.75)
     return render(0.12, (t, n) => lp(n) * (Math.random() < 0.25 ? 2.2 : 0.6) * Math.exp(-t * 32))
   },
-  road: () => {
+  road: () => SOUNDS.stone(), // until its recordings load (FILES)
+  stone: () => {
+    // The cave floor and the city square's paving: a short, hard tap.
     const lp = lowpass(0.5)
     return render(0.07, (t, n) => lp(n) * Math.exp(-t * 60) * 0.9)
   },
@@ -227,7 +230,7 @@ function play(name: Sound, gain = 1, rate = 1) {
   src.start()
 }
 
-export type Surface = 'grass' | 'snow' | 'road' | 'tatami' | 'wood'
+export type Surface = 'grass' | 'snow' | 'road' | 'stone' | 'tatami' | 'wood'
 
 /** One footstep, slightly different every time (and left, right, left with recordings). */
 export const step = (surface: Surface, wet = false) => {

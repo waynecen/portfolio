@@ -43,11 +43,12 @@ const FLICKER = 14 // flickers per second while invulnerable after a bump
 const roads = new Set(roadTiles.map((t) => t.i + ',' + t.j))
 function surfaceAt(x: number, z: number): Surface {
   if (useGame.getState().scene === 'house') return 'tatami'
-  if (useGame.getState().scene === 'cave') return 'road' // stone
+  if (useGame.getState().scene === 'cave') return 'stone'
   if (onDock(x, z)) return 'wood'
   const i = Math.round(x / TILE)
   const j = Math.round(z / TILE)
-  return roads.has(i + ',' + j) || inSquare(i, j) ? 'road' : winter ? 'snow' : 'grass'
+  if (inSquare(i, j)) return 'stone' // the city square's paving
+  return roads.has(i + ',' + j) ? 'road' : winter ? 'snow' : 'grass'
 }
 
 // Footsteps splash in the rain: outdoors, while it's raining (not in winter, when it snows instead).
@@ -137,7 +138,8 @@ export function Player() {
       stride.current -= len
       const surface = surfaceAt(p.x, p.z)
       step(surface, wet())
-      if ((surface === 'road' || surface === 'snow') && useGame.getState().scene === 'world') addPrint(p.x, p.z, playerFacing.heading, surface)
+      if (surface !== 'grass' && surface !== 'wood' && useGame.getState().scene === 'world')
+        addPrint(p.x, p.z, playerFacing.heading, surface === 'snow' ? 'snow' : 'road') // the square's paving takes prints like a road
     }
     playerPos.x = p.x
     playerPos.z = p.z
