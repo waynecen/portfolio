@@ -19,7 +19,7 @@ const NO = new Color('#e2574c') // it doesn't
 const AIM = new Color('#ffffff') // the cursor, over nothing
 const OVER = new Color('#f2b233') // the cursor, over a piece you could pick up
 
-const LINE = 0.04 // grid line width
+const LINE = 0.02 // grid line width
 
 // A thin strip along every tile edge, a hair above the floor (house-local). Strips rather than
 // lines, which are a single pixel wide and vanish into the planks' seams.
@@ -35,7 +35,7 @@ function buildGrid() {
 }
 const grid = buildGrid()
 const overlay = { transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }
-const gridMaterial = new MeshBasicMaterial({ ...overlay, color: '#fffaf0', opacity: 0.55 })
+const gridMaterial = new MeshBasicMaterial({ ...overlay, color: '#000000', opacity: 0.4 })
 const square = new PlaneGeometry(1, 1).rotateX(-Math.PI / 2)
 const squareMaterial = new MeshBasicMaterial({ ...overlay, opacity: 0.7 })
 
