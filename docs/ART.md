@@ -88,7 +88,7 @@ Hundreds of these are drawn with instancing (Trees.tsx).
 - **Parts:** make the trunk and the foliage separate parts. The wind sways the leaves, autumn turns them, winter caps them with snow, and the forest turns see-through near the player.
 - **Size:** about 1,500 triangles or fewer.
 
-- [ ] **`pine.glb`**: the island's main tree.
+- [x] **`pine.glb`**: the island's main tree. *In: PineModel.tsx, every tree as one instanced mesh, stretched taller and narrower (`HEIGHT`, `WIDTH`); its foliage takes the season's colour.*
   > A stylised low-poly pine tree: a short chunky brown trunk and three stacked, slightly rounded cone tiers of deep green foliage, soft faceted shading, flat colours with no texture detail. Tall and narrow, about three times as tall as it is wide.
 - [ ] **`pine-small.glb`**: a young pine, for variety.
   > A small young pine tree, two rounded cone tiers on a short trunk, the same flat low-poly style. Squat and cute.

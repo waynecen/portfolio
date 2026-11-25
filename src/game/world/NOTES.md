@@ -14,7 +14,7 @@ There's no map on purpose: the island is found by walking round it. `pois` in po
 
 ---
 
-## Island, cliffs and trees: [land.ts](./land.ts), [Island.tsx](./Island.tsx), [forest.ts](./forest.ts), [Trees.tsx](./Trees.tsx)
+## Island, cliffs and trees: [land.ts](./land.ts), [Island.tsx](./Island.tsx), [forest.ts](./forest.ts), [Trees.tsx](./Trees.tsx), [PineModel.tsx](./PineModel.tsx), [treeLook.ts](./treeLook.ts)
 
 ```ts
 export const ISLAND_RADIUS = 18 // land.ts: in tiles; every tile whose centre is closer than this to spawn is land, so the shore steps along tile edges
@@ -38,14 +38,19 @@ const MAX_TRUNK = 0.3           // Trees.tsx: most a trunk's collider grows, so 
 const FOREST_DENSITY = 0.85     // forest.ts: share of the forest's tree spots that get one
 const FOREST_SCALE = [1, 1.5]   // forest trees are sized between these: taller than the island's
 const CLEARING = 3.5            // radius of the open clearing in the middle of the forest, in tiles
-const FADE = 0.75               // Trees.tsx: how much of a tree standing in front of the player drops out
+const FADE = 0.75               // treeLook.ts: how much of a tree standing in front of the player drops out
+const HEIGHT = 2, WIDTH = 0.8   // PineModel.tsx: the pine model at scale 1, taller and narrower than its own shape (2 : 1) so it reads as a pine from above
+const BRIGHT = 1.3              // its texture lifted to sit with the island's palette (not the snow)
+const SNOW_FROM = 0.3, UP = [0.3, 0.6] // winter: whatever faces up above this share of its height holds snow
 ```
 
 The island is two overlapping circles of land: the main one round the house, and the forest's to the north-west (top left). `BOUND` in land.ts is how far out either reaches, for anything that loops over every tile.
 
 On the main island, trees never touch each other, diagonals included, so there's always a gap to walk through. The forest is packed: a tree on every other tile, like a chessboard's dark squares (`FOREST_DENSITY` of them), so they only ever meet corner to corner and you can always slip through on the diagonals. In its middle is a clearing, and a road leads there from the house (a `forest` place in pois.ts); the pine cone waits in it.
 
-Every tree between the camera and the player thins out (`seeThrough` in Trees.tsx): its shader drops out a fixed noise pattern of pixels, up to `FADE` of them, so the player never vanishes behind a canopy. They're placeholders: a trunk and a cone, drawn as two instanced meshes.
+Every tree between the camera and the player thins out (`seeThrough` in treeLook.ts): its shader drops out a fixed noise pattern of pixels, up to `FADE` of them, so the player never vanishes behind a canopy.
+
+**The pine model** (PineModel.tsx) is every tree, drawn as one instanced mesh; while it downloads, placeholder cones stand in (a trunk and a cone, two instanced meshes, in Trees.tsx). It isn't behind the loader (the game starts indoors). Its foliage is the only green in its texture, so in spring and autumn that alone takes the tree's `canopyColor` (keeping the texture's light and dark, scaled from `GREEN`); in summer and winter the texture shows as it is. A new tree model needs green foliage and a trunk that isn't green. Trunk colliders don't change with the model.
 
 ---
 
@@ -91,7 +96,7 @@ const GLOW = 1.1                   // House.tsx: window glow at full night
 
 **Seasons:** [season.ts](./season.ts) picks the season from the visitor's month (northern hemisphere: December to February is winter). Only winter changes the island so far:
 
-- snow on the ground, a snow cap on each tree and a snowed-over roof (`GROUND` in Island.tsx, `capGeometry` in Trees.tsx, `O.roof` in House.tsx)
+- snow on the ground, on every tree's tiers and on the roof (`GROUND` in Island.tsx, `SNOW_FROM` in PineModel.tsx and `capGeometry` for the cones in Trees.tsx, house/snow.ts and `O.roof` for the blocks in House.tsx)
 - snow falling all day instead of rain, heavier in the afternoon slot ([Snow.tsx](./Snow.tsx): `LIGHT`, `SPEED`, `SWAY`, `SIZE`)
 - a cooler, paler light with snow bouncing light up from the ground (`chill` and the `WINTER_*` colours in sky.ts)
 - crunchy footsteps (the `snow` sound in sfx.ts), puffs of snow instead of dust, and no fireflies
