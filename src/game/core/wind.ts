@@ -1,4 +1,4 @@
-import type { Material } from 'three'
+import { MeshDepthMaterial, RGBADepthPacking, type Material } from 'three'
 import { reducedMotion } from './settings'
 import { playerPos } from './state'
 
@@ -8,8 +8,8 @@ import { playerPos } from './state'
 // across rather than everything moving as one. Grass also leans away from the player as they walk
 // through. Rain blows harder; with reduced motion everything stands still.
 //
-// The shadow pass doesn't sway (three's depth material is shared), so shadows stay put; the sway is
-// small enough that it doesn't show.
+// The shadow pass uses three's shared depth material, which doesn't sway; give a swaying mesh
+// swayShadow(s) as its customDepthMaterial so its shadow moves with it.
 
 const SPEED = 1.3 // the sway's base rate, rad/s
 const RAIN = 1.8 // how much harder it blows in the rain
@@ -90,4 +90,9 @@ export function sway<M extends Material>(material: M, s: Sway): M {
   }
   material.customProgramCacheKey = () => `${key()}|sway:${s.height},${s.amount},${s.rate ?? 1},${s.part?.radius ?? 0},${s.part?.amount ?? 0}`
   return material
+}
+
+/** A depth material that sways like sway(…, s): a swaying mesh's customDepthMaterial, so its shadow moves with it. */
+export function swayShadow(s: Sway): MeshDepthMaterial {
+  return sway(new MeshDepthMaterial({ depthPacking: RGBADepthPacking }), s)
 }

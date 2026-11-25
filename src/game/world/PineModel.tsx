@@ -1,7 +1,7 @@
 import { useLayoutEffect, useMemo, useRef } from 'react'
 import { Box3, Float32BufferAttribute, MeshLambertMaterial, Object3D, type BufferGeometry, type InstancedMesh, type Mesh, type MeshStandardMaterial } from 'three'
 import { useGLB } from '../core/gltf'
-import { sway } from '../core/wind'
+import { sway, swayShadow } from '../core/wind'
 import { autumn, spring, winter } from './season'
 import { canopyColor, drawn, GREEN, SWAY } from './treeLook'
 
@@ -92,6 +92,7 @@ export default function PineModel() {
     return { geometry: fit(gltf.scene), material }
   }, [gltf])
 
+  const shadow = useMemo(() => swayShadow(SWAY), [])
   const pines = useRef<InstancedMesh>(null)
   useLayoutEffect(() => {
     const mesh = pines.current
@@ -110,5 +111,5 @@ export default function PineModel() {
     mesh.computeBoundingSphere() // cover every instance, so the forest isn't culled when the origin is off screen
   }, [geometry])
 
-  return <instancedMesh ref={pines} args={[geometry, material, drawn.length]} />
+  return <instancedMesh ref={pines} args={[geometry, material, drawn.length]} customDepthMaterial={shadow} />
 }

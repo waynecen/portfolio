@@ -10,7 +10,7 @@ import { winter } from '../world/season'
 import { pop } from '../core/sfx'
 import { playerPos } from '../core/state'
 import { clear } from '../world/tiles'
-import { sway } from '../core/wind'
+import { sway, swayShadow } from '../core/wind'
 import { useSceneFrame } from '../core/sceneFrame'
 
 // Things to cut and break with the sword (combat.ts): tufts of tall grass scattered over the
@@ -74,7 +74,9 @@ function tuftGeometry(): BufferGeometry {
 }
 const geometry = tuftGeometry()
 // Quick in the wind, and parting round the player as they walk through (core/wind.ts).
-const material = sway(new MeshLambertMaterial({ color: '#5f9e57', flatShading: true }), { height: 0.42, amount: 0.05, rate: 1.6, part: { radius: 0.9, amount: 0.2 } })
+const SWAY = { height: 0.42, amount: 0.05, rate: 1.6, part: { radius: 0.9, amount: 0.2 } }
+const material = sway(new MeshLambertMaterial({ color: '#5f9e57', flatShading: true }), SWAY)
+const shadow = swayShadow(SWAY)
 const CLIPPINGS = new Color('#7fbf6a')
 const dummy = new Object3D()
 
@@ -127,7 +129,7 @@ export function Grass() {
   })
 
   if (!tufts.length) return null
-  return <instancedMesh ref={mesh} args={[geometry, material, tufts.length]} />
+  return <instancedMesh ref={mesh} args={[geometry, material, tufts.length]} customDepthMaterial={shadow} />
 }
 
 // Pots: where they'd like to stand, moved to the nearest clear tile. Beside the house and by the dock.
