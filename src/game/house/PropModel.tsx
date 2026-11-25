@@ -2,9 +2,10 @@ import { useMemo } from 'react'
 import { Box3, Vector3 } from 'three'
 import { lambertAll, useGLB } from '../core/gltf'
 import { useSceneFrame } from '../core/sceneFrame'
+import type { Scene } from '../core/store'
 import { sky } from '../world/sky'
 
-// A Tripo prop for the room (models-src, through npm run models): fitted to `width` across, standing
+// A Tripo prop for the room, or outdoors with `scene` (models-src, through npm run models): fitted to `width` across, standing
 // on the floor and centred on its spot (offset by `z`). With `depth`, it's also stretched or squeezed
 // front to back to fill its tiles, which a bed or a rug can take without looking wrong, and with
 // `height` made taller or lower the same way. Loaded lazily;
@@ -16,9 +17,9 @@ import { sky } from '../world/sky'
 // doesn't glow in a lamp-lit room. Kept low: the textures already have soft lighting painted in.
 const FILL = { day: 0.2, night: 0.12 }
 
-type Props = { url: string; width: number; depth?: number; height?: number; z?: number }
+type Props = { url: string; width: number; depth?: number; height?: number; z?: number; scene?: Scene }
 
-export default function PropModel({ url, width, depth, height, z = 0 }: Props) {
+export default function PropModel({ url, width, depth, height, z = 0, scene = 'house' }: Props) {
   const gltf = useGLB(url)
   const { root, materials } = useMemo(() => {
     const root = gltf.scene.clone()
@@ -34,7 +35,7 @@ export default function PropModel({ url, width, depth, height, z = 0 }: Props) {
     return { root, materials: lambertAll(root) }
   }, [gltf, width, depth, height, z])
 
-  useSceneFrame('house', () => {
+  useSceneFrame(scene, () => {
     const fill = FILL.day + (FILL.night - FILL.day) * sky.weather.night
     for (const m of materials) m.emissiveIntensity = fill
   })

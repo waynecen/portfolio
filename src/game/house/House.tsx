@@ -1,5 +1,5 @@
 import { useFrame } from '@react-three/fiber'
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { CanvasTexture, Color, ExtrudeGeometry, MeshLambertMaterial, RepeatWrapping, Shape, SRGBColorSpace, type BufferGeometry } from 'three'
 import { addCollider, type Collider } from '../core/collision'
 import { block, flat, merge, pick, tint, unindexed } from '../core/geometry'
@@ -204,6 +204,12 @@ const GLOW = 1.1 // how bright the windows glow at full night
 const panes = merge([FRONT_DOOR.x - 1.5, FRONT_DOOR.x + 1.5].map((x) => block(x - 0.24, x + 0.24, 0.58, 1.02, Z1 + 0.04, Z1 + 0.05)))
 const paneMaterial = new MeshLambertMaterial({ color: '#8fb8d8', emissive: '#ffc766', emissiveIntensity: 0 })
 
+// The Tripo model (models-src/house.glb, through npm run models), fitted over the footprint with its
+// eaves and a little lower than its own shape, so it doesn't fill the view from the door: the blocks above
+// stand in while it downloads. The collider stays the walls' box.
+const Model = lazy(() => import('./PropModel'))
+const MODEL = { url: '/models/house.glb', width: X1 - X0 + 2 * EAVES, depth: Z1 - Z0 + 2 * EAVES, height: 2.9, z: (Z0 + Z1) / 2 }
+
 /** The house from outside, at the centre of the island. Its door leads in (see Doors.tsx). */
 export function HouseExterior() {
   useEffect(
@@ -213,12 +219,17 @@ export function HouseExterior() {
   useFrame(() => {
     paneMaterial.emissiveIntensity = GLOW * sky.weather.night
   })
-  return (
+  const blocks = (
     <>
       <mesh geometry={exterior}>
         <meshLambertMaterial vertexColors flatShading />
       </mesh>
       <mesh geometry={panes} material={paneMaterial} />
     </>
+  )
+  return (
+    <Suspense fallback={blocks}>
+      <Model {...MODEL} scene="world" />
+    </Suspense>
   )
 }
