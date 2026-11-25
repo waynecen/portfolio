@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { useSceneFrame } from '../core/sceneFrame'
 import { CapsuleGeometry, ConeGeometry, MeshLambertMaterial, SphereGeometry, type Group } from 'three'
-import { addCollider, type Collider } from '../core/collision'
+import { addCollider, resolve, type Collider } from '../core/collision'
 import { useFishing } from './fishing'
 import { busy, openPanel, register, say, type Interactable } from '../core/interact'
 import { OUTSIDE_SPAWN, SHOP_AT } from '../world/layout'
@@ -12,7 +12,9 @@ import { projects, stationPos } from '../portfolio/projects'
 import { autumn, spring, winter } from '../world/season'
 import { reducedMotion } from '../core/settings'
 import { sky } from '../world/sky'
-import { playerPos } from '../core/state'
+import { playerFacing, playerPos } from '../core/state'
+import { PILL_RADIUS } from '../player/PillCharacter'
+import { isLand } from '../world/land'
 import { useGame } from '../core/store'
 
 // The neighbours: three original animals who live on the island.
@@ -32,6 +34,11 @@ const RANGE = 1.4 // how close to talk
 const CATCH_UP = 2.6 // on the tour, how close the player must come before Bramble introduces a project
 const LOST = 14 // on the tour, this far away...
 const LOST_FOR = 10 // ...for this many seconds, and the tour is called off
+const GIVE_WAY = 1.8 // units/s a villager steps aside at when the player presses into them, so nobody gets stuck
+const TOUCH = 0.1 // how near counts as pressing, beyond the two bodies' radii
+const EASE = 8 // how quickly stepping aside starts and stops (damp rate)
+const AROUND = 0.7 // a walking villager starts curving round the player this far (beyond touching) before reaching them
+const TURN = 10 // how quickly a villager turns to face where it's going (damp rate)
 
 type Tile = { i: number; j: number }
 const key = (t: Tile) => `${t.i},${t.j}`
@@ -94,6 +101,10 @@ type Villager = {
   talking: boolean
   item: Interactable
   collider: Collider & { kind: 'circle' }
+  /** Velocity stepping aside for the player, units/s; eases in and out. */
+  aside: { x: number; z: number }
+  /** The way it's drawn facing, turning smoothly toward heading. */
+  shown: number
 }
 
 function villager(name: string, kind: Kind, home: Tile, prompt: string, onInteract: () => void): Villager {
@@ -110,6 +121,8 @@ function villager(name: string, kind: Kind, home: Tile, prompt: string, onIntera
     talking: false,
     item: { x: home.i, z: home.j, range: RANGE, prompt, onInteract },
     collider: { kind: 'circle', x: home.i, z: home.j, r: 0.28 },
+    aside: { x: 0, z: 0 },
+    shown: 0,
   }
 }
 
@@ -163,7 +176,22 @@ function walkTo(v: Villager, to: Tile) {
   v.step = 0
 }
 
-/** Moves v along its path by `speed`; true once it's at the end. */
+// Moves v by (mx, mz), sliding round anything solid and never off the land. Other villagers
+// aren't in the way (their colliders are only for the player), so two never jam on a road.
+const at = { x: 0, z: 0 }
+const still = { x: 0, z: 0 }
+function moveBy(v: Villager, mx: number, mz: number) {
+  at.x = v.x + mx
+  at.z = v.z + mz
+  if (!isLand(Math.round(at.x), Math.round(at.z))) return
+  for (const o of VILLAGERS) o.collider.x += 1e4 // out of the way for a moment
+  resolve(at, v.collider.r || 0.28, still)
+  for (const o of VILLAGERS) o.collider.x -= 1e4
+  v.x = at.x
+  v.z = at.z
+}
+
+/** Moves v along its path by `speed`, curving round the player if they're in the way; true once it's at the end. */
 function walk(v: Villager, speed: number, dt: number): boolean {
   if (v.step >= v.path.length) return true
   const t = v.path[v.step]
@@ -171,16 +199,77 @@ function walk(v: Villager, speed: number, dt: number): boolean {
   const dz = t.j - v.z
   const d = Math.sqrt(dx * dx + dz * dz)
   const move = speed * dt
-  if (d <= move) {
-    v.x = t.i
-    v.z = t.j
+  let mx = dx / d
+  let mz = dz / d
+  // The player ahead and near: bend the way off to the side away from them, more the nearer they are.
+  const px = playerPos.x - v.x
+  const pz = playerPos.z - v.z
+  const pd = Math.sqrt(px * px + pz * pz)
+  const touch = v.collider.r + PILL_RADIUS
+  const around = pd < touch + AROUND && px * mx + pz * mz > 0
+  // At the tile: on to the next (near enough will do while curving round the player).
+  if (d <= move || (around && d < 0.3)) {
+    if (d <= move) {
+      v.x = t.i
+      v.z = t.j
+    }
     v.step++
-  } else {
-    v.x += (dx / d) * move
-    v.z += (dz / d) * move
-    v.heading = Math.atan2(dx, dz)
+    return v.step >= v.path.length
   }
-  return v.step >= v.path.length
+  if (around) {
+    let sx = -mz
+    let sz = mx
+    if (sx * px + sz * pz > 0) {
+      sx = -sx
+      sz = -sz
+    }
+    const w = 1 - Math.max(0, (pd - touch) / AROUND)
+    mx += sx * 1.6 * w
+    mz += sz * 1.6 * w
+    const m = Math.sqrt(mx * mx + mz * mz)
+    mx /= m
+    mz /= m
+  }
+  // Only while curving does it need to slide round things: the roads themselves are kept clear.
+  if (around) moveBy(v, mx * move, mz * move)
+  else {
+    v.x += mx * move
+    v.z += mz * move
+  }
+  v.heading = Math.atan2(mx, mz)
+  return false
+}
+
+// Giving way: a villager the player presses into steps aside, across the way the player is facing
+// (to whichever side it's already on) and a little away, so the player can always get past, even
+// in a doorway or between trees. It eases into the step and out of it, and walks it, facing the way it goes.
+function giveWay(v: Villager, dt: number) {
+  if (v.collider.r === 0) return
+  const dx = v.x - playerPos.x
+  const dz = v.z - playerPos.z
+  const d = Math.sqrt(dx * dx + dz * dz)
+  let tx = 0
+  let tz = 0
+  if (d < v.collider.r + PILL_RADIUS + TOUCH && d > 1e-4) {
+    let sx = -Math.cos(playerFacing.heading)
+    let sz = Math.sin(playerFacing.heading)
+    if (sx * dx + sz * dz < 0) {
+      sx = -sx
+      sz = -sz
+    }
+    tx = sx + (0.6 * dx) / d
+    tz = sz + (0.6 * dz) / d
+    const m = Math.sqrt(tx * tx + tz * tz)
+    tx *= GIVE_WAY / m
+    tz *= GIVE_WAY / m
+  }
+  const k = 1 - Math.exp(-EASE * dt)
+  v.aside.x += (tx - v.aside.x) * k
+  v.aside.z += (tz - v.aside.z) * k
+  const speed = Math.hypot(v.aside.x, v.aside.z)
+  if (speed < 0.02) return
+  moveBy(v, v.aside.x * dt, v.aside.z * dt)
+  if (speed > 0.4 && !v.talking) v.heading = Math.atan2(v.aside.x, v.aside.z)
 }
 
 function face(v: Villager, x: number, z: number) {
@@ -391,6 +480,7 @@ export function Villagers() {
         }
       }
     }
+    if (!paused) for (const v of VILLAGERS) giveWay(v, dt)
     for (let k = 0; k < VILLAGERS.length; k++) {
       const v = VILLAGERS[k]
       const g = groups.current[k]
@@ -399,9 +489,12 @@ export function Villagers() {
         v.item.z = v.collider.z = v.z
       }
       if (!g) continue
-      const moving = v.step < v.path.length && !v.talking && !paused
+      const moving = ((v.step < v.path.length && !v.talking) || Math.hypot(v.aside.x, v.aside.z) > 0.4) && !paused
+      // Turn smoothly toward the way it's heading, the short way round.
+      const turn = Math.atan2(Math.sin(v.heading - v.shown), Math.cos(v.heading - v.shown))
+      v.shown += turn * (1 - Math.exp(-TURN * Math.min(delta, 0.1)))
       g.position.set(v.x, moving && !reducedMotion() ? Math.abs(Math.sin(clock.elapsedTime * 9 + k)) * 0.05 : 0, v.z)
-      g.rotation.y = v === pip ? 0 : v.heading
+      g.rotation.y = v === pip ? 0 : v.shown
     }
   })
 
