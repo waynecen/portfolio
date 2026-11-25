@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef } from 'react'
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef } from 'react'
 import { ConeGeometry, CylinderGeometry, MeshLambertMaterial, Object3D, type InstancedMesh } from 'three'
 import { addCollider } from '../core/collision'
 import { winter } from './season'
@@ -7,9 +7,9 @@ import { useSceneFrame } from '../core/sceneFrame'
 import { sway } from '../core/wind'
 import { canopyColor, drawn, seeThrough, SWAY, treePlayer } from './treeLook'
 
-// Placeholder trees: a trunk and a low-poly cone, drawn as instanced meshes (a draw call or two
-// for every tree on the island). Where they stand is forest.ts; how they look (thinning out in
-// front of the player, sway, season colours) is treeLook.ts.
+// The island's trees: the Tripo pine (PineModel.tsx), one instanced mesh for every tree on the island.
+// While it downloads, placeholders stand in: a trunk and a low-poly cone, drawn the same way. Where
+// they stand is forest.ts; what they share (thinning out in front of the player, sway, season colours) is treeLook.ts.
 
 const TRUNK_RADIUS = 0.25 // collision radius at scale 1; a little wider than the trunk so the pill doesn't clip the canopy
 const MAX_TRUNK = 0.3 // and at most this, so the pill (0.35 radius) still fits between forest trees corner to corner
@@ -22,6 +22,8 @@ const canopyMaterial = sway(seeThrough(new MeshLambertMaterial({ color: '#ffffff
 const capGeometry = new ConeGeometry(0.25, 0.56, 7).translate(0, 1.37, 0)
 const capMaterial = sway(seeThrough(new MeshLambertMaterial({ color: '#f4f7fb', flatShading: true })), SWAY)
 
+const PineModel = lazy(() => import('./PineModel'))
+
 /** Every tree on the island and the islet, with its trunk's collider. */
 export function Trees() {
   useEffect(() => {
@@ -33,7 +35,11 @@ export function Trees() {
     treePlayer.value.set(playerPos.x, playerPos.z)
   })
 
-  return <Placeholders />
+  return (
+    <Suspense fallback={<Placeholders />}>
+      <PineModel />
+    </Suspense>
+  )
 }
 
 function Placeholders() {
