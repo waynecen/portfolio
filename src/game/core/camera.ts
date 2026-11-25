@@ -4,8 +4,8 @@ import { cameraNudge, cameraShake } from './state'
 // The camera's place above the player, and the moments that move it (a shake, a nudge), which
 // CameraRig.tsx plays out.
 
-export const HEIGHT = 8
-export const DISTANCE = 10.25 // about 38°, well under 45°, so the curved horizon shows (curve.ts)
+export const HEIGHT = 8.7
+export const DISTANCE = 9.65 // about 42°, still under 45°, so the curved horizon shows (curve.ts)
 
 /** Shakes the camera for a moment (a big find, a hole in one). Nothing with reduced motion. */
 export function shakeCamera(amount = 0.12) {

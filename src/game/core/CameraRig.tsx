@@ -27,7 +27,7 @@ const NUDGE_TIME = 1.4 // seconds in and back
 
 // Editing the room (edit.ts): the camera rises to look down more steeply and backs off, so the
 // whole floor reads as a grid. It eases there and back.
-const EDIT_PITCH = MathUtils.degToRad(70) // degrees below level while editing (the usual is about 38°)
+const EDIT_PITCH = MathUtils.degToRad(70) // degrees below level while editing (the usual is about 42°)
 const EDIT_FAR = 1.35 // and this much further from the room than usual
 const EDIT_SHIFT = -0.6 // and aimed this much further back, so the edit bar at the top clears the back row
 const EDIT_EASE = 5 // how quickly it moves between the two
