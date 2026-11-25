@@ -10,6 +10,9 @@ import './curve'
 // nearly all of it, rain (22) and night (24) a little, the clear morning (60) and evening (40) none,
 // and indoors (fog pushed out of sight) none. That keeps it in step with each slot's look with no new
 // uniform, which a shared chunk can't add.
+//
+// Something that sits low on purpose (the boats, at the water line) stays clear of it with
+// `material.defines = { NO_HAZE: '' }` (still fogged by distance).
 
 const LOW = -1.3 // at and below this height the mist is full (the water is at -1.2)
 const HIGH = -0.1 // above this, none: the ground you walk on (y = 0) stays clear
@@ -52,7 +55,9 @@ ShaderChunk.fog_fragment = /* glsl */ `
 		float fogFactor = smoothstep( fogNear, fogFar, vFogDepth );
 		float hazeStrength = 1.0 - smoothstep( ${f(CLOSE)}, ${f(OPEN)}, fogNear );
 		float haze = ( 1.0 - smoothstep( ${f(LOW)}, ${f(HIGH)}, vFogHeight ) ) * hazeStrength * ${f(MOST)};
-		fogFactor = max( fogFactor, haze );
+		#ifndef NO_HAZE
+			fogFactor = max( fogFactor, haze );
+		#endif
 	#endif
 	gl_FragColor.rgb = mix( gl_FragColor.rgb, fogColor, fogFactor );
 #endif

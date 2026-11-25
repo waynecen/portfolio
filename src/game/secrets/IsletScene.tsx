@@ -21,23 +21,26 @@ const HULL_DARK = new Color('#7c4429')
 const INSIDE = new Color('#d8b483')
 const OAR = new Color('#c9a36a')
 
-// A boat, long along x: a floor, sides and ends, a bench across the middle.
+// A boat, long along x: a floor, sides and ends, a bench across the middle. No two parts share a
+// face (the ends sit between the sides, the planks on the floor), so nothing flickers.
 function buildBoat(): BufferGeometry {
   const L = 0.78 // half-length
   const W = 0.32 // half-width
   const parts = [
-    tint(block(-L + 0.1, L - 0.1, -0.12, -0.04, -W + 0.05, W - 0.05), HULL_DARK),
+    tint(block(-L + 0.06, L - 0.06, -0.12, -0.06, -W + 0.06, W - 0.06), HULL_DARK),
     tint(block(-L, L, -0.12, 0.2, -W, -W + 0.06), HULL),
     tint(block(-L, L, -0.12, 0.2, W - 0.06, W), HULL),
-    tint(block(-L, -L + 0.06, -0.12, 0.2, -W, W), HULL),
-    tint(block(L - 0.06, L, -0.12, 0.2, -W, W), HULL),
-    tint(block(-L + 0.06, L - 0.06, -0.06, -0.04, -W + 0.06, W - 0.06), INSIDE),
+    tint(block(-L, -L + 0.06, -0.12, 0.2, -W + 0.06, W - 0.06), HULL),
+    tint(block(L - 0.06, L, -0.12, 0.2, -W + 0.06, W - 0.06), HULL),
+    tint(block(-L + 0.06, L - 0.06, -0.06, -0.03, -W + 0.06, W - 0.06), INSIDE),
     tint(block(-0.14, 0.14, 0.06, 0.1, -W + 0.06, W - 0.06), INSIDE),
   ]
   return merge(parts.map(unindexed))
 }
 const boatGeometry = buildBoat()
+// Kept out of the low mist over the sea (core/haze.ts), which otherwise washes the boats out.
 const wood = new MeshLambertMaterial({ vertexColors: true, flatShading: true })
+wood.defines = { NO_HAZE: '' }
 // An oar lying in the boat, along its length.
 const oarGeometry = merge([
   tint(unindexed(new CylinderGeometry(0.022, 0.022, 1.1, 5).rotateZ(Math.PI / 2)), OAR),
