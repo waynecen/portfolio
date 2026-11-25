@@ -33,6 +33,8 @@ Panel styles are `.music-*` in [house.css](./house.css); the now-playing label i
 const PENDANT = { x: 0, y: 2.25, z: 0.3 } // the paper lantern hanging from the ceiling, house-local; its cord runs up out of sight
 const CEILING = { day: 3, night: 10, distance: 13 } // its warm light (candela), blended by how much it's night: a pool under it, fading to the walls
 const LAMP = { day: 0.5, night: 1.8, distance: 3.5, y: 1.1 } // the paper lamp's light, once it's bought; it follows the lamp, into the hand while moving it
+const FIRE = { day: 1.2, night: 3.5, distance: 5, y: 0.5, z: 0.25, color: '#ff9a4a' } // the fireplace's light, just out of its opening; it follows the fireplace like the lamp's
+const FLICKER = 0.15 // how much the fire's light flickers either way (a third of it with reduced motion); the flames (Fire in Furniture.tsx) flicker with it
 const GLOW = { day: 0.35, night: 1 } // how much both paper shades glow (shadeMaterial's emissive)
 const DRIFT = 0.025 // how far the ceiling lantern swings on its cord, radians, from the cord's top (still with reduced motion)
 const COUNT = 60, SIZE = 0.075, SPEED = 0.06 // Motes.tsx: dust drifting in the room's air (0.3 to 2.2 up), wrapping round at the walls
@@ -62,9 +64,10 @@ export const INSIDE_SPAWN = { x: INTERIOR.x, z: INTERIOR.z + ROOM.hz - 1, headin
 const WALL = 0.5        // House.tsx: room wall thickness
 const WALL_H = 1.6      // height of the room's back and side walls
 const FRONT_H = 0.35    // height of the front wall; kept low so it never hides the room
-const SEAM = 0.02       // dark gap between tatami mats (each mat is 1 × 2 tiles, half mats at row ends)
-const HERI = 0.045      // width of the dark cloth border along each mat's long sides
-const WEAVE = 9         // rush stripes per tile in the mats' weave texture
+const SEAM = 0.015      // dark gap between tatami mats (each 1 × 2 tiles, laid in pinwheel rings round a half mat in the middle: layMats)
+const HERI = 0.05       // width of the dark navy cloth border along each mat's long sides, for mats lying across the room
+const HERI_UP = 0.025   // and for mats running up the room, whose borders the camera's tilt makes look thicker
+const WEAVE = 9         // rush stripes per tile in the weave texture; they run across each mat
 const MAT = [...]       // tatami colours, fresh to sun-faded; each mat picks one from a fixed hash
 const OUT_WALL_H = 1.4  // outside: wall height
 const RISE = 1          // outside: height of the roof's ridge above the walls
@@ -89,10 +92,10 @@ Both areas stay loaded and only one is drawn, so trips are instant. Each arrival
 export const PIECES = [...]  // room.ts: every movable piece, its name and footprint in tiles (w across, d deep); floor: true for rugs
 const DEFAULT = {...}        // where each piece starts: its top-left tile, house-local (tile i, j is centred on x = i, z = j)
 const DOORWAY = [...]        // tiles just inside the door, always kept clear of furniture
-const SAVE_KEY = 'room-layout-v1' // the visitor's layout is saved in their browser under this; bump it if you change the pieces
+const SAVE_KEY = 'room-layout-v2' // the visitor's layout is saved in their browser under this; bump it if you change the pieces
 const LIFT = 0.25            // piece.ts: how high a piece floats while being moved
 const BOB = 0.04             // and how much it bobs (off with reduce motion)
-const LINE = 0.04            // EditRoom.tsx: width of the grid lines shown while editing
+const LINE = 0.02            // EditRoom.tsx: width of the grid lines shown while editing; black at 40% opacity (gridMaterial)
 const OK / NO / AIM / OVER   // highlight colours: fits, doesn't fit, empty tile, a piece you could pick up
 ```
 
@@ -102,7 +105,13 @@ A piece only goes down where it fits. It must stay inside the room and not overl
 
 **The chest and the sword:** the chest beside the bed holds the sword (combat/armed.ts). Its use is **Open** until then (a fanfare, and the lines on how to swing), and **Look** after (`CHEST_OPEN`, `CHEST_EMPTY` in Furniture.tsx). It follows the chest if it's moved.
 
-**The golf trophy:** once Gull Rock Links is finished under par ([trophy.ts](./trophy.ts), set by golf/golf.ts), a small gold cup stands on the dresser between its left and middle jars (`TROPHY_AT` in Furniture.tsx, from the dresser's centre) and moves with it. Using it (**Look**) says what it's for. Start over forgets it with the rest of the golf.
+**The room's furniture:** the bed and the chest beside it; the fireplace in the middle of the back wall (**Look**), an armchair either side of it facing in, the side table with tea beside the left one and the log basket beside the right; the table with the note and its stool, and the record player, on the right; the coat stand in the back left corner; two pots and the blanket basket down the left; the kotatsu on the right with a floor cushion (a `floor` piece, like the rug) either side; the rug in front of the door. The column below the bed and the front row left of the door are left clear: the snapshot skill walks out that way.
+
+**Kinako, the house shiba** ([shiba.ts](./shiba.ts), [Dog.tsx](./Dog.tsx)): wanders the room from one free tile to another within `WANDER` = 4 (`walkableTiles` in room.ts, the same flood from the door that keeps the room passable), at `WALK` = 0.9 units/s, standing `PAUSE` = 1.5 to 5 s between. It waits rather than walk into the player, and if the player bumps into it, it trots off (`TROT` = 1.8) to the free tile furthest from them nearby, so it never traps anyone. Within `RANGE` = 1.1, **Pet**: it sits facing you for `SIT` = 2.6 s, wags hard, gives a little `woof` (sfx.ts) and three hearts float up; the first pet ever says who it is. It holds still while editing the room, and hops to the nearest free tile if furniture is put down on it. Its collider is `RADIUS` = 0.22. Built from blocks, facing +z; a Tripo model is in ART.md.
+
+**The fireplace** draws its own flames (`Fire` in Furniture.tsx: three cones that flicker, bright enough to bloom) and lights the room from RoomLights.tsx, always mounted like the other room lights.
+
+**The golf trophy:** once Gull Rock Links is finished under par ([trophy.ts](./trophy.ts), set by golf/golf.ts), a small gold cup stands on the mantelpiece, right of the middle (`TROPHY_AT` in Furniture.tsx, from the fireplace's centre) and moves with it. Using it (**Look**) says what it's for. Start over forgets it with the rest of the golf.
 
 **Tripo models:** a piece with an entry in `MODELS` (Furniture.tsx) shows its model ([PropModel.tsx](./PropModel.tsx)) in place of its blocks, which stand in while it downloads: fitted to `width`, stretched to `depth` and `height` if given, nudged by `z`. The colliders stay the Build's. In so far: the bed (`width 0.98, depth 1.8`: its shape is stubbier than its 1 × 2 tiles, so it's lengthened), the chest (`width 0.8, z -0.15`: at the back of its tile, its own height), the table (`width 1.9, depth 0.9, height 0.6`: its blocks' footprint and height, as the model is squarer and lower; its note is in the model, and Read still uses `NOTE_AT`) and the stool (`width 0.5`). Each piece shows its own copy of a model, so one file can serve several pieces (the pots, later). The models still to make, and their prompts, are in [docs/ART.md](../../../docs/ART.md).
 

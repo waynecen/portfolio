@@ -14,7 +14,7 @@ const GLOW = '#ffd27a' // an unseen project's gem glows this colour, pulsing bet
 const SAVE_KEY = 'seen-v1' // seen.ts: localStorage key for the places seen; change it to forget them
 ```
 
-The projects themselves aren't constants. They're read from the `#projects article` elements in [index.html](../../../index.html), so adding an `<article>` there adds a station.
+The projects themselves aren't constants. They're read from the `#projects article` elements in [index.html](../../../index.html), so adding an `<article>` there adds a station. Mark one `data-game="hidden"` to keep it on the page with no station (the two placeholders are, for now).
 
 **Places seen** ([seen.ts](./seen.ts)): every project, the About sign and the Contact mailbox is a place (`PLACES`). A place counts as seen once its card has shown (a project, the mailbox) or once it's been used (the sign, which has no card); an interactable names its place with `seen` when it registers. The list is saved in this browser and shown at the top of the bag ("2 of 3 projects seen"), and a project's gem glows until it's been seen. A project's place id is its title, so renaming one in index.html makes it unseen again.
 

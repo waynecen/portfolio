@@ -38,6 +38,11 @@ export const DOCK = { x: -9, half: 0.7, z0: 15.5, z1: 19.5 } // fishing.ts: the 
 export const DOCK_ROOT = { x: -9, z: 15 }  // the land tile it leaves from; a road leads here (a 'dock' place in pois.ts)
 export const BARREL_AT = { x: -8, z: 15.1 } // the barrel of rods
 export const SPOTS = [...]                 // where the ripple can be; it moves to another after each catch
+export const DECK_Y = 0.06                 // the landing's planks, just proud of the grass
+export const LOW_Y = WATER_Y + 0.3         // the low deck's planks, close to the water
+export const STAIRS = { z0: 16.2, steps: 6, depth: 0.2 } // the flight down from the landing to the low deck
+export const BOAT_SCALE = 1.45             // the rowing boats, drawn this much bigger than built (IsletScene.tsx); BOAT_HALF is their size
+export const DOCK_BOAT = { x: ..., z: 18.65 } // the boat at the dock, along the low deck's west (left) side
 export const CAST_TIME = 0.55              // seconds for the float to fly out
 const WAIT = [2.5, 6]                      // seconds before a bite, at random between these
 const BITE_TIME = 0.9                      // seconds to hook it once it bites (ASSIST_BITE_TIME = 1.8 with the assist)
@@ -68,9 +73,9 @@ What bites is drawn by `weight`, and its length leans small, so big ones are rar
 
 **Feedback, and when it doesn't fire.** A kind of fish never caught before gets the `fanfare` (sfx.ts) and a brief camera zoom; a new biggest gets the zoom with the short `catch` blip; any other catch only the blip, so the hundredth minnow doesn't hold you up. The zoom never runs with reduced motion. Items found on the island keep the `chime`.
 
-The dock is a walkway: the water either side of it doesn't stop the player (`dockOpens` in fishing.ts, used by Player.tsx); thin colliders along its open sides and across its end do instead. Footsteps on it are `wood`. The sounds are `plop` (the float landing) and `splash` (a bite) in sfx.ts.
+The dock is a landing at the grass, six steps down and a low deck close to the water, where the boat ties up on the left. The player walks down them: Player.tsx sets its height from `groundAt` (fishing.ts), which follows `dockHeight` through the middle of each step, so it needs no physics. The dock is a walkway: the water either side of it doesn't stop the player (`dockOpens` in fishing.ts, used by Player.tsx); thin colliders along its open sides and across its end do instead. Footsteps on it are `wood`. The sounds are `plop` (the float landing) and `splash` (a bite) in sfx.ts.
 
-**Moving the dock:** change `DOCK` and `DOCK_ROOT` together, keep `POSTS` over water, and move `BARREL_AT` and `SPOTS` with it. Every spot must be within `RANGE` of somewhere on the deck but not of the shore.
+**Moving the dock:** change `DOCK` and `DOCK_ROOT` together, keep `POSTS` over water, and move `BARREL_AT`, `SPOTS` and `DOCK_BOAT` with it (no spot under the boat). Every spot must be within `RANGE` of somewhere on the deck but not of the shore.
 
 ---
 
