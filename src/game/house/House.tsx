@@ -6,6 +6,7 @@ import { block, flat, merge, pick, tint, unindexed } from '../core/geometry'
 import { DOOR, FRONT_DOOR, HOUSE, INTERIOR, ROOM } from '../world/layout'
 import { winter } from '../world/season'
 import { sky } from '../world/sky'
+import { snowRoof } from './snow'
 import { glowWindows, windowGlow } from './windows'
 
 // The house the game starts in: one room seen from above, with nothing around it (the background
@@ -207,9 +208,10 @@ const paneMaterial = new MeshLambertMaterial({ color: '#8fb8d8', emissive: '#ffc
 
 // The Tripo model (models-src/house.glb, through npm run models), fitted over the footprint with its
 // eaves and a little lower than its own shape, so it doesn't fill the view from the door: the blocks above
-// stand in while it downloads. The collider stays the walls' box. Its blue panes glow at night (windows.ts).
+// stand in while it downloads. The collider stays the walls' box. Its blue panes glow at night (windows.ts),
+// and its roof is snowed over in winter (snow.ts).
 const Model = lazy(() => import('./PropModel'))
-const MODEL = { url: '/models/house.glb', width: X1 - X0 + 2 * EAVES, depth: Z1 - Z0 + 2 * EAVES, height: 2.9, z: (Z0 + Z1) / 2, patch: glowWindows }
+const MODEL = { url: '/models/house.glb', width: X1 - X0 + 2 * EAVES, depth: Z1 - Z0 + 2 * EAVES, height: 2.9, z: (Z0 + Z1) / 2, patch: winter ? (m: MeshLambertMaterial) => (glowWindows(m), snowRoof(m)) : glowWindows }
 
 /** The house from outside, at the centre of the island. Its door leads in (see Doors.tsx). */
 export function HouseExterior() {
