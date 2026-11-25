@@ -37,6 +37,7 @@ import { Festive } from './secrets/Festive'
 import { Fireflies } from './life/Fireflies'
 import { clearSpawn } from './house/room'
 import { Furniture } from './house/Furniture'
+import { Dog } from './house/Dog'
 import { Grass, Pots } from './combat/Grass'
 import { GroundDrops, ShellCounter } from './combat/GroundDrops'
 import { Hearts } from './combat/Hearts'
@@ -197,6 +198,7 @@ export function Game() {
           <LightSwitch />
           <Motes />
           <Furniture />
+          <Dog />
           <RecordPlayer />
           <Later>
             <EditOverlay />

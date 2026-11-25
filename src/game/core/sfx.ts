@@ -153,6 +153,13 @@ const SOUNDS = {
     const lp = lowpass(0.45)
     return render(0.12, (t, n) => (lp(n) * 1.4 + Math.sin(2 * Math.PI * 180 * t) * 0.5) * Math.exp(-t * 38))
   },
+  woof: () =>
+    // Kinako, petted: a small, happy yip, falling in pitch.
+    render(0.16, (t, n) => {
+      const f = 430 - 700 * t
+      const tone = Math.sin(2 * Math.PI * f * t) * 0.45 + Math.sign(Math.sin(2 * Math.PI * f * t)) * 0.15
+      return (tone + n * 0.15 * Math.exp(-t * 60)) * Math.min(1, t * 80) * Math.exp(-t * 16)
+    }),
   pop: () =>
     // A slime popping, or a pot breaking: a quick wet burst that drops in pitch.
     render(0.2, (t, n) => (Math.sin(2 * Math.PI * (700 - 2400 * t) * t) * 0.45 + n * 0.25 * Math.exp(-t * 40)) * Math.exp(-t * 14)),
@@ -248,6 +255,8 @@ export const step = (surface: Surface, wet = false) => {
 }
 export const whoosh = () => play('whoosh', WHOOSH_VOLUME, 0.95 + Math.random() * 0.1)
 export const door = () => play('door')
+/** The dog, petted. */
+export const woof = () => play('woof', 0.8, 0.95 + Math.random() * 0.1)
 /** The house's front door opening, going in or out. */
 export const homeDoor = () => play('homeDoor')
 /** A dialogue letter; `pitch` around 1 gives each line its own voice. */

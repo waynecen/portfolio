@@ -246,6 +246,15 @@ export function clearSpawn(at: Spawn): Spawn {
   return { x: INTERIOR.x + best.i, z: INTERIOR.z + best.j, heading: at.heading }
 }
 
+/** Every tile you can walk to from the door, past the furniture (the dog wanders these: shiba.ts). */
+export function walkableTiles(): Spot[] {
+  fillBlocked(useRoom.getState().spots)
+  floodFromDoor()
+  const tiles: Spot[] = []
+  for (let k = 0; k < reached.length; k++) if (reached[k]) tiles.push({ i: (k % COLS) + TILES.i0, j: Math.floor(k / COLS) + TILES.j0 })
+  return tiles
+}
+
 function save() {
   writeSaved(SAVE_KEY, useRoom.getState().spots)
 }
