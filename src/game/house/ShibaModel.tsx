@@ -4,13 +4,16 @@ import { lambertAll, useGLB } from '../core/gltf'
 import { reducedMotion } from '../core/settings'
 import { useSceneFrame } from '../core/sceneFrame'
 import { sky } from '../world/sky'
+import { playerPos } from '../core/state'
 import { dog } from './shiba'
 
 // Katsu as the Tripo model (models-src/shiba.glb, through npm run models), in place of the block dog
 // in Dog.tsx, which stands in while it loads. The model is rigged but has no clips, so its bones are
 // turned here: it walks with a dog's four-beat gait (each foot planted while the body passes over
 // it, then lifted and swung forward), or trots in diagonal pairs when it hurries off, bobbing with
-// its steps; and the tail wags, harder while it sits after a pet. Dog.tsx turns the whole dog and tips it back to sit. Turned to face +z,
+// its steps; and the tail wags. Its head looks where it's going, leading the body round a turn.
+// Petted, it stands still with its feet on the floor, looks at the player with its head tipped to
+// one side and up, and wags harder. Dog.tsx turns the whole dog and tips it back to sit. Turned to face +z,
 // like the blocks.
 
 const URL = '/models/shiba.glb'
@@ -38,6 +41,8 @@ const STANCE = { walk: 0.65, trot: 0.5 } // the share of each cycle a foot is do
 const LIFT = 0.7 // how far the lower leg folds at the top of a step, radians, so the foot clears the floor
 const BOB = 0.04 // how high it bobs with its steps, twice a cycle
 const EASE = 8 // how quickly it settles into its gait and out of it, per second
+const LOOK = { max: 0.9, ease: 8 } // the head turning from the body toward where it looks: most it turns either way (radians), and how fast
+const PETTED = { tilt: 0.38, lift: 0.22, ease: 7 } // its head, petted: tipped to one side and up (radians), easing in and out
 const WAG = { idle: 0.25, happy: 0.55, idleRate: 7, happyRate: 22 } // the tail's swing (radians) and speed
 
 const X = new Vector3(1, 0, 0)
@@ -93,14 +98,17 @@ export default function ShibaModel() {
     const tail = joint(root, TAIL, Z)
     const head = joint(root, HEAD.bone, Y)
     const nod = joint(root, HEAD.bone, Z)
+    const lift = joint(root, HEAD.bone, X)
     if (head && nod) head.bone.quaternion.copy(head.rest).multiply(turn.setFromAxisAngle(head.axis, HEAD.turn)).multiply(turn.setFromAxisAngle(nod.axis, HEAD.roll))
+    // Its head as straightened, to tip from when petted.
+    const face = head && nod && lift ? { bone: head.bone, rest: head.bone.quaternion.clone(), turn: head.axis, roll: nod.axis, lift: lift.axis } : null
     if (legs.some((l) => !l.top || !l.knee) || !tail || !head)
       console.warn('shiba.glb: some bones are missing; it will trot stiffly.')
-    return { root, materials, legs, tail }
+    return { root, materials, legs, tail, face }
   }, [gltf])
 
   const bob = useRef<Group>(null)
-  const gait = useRef({ cycle: 0, on: 0 }) // where it is in its stride (0 to 1), and how far into its gait (0 standing, 1 walking)
+  const gait = useRef({ cycle: 0, on: 0, petted: 0, look: 0 }) // where it is in its stride (0 to 1), and how far into its gait (0 standing, 1 walking)
 
   useSceneFrame('house', ({ clock }, delta) => {
     const t = clock.elapsedTime
@@ -122,6 +130,21 @@ export default function ShibaModel() {
     }
     // Up as the legs pass under it, down as they reach: twice a cycle.
     if (bob.current) bob.current.position.y = (0.5 - 0.5 * Math.cos(4 * Math.PI * g.cycle)) * BOB * g.on
+    // The head: toward the player while petted, otherwise where it's heading (which leads the body
+    // round a turn), as an angle from where the body faces; tipped to one side and up while petted.
+    g.petted += ((dog.sit > 0 ? 1 : 0) - g.petted) * (1 - Math.exp(-PETTED.ease * dt))
+    const toward = dog.sit > 0 ? Math.atan2(playerPos.x - dog.x, playerPos.z - dog.z) : dog.heading
+    const want = Math.max(-LOOK.max, Math.min(LOOK.max, Math.atan2(Math.sin(toward - dog.shown), Math.cos(toward - dog.shown))))
+    g.look += (want - g.look) * (1 - Math.exp(-LOOK.ease * dt))
+    const f2 = rig.face
+    if (f2) {
+      const k = smooth(Math.min(1, g.petted))
+      f2.bone.quaternion
+        .copy(f2.rest)
+        .multiply(turn.setFromAxisAngle(f2.turn, g.look))
+        .multiply(turn.setFromAxisAngle(f2.roll, PETTED.tilt * k))
+        .multiply(turn.setFromAxisAngle(f2.lift, -PETTED.lift * k))
+    }
     if (rig.tail) {
       const happy = dog.sit > 0
       pose(rig.tail, still ? 0 : Math.sin(t * (happy ? WAG.happyRate : WAG.idleRate)) * (happy ? WAG.happy : WAG.idle))

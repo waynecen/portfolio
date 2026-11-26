@@ -58,11 +58,9 @@ const heartMaterials = HEARTS.map(() => new MeshBasicMaterial({ color: '#ff6f8e'
 /** Katsu, in the room (Game.tsx mounts it in the house's group). */
 export function Dog() {
   const root = useRef<Group>(null)
-  const pose = useRef<Group>(null)
   const legs = useRef<(Group | null)[]>([])
   const wag = useRef<Group>(null)
   const hearts = useRef<(Group | null)[]>([])
-  const shown = useRef(0)
 
   const collider = useRef<Collider & { kind: 'circle' }>({ kind: 'circle', x: dog.x, z: dog.z, r: RADIUS })
   const item = useRef<Interactable>({ x: dog.x, z: dog.z, range: RANGE, prompt: 'Pet', onInteract: pet })
@@ -83,11 +81,10 @@ export function Dog() {
     const still = reducedMotion()
     g.position.set(dog.x, 0, dog.z)
     // Turn the short way round, smoothly.
-    const turn = Math.atan2(Math.sin(dog.heading - shown.current), Math.cos(dog.heading - shown.current))
-    shown.current += turn * (1 - Math.exp(-10 * dt))
-    g.rotation.y = shown.current
+    const turn = Math.atan2(Math.sin(dog.heading - dog.shown), Math.cos(dog.heading - dog.shown))
+    dog.shown += turn * (1 - Math.exp(-10 * dt))
+    g.rotation.y = dog.shown
     // Sitting tips it back on its haunches; trotting swings the legs in diagonal pairs.
-    if (pose.current) pose.current.rotation.x += ((dog.sit > 0 ? -0.45 : 0) - pose.current.rotation.x) * (1 - Math.exp(-8 * dt))
     const swing = dog.moving && !still ? Math.sin(t * dog.speed * 14) * 0.55 : 0
     legs.current.forEach((l, k) => l && (l.rotation.x = k === 0 || k === 3 ? swing : -swing))
     if (wag.current) wag.current.rotation.z = still ? 0 : Math.sin(t * (dog.sit > 0 ? 22 : 7)) * (dog.sit > 0 ? 0.5 : 0.2)
@@ -98,17 +95,17 @@ export function Dog() {
       h.visible = dog.hearts >= 0 && a > 0 && a < 1
       if (!h.visible) return
       h.position.y = 0.75 + a * 0.45
-      h.rotation.y = -shown.current // keep facing the camera
+      h.rotation.y = -dog.shown // keep facing the camera
       heartMaterials[k].opacity = a < 0.2 ? a / 0.2 : 1 - (a - 0.2) / 0.8
     })
   })
 
   return (
     <group ref={root}>
-      {/* Pivots on its back legs to sit. */}
-      <group position-z={-0.2}>
-        <group ref={pose}>
-          <group position-z={0.2}>
+      {/* Stays on all fours when petted: the model tips its head instead (ShibaModel.tsx). */}
+      <group>
+        <group>
+          <group>
             <Suspense
               fallback={
                 <Held>

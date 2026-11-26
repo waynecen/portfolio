@@ -29,7 +29,8 @@ const centre = (t: Spot) => ({ x: INTERIOR.x + t.i, z: INTERIOR.z + t.j })
 export const dog = {
   x: centre(START).x,
   z: centre(START).z,
-  heading: 0,
+  heading: 0, // where it's going (or, petted, the player)
+  shown: 0, // where its body faces as drawn, easing round to heading (Dog.tsx)
   path: [] as Spot[],
   step: 0,
   speed: WALK,
