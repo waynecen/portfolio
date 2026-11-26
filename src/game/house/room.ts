@@ -11,7 +11,7 @@ import { readSaved, writeSaved } from '../core/persist'
 
 export type PieceId =
   | 'bed' | 'fireplace' | 'table' | 'stool' | 'pot2' | 'pot3' | 'chest' | 'rug' | 'recordPlayer'
-  | 'armchair' | 'armchair2' | 'sideTable' | 'logs' | 'coatStand' | 'kotatsu' | 'zabuton' | 'zabuton2' | 'zabuton3' | 'zabuton4' | 'basket'
+  | 'sideTable' | 'logs' | 'coatStand' | 'kotatsu' | 'zabuton' | 'zabuton2' | 'zabuton3' | 'zabuton4' | 'basket'
   | 'lamp' | 'plant' | 'shelf'
 
 export type Spot = { i: number; j: number }
@@ -39,8 +39,6 @@ export const PIECES: Piece[] = [
   { id: 'pot2', name: 'a pot', w: 1, d: 1 },
   { id: 'pot3', name: 'a pot', w: 1, d: 1 },
   { id: 'recordPlayer', name: 'the record player', w: 1, d: 1 },
-  { id: 'armchair', name: 'an armchair', w: 1, d: 1 },
-  { id: 'armchair2', name: 'an armchair', w: 1, d: 1 },
   { id: 'sideTable', name: 'the side table', w: 1, d: 1 },
   { id: 'logs', name: 'the log basket', w: 1, d: 1 },
   { id: 'coatStand', name: 'the coat stand', w: 1, d: 1 },
@@ -67,9 +65,7 @@ const DEFAULT: Record<PieceId, Spot> = {
   pot2: { i: -5, j: 0 },
   pot3: { i: -5, j: 1 },
   recordPlayer: { i: 5, j: -3 },
-  // Round the fire: an armchair either side facing in, the tea beside the left one, the logs beside the right.
-  armchair: { i: -2, j: -2 },
-  armchair2: { i: 2, j: -2 },
+  // Either side of the fire: the tea on the left, the logs on the right.
   sideTable: { i: -2, j: -3 },
   logs: { i: 2, j: -3 },
   coatStand: { i: -5, j: -3 }, // in the back corner, out of the way of the door and the view

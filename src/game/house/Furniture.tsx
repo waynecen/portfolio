@@ -39,8 +39,6 @@ const C = {
   stoneDark: new Color('#8c847b'),
   soot: new Color('#2b2522'),
   log: new Color('#6b4429'),
-  fabric: new Color('#7f9e78'), // sage-green upholstery
-  cushion: new Color('#94b38c'),
   wicker: new Color('#c7a06a'),
   tea: new Color('#9cb79a'),
   candle: new Color('#f3ead6'),
@@ -144,23 +142,7 @@ const FIRE_USE = {
   dz: 0.5,
   range: 1.3,
   prompt: 'Look',
-  onInteract: () => say(['The fire crackles and pops.', 'It’s always lit in here, rain or shine. Pull up an armchair.']),
-}
-/** An armchair facing +x (`side` 1) or -x (-1): its back on the other side. */
-function armchair(side: 1 | -1): Build {
-  return {
-    parts: (box) => {
-      // x from the back (a) toward the front (b), mirrored for a chair facing -x.
-      const along = (c: Color, a: number, b: number, y0: number, y1: number, z0: number, z1: number) =>
-        box(c, Math.min(a * side, b * side), Math.max(a * side, b * side), y0, y1, z0, z1)
-      box(C.wood, -0.36, 0.36, 0, 0.08, -0.36, 0.36) // the feet's frame
-      box(C.fabric, -0.38, 0.38, 0.08, 0.3, -0.38, 0.38) // the base
-      along(C.cushion, -0.24, 0.36, 0.3, 0.4, -0.27, 0.27) // the seat cushion
-      along(C.fabric, -0.4, -0.24, 0.3, 0.86, -0.38, 0.38) // the back
-      for (const z of [-1, 1]) along(C.fabric, -0.24, 0.38, 0.3, 0.55, Math.min(z * 0.27, z * 0.37), Math.max(z * 0.27, z * 0.37)) // the arms, in from the back
-    },
-    solid: [{ kind: 'circle', x: 0, z: 0, r: 0.38 }],
-  }
+  onInteract: () => say(['The fire crackles and pops.', 'It’s always lit in here, rain or shine.']),
 }
 const SIDE_TABLE: Build = {
   // A round top on one leg, with a teapot and a cup on it.
@@ -322,7 +304,7 @@ const MODELS: Partial<Record<PieceId, { url: string; width: number; depth?: numb
 
 const BUILDS: Partial<Record<PieceId, Build>> = {
   bed: BED, fireplace: FIREPLACE, table: TABLE, stool: STOOL,
-  armchair: armchair(1), armchair2: armchair(-1), sideTable: SIDE_TABLE, logs: LOGS, coatStand: COAT_STAND,
+  sideTable: SIDE_TABLE, logs: LOGS, coatStand: COAT_STAND,
   kotatsu: KOTATSU, zabuton: ZABUTON, zabuton2: ZABUTON, zabuton3: ZABUTON, zabuton4: ZABUTON, basket: BASKET,
   pot2: POT, pot3: POT, chest: CHEST, rug: RUG,
   lamp: LAMP, plant: PLANT, shelf: SHELF,
