@@ -19,7 +19,7 @@ import { GLOW, shadeMaterial, useLightSwitch, WARM } from './lights'
 // a hidden light drops out of the light count, and a change in that count recompiles every material
 // on each trip through the door. So they're always there, and simply at 0 away from the house.
 
-const PENDANT = { x: 0, y: 2.25, z: 0.3 } // the hanging lantern, house-local; the cord runs up out of sight
+const PENDANT = { x: 0, y: 2.25, z: 1.5 } // the hanging lantern, house-local, over the rug (further back, it hides the fire); the cord runs up out of sight
 const CEILING = { day: 3, night: 10, distance: 13 } // its light, candela; it pools under the lantern and fades to the walls
 const LAMP = { day: 0.5, night: 1.8, distance: 3.5, y: 1.1 } // the paper lamp's light, at the height of its shade
 const FIRE = { day: 1.2, night: 3.5, distance: 5, y: 0.5, z: 0.25, color: '#ff9a4a' } // the fireplace's light, just out of its opening (from the piece's centre), flickering
