@@ -30,7 +30,7 @@ Panel styles are `.music-*` in [house.css](./house.css); the now-playing label i
 ## Room lights: [RoomLights.tsx](./RoomLights.tsx), [lights.ts](./lights.ts), [Atmosphere.tsx](../world/Atmosphere.tsx)
 
 ```ts
-const PENDANT = { x: 0, y: 2.25, z: 0.3 } // the paper lantern hanging from the ceiling, house-local; its cord runs up out of sight
+const PENDANT = { x: 0, y: 2.25, z: 1.5 } // the paper lantern hanging from the ceiling, house-local, over the rug's centre (further back, it hides the fire from the camera); its cord runs up out of sight
 const CEILING = { day: 3, night: 10, distance: 13 } // its warm light (candela), blended by how much it's night: a pool under it, fading to the walls
 const LAMP = { day: 0.5, night: 1.8, distance: 3.5, y: 1.1 } // the paper lamp's light, once it's bought; it follows the lamp, into the hand while moving it
 const FIRE = { day: 1.2, night: 3.5, distance: 5, y: 0.5, z: 0.25, color: '#ff9a4a' } // the fireplace's light, just out of its opening; it follows the fireplace like the lamp's
