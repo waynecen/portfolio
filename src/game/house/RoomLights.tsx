@@ -25,9 +25,9 @@ import { GLOW, shadeMaterial, useLightSwitch, WARM } from './lights'
 // on a low-tier device (phones) only the lantern casts: each one is six more renders of the room.
 
 const PENDANT = { x: 0, y: 2.25, z: 1.5 } // the hanging lantern, house-local, over the rug (further back, it hides the fire); the cord runs up out of sight
-const CEILING = { day: 3, night: 10, distance: 13 } // its light, candela; it pools under the lantern and fades to the walls
-const LAMP = { day: 0.5, night: 1.8, distance: 3.5, y: 1.1 } // the paper lamp's light, at the height of its shade
-const FIRE = { day: 1.2, night: 3.5, distance: 5, y: 0.5, z: 0.45, color: '#ff9a4a' } // the fireplace's light, just out of its opening (from the piece's centre), flickering
+const CEILING = { day: 4.5, night: 12, distance: 13 } // its light, candela; it pools under the lantern and fades to the walls
+const LAMP = { day: 1, night: 2.5, distance: 3.5, y: 1.1 } // the paper lamp's light, at the height of its shade
+const FIRE = { day: 3, night: 6, distance: 6, y: 0.5, z: 0.45, color: '#ff9a4a' } // the fireplace's light, just out of its opening (from the piece's centre), flickering
 const FLICKER = 0.15 // how much the fire's light flickers either way (a third of it with reduced motion)
 const DRIFT = 0.025 // how far the lantern swings on its cord, radians (still with reduced motion)
 const CORD = 3 // the cord's length above the lantern; it swings from the top
