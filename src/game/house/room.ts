@@ -11,7 +11,7 @@ import { readSaved, writeSaved } from '../core/persist'
 
 export type PieceId =
   | 'bed' | 'fireplace' | 'table' | 'stool' | 'pot2' | 'pot3' | 'chest' | 'rug' | 'recordPlayer'
-  | 'sideTable' | 'logs' | 'coatStand' | 'kotatsu' | 'zabuton' | 'zabuton2' | 'zabuton3' | 'zabuton4' | 'basket'
+  | 'sideTable' | 'logs' | 'coatStand' | 'kotatsu' | 'basket'
   | 'lamp' | 'plant' | 'shelf'
 
 export type Spot = { i: number; j: number }
@@ -42,11 +42,7 @@ export const PIECES: Piece[] = [
   { id: 'sideTable', name: 'the side table', w: 1, d: 1 },
   { id: 'logs', name: 'the log basket', w: 1, d: 1 },
   { id: 'coatStand', name: 'the coat stand', w: 1, d: 1 },
-  { id: 'kotatsu', name: 'the kotatsu', w: 2, d: 2 },
-  { id: 'zabuton', name: 'a cushion', w: 1, d: 1, floor: true },
-  { id: 'zabuton2', name: 'a cushion', w: 1, d: 1, floor: true },
-  { id: 'zabuton3', name: 'a cushion', w: 1, d: 1, floor: true },
-  { id: 'zabuton4', name: 'a cushion', w: 1, d: 1, floor: true },
+  { id: 'kotatsu', name: 'the kotatsu', w: 4, d: 2 }, // 2 × 2, with a floor cushion either side (Furniture.tsx), which move with it
   { id: 'basket', name: 'the blanket basket', w: 1, d: 1 },
   { id: 'lamp', name: 'the paper lamp', w: 1, d: 1, price: 10 },
   { id: 'plant', name: 'the fern', w: 1, d: 1, price: 6 },
@@ -69,17 +65,13 @@ const DEFAULT: Record<PieceId, Spot> = {
   sideTable: { i: -2, j: -3 },
   logs: { i: 2, j: -3 },
   coatStand: { i: -5, j: -3 }, // in the back corner, out of the way of the door and the view
-  // The kotatsu on the right with two cushions either side (its left ones at i = 2, clear of the
-  // rug), and a basket of blankets on the left. The column below the bed (i = -3) and the front row
+  // The kotatsu on the right, its cushions either side (the left one at i = 2, clear of the rug),
+  // and a basket of blankets on the left. The column below the bed (i = -3) and the front row
   // left of the door stay clear: the snapshot skill walks out that way.
-  kotatsu: { i: 3, j: 0 },
-  zabuton: { i: 2, j: 0 },
-  zabuton2: { i: 2, j: 1 },
-  zabuton3: { i: 5, j: 0 },
-  zabuton4: { i: 5, j: 1 },
+  kotatsu: { i: 2, j: 0 },
   basket: { i: -4, j: 1 },
   // Where bought pieces go if there's room there (otherwise the nearest free tile: addPiece).
-  lamp: { i: 5, j: 2 }, // below the kotatsu's right cushions
+  lamp: { i: 5, j: 2 }, // below the kotatsu's right cushion
   plant: { i: -5, j: 2 },
   shelf: { i: -5, j: -2 },
 }

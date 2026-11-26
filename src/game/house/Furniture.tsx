@@ -177,8 +177,11 @@ const KOTATSU: Build = {
   },
   solid: [{ kind: 'box', x: 0, z: 0, hx: 0.87, hz: 0.87 }],
 }
+// The kotatsu's floor cushions, one centred on each side of it, close in (part of its piece, so
+// they move with it). Walked over: no collider.
+const CUSHION_X = 1.24 // from the kotatsu's centre
 const ZABUTON: Build = {
-  // A flat floor cushion with a tassel tied in the middle. On the floor, like the rug: walk over it.
+  // A flat floor cushion with a tassel tied in the middle.
   parts: (box) => {
     box(C.indigo, -0.34, 0.34, 0, 0.07, -0.34, 0.34)
     box(C.quiltEdge, -0.04, 0.04, 0.07, 0.09, -0.04, 0.04)
@@ -290,7 +293,7 @@ const SHELF: Build = {
 // while the model downloads. Fitted to `width` across; `depth` stretches it front to back to fill its
 // tiles and `height` up or down; `z` nudges it back or forward on them. Colliders stay the Build's.
 const PropModel = lazy(() => import('./PropModel'))
-// The four cushions share one model, squared to their blocks and flattened (it's puffier), since you walk over them.
+// The kotatsu's two cushions share one model, squared to their blocks and flattened (it's puffier), since you walk over them.
 const ZABUTON_MODEL = { url: '/models/zabuton.glb', width: 0.68, depth: 0.68, height: 0.1 }
 const MODELS: Partial<Record<PieceId, { url: string; width: number; depth?: number; height?: number; z?: number }>> = {
   bed: { url: '/models/bed.glb', width: 0.98, depth: 1.8, z: -0.03 }, // its shape is stubbier than the 1 × 2 tiles, so it's lengthened
@@ -299,13 +302,12 @@ const MODELS: Partial<Record<PieceId, { url: string; width: number; depth?: numb
   stool: { url: '/models/stool.glb', width: 0.5 },
   fireplace: { url: '/models/fireplace.glb', width: 2.6, depth: 0.85, height: 1.6, z: -0.08 }, // its blocks' footprint, up to the top of the wall: the model is squarer
   kotatsu: { url: '/models/kotatsu.glb', width: 1.74, depth: 1.74, height: 0.75 }, // its blocks' footprint, a little lower than its own shape (1.04 at this width)
-  ...Object.fromEntries((['zabuton', 'zabuton2', 'zabuton3', 'zabuton4'] as const).map((id) => [id, ZABUTON_MODEL])),
 }
 
 const BUILDS: Partial<Record<PieceId, Build>> = {
   bed: BED, fireplace: FIREPLACE, table: TABLE, stool: STOOL,
   sideTable: SIDE_TABLE, logs: LOGS, coatStand: COAT_STAND,
-  kotatsu: KOTATSU, zabuton: ZABUTON, zabuton2: ZABUTON, zabuton3: ZABUTON, zabuton4: ZABUTON, basket: BASKET,
+  kotatsu: KOTATSU, basket: BASKET,
   pot2: POT, pot3: POT, chest: CHEST, rug: RUG,
   lamp: LAMP, plant: PLANT, shelf: SHELF,
 } // the record player draws itself (RecordPlayer.tsx)
@@ -356,6 +358,7 @@ function geometryOf(b: Build) {
   return g
 }
 const material = new MeshLambertMaterial({ vertexColors: true, flatShading: true })
+const cushion = <mesh geometry={geometryOf(ZABUTON)} material={material} />
 
 /** Things to use on a piece, from its centre. */
 const USES: Partial<Record<PieceId, Omit<Interactable, 'x' | 'z'> & { dx: number; dz: number }>> = {
@@ -383,6 +386,14 @@ function Piece({ id, build }: { id: PieceId; build: Build }) {
       {build.glow && <mesh geometry={build.glow} material={shadeMaterial} />}
       {cup && <mesh geometry={trophy} material={material} />}
       {id === 'fireplace' && <Fire />}
+      {id === 'kotatsu' &&
+        [-1, 1].map((s) => (
+          <group key={s} position-x={s * CUSHION_X}>
+            <Suspense fallback={<Held>{cushion}</Held>}>
+              <PropModel {...ZABUTON_MODEL} />
+            </Suspense>
+          </group>
+        ))}
     </group>
   )
 }
