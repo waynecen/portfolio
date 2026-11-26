@@ -25,14 +25,11 @@ body.playing .view-toggle:not(:focus-visible) { width: 1px; height: 1px; padding
   opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .4s ease, visibility 0s .4s;
 }
 .loader p { margin: 0; }
-/* Something to do while it loads: a little pill that hops on a tap, a click or Space (main.tsx). */
+/* A little pill (the player's shape) above the words. */
 .loader-box { display: grid; justify-items: center; gap: 14px; }
 .loader-pill { width: 22px; height: 34px; border-radius: 11px; background: var(--bg); }
-.loader-pill.hop { animation: loader-hop .45s cubic-bezier(.3, .7, .4, 1); }
-@keyframes loader-hop { 30% { transform: translateY(-28px) scaleY(1.08); } 80% { transform: translateY(0) scaleY(.85); } }
-.loader-hint { opacity: .55; font-size: 10px; }
 body.loading .loader { opacity: 1; visibility: visible; pointer-events: auto; transition: none; }
 .loader-dots::after { content: "..."; display: inline-block; width: 3ch; text-align: left; animation: loader-dots 1.2s steps(4) infinite; overflow: hidden; vertical-align: bottom; }
 @keyframes loader-dots { from { width: 0; } }
-@media (prefers-reduced-motion: reduce) { .loader { transition: none; } .loader-dots::after { animation: none; } .loader-pill.hop { animation-duration: .01s; } }
+@media (prefers-reduced-motion: reduce) { .loader { transition: none; } .loader-dots::after { animation: none; } }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
