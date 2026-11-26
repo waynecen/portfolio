@@ -6,7 +6,7 @@ import { useSceneFrame } from '../core/sceneFrame'
 import { sky } from '../world/sky'
 import { dog } from './shiba'
 
-// Kinako as the Tripo model (models-src/shiba.glb, through npm run models), in place of the block dog
+// Katsu as the Tripo model (models-src/shiba.glb, through npm run models), in place of the block dog
 // in Dog.tsx, which stands in while it loads. The model is rigged but has no clips, so its bones are
 // turned here: it walks with a dog's four-beat gait (each foot planted while the body passes over
 // it, then lifted and swung forward), or trots in diagonal pairs when it hurries off, bobbing with

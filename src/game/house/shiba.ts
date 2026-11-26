@@ -6,7 +6,7 @@ import { PILL_RADIUS } from '../player/PillCharacter'
 import { INTERIOR } from '../world/layout'
 import { tileAt, walkableTiles, type Spot } from './room'
 
-// Kinako, the house shiba (Dog.tsx draws it): wanders the room from one free tile to another, trots
+// Katsu, the house shiba (Dog.tsx draws it): wanders the room from one free tile to another, trots
 // out of the way if the player bumps into it, and can be petted: it sits, wags like mad, gives a
 // little woof and hearts float up. Its state lives here, outside React, moved on once a frame.
 
@@ -103,7 +103,7 @@ function setOff(away: boolean) {
   dog.speed = away ? TROT : WALK
 }
 
-/** Moves Kinako on by dt seconds. Call once a frame while the room is showing and nothing's paused. */
+/** Moves Katsu on by dt seconds. Call once a frame while the room is showing and nothing's paused. */
 export function tickDog(dt: number) {
   if (dog.hearts >= 0) dog.hearts += dt
   if (STAY && dog.sit <= 0) {
@@ -158,5 +158,5 @@ export function pet() {
   dog.path = []
   dog.hearts = 0
   woof()
-  if (firstTime('dog')) say(['This is Kinako, the house shiba.', 'Kinako leans right into the scratch, tail going like mad.'])
+  if (firstTime('dog')) say(['This is Katsu, the house shiba.', 'Katsu leans right into the scratch, tail going like mad.'])
 }

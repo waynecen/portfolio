@@ -154,7 +154,7 @@ const SOUNDS = {
     return render(0.12, (t, n) => (lp(n) * 1.4 + Math.sin(2 * Math.PI * 180 * t) * 0.5) * Math.exp(-t * 38))
   },
   woof: () =>
-    // Kinako, petted: a small, happy yip, falling in pitch.
+    // Katsu, petted: a small, happy yip, falling in pitch.
     render(0.16, (t, n) => {
       const f = 430 - 700 * t
       const tone = Math.sin(2 * Math.PI * f * t) * 0.45 + Math.sign(Math.sin(2 * Math.PI * f * t)) * 0.15

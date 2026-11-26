@@ -49,7 +49,7 @@ The sizes are in floor tiles (1 tile = 1 unit), across × deep. The back of a pi
 - [x] **`zabuton.glb`** (flat, one centred on each side of the kotatsu, as part of its piece). *In: `ZABUTON_MODEL`, one model for both cushions, 0.68 square and 0.16 tall; solid, so the player walks round them.*
 - [ ] **`basket.glb`** (1 × 1, the left of the room). In the room as blocks.
   > A round woven wicker basket holding rolled-up blankets and a ball of yarn with knitting needles.
-- [x] **`shiba.glb`** (Kinako, the house dog). *In: ShibaModel.tsx, 0.7 tall. Rigged with no clips, so its legs and tail bones are swung in code: a trot, and a wag that quickens after a pet.*
+- [x] **`shiba.glb`** (Katsu, the house dog). *In: ShibaModel.tsx, 0.7 tall. Rigged with no clips, so its legs and tail bones are swung in code: a trot, and a wag that quickens after a pet.*
 - [ ] **`lantern.glb`** (the paper lantern hanging from the ceiling, RoomLights.tsx; seen from above)
   > A round Japanese paper ceiling lantern, cream rice paper over a thin bamboo frame, with a short dark cord at the top. Glowing softly from inside.
 - [x] **`recordPlayer.glb`** (1 × 1). *In: RecordPlayer.tsx.*

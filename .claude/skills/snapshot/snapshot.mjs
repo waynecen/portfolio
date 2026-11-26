@@ -35,7 +35,7 @@ async function page(name, options, hour, season = 'summer') {
     if (m.type() === 'error') errors.push(`${name}: ${m.text()} ${m.location().url ?? ''}`)
   })
   // Pin the clock and the season, so shots compare between runs whatever the date.
-  // Kinako stays put (?dog=stay), so it can't stand in the walk out of the room.
+  // Katsu stays put (?dog=stay), so it can't stand in the walk out of the room.
   await p.goto(hour === undefined ? URL : `${URL}?hour=${hour}&season=${season}&dog=stay`)
   return p
 }

@@ -28,7 +28,7 @@ The shots:
 - `desktop-character.png`: a close-up of the player on the doorstep in the morning, cropped from the island shot. It shows the pill, or the 3D model when `PLAYER_MODEL` is set in `src/game/models.ts`. Check it stands on the ground, faces the camera and isn't clipped.
 - `mobile-house.png`: the starting room at 390 × 844 with touch controls.
 
-Each game shot keeps Kinako, the house dog, on its start tile with `?dog=stay`, so it can't block the walk out, and pins the clock with `?hour=` (see `HOURS` in the script), so shots compare between runs whatever the real time. It takes about two minutes.
+Each game shot keeps Katsu, the house dog, on its start tile with `?dog=stay`, so it can't block the walk out, and pins the clock with `?hour=` (see `HOURS` in the script), so shots compare between runs whatever the real time. It takes about two minutes.
 
 ## After running
 

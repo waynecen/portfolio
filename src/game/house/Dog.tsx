@@ -11,7 +11,7 @@ import { dog, pet, RADIUS, RANGE, tickDog } from './shiba'
 
 const ShibaModel = lazy(() => import('./ShibaModel'))
 
-// Kinako, the house shiba (its wandering and petting are shiba.ts): the Tripo model (ShibaModel.tsx),
+// Katsu, the house shiba (its wandering and petting are shiba.ts): the Tripo model (ShibaModel.tsx),
 // with these blocks standing in while it loads: a tan body with a cream chest, muzzle and belly,
 // pointed ears, a curled tail that wags, and legs that trot. Facing +z at heading 0.
 
@@ -55,7 +55,7 @@ const HEARTS = [
 const HEART_TIME = 1.2 // seconds each heart takes to rise and fade
 const heartMaterials = HEARTS.map(() => new MeshBasicMaterial({ color: '#ff6f8e', transparent: true, depthWrite: false }))
 
-/** Kinako, in the room (Game.tsx mounts it in the house's group). */
+/** Katsu, in the room (Game.tsx mounts it in the house's group). */
 export function Dog() {
   const root = useRef<Group>(null)
   const pose = useRef<Group>(null)
