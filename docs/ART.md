@@ -7,7 +7,7 @@ The models for roadmap item 69, made in [Tripo](https://www.tripo3d.ai/), each r
 2. Save it as `models-src/<name>.glb`.
 3. Run `npm run models <name>.glb`. It writes `public/models/<name>.glb`, compressed (meshopt geometry, WebP textures at 1024 px or less).
 4. Wire it in:
-   - **Room pieces:** add a line to `MODELS` in [Furniture.tsx](../src/game/house/Furniture.tsx). [PropModel.tsx](../src/game/house/PropModel.tsx) fits the model to the piece's width, can stretch it to the depth of its tiles, and adds a soft fill so its front isn't lost in shadow. One file can serve several pieces (the two pots).
+   - **Room pieces:** add a line to `MODELS` in [Furniture.tsx](../src/game/house/Furniture.tsx). [PropModel.tsx](../src/game/house/PropModel.tsx) fits the model to the piece's width, can stretch it to the depth of its tiles, lays a model made standing up down flat (`flat`), and adds a soft fill so its front isn't lost in shadow (`fill` for more, which makes pale parts glow). One file can serve several pieces (the two pots).
    - **Outdoor items:** each needs its own small loader. PropModel works outdoors too, with `scene="world"` (the house does this).
 
 **Budget for each prop**
@@ -34,10 +34,8 @@ The sizes are in floor tiles (1 tile = 1 unit), across × deep. The back of a pi
   > A large terracotta floor pot, wider at the top, with a rolled rim and a simple painted band around it. Empty, or with a little soil showing.
 - [x] **`chest.glb`** (1 × 1, at the back of its tile). *In: `MODELS.chest`; the sword starts inside it.*
   > A small wooden storage chest with a domed lid, brass corner caps, a brass band around it and a chunky round brass latch on the front. Slightly chunky, toy-like proportions.
-- [ ] **`rug.glb`** (3 × 2, flat)
-  > A flat rectangular woven rug, one and a half times as wide as deep. Terracotta border, a mustard-gold field and a simple cream diamond motif in the centre. Very thin, lying perfectly flat, with short tassels on the two short ends.
-- [ ] **`lamp.glb`** (1 × 1, sold in the shop). The shade glows at night (RoomLights.tsx), so ideally make it a separate part.
-  > A Japanese paper floor lantern: a thin dark wooden stand on a round base, holding a cylindrical cream rice-paper shade with a thin wooden frame. The shade glows softly as if lit from inside. Waist to chest height.
+- [x] **`rug.glb`** (3 × 2, flat). *In: `MODELS.rug`, laid flat (`flat`: Tripo made it standing up) and stretched to its blocks' footprint.*
+- [x] **`lamp.glb`** (1 × 1, sold in the shop). *In: `MODELS.lamp`, 1.3 tall; a strong `fill` makes its paper shade glow, most at night.*
 - [ ] **`plant.glb`** (1 × 1, sold in the shop)
   > A leafy fern in a small round clay pot, with fronds arching out evenly on all sides. Fresh green leaves, about knee height.
 - [ ] **`shelf.glb`** (1 × 1, sold in the shop)
