@@ -79,6 +79,8 @@ function start(spin: boolean) {
 
 /** True while a swing or spin is under way (the player slows down meanwhile). */
 export const swinging = () => sword.t >= 0
+/** The key is held after a swing: the spin is charging (or charged, waiting to be let go). */
+export const charging = () => sword.holding && sword.t < 0
 
 /** Advances the sword by `dt` seconds and strikes at the right moment; called every frame by <Sword>. */
 export function updateSword(dt: number) {

@@ -2,7 +2,7 @@ import { useFrame } from '@react-three/fiber'
 import { lazy, Suspense, useEffect, useRef } from 'react'
 import { MathUtils, type Group } from 'three'
 import { pushOutOfBox, resolve } from '../core/collision'
-import { swinging } from '../combat/combat'
+import { charging, swinging } from '../combat/combat'
 import { HeldRod } from '../life/Dock'
 import { harm } from '../combat/health'
 import { Sword } from './Sword'
@@ -37,6 +37,7 @@ const EDGE = PILL_RADIUS + SHORE // how close the pill's centre gets to a water 
 const STEP_LEN = [0.45, 0.7] // units travelled per footstep sound: walking, and at full sprint
 const TINY = 0.55 // the character's size with the "tiny you" secret on (secrets.ts)
 const SWING_SPEED = 0.35 // top speed while swinging the sword, as a share (combat.ts)
+const CHARGE_SPEED = 0.45 // top speed while charging a spin, as a share of walking (no sprinting): a slow, wary shuffle
 const KNOCK_DECEL = 5 // how quickly a knockback eases off (health.ts); lower = further
 const FLICKER = 14 // flickers per second while invulnerable after a bump
 
@@ -101,8 +102,10 @@ export function Player() {
     // Ease velocity toward the input instead of snapping, so starts and stops feel weighty.
     // Sprint eases in and out through the same damp, so pressing Shift ramps up rather than jumps.
     const rate = harm.stagger > 0 ? KNOCK_DECEL : len2 > 0 ? ACCEL : DECEL
-    // Swinging the sword slows the player to SWING_SPEED, so a swing plants the feet.
-    const top = (keys.sprint || buttons.sprint || pad.sprint ? SPEED * SPRINT : SPEED) * (swinging() ? SWING_SPEED : 1)
+    // Swinging the sword slows the player to SWING_SPEED, so a swing plants the feet; charging a spin
+    // to CHARGE_SPEED of walking, with no sprint.
+    const charge = charging()
+    const top = (!charge && (keys.sprint || buttons.sprint || pad.sprint) ? SPEED * SPRINT : SPEED) * (swinging() ? SWING_SPEED : charge ? CHARGE_SPEED : 1)
     v.x = MathUtils.damp(v.x, x * top, rate, dt)
     v.z = MathUtils.damp(v.z, z * top, rate, dt)
     if (len2 === 0 && v.x * v.x + v.z * v.z < 1e-4) v.x = v.z = 0
