@@ -56,17 +56,22 @@ export function bindKeys(): () => void {
       }
       if (!e.repeat && photoKey(e)) return
     }
-    // The sword's keys (J or X unless remapped; the left mouse button is below). Down swings (and starts a charge), up lets a charged spin go (combat.ts).
+    // The sword's keys (Space, J or X unless remapped; the left mouse button is below). Down swings
+    // (and starts a charge), up lets a charged spin go (combat.ts). With a dialogue open they advance
+    // it, and with a line out they reel in, instead.
     if (action === 'attack') {
       if (isTyping(e.target) || !document.body.classList.contains('playing')) return
+      if (e.target instanceof HTMLElement && e.target.closest('a, button')) return // Space presses a focused button
+      if (e.code === 'Space') e.preventDefault() // don't scroll the page
       if (useGame.getState().putting) {
         // At the golf ball the sword's key charges the putt instead (golf/golf.ts).
         if (down && !e.repeat) putter.press()
         else if (!down) putter.release()
         return
       }
-      if (down && !e.repeat) pressAttack()
-      else if (!down) releaseAttack()
+      if (down && !e.repeat) {
+        if (!advance() && !reel()) pressAttack()
+      } else if (!down) releaseAttack()
       return
     }
     if (e.code === 'Escape' || (action && !isDir(action))) {
@@ -83,9 +88,6 @@ export function bindKeys(): () => void {
           closePanel()
           stopFishing()
         }
-      } else if (action === 'continue') {
-        // Space advances dialogue when it's open, or reels in a line that's out.
-        if (!advance()) reel()
       } else if (action === 'edit') toggleEdit()
       else if (action === 'log') toggleLog()
       else if (action === 'settings') toggleSettings()
