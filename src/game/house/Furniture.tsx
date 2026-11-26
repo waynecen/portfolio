@@ -40,7 +40,6 @@ const C = {
   soot: new Color('#2b2522'),
   log: new Color('#6b4429'),
   wicker: new Color('#c7a06a'),
-  tea: new Color('#9cb79a'),
   candle: new Color('#f3ead6'),
   quilt: new Color('#c4553f'),
   quiltEdge: new Color('#efe3cc'),
@@ -143,19 +142,6 @@ const FIRE_USE = {
   range: 1.3,
   prompt: 'Look',
   onInteract: () => say(['The fire crackles and pops.', 'It’s always lit in here, rain or shine.']),
-}
-const SIDE_TABLE: Build = {
-  // A round top on one leg, with a teapot and a cup on it.
-  parts: (_, add) => {
-    add(cylinder(0, 0, 0.18, 0.18, 0, 0.04, C.cap))
-    add(cylinder(0, 0, 0.05, 0.05, 0.04, 0.5, C.wood))
-    add(cylinder(0, 0, 0.3, 0.3, 0.5, 0.56, C.wood))
-    add(tint(new SphereGeometry(0.1, 10, 7).scale(1, 0.85, 1).translate(-0.06, 0.64, -0.04), C.tea)) // the teapot
-    add(cylinder(-0.06, -0.04, 0.025, 0.025, 0.71, 0.75, C.tea)) // its lid knob
-    add(tint(new CylinderGeometry(0.02, 0.025, 0.12, 5).rotateZ(-0.9).translate(0.06, 0.66, -0.04), C.tea)) // its spout
-    add(cylinder(0.13, 0.12, 0.045, 0.04, 0.56, 0.63, C.candle)) // a cup
-  },
-  solid: [{ kind: 'circle', x: 0, z: 0, r: 0.3 }],
 }
 const LOGS: Build = {
   // A wicker basket of split logs for the fire.
@@ -310,7 +296,7 @@ const MODELS: Partial<Record<PieceId, { url: string; width: number; depth?: numb
 
 const BUILDS: Partial<Record<PieceId, Build>> = {
   bed: BED, fireplace: FIREPLACE, table: TABLE, stool: STOOL,
-  sideTable: SIDE_TABLE, logs: LOGS, coatStand: COAT_STAND,
+  logs: LOGS, coatStand: COAT_STAND,
   kotatsu: KOTATSU, basket: BASKET,
   pot2: POT, pot3: POT, chest: CHEST, rug: RUG,
   lamp: LAMP, plant: PLANT, shelf: SHELF,
