@@ -81,12 +81,13 @@ try {
     if (label === 'morning' || label === 'night') await shot(p, `desktop-house-${label}`)
     // From the bed: down to the front wall, then down and right together, which slides along the
     // wall into the doorway and out. It needs no exact timing, so a slow frame rate can't miss the door.
-    // Long enough to reach the wall even at the software renderer's ~5 fps; extra time just presses against it.
-    await hold(p, 'KeyS', 6000)
+    // Long enough to reach the wall even at the software renderer's few fps (slower in the room, with
+    // its point-light shadows); extra time just presses against it.
+    await hold(p, 'KeyS', 10000)
     await p.keyboard.down('KeyD')
     await p.keyboard.down('KeyS')
     try {
-      await p.waitForSelector('body[data-scene="world"]', { timeout: 15000 }) // set by Game.tsx once outdoors; generous, since the software renderer runs at about 5 fps
+      await p.waitForSelector('body[data-scene="world"]', { timeout: 40000 }) // set by Game.tsx once outdoors; generous, since the software renderer runs at a few fps
       await p.keyboard.up('KeyD')
       await p.keyboard.up('KeyS')
       await p.waitForTimeout(2000) // past the fade back in, even when the first frames outdoors are slow
