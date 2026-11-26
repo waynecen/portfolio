@@ -83,7 +83,7 @@ Each slot sets the background, fog colour and distances, hemisphere light, sun c
 ```ts
 export const BLEND = 0.5           // sky.ts: hours each slot takes to blend in from the one before
 const RECHECK = 5                  // Atmosphere.tsx: seconds between reads of the clock
-const ROOM_DAY / ROOM_NIGHT        // Atmosphere.tsx: indoor lights by day and at night (blended by how much it's night)
+const ROOM_DAY / ROOM_NIGHT        // Atmosphere.tsx: indoor lights by day and at night (blended by how much it's night): a dim fill and no key; the room's own lights cast the shadows (house/NOTES.md)
 const COUNT = tier low ? 300 : 800 // Rain.tsx: streaks; SPEED = 14, LENGTH = 0.45, SLANT = 0.12, OPACITY = 0.5
 const SPREAD_X = 15, SPREAD_Z = 13 // Rain.tsx: area round the player that rain falls in
 const COUNT = 55                   // life/swarm.ts: fireflies; SIZE = 0.3, WANDER = 0.5, HEIGHT = 0.45, BOB = 0.25
