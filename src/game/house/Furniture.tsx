@@ -316,6 +316,7 @@ const MODELS: Partial<Record<PieceId, { url: string; width: number; depth?: numb
   table: { url: '/models/table.glb', width: 1.9, depth: 0.9, height: 0.6 }, // its blocks' footprint and height: the model is squarer and lower
   stool: { url: '/models/stool.glb', width: 0.5 },
   fireplace: { url: '/models/fireplace.glb', width: 2.6, depth: 0.85, height: 1.6, z: -0.08 }, // its blocks' footprint, up to the top of the wall: the model is squarer
+  kotatsu: { url: '/models/kotatsu.glb', width: 1.74, depth: 1.74, height: 0.75 }, // its blocks' footprint, a little lower than its own shape (1.04 at this width)
   ...Object.fromEntries((['zabuton', 'zabuton2', 'zabuton3', 'zabuton4'] as const).map((id) => [id, ZABUTON_MODEL])),
 }
 
