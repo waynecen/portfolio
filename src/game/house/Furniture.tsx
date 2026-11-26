@@ -308,12 +308,15 @@ const SHELF: Build = {
 // while the model downloads. Fitted to `width` across; `depth` stretches it front to back to fill its
 // tiles and `height` up or down; `z` nudges it back or forward on them. Colliders stay the Build's.
 const PropModel = lazy(() => import('./PropModel'))
+// The four cushions share one model, squared to their blocks and flattened (it's puffier), since you walk over them.
+const ZABUTON_MODEL = { url: '/models/zabuton.glb', width: 0.68, depth: 0.68, height: 0.1 }
 const MODELS: Partial<Record<PieceId, { url: string; width: number; depth?: number; height?: number; z?: number }>> = {
   bed: { url: '/models/bed.glb', width: 0.98, depth: 1.8, z: -0.03 }, // its shape is stubbier than the 1 × 2 tiles, so it's lengthened
   chest: { url: '/models/chest.glb', width: 0.8, z: -0.15 }, // at the back of its tile, like its blocks
   table: { url: '/models/table.glb', width: 1.9, depth: 0.9, height: 0.6 }, // its blocks' footprint and height: the model is squarer and lower
   stool: { url: '/models/stool.glb', width: 0.5 },
   fireplace: { url: '/models/fireplace.glb', width: 2.6, depth: 0.85, height: 1.6, z: -0.08 }, // its blocks' footprint, up to the top of the wall: the model is squarer
+  ...Object.fromEntries((['zabuton', 'zabuton2', 'zabuton3', 'zabuton4'] as const).map((id) => [id, ZABUTON_MODEL])),
 }
 
 const BUILDS: Partial<Record<PieceId, Build>> = {
