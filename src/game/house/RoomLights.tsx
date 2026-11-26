@@ -1,11 +1,12 @@
 import { useFrame } from '@react-three/fiber'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { CylinderGeometry, MeshLambertMaterial, type Group, type PointLight } from 'three'
 import { useEdit } from './edit'
 import { PIECE, useOwned, useRoom } from './room'
 import { useGame } from '../core/store'
 import { INTERIOR } from '../world/layout'
 import { reducedMotion } from '../core/settings'
+import { detectTier } from '../core/quality'
 import { useSceneFrame } from '../core/sceneFrame'
 import { sky } from '../world/sky'
 import { GLOW, shadeMaterial, useLightSwitch, WARM } from './lights'
@@ -18,14 +19,20 @@ import { GLOW, shadeMaterial, useLightSwitch, WARM } from './lights'
 // The lights themselves (RoomLights) are mounted outside the house's group, which is hidden outdoors:
 // a hidden light drops out of the light count, and a change in that count recompiles every material
 // on each trip through the door. So they're always there, and simply at 0 away from the house.
+//
+// The lantern and the fire cast the room's shadows (the daylight's key is off indoors: Atmosphere.tsx),
+// so the player's shadow falls away from them. Their shadow maps are only redrawn in the house, and
+// on a low-tier device (phones) only the lantern casts: each one is six more renders of the room.
 
 const PENDANT = { x: 0, y: 2.25, z: 1.5 } // the hanging lantern, house-local, over the rug (further back, it hides the fire); the cord runs up out of sight
 const CEILING = { day: 3, night: 10, distance: 13 } // its light, candela; it pools under the lantern and fades to the walls
 const LAMP = { day: 0.5, night: 1.8, distance: 3.5, y: 1.1 } // the paper lamp's light, at the height of its shade
-const FIRE = { day: 1.2, night: 3.5, distance: 5, y: 0.5, z: 0.25, color: '#ff9a4a' } // the fireplace's light, just out of its opening (from the piece's centre), flickering
+const FIRE = { day: 1.2, night: 3.5, distance: 5, y: 0.5, z: 0.45, color: '#ff9a4a' } // the fireplace's light, just out of its opening (from the piece's centre), flickering
 const FLICKER = 0.15 // how much the fire's light flickers either way (a third of it with reduced motion)
 const DRIFT = 0.025 // how far the lantern swings on its cord, radians (still with reduced motion)
 const CORD = 3 // the cord's length above the lantern; it swings from the top
+const SHADOW = { map: 512, bias: -0.002, normalBias: 0.02, radius: 4 } // the lantern's and the fire's shadows (cube maps)
+const FIRE_SHADOW = detectTier() === 'high'
 const SNAP = 18 // how fast the lantern comes on or goes out at the switch (a damp rate, per second): a bulb's quick fade
 
 /** The ceiling lantern's paper: the same, but it goes dark with the switch. */
@@ -68,6 +75,19 @@ export function RoomLights() {
   const lamp = useRef<PointLight>(null)
   const fire = useRef<PointLight>(null)
 
+  useEffect(() => {
+    for (const [light, far] of [[ceiling.current, CEILING.distance], [fire.current, FIRE.distance]] as const) {
+      if (!light) continue
+      const s = light.shadow
+      s.mapSize.set(SHADOW.map, SHADOW.map)
+      s.bias = SHADOW.bias
+      s.normalBias = SHADOW.normalBias
+      s.radius = SHADOW.radius
+      s.camera.near = 0.1
+      s.camera.far = far
+    }
+  }, [])
+
   useFrame(({ clock }, dt) => {
     const c = ceiling.current
     const l = lamp.current
@@ -78,6 +98,7 @@ export function RoomLights() {
     shadeMaterial.emissiveIntensity = mix(GLOW.day, GLOW.night)
     lanternMaterial.emissiveIntensity = shadeMaterial.emissiveIntensity * lit
     c.intensity = home ? mix(CEILING.day, CEILING.night) * lit : 0
+    c.shadow.autoUpdate = home
     // The lamp's light follows it round the room, into the hand too while it's being moved.
     const owned = useOwned.getState().owned.includes('lamp')
     l.intensity = home && owned ? mix(LAMP.day, LAMP.night) : 0
@@ -93,6 +114,7 @@ export function RoomLights() {
       const t = clock.elapsedTime
       const flick = 1 + FLICKER * (reducedMotion() ? 0.3 : 1) * (Math.sin(t * 9) * 0.6 + Math.sin(t * 23 + 1) * 0.4)
       f.intensity = home ? mix(FIRE.day, FIRE.night) * flick : 0
+      f.shadow.autoUpdate = home
       const h = useEdit.getState().held
       const at = h && h.id === 'fireplace' && useGame.getState().editing ? h.at : useRoom.getState().spots.fireplace
       const p = PIECE.fireplace
@@ -102,9 +124,9 @@ export function RoomLights() {
 
   return (
     <>
-      <pointLight ref={ceiling} color={WARM} intensity={0} distance={CEILING.distance} decay={2} position={[INTERIOR.x + PENDANT.x, PENDANT.y - 0.15, INTERIOR.z + PENDANT.z]} />
+      <pointLight ref={ceiling} castShadow color={WARM} intensity={0} distance={CEILING.distance} decay={2} position={[INTERIOR.x + PENDANT.x, PENDANT.y - 0.15, INTERIOR.z + PENDANT.z]} />
       <pointLight ref={lamp} color={WARM} intensity={0} distance={LAMP.distance} decay={2} />
-      <pointLight ref={fire} color={FIRE.color} intensity={0} distance={FIRE.distance} decay={2} />
+      <pointLight ref={fire} castShadow={FIRE_SHADOW} color={FIRE.color} intensity={0} distance={FIRE.distance} decay={2} />
     </>
   )
 }
