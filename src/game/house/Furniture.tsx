@@ -166,6 +166,10 @@ const LOGS: Build = {
   },
   solid: [{ kind: 'circle', x: 0, z: 0, r: 0.3 }],
 }
+// The kotatsu's floor cushions, one centred on each side of it, close in (part of its piece, so
+// they move with it). Solid, so the player walks round them rather than through.
+const CUSHION_X = 1.24 // from the kotatsu's centre
+const CUSHION_HALF = 0.34
 const KOTATSU: Build = {
   // A low square table under a quilt that falls to the floor all round, a bowl of oranges on top.
   parts: (box, add) => {
@@ -175,16 +179,16 @@ const KOTATSU: Build = {
     add(cylinder(0, 0, 0.13, 0.17, 0.42, 0.5, C.candle)) // the bowl
     for (const [x, z] of [[-0.06, -0.04], [0.07, -0.03], [0, 0.07]]) add(tint(new SphereGeometry(0.065, 8, 6).translate(x, 0.53, z), C.orange))
   },
-  solid: [{ kind: 'box', x: 0, z: 0, hx: 0.87, hz: 0.87 }],
+  solid: [
+    { kind: 'box', x: 0, z: 0, hx: 0.87, hz: 0.87 },
+    ...[-1, 1].map((s) => ({ kind: 'box' as const, x: s * CUSHION_X, z: 0, hx: CUSHION_HALF, hz: CUSHION_HALF })),
+  ],
 }
-// The kotatsu's floor cushions, one centred on each side of it, close in (part of its piece, so
-// they move with it). Walked over: no collider.
-const CUSHION_X = 1.24 // from the kotatsu's centre
 const ZABUTON: Build = {
   // A flat floor cushion with a tassel tied in the middle.
   parts: (box) => {
-    box(C.indigo, -0.34, 0.34, 0, 0.07, -0.34, 0.34)
-    box(C.quiltEdge, -0.04, 0.04, 0.07, 0.09, -0.04, 0.04)
+    box(C.indigo, -0.34, 0.34, 0, 0.16, -0.34, 0.34)
+    box(C.quiltEdge, -0.04, 0.04, 0.16, 0.18, -0.04, 0.04)
   },
   solid: [],
 }
@@ -293,15 +297,15 @@ const SHELF: Build = {
 // while the model downloads. Fitted to `width` across; `depth` stretches it front to back to fill its
 // tiles and `height` up or down; `z` nudges it back or forward on them. Colliders stay the Build's.
 const PropModel = lazy(() => import('./PropModel'))
-// The kotatsu's two cushions share one model, squared to their blocks and flattened (it's puffier), since you walk over them.
-const ZABUTON_MODEL = { url: '/models/zabuton.glb', width: 0.68, depth: 0.68, height: 0.1 }
+// The kotatsu's two cushions share one model, squared to their blocks and a little flatter than its own shape (0.21 at this width).
+const ZABUTON_MODEL = { url: '/models/zabuton.glb', width: 0.68, depth: 0.68, height: 0.16 }
 const MODELS: Partial<Record<PieceId, { url: string; width: number; depth?: number; height?: number; z?: number }>> = {
   bed: { url: '/models/bed.glb', width: 0.98, depth: 1.8, z: -0.03 }, // its shape is stubbier than the 1 × 2 tiles, so it's lengthened
   chest: { url: '/models/chest.glb', width: 0.8, z: -0.15 }, // at the back of its tile, like its blocks
   table: { url: '/models/table.glb', width: 1.9, depth: 0.9, height: 0.6 }, // its blocks' footprint and height: the model is squarer and lower
   stool: { url: '/models/stool.glb', width: 0.5 },
   fireplace: { url: '/models/fireplace.glb', width: 2.6, depth: 0.85, height: 1.6, z: -0.08 }, // its blocks' footprint, up to the top of the wall: the model is squarer
-  kotatsu: { url: '/models/kotatsu.glb', width: 1.74, depth: 1.74, height: 0.75 }, // its blocks' footprint, a little lower than its own shape (1.04 at this width)
+  kotatsu: { url: '/models/kotatsu.glb', width: 1.74, depth: 1.74, height: 0.88 }, // its blocks' footprint, a little lower than its own shape (1.04 at this width)
 }
 
 const BUILDS: Partial<Record<PieceId, Build>> = {
