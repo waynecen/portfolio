@@ -112,6 +112,7 @@ export const BOX = 13      // shadowBox.ts: half-size of the sun's shadow box, w
 export const MAP = 2048    // shadow map size; one texel is BOX × 2 / MAP (about 1.3 cm), and the box snaps to whole texels so edges don't shimmer
 const BIAS = -0.0004, NORMAL_BIAS = 0.025 // against acne (stripes) without lifting shadows off their casters
 const SWEEP = 1            // Shadows.tsx: seconds between sweeps that set new meshes casting and receiving
+const ROOM_THRESHOLD = 1.15 // PostFX.tsx: bloom's threshold in the house, where lamplit surfaces near the lights (the fireplace's stones) go just past white and would glow; only the flames and the shades bloom
 const BLOOM = { threshold: 0.9, smoothing: 0.25, intensity: 1, radius: 0.75 } // PostFX.tsx: only what's brighter than white once lit blooms (the fire, the shades and windows at night, fireflies, sparkles)
 const VIGNETTE = { offset: 0.32, darkness: 0.42 }
 const SAMPLES = 4          // multisampling in the composer, in place of the canvas's antialiasing
