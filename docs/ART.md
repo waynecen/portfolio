@@ -43,14 +43,12 @@ The sizes are in floor tiles (1 tile = 1 unit), across × deep. The back of a pi
 - [ ] **`shelf.glb`** (1 × 1, sold in the shop)
   > A narrow, tall wooden bookshelf with three shelves of chunky books in soft red, blue, mustard, green and purple. A few books lean over, and there's a tiny plant on the top shelf.
 - [x] **`fireplace.glb`** (3 × 1, against the back wall). *In: `MODELS.fireplace`, stretched to its blocks' footprint and up to the top of the wall; the game's own flames flicker in its opening, and the golf trophy stands in the middle of its mantel.*
-- [ ] **`sidetable.glb`** (1 × 1, left of the fire). In the room as blocks.
-  > A small round wooden side table on a single turned pedestal leg, with a sage-green teapot and a little cup on top.
 - [ ] **`logs.glb`** (1 × 1, beside the fire). In the room as blocks.
   > A round woven wicker basket full of split firewood logs, a few poking out at angles. Warm honey wicker, pale split wood with darker bark.
 - [ ] **`coatstand.glb`** (1 × 1, in the back left corner). In the room as blocks.
   > A tall wooden coat stand on four short curved feet, with round-tipped pegs at the top. A red knitted scarf hangs from one peg and a straw sun hat sits on another.
-- [x] **`kotatsu.glb`** (2 × 2, the right of the room). *In: `MODELS.kotatsu`, at its blocks' footprint and 0.75 tall.*
-- [x] **`zabuton.glb`** (flat, one centred on each side of the kotatsu, as part of its piece). *In: `ZABUTON_MODEL`, one model for both cushions, 0.68 square and flattened to 0.1 tall.*
+- [x] **`kotatsu.glb`** (2 × 2, the right of the room). *In: `MODELS.kotatsu`, at its blocks' footprint and 0.88 tall.*
+- [x] **`zabuton.glb`** (flat, one centred on each side of the kotatsu, as part of its piece). *In: `ZABUTON_MODEL`, one model for both cushions, 0.68 square and 0.16 tall; solid, so the player walks round them.*
 - [ ] **`basket.glb`** (1 × 1, the left of the room). In the room as blocks.
   > A round woven wicker basket holding rolled-up blankets and a ball of yarn with knitting needles.
 - [ ] **`shiba.glb`** (Kinako, the house dog: about 0.5 long, 0.65 tall to the ear tips). In the room as blocks (Dog.tsx). Its legs and tail move, so make them separate parts if Tripo allows, or the model will slide rather than trot.
