@@ -289,6 +289,7 @@ const MODELS: Partial<Record<PieceId, { url: string; width: number; depth?: numb
   chest: { url: '/models/chest.glb', width: 0.8, z: -0.15 }, // at the back of its tile, like its blocks
   table: { url: '/models/table.glb', width: 1.9, depth: 0.9, height: 0.6 }, // its blocks' footprint and height: the model is squarer and lower
   stool: { url: '/models/stool.glb', width: 0.5 },
+  fireplace: { url: '/models/fireplace.glb', width: 2.6, depth: 0.85, height: 1.6, z: -0.08 }, // its blocks' footprint, up to the top of the wall: the model is squarer
 }
 
 const BUILDS: Partial<Record<PieceId, Build>> = {
@@ -300,7 +301,7 @@ const BUILDS: Partial<Record<PieceId, Build>> = {
 } // the record player draws itself (RecordPlayer.tsx)
 
 // The golf trophy (trophy.ts), on the mantelpiece once Gull Rock Links is finished under par.
-const TROPHY_AT = { x: 0.45, y: 1.22, z: 0 } // from the fireplace's centre: on the mantel, right of the middle
+const TROPHY_AT = { x: 0, y: 1.26, z: -0.12 } // from the fireplace's centre: in the middle of the model's mantel, between its candle and its picture
 const GOLD = new Color('#ffd447') // brighter than the jars' amber, so it reads as the cup
 const trophy = merge([
   tint(block(-0.11, 0.11, 0, 0.07, -0.09, 0.09), C.cap), // a wooden plinth
