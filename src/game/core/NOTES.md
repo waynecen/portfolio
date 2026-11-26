@@ -88,6 +88,7 @@ const ZOOM = 0.18 // a catch's zoom: how much nearer the camera comes, as a shar
 const ZOOM_TIME = 0.9 // seconds in and back out
 const ROOM_MARGIN = 1 // indoors: black kept beside the room's side walls when the screen is wide enough
 const ROOM_SHIFT = -0.5 // indoors: aim this far behind the room's centre so the tall back wall stays in view
+const ROOM_PITCH = 32° // in the house: a lower angle than outdoors (about 42°), so the furniture reads as 3D rather than from above; editing still rises to EDIT_PITCH
 const LEAD = 0.9 // outdoors, how far ahead of the player the camera looks at walking pace (more sprinting)
 const LEAD_EASE = 1.6 // how slowly the lead follows a turn: a slight lag, never a swing
 const SHAKE_TIME = 0.45, SHAKE_RATE = 38 // a shake's length and tremble (shakeCamera(amount), default 0.12)

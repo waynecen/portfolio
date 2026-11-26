@@ -43,16 +43,13 @@ The sizes are in floor tiles (1 tile = 1 unit), across × deep. The back of a pi
 - [ ] **`shelf.glb`** (1 × 1, sold in the shop)
   > A narrow, tall wooden bookshelf with three shelves of chunky books in soft red, blue, mustard, green and purple. A few books lean over, and there's a tiny plant on the top shelf.
 - [x] **`fireplace.glb`** (3 × 1, against the back wall). *In: `MODELS.fireplace`, stretched to its blocks' footprint and up to the top of the wall; the game's own flames flicker in its opening, and the golf trophy stands in the middle of its mantel.*
-- [ ] **`armchair.glb`** (1 × 1, two in the room, facing each other in front of the fire). In the room as blocks. Make it facing +x (its back on the left). The right-hand chair faces the other way, so wiring it in needs PropModel to mirror it (a scale of -1 across).
-  > A small, squashy armchair upholstered in sage-green fabric, with fat rounded arms, a plump seat cushion and short wooden feet. A knitted cream throw blanket is draped over one arm.
-- [ ] **`sidetable.glb`** (1 × 1, beside the left armchair). In the room as blocks.
+- [ ] **`sidetable.glb`** (1 × 1, left of the fire). In the room as blocks.
   > A small round wooden side table on a single turned pedestal leg, with a sage-green teapot and a little cup on top.
 - [ ] **`logs.glb`** (1 × 1, beside the fire). In the room as blocks.
   > A round woven wicker basket full of split firewood logs, a few poking out at angles. Warm honey wicker, pale split wood with darker bark.
 - [ ] **`coatstand.glb`** (1 × 1, in the back left corner). In the room as blocks.
   > A tall wooden coat stand on four short curved feet, with round-tipped pegs at the top. A red knitted scarf hangs from one peg and a straw sun hat sits on another.
-- [ ] **`kotatsu.glb`** (2 × 2, the right of the room). In the room as blocks.
-  > A low square kotatsu table with a thick quilted futon blanket in a red and cream pattern draped over all four sides to the floor, a square wooden top, and a bowl of mandarin oranges in the middle.
+- [x] **`kotatsu.glb`** (2 × 2, the right of the room). *In: `MODELS.kotatsu`, at its blocks' footprint and 0.75 tall.*
 - [x] **`zabuton.glb`** (1 × 1, flat, four by the kotatsu). *In: `ZABUTON_MODEL`, one model for all four cushions, squared to their tiles and flattened to 0.1 tall.*
 - [ ] **`basket.glb`** (1 × 1, the left of the room). In the room as blocks.
   > A round woven wicker basket holding rolled-up blankets and a ball of yarn with knitting needles.
