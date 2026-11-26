@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { lazy, Suspense, useEffect, useRef } from 'react'
 import { Color, ConeGeometry, MeshBasicMaterial, MeshLambertMaterial, SphereGeometry, TorusGeometry, type Group } from 'three'
 import { addCollider, type Collider } from '../core/collision'
 import { block, merge, tint } from '../core/geometry'
@@ -6,10 +6,14 @@ import { register, type Interactable } from '../core/interact'
 import { reducedMotion } from '../core/settings'
 import { useSceneFrame } from '../core/sceneFrame'
 import { useGame } from '../core/store'
+import { Held } from '../core/Held'
 import { dog, pet, RADIUS, RANGE, tickDog } from './shiba'
 
-// Kinako, the house shiba (its wandering and petting are shiba.ts): a tan body with a cream chest,
-// muzzle and belly, pointed ears, a curled tail that wags, and legs that trot. Facing +z at heading 0.
+const ShibaModel = lazy(() => import('./ShibaModel'))
+
+// Kinako, the house shiba (its wandering and petting are shiba.ts): the Tripo model (ShibaModel.tsx),
+// with these blocks standing in while it loads: a tan body with a cream chest, muzzle and belly,
+// pointed ears, a curled tail that wags, and legs that trot. Facing +z at heading 0.
 
 const TAN = new Color('#d98a43')
 const CREAM = new Color('#f4e4c8')
@@ -105,21 +109,29 @@ export function Dog() {
       <group position-z={-0.2}>
         <group ref={pose}>
           <group position-z={0.2}>
-            <mesh geometry={body} material={material} />
-            {LEGS.map(([x, z], k) => (
-              <group
-                key={k}
-                position={[x, 0.2, z]}
-                ref={(el) => {
-                  legs.current[k] = el
-                }}
-              >
-                <mesh geometry={leg} material={material} />
-              </group>
-            ))}
-            <group ref={wag} position={[0, 0.36, -0.26]}>
-              <mesh geometry={tail} material={material} />
-            </group>
+            <Suspense
+              fallback={
+                <Held>
+                  <mesh geometry={body} material={material} />
+                  {LEGS.map(([x, z], k) => (
+                    <group
+                      key={k}
+                      position={[x, 0.2, z]}
+                      ref={(el) => {
+                        legs.current[k] = el
+                      }}
+                    >
+                      <mesh geometry={leg} material={material} />
+                    </group>
+                  ))}
+                  <group ref={wag} position={[0, 0.36, -0.26]}>
+                    <mesh geometry={tail} material={material} />
+                  </group>
+                </Held>
+              }
+            >
+              <ShibaModel />
+            </Suspense>
           </group>
         </group>
       </group>
