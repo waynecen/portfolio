@@ -41,8 +41,7 @@ The sizes are in floor tiles (1 tile = 1 unit), across × deep. The back of a pi
 - [ ] **`shelf.glb`** (1 × 1, sold in the shop)
   > A narrow, tall wooden bookshelf with three shelves of chunky books in soft red, blue, mustard, green and purple. A few books lean over, and there's a tiny plant on the top shelf.
 - [x] **`fireplace.glb`** (3 × 1, against the back wall). *In: `MODELS.fireplace`, stretched to its blocks' footprint and up to the top of the wall; the game's own flames flicker in its opening, and the golf trophy stands in the middle of its mantel.*
-- [ ] **`logs.glb`** (1 × 1, beside the fire). In the room as blocks.
-  > A round woven wicker basket full of split firewood logs, a few poking out at angles. Warm honey wicker, pale split wood with darker bark.
+- [x] **`logs.glb`** (1 × 1, right of the fire). *In: `MODELS.logs`, 0.6 across, its own height.*
 - [ ] **`coatstand.glb`** (1 × 1, in the back left corner). In the room as blocks.
   > A tall wooden coat stand on four short curved feet, with round-tipped pegs at the top. A red knitted scarf hangs from one peg and a straw sun hat sits on another.
 - [x] **`kotatsu.glb`** (2 × 2, the right of the room). *In: `MODELS.kotatsu`, at its blocks' footprint and 0.88 tall.*
