@@ -294,7 +294,7 @@ const MODELS: Partial<Record<PieceId, { url: string; width: number; depth?: numb
 const BUILDS: Partial<Record<PieceId, Build>> = {
   bed: BED, fireplace: FIREPLACE, table: TABLE, stool: STOOL,
   armchair: armchair(1), armchair2: armchair(-1), sideTable: SIDE_TABLE, logs: LOGS, coatStand: COAT_STAND,
-  kotatsu: KOTATSU, zabuton: ZABUTON, zabuton2: ZABUTON, basket: BASKET,
+  kotatsu: KOTATSU, zabuton: ZABUTON, zabuton2: ZABUTON, zabuton3: ZABUTON, zabuton4: ZABUTON, basket: BASKET,
   pot2: POT, pot3: POT, chest: CHEST, rug: RUG,
   lamp: LAMP, plant: PLANT, shelf: SHELF,
 } // the record player draws itself (RecordPlayer.tsx)
