@@ -13,7 +13,8 @@ import { tileAt, walkableTiles, type Spot } from './room'
 export const WALK = 0.9 // its pace, units/s
 export const TROT = 1.8 // getting out of the player's way
 const PAUSE = [1.5, 5] // seconds it stands between wanders
-const WANDER = 4 // it wanders to free tiles within this many tiles
+const WANDER = 8 // it wanders to free tiles within this many tiles (4-way steps)
+const ROAM = 3 // and goes at least this far when it can, so it crosses the room rather than pottering
 export const RADIUS = 0.22 // its collider
 export const RANGE = 1.1 // how close the player must be to pet it
 export const SIT = 2.6 // seconds it sits after a pet
@@ -67,7 +68,7 @@ function setOff(away: boolean) {
   const free = new Set(tiles.map(key))
   const here = tileAt(dog.x, dog.z)
   const player = tileAt(playerPos.x, playerPos.z)
-  free.delete(key(player))
+  // Only furniture moves it off its own tile (the player standing on it too just sends it walking).
   if (!free.has(key(here))) {
     // Furniture's been put where it stands (edit mode): hop to the nearest free tile.
     let best: Spot | null = null
@@ -86,9 +87,13 @@ function setOff(away: boolean) {
     dog.path = []
     return
   }
+  free.delete(key(player))
+  free.add(key(here)) // still its own to walk off, if the player's on it too
   const near = tiles.filter((t) => free.has(key(t)) && Math.abs(t.i - here.i) + Math.abs(t.j - here.j) <= (away ? 3 : WANDER) && (t.i !== here.i || t.j !== here.j))
   if (!near.length) return
-  let to = near[Math.floor(Math.random() * near.length)]
+  const far = near.filter((t) => Math.abs(t.i - here.i) + Math.abs(t.j - here.j) >= ROAM)
+  const pool = !away && far.length ? far : near
+  let to = pool[Math.floor(Math.random() * pool.length)]
   if (away) {
     const score = (t: Spot) => (t.i - player.i) ** 2 + (t.j - player.j) ** 2
     to = near.reduce((a, b) => (score(b) > score(a) ? b : a))
