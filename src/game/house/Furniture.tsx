@@ -1,5 +1,5 @@
 import { lazy, Suspense, useRef } from 'react'
-import { Color, ConeGeometry, CylinderGeometry, MeshBasicMaterial, MeshLambertMaterial, SphereGeometry, type BufferGeometry, type Group } from 'three'
+import { AdditiveBlending, CanvasTexture, Color, ConeGeometry, CylinderGeometry, MeshBasicMaterial, MeshLambertMaterial, PlaneGeometry, SphereGeometry, type BufferGeometry, type Group } from 'three'
 import { addCollider, type Collider } from '../core/collision'
 import { useEdit } from './edit'
 import { centreOf, PIECE, placed, useOwned, useRoom, type PieceId } from './room'
@@ -104,15 +104,39 @@ const FIREPLACE: Build = {
   },
   solid: [{ kind: 'box', x: 0, z: -0.15, hx: 1.3, hz: 0.45 }],
 }
-// The flames: three cones in the opening, flickering (Fire, below). Bright enough to bloom.
+// The flames: three cones in the opening, flickering (Fire, below). Well over white, so they bloom
+// (PostFX.tsx); a soft halo glows in the opening behind them, and a pool of warm light on the floor
+// in front, both additive and flickering with the flames.
 const FLAMES = [
   { x: -0.2, h: 0.36, r: 0.11 },
   { x: 0.02, h: 0.5, r: 0.14 },
   { x: 0.22, h: 0.32, r: 0.1 },
 ]
 const flame = new ConeGeometry(1, 1, 7).translate(0, 0.5, 0)
-const flameMaterial = new MeshBasicMaterial({ color: new Color('#ff9a3c').multiplyScalar(1.6) })
-const coreMaterial = new MeshBasicMaterial({ color: new Color('#ffe08a').multiplyScalar(1.4) })
+const FLAME_BRIGHT = 3 // how far over white the flames are drawn, for the bloom
+const flameMaterial = new MeshBasicMaterial({ color: new Color('#ff9a3c').multiplyScalar(FLAME_BRIGHT) })
+const coreMaterial = new MeshBasicMaterial({ color: new Color('#ffe08a').multiplyScalar(FLAME_BRIGHT) })
+const HALO = { w: 1.2, h: 0.75, y: 0.22, z: 0.06, opacity: 0.9 } // the glow in the opening, from the flames' base
+const POOL = { w: 2.4, d: 1.5, z: 1.05, opacity: 0.22 } // the warm light on the floor, from the flames
+function softSpot() {
+  // A white spot fading to nothing at the edges, for additive glows.
+  const c = document.createElement('canvas')
+  c.width = c.height = 64
+  const g = c.getContext('2d')!
+  const r = g.createRadialGradient(32, 32, 0, 32, 32, 32)
+  r.addColorStop(0, 'rgba(255,255,255,1)')
+  r.addColorStop(0.45, 'rgba(255,255,255,0.45)')
+  r.addColorStop(1, 'rgba(255,255,255,0)')
+  g.fillStyle = r
+  g.fillRect(0, 0, 64, 64)
+  return new CanvasTexture(c)
+}
+const spot = softSpot()
+const glow = { transparent: true, depthWrite: false, blending: AdditiveBlending, map: spot }
+const haloMaterial = new MeshBasicMaterial({ ...glow, color: new Color('#ff8a30').multiplyScalar(1.6) })
+const poolMaterial = new MeshBasicMaterial({ ...glow, color: '#ff9a4a', polygonOffset: true, polygonOffsetFactor: -2 })
+const halo = new PlaneGeometry(HALO.w, HALO.h)
+const pool = new PlaneGeometry(POOL.w, POOL.d).rotateX(-Math.PI / 2)
 const FIRE_Y = 0.2 // the flames' base, on the logs
 const FIRE_Z = -0.1
 const FIRE_USE = {
@@ -383,6 +407,9 @@ function Fire() {
   useSceneFrame('house', ({ clock }) => {
     const t = clock.elapsedTime
     const k = reducedMotion() ? 0.3 : 1
+    const flick = 1 + k * (0.12 * Math.sin(t * 9) + 0.08 * Math.sin(t * 23 + 1))
+    haloMaterial.opacity = HALO.opacity * flick
+    poolMaterial.opacity = POOL.opacity * flick
     flames.current.forEach((g, n) => {
       if (!g) return
       const f = FLAMES[n]
@@ -404,6 +431,8 @@ function Fire() {
           <mesh geometry={flame} material={coreMaterial} scale={[0.5, 0.6, 0.5]} position-z={0.03} />
         </group>
       ))}
+      <mesh geometry={halo} material={haloMaterial} position={[0, HALO.y, HALO.z]} />
+      <mesh geometry={pool} material={poolMaterial} position={[0, 0.012 - FIRE_Y, POOL.z]} />
     </group>
   )
 }
