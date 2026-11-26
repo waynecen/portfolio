@@ -19,6 +19,9 @@ export const RANGE = 1.1 // how close the player must be to pet it
 export const SIT = 2.6 // seconds it sits after a pet
 const TOUCH = 0.05 // beyond the two bodies' radii, counts as bumping into it
 const START: Spot = { i: -2, j: 0 } // where it starts, house-local; moved to the nearest free tile if furniture is there
+// ?dog=stay keeps it on its START tile (it can still be petted): the snapshot skill walks out of the
+// room past where it might wander.
+const STAY = new URLSearchParams(location.search).get('dog') === 'stay'
 
 const centre = (t: Spot) => ({ x: INTERIOR.x + t.i, z: INTERIOR.z + t.j })
 
@@ -98,6 +101,10 @@ function setOff(away: boolean) {
 /** Moves Kinako on by dt seconds. Call once a frame while the room is showing and nothing's paused. */
 export function tickDog(dt: number) {
   if (dog.hearts >= 0) dog.hearts += dt
+  if (STAY && dog.sit <= 0) {
+    dog.moving = false
+    return
+  }
   const dx = playerPos.x - dog.x
   const dz = playerPos.z - dog.z
   const toPlayer = Math.sqrt(dx * dx + dz * dz)
