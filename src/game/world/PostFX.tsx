@@ -20,10 +20,10 @@ import { sky, type Weather } from './sky'
 // mapping, a colour grade for the time of day (or the room, or the cave), and a light vignette.
 // The renderer's own tone mapping is off (Canvas `flat` in Game.tsx) so it isn't done twice.
 //
-// Bloom only catches what's brighter than white once lit: lantern shades and windows at night,
-// fireflies, sparkles. Lit surfaces by day stay under the threshold.
+// Bloom only catches what's brighter than white once lit: the fire, lantern shades and windows at
+// night, fireflies, sparkles. Lit surfaces by day stay under the threshold.
 
-const BLOOM = { threshold: 0.9, smoothing: 0.25, intensity: 0.7, radius: 0.65 }
+const BLOOM = { threshold: 0.9, smoothing: 0.25, intensity: 1, radius: 0.75 }
 const VIGNETTE = { offset: 0.32, darkness: 0.42 }
 const SAMPLES = 4 // multisampling, in place of the canvas's own antialiasing (which a composer bypasses)
 // Photo mode's tilt-shift: a band in focus across the middle (where the player stands), blurring

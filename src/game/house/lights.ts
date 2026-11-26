@@ -6,7 +6,7 @@ import { create } from 'zustand'
 // components so their files export only components (Vite's fast refresh needs that).
 
 export const WARM = '#ffc98a'
-export const GLOW = { day: 0.35, night: 1 } // how much the paper shades glow (emissive)
+export const GLOW = { day: 0.35, night: 1.3 } // how much the paper shades glow (emissive)
 
 /** The switch by the door (LightSwitch.tsx): whether the ceiling lantern is on. Not saved: every visit starts lit. */
 export const useLightSwitch = create<{ on: boolean }>(() => ({ on: true }))
