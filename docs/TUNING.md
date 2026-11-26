@@ -52,6 +52,31 @@ return mobile || cores <= 4 || mem <= 4 ? 'low' : 'high' // touch devices, ≤4 
 
 ---
 
+## Sound levels: [src/game/core/sfx.ts](../src/game/core/sfx.ts)
+
+Every effect plays through one master gain: the settings' **Effects** slider (0 to 1, default 1) times `LEVEL` = 0.5. Each sound then has its own gain on top. The **Level** column is what reaches the speakers with the slider at full, as a share of full volume (slider × 0.5 × gain). The music is separate, at its own slider (`DEFAULT_VOLUME` = 0.6 in core/music.ts).
+
+| Sound | Gain | Level | Notes |
+| --- | --- | --- | --- |
+| Footsteps (grass, tatami, road) | `STEP_VOLUME` 0.45, ×0.85 to 1.15 each step | 0.19 to 0.26 | Recorded L/R files. Grass is darkened (`TONE`: low-pass 1800 Hz, +9 dB below 300 Hz). Pitch varies ±3% (`STEP_PITCH`). |
+| Footsteps (dock wood) | 0.45 × `STEP_LEVEL.wood` 0.5 | 0.10 to 0.13 | The recordings are about twice as loud as the grass. |
+| Footsteps (snow, stone) | 0.45 | 0.19 to 0.26 | Synthesised; pitch varies ±10%. |
+| Rain splash under a step | 0.45 × `WET_VOLUME` 0.7, ×0.8 to 1.2 | 0.13 to 0.19 | Synthesised steps only; recorded ones play alone. |
+| Whoosh (swing, cast) | `WHOOSH_VOLUME` 0.2 | 0.10 | |
+| Sword hit, pot or slime pop | 0.9 | 0.45 | Pitch ±10%. |
+| Woof (Katsu petted) | 0.8 | 0.40 | Pitch ±5%. |
+| Plop (the float lands) | 0.8 | 0.40 | |
+| Reel click | 0.25 | 0.13 | Pitched up 1.5 to 1.7×. |
+| Rattle (a bite) | 0.5 and 0.3 | 0.25 and 0.15 | Two clicks. |
+| Golf putt (`tap`) | 0.15 to 0.6, by power | 0.08 to 0.30 | Softer putts are higher. |
+| Furniture set down (`thud`) | 1, at 0.7× pitch | 0.50 | |
+| Dialogue letter (`blip`) | 1 | 0.50 | Each speaker's own pitch, ±4%. |
+| Door, front door (recorded), click, pickup, hurt, chime, catch, fanfare, splash | 1 | 0.50 | |
+
+To change one sound, change its gain where it's played (the exports at the bottom of sfx.ts); to change them all, `LEVEL`. Keep footsteps low: they repeat several times a second.
+
+---
+
 ## Start-up: [src/main.tsx](../src/main.tsx)
 
 ```ts
