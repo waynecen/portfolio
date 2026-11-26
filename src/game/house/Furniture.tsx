@@ -354,6 +354,10 @@ function geometryOf(b: Build) {
 const material = new MeshLambertMaterial({ vertexColors: true, flatShading: true })
 const cushion = <mesh geometry={geometryOf(ZABUTON)} material={material} />
 
+// The fireplace neither casts nor takes shadows (Shadows.tsx): its own light sits just in front of it,
+// and its shadow map lit a bright rim round the stones' edges. It stands against the wall, so nothing's lost.
+const SHADOWLESS = { noShadow: true }
+
 /** Things to use on a piece, from its centre. */
 const USES: Partial<Record<PieceId, Omit<Interactable, 'x' | 'z'> & { dx: number; dz: number }>> = {
   table: { dx: NOTE_AT.x, dz: NOTE_AT.z, range: 1.4, prompt: 'Read', onInteract: () => say(note()) },
@@ -370,7 +374,7 @@ function Piece({ id, build }: { id: PieceId; build: Build }) {
   const blocks = <mesh geometry={geometryOf(build)} material={material} />
   const glow = build.glow && <mesh geometry={build.glow} material={shadeMaterial} /> // a model has its own (the lamp's fill)
   return (
-    <group ref={group}>
+    <group ref={group} userData={id === 'fireplace' ? SHADOWLESS : undefined}>
       {model ? (
         <Suspense
           fallback={
