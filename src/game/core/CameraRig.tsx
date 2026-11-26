@@ -13,7 +13,7 @@ const FLIP = 9 // in the cave, how quickly the camera slides from one room to th
 const STEADY = 30 // with reduced motion: close enough to locked on that nothing seems to drift or sway
 const ROOM_MARGIN = 1 // indoors, keep at least this much black beside the walls when the screen is wide enough
 const ROOM_SHIFT = -0.5 // indoors, aim this far behind the room's centre so the tall back wall stays in view
-const ROOM_PITCH = MathUtils.degToRad(32) // indoors, a lower angle than outdoors (about 42°), so the furniture reads as 3D rather than from above
+const ROOM_PITCH = MathUtils.degToRad(36) // indoors, a lower angle than outdoors (about 42°), so the furniture reads as 3D rather than from above
 
 const ZOOM = 0.18 // a catch's zoom: how much nearer the camera comes, as a share of its distance
 const ZOOM_TIME = 0.9 // seconds in and back out
