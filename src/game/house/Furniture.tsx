@@ -143,14 +143,15 @@ const FIRE_USE = {
   prompt: 'Look',
   onInteract: () => say(['The fire crackles and pops.', 'It’s always lit in here, rain or shine.']),
 }
+const LOGS_X = -0.3 // nudged left in its tile, snug against the fireplace's right side (when it's next to it, as by default)
 const LOGS: Build = {
   // A wicker basket of split logs for the fire.
   parts: (_, add) => {
-    add(cylinder(0, 0, 0.26, 0.3, 0, 0.34, C.wicker))
+    add(cylinder(LOGS_X, 0, 0.26, 0.3, 0, 0.34, C.wicker))
     for (const [x, z, turn] of [[-0.08, -0.06, 0.3], [0.09, 0.05, -0.4], [0, 0.1, 1.2], [-0.02, -0.12, 2]] as const)
-      add(tint(new CylinderGeometry(0.06, 0.06, 0.46, 6).rotateZ(Math.PI / 2).rotateY(turn).translate(x, 0.36, z), C.log))
+      add(tint(new CylinderGeometry(0.06, 0.06, 0.46, 6).rotateZ(Math.PI / 2).rotateY(turn).translate(x + LOGS_X, 0.36, z), C.log))
   },
-  solid: [{ kind: 'circle', x: 0, z: 0, r: 0.3 }],
+  solid: [{ kind: 'circle', x: LOGS_X, z: 0, r: 0.3 }],
 }
 // The kotatsu's floor cushions, one centred on each side of it, close in (part of its piece, so
 // they move with it). Solid, so the player walks round them rather than through.
@@ -285,7 +286,7 @@ const SHELF: Build = {
 const PropModel = lazy(() => import('./PropModel'))
 // The kotatsu's two cushions share one model, squared to their blocks and a little flatter than its own shape (0.21 at this width).
 const ZABUTON_MODEL = { url: '/models/zabuton.glb', width: 0.68, depth: 0.68, height: 0.16 }
-const MODELS: Partial<Record<PieceId, { url: string; width: number; depth?: number; height?: number; z?: number; flat?: boolean; fill?: { day: number; night: number } }>> = {
+const MODELS: Partial<Record<PieceId, { url: string; width: number; depth?: number; height?: number; x?: number; z?: number; flat?: boolean; fill?: { day: number; night: number } }>> = {
   bed: { url: '/models/bed.glb', width: 0.98, depth: 1.8, z: -0.03 }, // its shape is stubbier than the 1 × 2 tiles, so it's lengthened
   chest: { url: '/models/chest.glb', width: 0.8, z: -0.15 }, // at the back of its tile, like its blocks
   table: { url: '/models/table.glb', width: 1.9, depth: 0.9, height: 0.6 }, // its blocks' footprint and height: the model is squarer and lower
@@ -295,7 +296,7 @@ const MODELS: Partial<Record<PieceId, { url: string; width: number; depth?: numb
   // Its own height, 1.3 to the top of the shade like its blocks; a strong fill makes the pale paper shade
   // glow, most at night (the stand is dark, so it barely does), and RoomLights.tsx lights the room from it.
   lamp: { url: '/models/lamp.glb', width: 0.46, fill: { day: 0.35, night: 1 } },
-  logs: { url: '/models/logs.glb', width: 0.6 }, // its blocks' width, its own height (0.52)
+  logs: { url: '/models/logs.glb', width: 0.6, x: LOGS_X }, // its blocks' width, its own height (0.52)
   kotatsu: { url: '/models/kotatsu.glb', width: 1.74, depth: 1.74, height: 0.88 }, // its blocks' footprint, a little lower than its own shape (1.04 at this width)
 }
 
