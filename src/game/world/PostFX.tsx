@@ -24,6 +24,9 @@ import { sky, type Weather } from './sky'
 // night, fireflies, sparkles. Lit surfaces by day stay under the threshold.
 
 const BLOOM = { threshold: 0.9, smoothing: 0.25, intensity: 1, radius: 0.75 }
+// Indoors the lamps light surfaces near them (the fireplace's stones) just past white, which bloomed
+// into a glow round them; a higher threshold there leaves only the flames and the shades glowing.
+const ROOM_THRESHOLD = 1.15
 const VIGNETTE = { offset: 0.32, darkness: 0.42 }
 const SAMPLES = 4 // multisampling, in place of the canvas's own antialiasing (which a composer bypasses)
 // Photo mode's tilt-shift: a band in focus across the middle (where the player stands), blurring
@@ -64,7 +67,7 @@ export function PostFX() {
     composer.addPass(new RenderPass(scene, camera))
     composer.addPass(tilt)
     composer.addPass(new EffectPass(camera, bloom, tone, light, colour, vignette))
-    return { composer, light, colour, tilt }
+    return { composer, bloom, light, colour, tilt }
   }, [gl, scene, camera])
 
   useEffect(() => () => fx.composer.dispose(), [fx])
@@ -74,6 +77,7 @@ export function PostFX() {
   useFrame((_, delta) => {
     const where = useGame.getState().scene
     fx.tilt.enabled = useGame.getState().photo
+    fx.bloom.luminanceMaterial.threshold = where === 'house' ? ROOM_THRESHOLD : BLOOM.threshold
     let b = 0
     let c = 0
     let s = 0
