@@ -285,7 +285,7 @@ const SHELF: Build = {
 const PropModel = lazy(() => import('./PropModel'))
 // The kotatsu's two cushions share one model, squared to their blocks and a little flatter than its own shape (0.21 at this width).
 const ZABUTON_MODEL = { url: '/models/zabuton.glb', width: 0.68, depth: 0.68, height: 0.16 }
-const MODELS: Partial<Record<PieceId, { url: string; width: number; depth?: number; height?: number; z?: number }>> = {
+const MODELS: Partial<Record<PieceId, { url: string; width: number; depth?: number; height?: number; z?: number; flat?: boolean; fill?: { day: number; night: number } }>> = {
   bed: { url: '/models/bed.glb', width: 0.98, depth: 1.8, z: -0.03 }, // its shape is stubbier than the 1 × 2 tiles, so it's lengthened
   chest: { url: '/models/chest.glb', width: 0.8, z: -0.15 }, // at the back of its tile, like its blocks
   table: { url: '/models/table.glb', width: 1.9, depth: 0.9, height: 0.6 }, // its blocks' footprint and height: the model is squarer and lower
@@ -364,16 +364,26 @@ function Piece({ id, build }: { id: PieceId; build: Build }) {
   usePiece(id, group, build.solid, cup ? TROPHY_USE : (chest ?? USES[id]))
   const model = MODELS[id]
   const blocks = <mesh geometry={geometryOf(build)} material={material} />
+  const glow = build.glow && <mesh geometry={build.glow} material={shadeMaterial} /> // a model has its own (the lamp's fill)
   return (
     <group ref={group}>
       {model ? (
-        <Suspense fallback={<Held>{blocks}</Held>}>
+        <Suspense
+          fallback={
+            <Held>
+              {blocks}
+              {glow}
+            </Held>
+          }
+        >
           <PropModel {...model} />
         </Suspense>
       ) : (
-        blocks
+        <>
+          {blocks}
+          {glow}
+        </>
       )}
-      {build.glow && <mesh geometry={build.glow} material={shadeMaterial} />}
       {cup && <mesh geometry={trophy} material={material} />}
       {id === 'fireplace' && <Fire />}
       {id === 'kotatsu' &&
