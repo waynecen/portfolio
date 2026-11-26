@@ -53,8 +53,7 @@ The sizes are in floor tiles (1 tile = 1 unit), across × deep. The back of a pi
   > A tall wooden coat stand on four short curved feet, with round-tipped pegs at the top. A red knitted scarf hangs from one peg and a straw sun hat sits on another.
 - [ ] **`kotatsu.glb`** (2 × 2, the right of the room). In the room as blocks.
   > A low square kotatsu table with a thick quilted futon blanket in a red and cream pattern draped over all four sides to the floor, a square wooden top, and a bowl of mandarin oranges in the middle.
-- [ ] **`zabuton.glb`** (1 × 1, flat, four by the kotatsu, two either side; you walk over them like the rug). In the room as blocks.
-  > A square Japanese floor cushion (zabuton) in indigo fabric with a small white tied tassel at the centre. Plump but low, lying flat.
+- [x] **`zabuton.glb`** (1 × 1, flat, four by the kotatsu). *In: `ZABUTON_MODEL`, one model for all four cushions, squared to their tiles and flattened to 0.1 tall.*
 - [ ] **`basket.glb`** (1 × 1, the left of the room). In the room as blocks.
   > A round woven wicker basket holding rolled-up blankets and a ball of yarn with knitting needles.
 - [ ] **`shiba.glb`** (Kinako, the house dog: about 0.5 long, 0.65 tall to the ear tips). In the room as blocks (Dog.tsx). Its legs and tail move, so make them separate parts if Tripo allows, or the model will slide rather than trot.

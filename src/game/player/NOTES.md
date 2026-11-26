@@ -21,7 +21,7 @@ const EDGE = PILL_RADIUS + SHORE // derived, don't edit: how close the pill's ce
 const STEP_LEN = [0.45, 0.7] // units travelled per footstep sound, walking and at full sprint
 ```
 
-There's no roll or dodge: it was taken out (2026-11-22) because the model had no way to animate it well. Space swings the sword (as J and X do), or continues dialogue and reels in when one's open or a line is out.
+There's no roll or dodge: it was taken out (2026-11-22) because the model had no way to animate it well. Space swings the sword (as J and X do), or continues dialogue and reels in when one's open or a line is out. Holding it after a swing charges a spin, and the player slows to `CHARGE_SPEED` = 0.45 of walking while it does, with no sprint (Player.tsx); a swing itself slows them to `SWING_SPEED` = 0.35.
 
 ---
 
