@@ -148,15 +148,15 @@ The player is a circle of `PILL_RADIUS`. Obstacles are circles or axis-aligned b
 const DEFAULTS: Record<Action, string[]> = {
   forward: ['KeyW', 'ArrowUp'], back: ['KeyS', 'ArrowDown'], left: ['KeyA', 'ArrowLeft'], right: ['KeyD', 'ArrowRight'],
   sprint: ['ShiftLeft', 'ShiftRight'], // hold to sprint
-  continue: ['Space'], interact: ['KeyF', 'Enter'], attack: ['KeyJ', 'KeyX'], bag: ['KeyB'],
+  interact: ['KeyF', 'Enter'], attack: ['Space', 'KeyJ', 'KeyX'], bag: ['KeyB'],
   log: ['KeyL'], settings: ['KeyO'], edit: ['KeyG'], photo: ['KeyP'],
 }
 // Every main key can be changed under Keys in the settings (saved as keys-v1). The spares keep working
 // unless the visitor gives one to something else. Escape and Tab can't be taken. Hints name the main
 // key (keyName), so they follow a change. Edit mode's own keys (edit.ts) don't change.
-// J or X = the sword: down swings, held after a swing charges, up lets a charged spin go (combat.ts)
+// Space, J or X = the sword: down swings, held after a swing charges, up lets a charged spin go (combat.ts); with dialogue open it advances it instead, and with a line out it reels in
 // The mouse, over the game (not the HUD): left button = the sword, like J; right button = put the rod away, like B (the browser's menu is kept off the game)
-// In bindKeys: Space = advance dialogue if open, else reel in a line that's out (fishing.ts); F / Enter = interact (interact.ts), or reel in; Esc = close whatever is open (dialogue, a panel, the line, the golf putt), or with nothing open (busy() is false), open the settings; G = edit the room (indoors); L = open or close the dialogue log (log.ts); O = the settings; P = photo mode (photo.ts); B = put away the rod if one is in hand (fishing.ts), else open or close the bag (inventory.ts)
+// In bindKeys: F / Enter = interact (interact.ts), or reel in; Esc = close whatever is open (dialogue, a panel, the line, the golf putt), or with nothing open (busy() is false), open the settings; G = edit the room (indoors); L = open or close the dialogue log (log.ts); O = the settings; P = photo mode (photo.ts); B = put away the rod if one is in hand (fishing.ts), else open or close the bag (inventory.ts)
 // While editing, keys go to editKey() in edit.ts instead; in photo mode, photoKey() in photo.ts goes first
 ```
 

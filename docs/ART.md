@@ -42,8 +42,7 @@ The sizes are in floor tiles (1 tile = 1 unit), across × deep. The back of a pi
   > A leafy fern in a small round clay pot, with fronds arching out evenly on all sides. Fresh green leaves, about knee height.
 - [ ] **`shelf.glb`** (1 × 1, sold in the shop)
   > A narrow, tall wooden bookshelf with three shelves of chunky books in soft red, blue, mustard, green and purple. A few books lean over, and there's a tiny plant on the top shelf.
-- [ ] **`fireplace.glb`** (3 × 1, against the back wall, where the dresser was). In the room as blocks. Make the flames a separate part, or leave them out: the game draws its own flickering flames (`Fire` in Furniture.tsx) and lights the room from them. The golf trophy stands on the mantel, right of the middle.
-  > A cosy stone hearth fireplace, three times as wide as it is deep, with rounded river-stone masonry in warm greys, a chimney breast rising behind, a thick wooden mantel beam and an arched opening. Inside, a few small logs and glowing embers. Two cream candles at the ends of the mantel. The back is flat so it sits against a wall.
+- [x] **`fireplace.glb`** (3 × 1, against the back wall). *In: `MODELS.fireplace`, stretched to its blocks' footprint and up to the top of the wall; the game's own flames flicker in its opening, and the golf trophy stands in the middle of its mantel.*
 - [ ] **`armchair.glb`** (1 × 1, two in the room, facing each other in front of the fire). In the room as blocks. Make it facing +x (its back on the left). The right-hand chair faces the other way, so wiring it in needs PropModel to mirror it (a scale of -1 across).
   > A small, squashy armchair upholstered in sage-green fabric, with fat rounded arms, a plump seat cushion and short wooden feet. A knitted cream throw blanket is draped over one arm.
 - [ ] **`sidetable.glb`** (1 × 1, beside the left armchair). In the room as blocks.
