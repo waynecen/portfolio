@@ -13,6 +13,7 @@ const FLIP = 9 // in the cave, how quickly the camera slides from one room to th
 const STEADY = 30 // with reduced motion: close enough to locked on that nothing seems to drift or sway
 const ROOM_MARGIN = 1 // indoors, keep at least this much black beside the walls when the screen is wide enough
 const ROOM_SHIFT = -0.5 // indoors, aim this far behind the room's centre so the tall back wall stays in view
+const ROOM_PITCH = MathUtils.degToRad(32) // indoors, a lower angle than outdoors (about 42°), so the furniture reads as 3D rather than from above
 
 const ZOOM = 0.18 // a catch's zoom: how much nearer the camera comes, as a share of its distance
 const ZOOM_TIME = 0.9 // seconds in and back out
@@ -48,7 +49,8 @@ export function CameraRig() {
     const editing = useGame.getState().editing && scene === 'house'
     view.edit = reducedMotion() ? +editing : MathUtils.damp(view.edit, +editing, EDIT_EASE, dt)
     const e = view.edit * view.edit * (3 - 2 * view.edit) // smoothstep, so it starts and lands softly
-    const pitch = PITCH + (EDIT_PITCH - PITCH) * e
+    const base = scene === 'house' ? ROOM_PITCH : PITCH
+    const pitch = base + (EDIT_PITCH - base) * e
     const slant = SLANT * (1 + (EDIT_FAR - 1) * e)
     const height = Math.sin(pitch) * slant
     const back = Math.cos(pitch) * slant
