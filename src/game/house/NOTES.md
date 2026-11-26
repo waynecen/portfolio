@@ -35,7 +35,7 @@ const CEILING = { day: 3, night: 10, distance: 13 } // its warm light (candela),
 const LAMP = { day: 0.5, night: 1.8, distance: 3.5, y: 1.1 } // the paper lamp's light, once it's bought; it follows the lamp, into the hand while moving it
 const FIRE = { day: 1.2, night: 3.5, distance: 5, y: 0.5, z: 0.25, color: '#ff9a4a' } // the fireplace's light, just out of its opening; it follows the fireplace like the lamp's
 const FLICKER = 0.15 // how much the fire's light flickers either way (a third of it with reduced motion); the flames (Fire in Furniture.tsx) flicker with it
-const GLOW = { day: 0.35, night: 1 } // how much both paper shades glow (shadeMaterial's emissive)
+const GLOW = { day: 0.35, night: 1.3 } // how much both paper shades glow (shadeMaterial's emissive)
 const DRIFT = 0.025 // how far the ceiling lantern swings on its cord, radians, from the cord's top (still with reduced motion)
 const COUNT = 60, SIZE = 0.075, SPEED = 0.06 // Motes.tsx: dust drifting in the room's air (0.3 to 2.2 up), wrapping round at the walls
 const OPACITY = { day: 0.35, night: 0.7 } // the motes catch the lantern more at night
@@ -109,7 +109,7 @@ A piece only goes down where it fits. It must stay inside the room and not overl
 
 **Kinako, the house shiba** ([shiba.ts](./shiba.ts), [Dog.tsx](./Dog.tsx)): wanders the room from one free tile to another within `WANDER` = 4 (`walkableTiles` in room.ts, the same flood from the door that keeps the room passable), at `WALK` = 0.9 units/s, standing `PAUSE` = 1.5 to 5 s between. It waits rather than walk into the player, and if the player bumps into it, it trots off (`TROT` = 1.8) to the free tile furthest from them nearby, so it never traps anyone. Within `RANGE` = 1.1, **Pet**: it sits facing you for `SIT` = 2.6 s, wags hard, gives a little `woof` (sfx.ts) and three hearts float up; the first pet ever says who it is. It holds still while editing the room, and hops to the nearest free tile if furniture is put down on it. Its collider is `RADIUS` = 0.22. Built from blocks, facing +z; a Tripo model is in ART.md.
 
-**The fireplace** draws its own flames (`Fire` in Furniture.tsx: three cones that flicker, bright enough to bloom) and lights the room from RoomLights.tsx, always mounted like the other room lights.
+**The fireplace** draws its own flames (`Fire` in Furniture.tsx: three cones that flicker, drawn `FLAME_BRIGHT` = 3 times over white so they bloom), with a soft additive halo in its opening (`HALO`) and a faint pool of warm light on the floor in front (`POOL`), both flickering with the flames, and lights the room from RoomLights.tsx, always mounted like the other room lights.
 
 **The golf trophy:** once Gull Rock Links is finished under par ([trophy.ts](./trophy.ts), set by golf/golf.ts), a small gold cup stands in the middle of the mantelpiece, between the model's candle and picture (`TROPHY_AT` in Furniture.tsx, from the fireplace's centre) and moves with it. Using it (**Look**) says what it's for. Start over forgets it with the rest of the golf.
 
