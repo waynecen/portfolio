@@ -6,7 +6,7 @@ import { playerPos } from '../core/state'
 // shimmer as the player walks. Which meshes cast is Shadows.tsx.
 
 export const BOX = 13 // half-size of the shadow box, world units (26 × 26 round the player)
-export const MAP = 2048 // shadow map size; BOX × 2 / MAP is one texel (about 1.3 cm)
+export const MAP = 1024 // shadow map size; BOX × 2 / MAP is one texel (about 2.5 cm)
 const FAR = 40 // how far up the sun's direction the light sits, and the box's depth
 const BIAS = -0.0004
 const NORMAL_BIAS = 0.025
@@ -18,7 +18,7 @@ export function setUpShadow(light: DirectionalLight) {
   s.mapSize.set(MAP, MAP)
   s.bias = BIAS
   s.normalBias = NORMAL_BIAS
-  s.radius = 3 // the blur that softens PCF's edges
+  s.radius = 5 // the blur that softens PCF's edges, in texels (about 13 cm)
   const c = s.camera
   c.left = -BOX
   c.right = BOX

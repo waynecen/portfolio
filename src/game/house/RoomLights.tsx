@@ -34,7 +34,7 @@ const FIRE = { day: 3, night: 6, distance: 6, y: 0.5, z: 0.55, color: '#ff9a4a' 
 const FLICKER = 0.15 // how much the fire's light flickers either way (a third of it with reduced motion)
 const DRIFT = 0.025 // how far the lantern swings on its cord, radians (still with reduced motion)
 const CORD = 3 // the cord's length above the lantern; it swings from the top
-const SHADOW = { map: 512, bias: -0.002, normalBias: 0.02, radius: 4 } // the lantern's and the fire's shadows (cube maps)
+const SHADOW = { map: 256, bias: -0.002, normalBias: 0.02, radius: 4 } // the lantern's and the fire's shadows (cube maps)
 const FIRE_SHADOW = detectTier() === 'high'
 const SNAP = 18 // how fast the lantern comes on or goes out at the switch (a damp rate, per second): a bulb's quick fade
 
