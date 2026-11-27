@@ -147,6 +147,12 @@ async function prepare(input, output) {
   const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0]
   const { min, max } = getBounds(scene)
   const height = max[1] - min[1] || 1
+  // The game draws every model on Lambert materials (src/game/core/gltf.ts), which read only the
+  // base colour, so Tripo's normal, roughness/metal and occlusion maps would be downloaded and
+  // decoded for nothing: they're dropped here, and optimize prunes the textures left unused.
+  for (const material of doc.getRoot().listMaterials()) {
+    material.setNormalTexture(null).setMetallicRoughnessTexture(null).setOcclusionTexture(null)
+  }
   for (const anim of doc.getRoot().listAnimations()) {
     const old = anim.getName()
     const match = CLIP_NAMES.find(([re]) => re.test(old))
