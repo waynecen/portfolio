@@ -186,15 +186,17 @@ Every part of a visit is kept in this browser's localStorage, each module under 
 ## Resolution: [adaptive.ts](./adaptive.ts)
 
 ```ts
-const STEPS = [1, 1.25, 1.5] // device pixel ratios to choose between, never above the screen's own
+const STEPS = [0.5, 0.6, 0.75, 1, 1.25, 1.5] // device pixel ratios to choose between, never above the screen's own
+const MAX_PIXELS = 2560 * 1440 // no step draws more than this
+const MIN_PIXELS = 1600 * 900  // steps under 1 (big windows only) never draw fewer than this
 const WINDOW = 2             // seconds of frames averaged per check
-const SLOW = 1 / 45          // slower than this on average: drop a step
+const SLOW = 1 / 50          // slower than this on average: drop a step (a 60 Hz screen missing frames)
 const FAST = 1 / 80          // faster than this: climb a step back
 const HOLD = 12              // seconds after a drop before it may climb again, so it settles
 const SKIP = 0.25            // longer frames (a tab coming back) aren't counted
 ```
 
-Every device gets the same look; the resolution adapts instead of effects being cut.
+Every device gets the same look; the resolution adapts instead of effects being cut. What costs is the pixel count, not the ratio, so a big window starts lower and can drop under 1: a 1440p window at ratio 1 can go to 0.75, a 4K one starts at 0.6. The steps are worked out again on a resize. PostFX resizes its buffers whenever the ratio changes (otherwise they stay at the starting resolution and a drop saves nothing).
 
 ---
 
