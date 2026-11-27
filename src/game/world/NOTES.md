@@ -112,7 +112,7 @@ With reduced motion, the colours and fog still change, but rain and fireflies ho
 
 ```ts
 export const BOX = 13      // shadowBox.ts: half-size of the sun's shadow box, which follows the player everywhere (26 × 26 units)
-export const MAP = 2048    // shadow map size; one texel is BOX × 2 / MAP (about 1.3 cm), and the box snaps to whole texels so edges don't shimmer
+export const MAP = 1024    // shadow map size; one texel is BOX × 2 / MAP (about 2.5 cm), and the box snaps to whole texels so edges don't shimmer
 const BIAS = -0.0004, NORMAL_BIAS = 0.025 // against acne (stripes) without lifting shadows off their casters
 const SWEEP = 1            // Shadows.tsx: seconds between sweeps that set new meshes casting and receiving
 const ROOM_THRESHOLD = 1.15 // PostFX.tsx: bloom's threshold in the house, where lamplit surfaces near the lights (the fireplace's stones) go just past white and would glow; only the flames and the shades bloom
@@ -121,7 +121,7 @@ const VIGNETTE = { offset: 0.32, darkness: 0.42 }
 const GRADE = {...}        // brightness, contrast, saturation per weather (blended by sky.weather), and for the room and the cave
 ```
 
-Shadows are PCF (`shadows="percentage"` on the Canvas: three has dropped its soft variant), softened by the shadow's `radius` (3). The sun (Atmosphere.tsx) is the only light that casts; lanterns and the player's glow don't (a point light's shadow is six passes). Every opaque mesh casts and receives, set by the sweep, so new things need nothing. To keep something out, give it, or any group it sits in, `userData.noShadow`; transparent and unlit (basic) materials are left out already. The curve isn't applied in the shadow pass (core/curve.ts), so far shadows stay under their casters.
+Shadows are PCF (`shadows="percentage"` on the Canvas: three has dropped its soft variant), softened by the shadow's `radius` (5 texels, about 13 cm: at 1024 a wider blur than at 2048, and the map's size barely changes the frame's cost, which is drawing the casters, not the map's pixels). The sun (Atmosphere.tsx) is the only light that casts; lanterns and the player's glow don't (a point light's shadow is six passes). Every opaque mesh casts and receives, set by the sweep, so new things need nothing. To keep something out, give it, or any group it sits in, `userData.noShadow`; transparent and unlit (basic) materials are left out already. The curve isn't applied in the shadow pass (core/curve.ts), so far shadows stay under their casters.
 
 PostFX draws every frame through one composer: the scene, then bloom, ACES tone mapping, the grade and the vignette in one merged pass. The renderer's own tone mapping and antialiasing are off (`flat` and `antialias: false` on the Canvas in Game.tsx), so neither is done twice. The `postprocessing` library is in the game chunk only. Its buffers are resized whenever the canvas size or the pixel ratio changes (core/adaptive.ts), so a drop in resolution makes the whole pass cheaper. The composer multisamples (4×) in place of the canvas's antialiasing; when frames run slow, core/adaptive.ts sets `quality.samples` to 0 and an SMAA pass (`EDGES = SMAAPreset.HIGH`, its own pass after the finish) smooths the edges instead. Whichever of the two passes is last draws to the screen.
 
