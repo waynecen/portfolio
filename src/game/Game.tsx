@@ -18,6 +18,8 @@ import { Motes } from './house/Motes'
 import { Footprints } from './player/Footprints'
 import { PostFX } from './world/PostFX'
 import { AdaptiveResolution } from './core/adaptive'
+import { WarmUp } from './core/WarmUp'
+import { warmUp } from './core/warm'
 import { CameraRig } from './core/CameraRig'
 import { DISTANCE, HEIGHT } from './core/camera'
 import './core/curve' // bends the world away; before anything is drawn
@@ -143,14 +145,19 @@ export function Game() {
         flat
         gl={{ antialias: false, powerPreference: 'high-performance' }}
         camera={{ position: [0, HEIGHT, DISTANCE], fov: 35 }}
-        // Tell main.tsx to lift the loader once the models are in (core/Held.tsx) and a frame with them is
-        // on screen (two frames: their first draw lands in between).
-        onCreated={() => whenModelsIn().then(() => requestAnimationFrame(() => requestAnimationFrame(() => dispatchEvent(new Event('gameready')))))}
+        // Tell main.tsx to lift the loader once the models are in (core/Held.tsx), every area's shaders are
+        // built (core/warm.ts) and a frame with them is on screen (two frames: their first draw lands in between).
+        onCreated={() =>
+          whenModelsIn()
+            .then(warmUp)
+            .then(() => requestAnimationFrame(() => requestAnimationFrame(() => dispatchEvent(new Event('gameready')))))
+        }
       >
         <Atmosphere />
         <ShadowSweep />
         <PostFX />
         <AdaptiveResolution />
+        <WarmUp />
         <RoomLights />
         {/* Both areas stay mounted (so nothing is rebuilt on each trip) but only one is drawn. */}
         <group visible={scene === 'world'}>
