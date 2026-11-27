@@ -297,6 +297,7 @@ const MODELS: Partial<Record<PieceId, { url: string; width: number; depth?: numb
   // glow, most at night (the stand is dark, so it barely does), and RoomLights.tsx lights the room from it.
   lamp: { url: '/models/lamp.glb', width: 0.46, fill: { day: 0.35, night: 1 } },
   logs: { url: '/models/logs.glb', width: 0.6, x: LOGS_X }, // its blocks' width, its own height (0.52)
+  coatStand: { url: '/models/coatstand.glb', width: 0.76 }, // its own shape, 1.55 tall like its blocks
   kotatsu: { url: '/models/kotatsu.glb', width: 1.74, depth: 1.74, height: 0.88 }, // its blocks' footprint, a little lower than its own shape (1.04 at this width)
 }
 

@@ -61,10 +61,10 @@ const DEFAULT: Record<PieceId, Spot> = {
   pot3: { i: -5, j: 1 },
   recordPlayer: { i: 5, j: -3 },
   logs: { i: 2, j: -3 }, // right of the fire
-  coatStand: { i: -5, j: -3 }, // in the back corner, out of the way of the door and the view
+  coatStand: { i: -1, j: 3 }, // just left of the doorway
   // The kotatsu on the right, its cushions either side (the left one at i = 2, clear of the rug),
-  // and a basket of blankets on the left. The column below the bed (i = -3) and the front row
-  // left of the door stay clear: the snapshot skill walks out that way.
+  // and a basket of blankets on the left. A diagonal from the bed down to the front wall right of
+  // the door, and that stretch of wall, stay clear: the snapshot skill walks out that way.
   kotatsu: { i: 2, j: 0 },
   basket: { i: -4, j: 1 },
   // Where bought pieces go if there's room there (otherwise the nearest free tile: addPiece).
