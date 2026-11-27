@@ -16,6 +16,12 @@ import { useSceneFrame } from '../core/sceneFrame'
 // island's (Trees.tsx) and its pearl with the others (HiddenPearls.tsx).
 
 const BOB = 0.025 // how far the boats rise and fall on the swell
+// How far above the water line a boat sits (world units, at BOAT_SCALE 1.25): its floor stays above
+// the water through the bob and the roll, so the sea never shows inside it, and the hull still dips in.
+const FLOAT = 0.11
+// The dock boat's prompt: only at the deck's west edge beside it, so the rest of the deck is for fishing
+// (the nearest prompt wins, and the boat's used to cover the deck).
+const BOAT_RANGE = 0.45
 const HULL = new Color('#b0643f')
 const HULL_DARK = new Color('#7c4429')
 const INSIDE = new Color('#d8b483')
@@ -47,9 +53,9 @@ const oarGeometry = merge([
   tint(unindexed(new BoxGeometry(0.26, 0.02, 0.1).translate(0.6, 0, 0)), OAR),
 ])
 
-function Boat({ x, z, turn, oars, prompt, from, onUse }: { x: number; z: number; turn: number; oars: number; prompt: string; from: { x: number; z: number }; onUse: () => void }) {
+function Boat({ x, z, turn, oars, prompt, from, range = 0.9, onUse }: { x: number; z: number; turn: number; oars: number; prompt: string; from: { x: number; z: number }; range?: number; onUse: () => void }) {
   const g = useRef<Group>(null)
-  useEffect(() => register({ x: from.x, z: from.z, range: 0.9, prompt, onInteract: onUse }), [from.x, from.z, prompt, onUse])
+  useEffect(() => register({ x: from.x, z: from.z, range, prompt, onInteract: onUse }), [from.x, from.z, range, prompt, onUse])
   useSceneFrame('world', ({ clock }) => {
     if (!g.current || reducedMotion()) return
     const t = clock.elapsedTime + x
@@ -57,7 +63,7 @@ function Boat({ x, z, turn, oars, prompt, from, onUse }: { x: number; z: number;
     g.current.rotation.x = Math.sin(t * 1.1) * 0.03
   })
   return (
-    <group position={[x, WATER_Y + 0.08, z]} rotation-y={turn} scale={BOAT_SCALE}>
+    <group position={[x, WATER_Y + FLOAT, z]} rotation-y={turn} scale={BOAT_SCALE}>
       <group ref={g} position-y={0}>
         <mesh geometry={boatGeometry} material={wood} />
         {Array.from({ length: oars }, (_, k) => (
@@ -123,7 +129,8 @@ export function Islet() {
         turn={Math.PI / 2}
         oars={oar ? 2 : 1}
         prompt={oar ? 'Row out' : 'Look'}
-        from={{ x: DOCK.x - 0.3, z: DOCK_BOAT.z }}
+        from={{ x: DOCK.x - DOCK.half + 0.15, z: DOCK_BOAT.z }}
+        range={BOAT_RANGE}
         onUse={rowOut}
       />
       <Boat x={ISLET_BOAT.x} z={ISLET_BOAT.z} turn={0} oars={2} prompt="Row back" from={ISLET_FROM} onUse={rowBack} />

@@ -35,7 +35,7 @@ export function dockHeight(z: number): number {
 export const groundAt = (x: number, z: number) => (onDock(x, z) ? Math.min(0, dockHeight(z)) : 0)
 
 /** The rowing boat, drawn BOAT_SCALE times its built size (IsletScene.tsx), moored along the low deck's west side. */
-export const BOAT_SCALE = 1.45
+export const BOAT_SCALE = 1.25
 export const BOAT_HALF = { length: 0.78 * BOAT_SCALE, width: 0.32 * BOAT_SCALE }
 export const DOCK_BOAT = { x: DOCK.x - DOCK.half - 0.1 - BOAT_HALF.width, z: 18.65 }
 
