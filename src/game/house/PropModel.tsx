@@ -10,7 +10,8 @@ import { sky } from '../world/sky'
 // front to back to fill its tiles, which a bed or a rug can take without looking wrong, and with
 // `height` made taller or lower the same way, and `patch` changes its materials' shaders. `flat` lays a
 // model made standing up (its face toward the front) down on its back, for a rug; `fill` overrides
-// the studio fill below, which also makes pale parts glow (the lamp's paper shade at night). Loaded lazily;
+// the studio fill below, which also makes pale parts glow (the lamp's paper shade at night), and `dim` scales it
+// each frame (the ceiling lantern, at the light switch); `hang` puts its top on y 0 instead of its foot. Loaded lazily;
 // whoever shows it keeps the placeholder blocks up until it's here. Each one shows its own copy of the
 // loaded scene (sharing its geometry and textures), so one file can be several pieces (the pots, once they have one).
 
@@ -20,9 +21,9 @@ import { sky } from '../world/sky'
 const FILL = { day: 0.2, night: 0.12 }
 
 export type Fill = { day: number; night: number }
-type Props = { url: string; width: number; depth?: number; height?: number; x?: number; z?: number; flat?: boolean; fill?: Fill; scene?: Scene; patch?: (m: MeshLambertMaterial) => void }
+type Props = { url: string; width: number; depth?: number; height?: number; x?: number; z?: number; flat?: boolean; fill?: Fill; dim?: () => number; hang?: boolean; scene?: Scene; patch?: (m: MeshLambertMaterial) => void }
 
-export default function PropModel({ url, width, depth, height, x = 0, z = 0, flat = false, fill = FILL, scene = 'house', patch }: Props) {
+export default function PropModel({ url, width, depth, height, x = 0, z = 0, flat = false, fill = FILL, dim, hang = false, scene = 'house', patch }: Props) {
   const gltf = useGLB(url)
   const { root, materials } = useMemo(() => {
     const root = new Group()
@@ -37,14 +38,14 @@ export default function PropModel({ url, width, depth, height, x = 0, z = 0, fla
     const sy = height ? height / (size.y || 1) : s
     const sz = depth ? depth / (size.z || 1) : s
     root.scale.set(s, sy, sz)
-    root.position.set(-centre.x * s + x, -box.min.y * sy, -centre.z * sz + z)
+    root.position.set(-centre.x * s + x, -(hang ? box.max.y : box.min.y) * sy, -centre.z * sz + z)
     const materials = lambertAll(root)
     if (patch) materials.forEach(patch)
     return { root, materials }
-  }, [gltf, width, depth, height, x, z, flat, patch])
+  }, [gltf, width, depth, height, x, z, flat, hang, patch])
 
   useSceneFrame(scene, () => {
-    const f = fill.day + (fill.night - fill.day) * sky.weather.night
+    const f = (fill.day + (fill.night - fill.day) * sky.weather.night) * (dim ? dim() : 1)
     for (const m of materials) m.emissiveIntensity = f
   })
 

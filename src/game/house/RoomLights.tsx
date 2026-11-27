@@ -1,5 +1,5 @@
 import { useFrame } from '@react-three/fiber'
-import { useEffect, useRef } from 'react'
+import { lazy, Suspense, useEffect, useRef } from 'react'
 import { CylinderGeometry, MeshLambertMaterial, type Group, type PointLight } from 'three'
 import { useEdit } from './edit'
 import { PIECE, useOwned, useRoom } from './room'
@@ -10,6 +10,7 @@ import { detectTier } from '../core/quality'
 import { useSceneFrame } from '../core/sceneFrame'
 import { sky } from '../world/sky'
 import { GLOW, shadeMaterial, useLightSwitch, WARM } from './lights'
+import { Held } from '../core/Held'
 
 // The room's own lights, for a softer, cosier room than the shared daylight alone (Atmosphere.tsx):
 // a paper lantern hanging from the ceiling, the fire, and the paper lamp from Pip's shop once it's bought.
@@ -42,6 +43,13 @@ const lanternMaterial = shadeMaterial.clone()
 let lit = 1 // the ceiling lantern, 0 (off) to 1 (on), easing after the switch
 let turn = false // which light's shadow is redrawn this frame, when both cast
 
+// The Tripo lantern (models-src/lantern.glb, through npm run models), its top where the cap was, so it
+// hangs a little lower than the blocks that stand in while it loads. Its paper glows from a strong fill,
+// past the room's bloom threshold at night like the lamp's shade, and goes dark with the switch.
+const PropModel = lazy(() => import('./PropModel'))
+const LANTERN_MODEL = { url: '/models/lantern.glb', width: 0.55, top: 0.255, fill: { day: 0.6, night: 1.1 } }
+const dim = () => lit
+
 const lantern = new CylinderGeometry(0.26, 0.3, 0.42, 12)
 const cap = new CylinderGeometry(0.1, 0.12, 0.05, 10)
 const cord = new CylinderGeometry(0.012, 0.012, 3, 4)
@@ -64,10 +72,28 @@ export function Pendant() {
   return (
     <group ref={swing} position={[INTERIOR.x + PENDANT.x, PENDANT.y + top, INTERIOR.z + PENDANT.z]} userData={{ noShadow: true }}>
       <group position-y={-top}>
-        <mesh geometry={lantern} material={lanternMaterial} />
-        <mesh geometry={cap} material={dark} position-y={0.23} />
+        <Suspense
+          fallback={
+            <Held>
+              <mesh geometry={lantern} material={lanternMaterial} />
+              <mesh geometry={cap} material={dark} position-y={0.23} />
+            </Held>
+          }
+        >
+          <Hung />
+        </Suspense>
         <mesh geometry={cord} material={dark} position-y={0.23 + CORD / 2} />
       </group>
+    </group>
+  )
+}
+
+/** The lantern model, its top at the cap's height. */
+function Hung() {
+  const { url, width, top, fill } = LANTERN_MODEL
+  return (
+    <group position-y={top}>
+      <PropModel url={url} width={width} fill={fill} dim={dim} hang />
     </group>
   )
 }
