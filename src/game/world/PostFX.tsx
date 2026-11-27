@@ -48,6 +48,7 @@ const WEATHERS = Object.keys(sky.weather) as Weather[]
 
 export function PostFX() {
   const { gl, scene, camera, size } = useThree()
+  const dpr = useThree((s) => s.viewport.dpr) // changed by core/adaptive.ts
 
   const fx = useMemo(() => {
     const composer = new EffectComposer(gl, { frameBufferType: HalfFloatType, multisampling: SAMPLES })
@@ -71,7 +72,11 @@ export function PostFX() {
   }, [gl, scene, camera])
 
   useEffect(() => () => fx.composer.dispose(), [fx])
-  useEffect(() => fx.composer.setSize(size.width, size.height), [fx, size])
+  // Its buffers are sized from the canvas's drawing buffer when this runs, so it runs again whenever
+  // the pixel ratio changes, or a lower resolution would still be drawn at the old one.
+  useEffect(() => {
+    fx.composer.setSize(size.width, size.height)
+  }, [fx, size, dpr])
 
   // Priority 1: R3F stops drawing the scene itself, and this draws it through the composer instead.
   useFrame((_, delta) => {
