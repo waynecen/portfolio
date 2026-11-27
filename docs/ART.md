@@ -206,12 +206,16 @@ These are picked up or caught, and shown in the hand or the bag.
   > A chunky glossy red heart, puffy and rounded, like a toy.
 - [ ] **`star.glb`**: the trinkets tucked round the island (Trinkets.tsx).
   > A small chunky five-pointed star with rounded points, soft gold, slightly puffy.
-- [ ] **`sea-glass.glb`**, **`pine-cone.glb`**, **`coin.glb`**, **`feather.glb`**, **`brass-key.glb`**: the items found in the grass (Pickups.tsx, inventory.ts). One model each.
-  > Sea glass: A smooth rounded pebble of frosted sea-green glass.
-  > Pine cone: A small brown pine cone with chunky open scales.
-  > Coin: An old worn gold coin, thick, with a faint stamped face.
-  > Feather: A single soft blue feather with a slight curve.
-  > Brass key: An old brass key with a round looped bow and a simple toothed bit.
+- [ ] **`sea-glass.glb`**: found in the grass (Pickups.tsx, inventory.ts), like the four below.
+  > A smooth rounded pebble of frosted sea-green glass.
+- [ ] **`pine-cone.glb`**
+  > A small brown pine cone with chunky open scales.
+- [ ] **`coin.glb`**: the old coin.
+  > An old worn gold coin, thick, with a faint stamped face.
+- [ ] **`feather.glb`**: the blue feather.
+  > A single soft blue feather with a slight curve.
+- [ ] **`brass-key.glb`**: it opens the cave's locked door.
+  > An old brass key with a round looped bow and a simple toothed bit.
 
 ### Hats (sold at Pip's shop: life/shop.ts; worn on the player's head, Hat.tsx)
 - [ ] **`hat-straw.glb`**
