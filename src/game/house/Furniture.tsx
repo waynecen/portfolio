@@ -304,8 +304,9 @@ const SHELF: Build = {
 // while the model downloads. Fitted to `width` across; `depth` stretches it front to back to fill its
 // tiles and `height` up or down; `z` nudges it back or forward on them. Colliders stay the Build's.
 const PropModel = lazy(() => import('./PropModel'))
-// The kotatsu's two cushions share one model, squared to their blocks and a little flatter than its own shape (0.21 at this width).
+// The two houseplants share one model.
 const HOUSEPLANT_MODEL = { url: '/models/houseplant.glb', width: 0.7 }
+// The kotatsu's two cushions share one model, squared to their blocks and a little flatter than its own shape (0.21 at this width).
 const ZABUTON_MODEL = { url: '/models/zabuton.glb', width: 0.68, depth: 0.68, height: 0.16 }
 const MODELS: Partial<Record<PieceId, { url: string; width: number; depth?: number; height?: number; x?: number; z?: number; flat?: boolean; fill?: { day: number; night: number } }>> = {
   bed: { url: '/models/bed.glb', width: 0.98, depth: 1.8, z: -0.03 }, // its shape is stubbier than the 1 × 2 tiles, so it's lengthened
