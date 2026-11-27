@@ -28,7 +28,9 @@ const BLOOM = { threshold: 0.9, smoothing: 0.25, intensity: 1, radius: 0.75 }
 // into a glow round them; a higher threshold there leaves only the flames and the shades glowing.
 const ROOM_THRESHOLD = 1.15
 const VIGNETTE = { offset: 0.32, darkness: 0.42 }
-const SAMPLES = 4 // multisampling, in place of the canvas's own antialiasing (which a composer bypasses)
+// Multisampling, in place of the canvas's own antialiasing (which a composer bypasses). Its cost grows
+// with the pixel count, and at a high pixel ratio the edges are fine already, so it eases off there.
+const SAMPLES = { low: 4, high: 2, from: 1.25 } // samples at a pixel ratio under `from`, and at or over it
 // Photo mode's tilt-shift: a band in focus across the middle (where the player stands), blurring
 // above and below, so the island reads as a miniature. Only while taking photos.
 const TILT = { focusArea: 0.32, feather: 0.22, offset: 0.04 }
@@ -51,7 +53,7 @@ export function PostFX() {
   const dpr = useThree((s) => s.viewport.dpr) // changed by core/adaptive.ts
 
   const fx = useMemo(() => {
-    const composer = new EffectComposer(gl, { frameBufferType: HalfFloatType, multisampling: SAMPLES })
+    const composer = new EffectComposer(gl, { frameBufferType: HalfFloatType, multisampling: SAMPLES.low })
     const bloom = new BloomEffect({
       luminanceThreshold: BLOOM.threshold,
       luminanceSmoothing: BLOOM.smoothing,
@@ -75,6 +77,7 @@ export function PostFX() {
   // Its buffers are sized from the canvas's drawing buffer when this runs, so it runs again whenever
   // the pixel ratio changes, or a lower resolution would still be drawn at the old one.
   useEffect(() => {
+    fx.composer.multisampling = dpr < SAMPLES.from ? SAMPLES.low : SAMPLES.high
     fx.composer.setSize(size.width, size.height)
   }, [fx, size, dpr])
 
