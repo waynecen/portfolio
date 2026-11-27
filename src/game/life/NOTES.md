@@ -38,10 +38,10 @@ export const DOCK = { x: -9, half: 0.7, z0: 15.5, z1: 19.5 } // fishing.ts: the 
 export const DOCK_ROOT = { x: -9, z: 15 }  // the land tile it leaves from; a road leads here (a 'dock' place in pois.ts)
 export const BARREL_AT = { x: -8, z: 15.1 } // the barrel of rods
 export const SPOTS = [...]                 // where the ripple can be; it moves to another after each catch
-export const DECK_Y = 0.06                 // the landing's planks, just proud of the grass
+export const DECK_Y = 0.02                 // the landing's planks, flush with the grass (the player stands at 0 on both, so stepping on and off is level)
 export const LOW_Y = WATER_Y + 0.3         // the low deck's planks, close to the water
-export const STAIRS = { z0: 16.2, steps: 6, depth: 0.2 } // the flight down from the landing to the low deck
-export const BOAT_SCALE = 1.45             // the rowing boats, drawn this much bigger than built (IsletScene.tsx); BOAT_HALF is their size
+export const STAIRS = { z0: 16.6, steps: 6, depth: 0.2 } // the flight down from the landing to the low deck; it starts past the grass beside the landing (to z 16.5), so no step can be walked onto from land
+export const BOAT_SCALE = 1.25             // the rowing boats, drawn this much bigger than built (IsletScene.tsx); BOAT_HALF is their size. They float FLOAT = 0.11 over the water line, so their floor stays dry through the bob and roll; the dock boat's prompt is BOAT_RANGE = 0.45 from the deck's west edge, so the rest of the deck is for fishing (the nearest prompt wins)
 export const DOCK_BOAT = { x: ..., z: 18.65 } // the boat at the dock, along the low deck's west (left) side
 export const CAST_TIME = 0.55              // seconds for the float to fly out
 const WAIT = [2.5, 6]                      // seconds before a bite, at random between these
