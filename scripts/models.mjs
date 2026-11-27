@@ -15,6 +15,10 @@ const OUT = 'public/models'
 // Meshopt compresses geometry and animation and needs only a small decoder (no wasm transcoder).
 // WebP keeps the download small; 1024 px is plenty for a character a few hundred pixels tall.
 const FLAGS = ['--compress', 'meshopt', '--texture-compress', 'webp', '--texture-size', '1024']
+// Models drawn many times over, simplified first (gltf-transform simplify: share of triangles to keep,
+// and how far the shape may drift as a share of its size). The pine stands on every tree: about 200 of
+// them, drawn twice a frame (the sun's shadow too); half its triangles look the same from the camera.
+const SIMPLIFY = { 'pine.glb': { ratio: 0.5, error: 0.01 } }
 
 // Clips are renamed by the first keyword in their name, so the game's CLIPS (src/game/models.ts)
 // can stay Idle / Walk / Run whatever the exporter called them (Tripo uses the motion's prompt).
@@ -196,6 +200,8 @@ try {
     const prepared = join(tmp, name)
     console.log(`\n▸ ${input} → ${output}`)
     await prepare(input, prepared)
+    const simplify = SIMPLIFY[name]
+    if (simplify) cli(['simplify', prepared, prepared, '--ratio', String(simplify.ratio), '--error', String(simplify.error)])
     cli(['optimize', prepared, output, ...FLAGS])
     const kb = (f) => (statSync(f).size / 1024).toFixed(0)
     console.log(`  ${kb(input)} KB → ${kb(output)} KB`)
