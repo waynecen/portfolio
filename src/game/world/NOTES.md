@@ -115,13 +115,14 @@ const SWEEP = 1            // Shadows.tsx: seconds between sweeps that set new m
 const ROOM_THRESHOLD = 1.15 // PostFX.tsx: bloom's threshold in the house, where lamplit surfaces near the lights (the fireplace's stones) go just past white and would glow; only the flames and the shades bloom
 const BLOOM = { threshold: 0.9, smoothing: 0.25, intensity: 1, radius: 0.75 } // PostFX.tsx: only what's brighter than white once lit blooms (the fire, the shades and windows at night, fireflies, sparkles)
 const VIGNETTE = { offset: 0.32, darkness: 0.42 }
-const SAMPLES = { low: 4, high: 2, from: 1.25 } // multisampling in the composer, in place of the canvas's antialiasing: 4 under a pixel ratio of 1.25, 2 at or over it (the edges are fine already, and it costs per pixel)
 const GRADE = {...}        // brightness, contrast, saturation per weather (blended by sky.weather), and for the room and the cave
 ```
 
 Shadows are PCF (`shadows="percentage"` on the Canvas: three has dropped its soft variant), softened by the shadow's `radius` (3). The sun (Atmosphere.tsx) is the only light that casts; lanterns and the player's glow don't (a point light's shadow is six passes). Every opaque mesh casts and receives, set by the sweep, so new things need nothing. To keep something out, give it, or any group it sits in, `userData.noShadow`; transparent and unlit (basic) materials are left out already. The curve isn't applied in the shadow pass (core/curve.ts), so far shadows stay under their casters.
 
-PostFX draws every frame through one composer: the scene, then bloom, ACES tone mapping, the grade and the vignette in one merged pass. The renderer's own tone mapping and antialiasing are off (`flat` and `antialias: false` on the Canvas in Game.tsx), so neither is done twice. The `postprocessing` library is in the game chunk only. Its buffers are resized whenever the canvas size or the pixel ratio changes (core/adaptive.ts), so a drop in resolution makes the whole pass cheaper.
+PostFX draws every frame through one composer: the scene, then bloom, ACES tone mapping, the grade and the vignette in one merged pass. The renderer's own tone mapping and antialiasing are off (`flat` and `antialias: false` on the Canvas in Game.tsx), so neither is done twice. The `postprocessing` library is in the game chunk only. Its buffers are resized whenever the canvas size or the pixel ratio changes (core/adaptive.ts), so a drop in resolution makes the whole pass cheaper. The composer multisamples in place of the canvas's antialiasing; how much (4, or 2 when frames run slow or at a ratio of 1.25 and up) is `quality.samples` from core/adaptive.ts.
+
+**Draw order:** solid things draw first (renderOrder 0, nearest first), then the sea (1, Sea.tsx), then the sky (2, SkyDome.tsx, pinned to the far plane), so the depth test skips the sea's shader under land and the sky's wherever anything else drew, which with the camera looking down is most of the screen. Neither changes how anything looks; they're only shaded where they show.
 
 ---
 

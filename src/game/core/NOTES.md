@@ -189,14 +189,18 @@ Every part of a visit is kept in this browser's localStorage, each module under 
 const STEPS = [0.5, 0.6, 0.75, 1, 1.25, 1.5] // device pixel ratios to choose between, never above the screen's own
 const MAX_PIXELS = 2560 * 1440 // no step draws more than this
 const MIN_PIXELS = 1600 * 900  // steps under 1 (big windows only) never draw fewer than this
-const WINDOW = 2             // seconds of frames averaged per check
-const SLOW = 1 / 50          // slower than this on average: drop a step (a 60 Hz screen missing frames)
-const FAST = 1 / 80          // faster than this: climb a step back
-const HOLD = 12              // seconds after a drop before it may climb again, so it settles
+const SAMPLES = { full: 4, eased: 2, from: 1.25 } // multisampling: full on the top rung only, eased below it, and always eased from a ratio of 1.25 up
+const WINDOW = 2             // seconds of frames looked at per check
+const SLOW = 1 / 50          // slower than this on average: drop a rung
+const LATE = 0.08            // or more than this share of frames late (LATE_AT = 1.5 refreshes, never under LATE_MIN = 1/45 s): drop a rung
+const ON_TIME = 0.01         // at most this share late, and the average at the screen's refresh (a fast screen: under FAST = 1/80), to climb one back
+const HOLD = 12              // seconds after a drop before it may climb again; a climb that drops again within FAILED = 6 doubles it
 const SKIP = 0.25            // longer frames (a tab coming back) aren't counted
 ```
 
-Every device gets the same look; the resolution adapts instead of effects being cut. What costs is the pixel count, not the ratio, so a big window starts lower and can drop under 1: a 1440p window at ratio 1 can go to 0.75, a 4K one starts at 0.6. The steps are worked out again on a resize. PostFX resizes its buffers whenever the ratio changes (otherwise they stay at the starting resolution and a drop saves nothing).
+Every device gets the same look; the resolution adapts instead of effects being cut. It moves along a ladder of rungs, each a pixel ratio and a multisampling level, cheapest first. The top rung multisamples fully; the first step down keeps the resolution and halves the samples (the least sharpness lost for what it saves), and only then does the ratio come down. So even a 1080p window at ratio 1, which has no lower ratio, has a rung to drop to. What costs is the pixel count, not the ratio, so a big window starts lower and can drop under 1: a 1440p window at ratio 1 can go to 0.75, a 4K one starts at 0.6. The rungs are worked out again on a resize.
+
+It watches for stutter as well as slowness: a frame is late when it took one and a half refreshes (the refresh is the frame time a fifth of the frames beat), so 55 fps on a 60 Hz screen, which averages fine but skips a frame every few, drops a rung. It climbs back when every frame is on time, which a 60 Hz screen can show (it couldn't before: the old climb needed over 80 fps, so one slow patch, like models loading, kept a lower resolution for the whole visit). A climb that fails waits twice as long before the next try, so it settles. PostFX resizes its buffers whenever the ratio changes (otherwise they stay at the starting resolution and a drop saves nothing), and reads `quality.samples` each frame.
 
 ---
 

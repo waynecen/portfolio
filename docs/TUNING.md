@@ -36,8 +36,8 @@ Vercel Web Analytics, cookieless, loaded only on the deployed site (never on loc
 ## World and rendering: [src/game/Game.tsx](../src/game/Game.tsx), [src/game/core/quality.ts](../src/game/core/quality.ts)
 
 ```tsx
-dpr={tier === 'low' ? [1, 1.25] : [1, 1.5]}  // render resolution cap relative to the screen; the biggest performance lever on phones
-gl={{ antialias: true }}                    // smooth edges on every device: multisampling is cheap even on phone GPUs, and the scene is light
+dpr={[0.5, 1.5]}                            // the range core/adaptive.ts picks within, to hold the frame rate (see core/NOTES.md)
+gl={{ antialias: false }}                   // the composer multisamples instead (world/PostFX.tsx); adaptive.ts eases it before the resolution
 ```
 
 The background, lights and fog come from the time of day; see the next section.
