@@ -23,6 +23,8 @@ import { GLOW, shadeMaterial, useLightSwitch, WARM } from './lights'
 // The lantern and the fire cast the room's shadows (the daylight's key is off indoors: Atmosphere.tsx),
 // so the player's shadow falls away from them. Their shadow maps are only redrawn in the house, and
 // on a low-tier device (phones) only the lantern casts: each one is six more renders of the room.
+// When both cast, they take turns, one redrawn each frame: half the cost, and a shadow a frame behind
+// a moving player doesn't show.
 
 const PENDANT = { x: 0, y: 2.25, z: 2.4 } // the hanging lantern, house-local, over the front of the rug (further back, it hides the fire from the room's low camera); the cord runs up out of sight
 const CEILING = { day: 4.5, night: 12, distance: 13 } // its light, candela; it pools under the lantern and fades to the walls
@@ -38,6 +40,7 @@ const SNAP = 18 // how fast the lantern comes on or goes out at the switch (a da
 /** The ceiling lantern's paper: the same, but it goes dark with the switch. */
 const lanternMaterial = shadeMaterial.clone()
 let lit = 1 // the ceiling lantern, 0 (off) to 1 (on), easing after the switch
+let turn = false // which light's shadow is redrawn this frame, when both cast
 
 const lantern = new CylinderGeometry(0.26, 0.3, 0.42, 12)
 const cap = new CylinderGeometry(0.1, 0.12, 0.05, 10)
@@ -98,7 +101,9 @@ export function RoomLights() {
     shadeMaterial.emissiveIntensity = mix(GLOW.day, GLOW.night)
     lanternMaterial.emissiveIntensity = shadeMaterial.emissiveIntensity * lit
     c.intensity = home ? mix(CEILING.day, CEILING.night) * lit : 0
-    c.shadow.autoUpdate = home
+    turn = !turn
+    c.shadow.autoUpdate = false
+    c.shadow.needsUpdate = home && (!FIRE_SHADOW || turn)
     // The lamp's light follows it round the room, into the hand too while it's being moved.
     const owned = useOwned.getState().owned.includes('lamp')
     l.intensity = home && owned ? mix(LAMP.day, LAMP.night) : 0
@@ -114,7 +119,8 @@ export function RoomLights() {
       const t = clock.elapsedTime
       const flick = 1 + FLICKER * (reducedMotion() ? 0.3 : 1) * (Math.sin(t * 9) * 0.6 + Math.sin(t * 23 + 1) * 0.4)
       f.intensity = home ? mix(FIRE.day, FIRE.night) * flick : 0
-      f.shadow.autoUpdate = home
+      f.shadow.autoUpdate = false
+      f.shadow.needsUpdate = home && FIRE_SHADOW && !turn
       const h = useEdit.getState().held
       const at = h && h.id === 'fireplace' && useGame.getState().editing ? h.at : useRoom.getState().spots.fireplace
       const p = PIECE.fireplace
