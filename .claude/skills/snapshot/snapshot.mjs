@@ -56,7 +56,10 @@ const HOURS = [
   [14, 'winter', 'winter'], // snowing (season.ts), shot at the hour it snows hardest
 ]
 
-const startGame = (p) => p.waitForFunction(() => document.body.classList.contains('playing'), null, { timeout: 20000 })
+// In the game with the loader gone: `playing` comes at once, but `loading` stays until the models
+// are in (up to MAX_WAIT in core/modelsIn.ts), and keys pressed under the loader are lost.
+const startGame = (p) =>
+  p.waitForFunction(() => document.body.classList.contains('playing') && !document.body.classList.contains('loading'), null, { timeout: 40000 })
 
 async function hold(p, key, ms) {
   await p.keyboard.down(key)
