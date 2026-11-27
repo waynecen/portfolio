@@ -138,7 +138,7 @@ export function Game() {
         // The resolution adapts to keep frames smooth (core/adaptive.ts); shadows and the finishing pass
         // (world/Shadows.tsx, world/PostFX.tsx) are the same for everyone. PostFX tone-maps and antialiases,
         // so the renderer does neither (flat).
-        dpr={[1, 1.5]}
+        dpr={[0.5, 1.5]}
         shadows="percentage" // PCF; Shadows.tsx softens it with the shadow radius (three removed PCFSoftShadowMap)
         flat
         gl={{ antialias: false, powerPreference: 'high-performance' }}
