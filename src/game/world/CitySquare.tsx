@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { Color, CylinderGeometry, MeshLambertMaterial, SphereGeometry, type BufferGeometry, type Mesh } from 'three'
+import { Color, CylinderGeometry, LatheGeometry, MeshLambertMaterial, SphereGeometry, Vector2, type BufferGeometry, type Mesh } from 'three'
 import { addCollider } from '../core/collision'
 import { addShells, useShells } from '../combat/drops'
 import { block, merge, pick, tint, unindexed } from '../core/geometry'
@@ -20,7 +20,12 @@ import { useSceneFrame } from '../core/sceneFrame'
 const PAVE_Y = 0.03 // the paving stands this proud of the grass
 const GROUT = 0.05 // gap between paving stones
 const BASIN_R = 1.15 // the fountain's basin; it's the collider too
-const BASIN_H = 0.42
+const BASIN_H = 0.42 // to the top of its rim
+// The basin and the top bowl are hollow, each with its water inside, below its lip, and a little into
+// its wall: a solid bowl with water on its top face flickered where the two met.
+const BASIN_WALL = 0.1 // the basin's rim, inward from BASIN_R
+const BASIN_WATER = 0.37 // the top of its water
+const BOWL = { r: 0.45, lip: 1.19, inner: 0.37, water: 1.165 } // the top bowl: its rim's radius, its lip, its inside, its water
 const DROPS = 10 // droplets falling from the top bowl
 const DROP_TIME = 0.7 // seconds for one to fall from the bowl to the basin
 const LAMP_GLOW = 1.4 // the lamps' glow at night (sky.weather.night)
@@ -63,13 +68,17 @@ function buildPaving(): BufferGeometry {
   return merge(parts)
 }
 
+const lathe = (...points: [number, number][]) => new LatheGeometry(points.map(([r, y]) => new Vector2(r, y)), 8)
+
 function buildFountain(): BufferGeometry {
   const at = (g: BufferGeometry, c: Color) => tint(unindexed(g.translate(FOUNTAIN.x, 0, FOUNTAIN.z)), c)
   return merge([
-    at(new CylinderGeometry(BASIN_R, BASIN_R + 0.05, BASIN_H, 8).translate(0, BASIN_H / 2, 0), BASIN),
-    at(new CylinderGeometry(BASIN_R + 0.06, BASIN_R + 0.06, 0.06, 8).translate(0, BASIN_H, 0), BASIN_RIM),
-    at(new CylinderGeometry(0.16, 0.2, 1.05, 8).translate(0, 0.52, 0), BASIN),
-    at(new CylinderGeometry(0.45, 0.22, 0.16, 8).translate(0, 1.08, 0), BASIN_RIM),
+    // Lathed profiles, outside up and over the rim and down inside; 8 sides, like the column.
+    at(lathe([BASIN_R + 0.05, 0], [BASIN_R, BASIN_H - 0.06]), BASIN),
+    at(lathe([BASIN_R, BASIN_H - 0.06], [BASIN_R + 0.06, BASIN_H - 0.06], [BASIN_R + 0.06, BASIN_H], [BASIN_R - BASIN_WALL, BASIN_H], [BASIN_R - BASIN_WALL, BASIN_H - 0.06]), BASIN_RIM),
+    at(lathe([BASIN_R - BASIN_WALL, BASIN_H - 0.06], [BASIN_R - BASIN_WALL, 0.3], [0, 0.3]), BASIN),
+    at(new CylinderGeometry(0.16, 0.2, 1.12, 8).translate(0, 0.56, 0), BASIN),
+    at(lathe([0.15, 0.98], [BOWL.r, 1.16], [BOWL.r, BOWL.lip], [BOWL.inner, BOWL.lip], [BOWL.inner, 1.12], [0, 1.12]), BASIN_RIM),
     at(new CylinderGeometry(0.07, 0.1, 0.24, 6).translate(0, 1.26, 0), BASIN),
   ])
 }
@@ -121,8 +130,8 @@ const posts = buildPosts()
 const stone = new MeshLambertMaterial({ vertexColors: true, flatShading: true })
 const lanternGeometry = new CylinderGeometry(0.11, 0.09, 0.26, 6)
 const lantern = new MeshLambertMaterial({ color: '#fff1c8', emissive: '#ffc96b', emissiveIntensity: 0 })
-const basinWater = new CylinderGeometry(BASIN_R - 0.08, BASIN_R - 0.08, 0.02, 8)
-const bowlWater = new CylinderGeometry(0.38, 0.38, 0.02, 8)
+const basinWater = new CylinderGeometry(BASIN_R - BASIN_WALL + 0.02, BASIN_R - BASIN_WALL + 0.02, 0.02, 8).translate(0, -0.01, 0) // its top at 0, its rim into the wall
+const bowlWater = new CylinderGeometry(BOWL.inner + 0.01, BOWL.inner + 0.01, 0.02, 8).translate(0, -0.01, 0)
 const dropGeometry = new SphereGeometry(0.035, 5, 4)
 const dropMaterial = new MeshLambertMaterial({ color: '#cfeefa', emissive: '#9fd3ea', emissiveIntensity: 0.3 })
 
@@ -173,8 +182,8 @@ export function CitySquare() {
       // Out over the top bowl's rim and down into the basin, one after another round the circle.
       const p = reducedMotion() ? 0.5 : (t / DROP_TIME + k / DROPS) % 1
       const a = (k / DROPS) * Math.PI * 2
-      const r = 0.4 + p * 0.35
-      m.position.set(FOUNTAIN.x + Math.cos(a) * r, 1.12 - p * p * (1.12 - BASIN_H + 0.02), FOUNTAIN.z + Math.sin(a) * r)
+      const r = BOWL.r + p * 0.3
+      m.position.set(FOUNTAIN.x + Math.cos(a) * r, BOWL.lip - p * p * (BOWL.lip - BASIN_WATER), FOUNTAIN.z + Math.sin(a) * r)
     }
   })
 
@@ -184,8 +193,8 @@ export function CitySquare() {
       <mesh geometry={fountain} material={stone} />
       <mesh geometry={benches} material={stone} />
       <mesh geometry={posts} material={stone} />
-      <mesh geometry={basinWater} material={waterMaterial} position={[FOUNTAIN.x, BASIN_H - 0.04, FOUNTAIN.z]} />
-      <mesh geometry={bowlWater} material={waterMaterial} position={[FOUNTAIN.x, 1.15, FOUNTAIN.z]} />
+      <mesh geometry={basinWater} material={waterMaterial} position={[FOUNTAIN.x, BASIN_WATER, FOUNTAIN.z]} />
+      <mesh geometry={bowlWater} material={waterMaterial} position={[FOUNTAIN.x, BOWL.water, FOUNTAIN.z]} />
       {LAMPS.map(({ x, z }) => (
         <mesh key={`${x},${z}`} geometry={lanternGeometry} material={lantern} position={[x, 1.7, z]} />
       ))}
