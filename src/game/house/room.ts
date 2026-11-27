@@ -10,7 +10,7 @@ import { readSaved, writeSaved } from '../core/persist'
 // The layout is saved in the visitor's browser; a bad or missing save falls back to DEFAULT.
 
 export type PieceId =
-  | 'bed' | 'fireplace' | 'table' | 'stool' | 'pot2' | 'plant2' | 'plant3' | 'chest' | 'rug' | 'recordPlayer'
+  | 'bed' | 'fireplace' | 'table' | 'stool' | 'plant2' | 'chest' | 'rug' | 'recordPlayer'
   | 'logs' | 'coatStand' | 'kotatsu' | 'basket'
   | 'lamp' | 'plant' | 'shelf'
 
@@ -36,9 +36,7 @@ export const PIECES: Piece[] = [
   { id: 'fireplace', name: 'the fireplace', w: 3, d: 1 },
   { id: 'table', name: 'the table', w: 2, d: 1 },
   { id: 'stool', name: 'the stool', w: 1, d: 1 },
-  { id: 'pot2', name: 'a pot', w: 1, d: 1 },
   { id: 'plant2', name: 'a houseplant', w: 1, d: 1 },
-  { id: 'plant3', name: 'a houseplant', w: 1, d: 1 },
   { id: 'recordPlayer', name: 'the record player', w: 1, d: 1 },
   { id: 'logs', name: 'the log basket', w: 1, d: 1 },
   { id: 'coatStand', name: 'the coat stand', w: 1, d: 1 },
@@ -58,9 +56,7 @@ const DEFAULT: Record<PieceId, Spot> = {
   fireplace: { i: -1, j: -3 }, // in the middle of the back wall
   table: { i: 3, j: -3 },
   stool: { i: 3, j: -2 },
-  pot2: { i: -5, j: 0 },
   plant2: { i: -2, j: -3 }, // left of the fireplace
-  plant3: { i: -5, j: 1 }, // down the left wall, below the pot
   recordPlayer: { i: 5, j: -3 },
   logs: { i: 2, j: -3 }, // right of the fire
   coatStand: { i: -1, j: 3 }, // just left of the doorway

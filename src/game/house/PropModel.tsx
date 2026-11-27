@@ -13,7 +13,7 @@ import { sky } from '../world/sky'
 // the studio fill below, which also makes pale parts glow (the lamp's paper shade at night), and `dim` scales it
 // each frame (the ceiling lantern, at the light switch); `hang` puts its top on y 0 instead of its foot. Loaded lazily;
 // whoever shows it keeps the placeholder blocks up until it's here. Each one shows its own copy of the
-// loaded scene (sharing its geometry and textures), so one file can be several pieces (the pots, once they have one).
+// loaded scene (sharing its geometry and textures), so one file can be several pieces (the kotatsu's cushions).
 
 // A soft studio fill (lambertAll), so it keeps the warm, bright look of its Tripo preview: the room's
 // key light comes from above and to the side, which leaves fronts near black. Less at night, so it

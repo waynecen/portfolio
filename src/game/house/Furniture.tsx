@@ -68,7 +68,7 @@ function cylinder(x: number, z: number, r0: number, r1: number, y0: number, y1: 
 }
 
 // Each piece's look, centred on its footprint, and what you bump into. Pieces with the same
-// builder (the pots) share one geometry.
+// builder share one geometry.
 // glow: parts drawn in the lit paper of RoomLights.tsx, which brightens at night.
 type Build = { parts: (box: Box, add: (g: BufferGeometry) => void) => void; glow?: BufferGeometry; solid: Collider[] }
 type Box = (c: Color, x0: number, x1: number, y0: number, y1: number, z0: number, z1: number) => void
@@ -215,13 +215,6 @@ const STOOL: Build = {
   parts: (_, add) => add(cylinder(0, 0, 0.22, 0.22, 0, 0.35, C.wood)),
   solid: [{ kind: 'circle', x: 0, z: 0, r: 0.22 }],
 }
-const POT: Build = {
-  parts: (_, add) => {
-    add(cylinder(0, 0, 0.3, 0.22, 0, 0.45, C.pot))
-    add(cylinder(0, 0, 0.2, 0.2, 0.45, 0.52, C.potLip))
-  },
-  solid: [{ kind: 'circle', x: 0, z: 0, r: 0.3 }],
-}
 const CHEST: Build = {
   // Towards the back of its tile, with a brass band.
   parts: (box) => {
@@ -251,7 +244,7 @@ const LAMP: Build = {
 }
 const HOUSEPLANT: Build = {
   // A tall leafy houseplant in a terracotta pot, standing about waist height: broad leaves fanning
-  // out and up from the middle. The room's own plants (the fern is the shop's).
+  // out and up from the middle. The room's own plant (the fern is the shop's).
   parts: (box, add) => {
     add(cylinder(0, 0, 0.24, 0.18, 0, 0.36, C.pot))
     add(cylinder(0, 0, 0.21, 0.21, 0.36, 0.41, C.potLip))
@@ -304,8 +297,6 @@ const SHELF: Build = {
 // while the model downloads. Fitted to `width` across; `depth` stretches it front to back to fill its
 // tiles and `height` up or down; `z` nudges it back or forward on them. Colliders stay the Build's.
 const PropModel = lazy(() => import('./PropModel'))
-// The two houseplants share one model.
-const HOUSEPLANT_MODEL = { url: '/models/houseplant.glb', width: 0.7 }
 // The kotatsu's two cushions share one model, squared to their blocks and a little flatter than its own shape (0.21 at this width).
 const ZABUTON_MODEL = { url: '/models/zabuton.glb', width: 0.68, depth: 0.68, height: 0.16 }
 const MODELS: Partial<Record<PieceId, { url: string; width: number; depth?: number; height?: number; x?: number; z?: number; flat?: boolean; fill?: { day: number; night: number } }>> = {
@@ -322,16 +313,14 @@ const MODELS: Partial<Record<PieceId, { url: string; width: number; depth?: numb
   coatStand: { url: '/models/coatstand.glb', width: 0.76 }, // its own shape, 1.55 tall like its blocks
   kotatsu: { url: '/models/kotatsu.glb', width: 1.74, depth: 1.74, height: 0.88 }, // its blocks' footprint, a little lower than its own shape (1.04 at this width)
   basket: { url: '/models/basket.glb', width: 0.62 }, // its blocks' width, its own height (about 0.55)
-  // Both houseplants share one model: its leaves 0.7 across, about waist height (0.9) like its prompt.
-  plant2: HOUSEPLANT_MODEL,
-  plant3: HOUSEPLANT_MODEL,
+  plant2: { url: '/models/houseplant.glb', width: 0.7 }, // its leaves 0.7 across, about waist height (0.9) like its prompt
 }
 
 const BUILDS: Partial<Record<PieceId, Build>> = {
   bed: BED, fireplace: FIREPLACE, table: TABLE, stool: STOOL,
   logs: LOGS, coatStand: COAT_STAND,
   kotatsu: KOTATSU, basket: BASKET,
-  pot2: POT, plant2: HOUSEPLANT, plant3: HOUSEPLANT, chest: CHEST, rug: RUG,
+  plant2: HOUSEPLANT, chest: CHEST, rug: RUG,
   lamp: LAMP, plant: PLANT, shelf: SHELF,
 } // the record player draws itself (RecordPlayer.tsx)
 
