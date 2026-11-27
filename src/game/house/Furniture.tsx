@@ -249,6 +249,26 @@ const LAMP: Build = {
   glow: new CylinderGeometry(0.24, 0.2, 0.4, 10).translate(0, 1.1, 0), // the shade, lit from inside (and by RoomLights.tsx's light)
   solid: [{ kind: 'circle', x: 0, z: 0, r: 0.2 }],
 }
+const HOUSEPLANT: Build = {
+  // A tall leafy houseplant in a terracotta pot, standing about waist height: broad leaves fanning
+  // out and up from the middle. The room's own plants (the fern is the shop's).
+  parts: (box, add) => {
+    add(cylinder(0, 0, 0.24, 0.18, 0, 0.36, C.pot))
+    add(cylinder(0, 0, 0.21, 0.21, 0.36, 0.41, C.potLip))
+    const stem = new Color('#5c7a3a')
+    box(stem, -0.025, 0.025, 0.36, 0.75, -0.025, 0.025)
+    const leaves = [new Color('#3f7f44'), new Color('#4f9450'), new Color('#357038')]
+    for (let k = 0; k < 7; k++) {
+      const a = (k / 7) * Math.PI * 2 + 0.4
+      const r = 0.12 + (k % 3) * 0.05
+      const x = Math.cos(a) * r
+      const z = Math.sin(a) * r
+      const y = 0.5 + (k % 3) * 0.16
+      box(leaves[k % 3], x - 0.09, x + 0.09, y, y + 0.22, z - 0.07, z + 0.07)
+    }
+  },
+  solid: [{ kind: 'circle', x: 0, z: 0, r: 0.26 }],
+}
 const PLANT: Build = {
   // A fern in a pot: a fan of leaves over a little clay pot.
   parts: (box, add) => {
@@ -305,7 +325,7 @@ const BUILDS: Partial<Record<PieceId, Build>> = {
   bed: BED, fireplace: FIREPLACE, table: TABLE, stool: STOOL,
   logs: LOGS, coatStand: COAT_STAND,
   kotatsu: KOTATSU, basket: BASKET,
-  pot2: POT, pot3: POT, chest: CHEST, rug: RUG,
+  pot2: POT, plant2: HOUSEPLANT, plant3: HOUSEPLANT, chest: CHEST, rug: RUG,
   lamp: LAMP, plant: PLANT, shelf: SHELF,
 } // the record player draws itself (RecordPlayer.tsx)
 

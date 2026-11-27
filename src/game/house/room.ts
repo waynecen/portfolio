@@ -10,7 +10,7 @@ import { readSaved, writeSaved } from '../core/persist'
 // The layout is saved in the visitor's browser; a bad or missing save falls back to DEFAULT.
 
 export type PieceId =
-  | 'bed' | 'fireplace' | 'table' | 'stool' | 'pot2' | 'pot3' | 'chest' | 'rug' | 'recordPlayer'
+  | 'bed' | 'fireplace' | 'table' | 'stool' | 'pot2' | 'plant2' | 'plant3' | 'chest' | 'rug' | 'recordPlayer'
   | 'logs' | 'coatStand' | 'kotatsu' | 'basket'
   | 'lamp' | 'plant' | 'shelf'
 
@@ -37,7 +37,8 @@ export const PIECES: Piece[] = [
   { id: 'table', name: 'the table', w: 2, d: 1 },
   { id: 'stool', name: 'the stool', w: 1, d: 1 },
   { id: 'pot2', name: 'a pot', w: 1, d: 1 },
-  { id: 'pot3', name: 'a pot', w: 1, d: 1 },
+  { id: 'plant2', name: 'a houseplant', w: 1, d: 1 },
+  { id: 'plant3', name: 'a houseplant', w: 1, d: 1 },
   { id: 'recordPlayer', name: 'the record player', w: 1, d: 1 },
   { id: 'logs', name: 'the log basket', w: 1, d: 1 },
   { id: 'coatStand', name: 'the coat stand', w: 1, d: 1 },
@@ -58,15 +59,17 @@ const DEFAULT: Record<PieceId, Spot> = {
   table: { i: 3, j: -3 },
   stool: { i: 3, j: -2 },
   pot2: { i: -5, j: 0 },
-  pot3: { i: -5, j: 1 },
+  plant2: { i: -2, j: -3 }, // left of the fireplace
+  plant3: { i: -5, j: 1 }, // down the left wall, below the pot
   recordPlayer: { i: 5, j: -3 },
   logs: { i: 2, j: -3 }, // right of the fire
   coatStand: { i: -1, j: 3 }, // just left of the doorway
   // The kotatsu on the right, its cushions either side (the left one at i = 2, clear of the rug),
-  // and a basket of blankets on the left. A diagonal from the bed down to the front wall right of
-  // the door, and that stretch of wall, stay clear: the snapshot skill walks out that way.
+  // and a basket of blankets in the back left corner, left of the bed. A diagonal from the bed down
+  // to the front wall right of the door, and that stretch of wall, stay clear: the snapshot skill
+  // walks out that way.
   kotatsu: { i: 2, j: 0 },
-  basket: { i: -4, j: 1 },
+  basket: { i: -5, j: -3 },
   // Where bought pieces go if there's room there (otherwise the nearest free tile: addPiece).
   lamp: { i: 5, j: 2 }, // below the kotatsu's right cushion
   plant: { i: -5, j: 2 },
@@ -96,7 +99,7 @@ const ROWS = TILES.j1 - TILES.j0 + 1
 const DOOR_TILE = { i: 0, j: TILES.j1 }
 const DOORWAY: Spot[] = [DOOR_TILE, { i: 0, j: TILES.j1 - 1 }]
 
-const SAVE_KEY = 'room-layout-v2' // v2: the dresser became the fireplace, and more furniture came
+const SAVE_KEY = 'room-layout-v3' // v2: the dresser became the fireplace, and more furniture came; v3: a pot became two houseplants, and the basket moved
 
 /** A piece's centre in world units, when its top-left tile is `at`. */
 export function centreOf(p: Piece, at: Spot) {
