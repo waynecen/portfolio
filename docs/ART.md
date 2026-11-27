@@ -36,7 +36,7 @@ The sizes are in floor tiles (1 tile = 1 unit), across × deep. The back of a pi
   > A small wooden storage chest with a domed lid, brass corner caps, a brass band around it and a chunky round brass latch on the front. Slightly chunky, toy-like proportions.
 - [x] **`rug.glb`** (3 × 2, flat). *In: `MODELS.rug`, laid flat (`flat`: Tripo made it standing up) and stretched to its blocks' footprint.*
 - [x] **`lamp.glb`** (1 × 1, sold in the shop). *In: `MODELS.lamp`, 1.3 tall; a strong `fill` makes its paper shade glow, most at night.*
-- [ ] **`houseplant.glb`** (1 × 1, two in the room: left of the fireplace, and down the left wall). In the room as blocks (`HOUSEPLANT` in Furniture.tsx), about 1.1 tall.
+- [x] **`houseplant.glb`** (1 × 1, two in the room: left of the fireplace, and down the left wall). *In: `HOUSEPLANT_MODEL`, one model for both, 0.7 across, its own height (about 0.9).*
   > A tall leafy houseplant in a round terracotta pot with a rolled rim, broad glossy green leaves fanning up and out from the middle, a few of them split like a monstera's. About waist height, fuller at the top.
 - [ ] **`plant.glb`** (1 × 1, sold in the shop)
   > A leafy fern in a small round clay pot, with fronds arching out evenly on all sides. Fresh green leaves, about knee height.
