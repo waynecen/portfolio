@@ -30,12 +30,14 @@ The sizes are in floor tiles (1 tile = 1 unit), across × deep. The back of a pi
   > A low rectangular wooden table, twice as wide as it is deep, with four sturdy square legs and a thick rounded top. A single folded paper note lies on top, slightly off centre.
 - [x] **`stool.glb`** (1 × 1). *In: `MODELS.stool`, in front of the table.*
   > A round wooden stool with three short splayed legs and a thick cushioned seat in faded red linen with a button in the middle. Knee height.
-- [ ] **`pot.glb`** (1 × 1, two in the room)
+- [ ] **`pot.glb`** (1 × 1, one in the room, down the left wall)
   > A large terracotta floor pot, wider at the top, with a rolled rim and a simple painted band around it. Empty, or with a little soil showing.
 - [x] **`chest.glb`** (1 × 1, at the back of its tile). *In: `MODELS.chest`; the sword starts inside it.*
   > A small wooden storage chest with a domed lid, brass corner caps, a brass band around it and a chunky round brass latch on the front. Slightly chunky, toy-like proportions.
 - [x] **`rug.glb`** (3 × 2, flat). *In: `MODELS.rug`, laid flat (`flat`: Tripo made it standing up) and stretched to its blocks' footprint.*
 - [x] **`lamp.glb`** (1 × 1, sold in the shop). *In: `MODELS.lamp`, 1.3 tall; a strong `fill` makes its paper shade glow, most at night.*
+- [ ] **`houseplant.glb`** (1 × 1, two in the room: left of the fireplace, and down the left wall). In the room as blocks (`HOUSEPLANT` in Furniture.tsx), about 1.1 tall.
+  > A tall leafy houseplant in a round terracotta pot with a rolled rim, broad glossy green leaves fanning up and out from the middle, a few of them split like a monstera's. About waist height, fuller at the top.
 - [ ] **`plant.glb`** (1 × 1, sold in the shop)
   > A leafy fern in a small round clay pot, with fronds arching out evenly on all sides. Fresh green leaves, about knee height.
 - [ ] **`shelf.glb`** (1 × 1, sold in the shop)
@@ -46,7 +48,7 @@ The sizes are in floor tiles (1 tile = 1 unit), across × deep. The back of a pi
   > A tall wooden coat stand on four short curved feet, with round-tipped pegs at the top. A red knitted scarf hangs from one peg and a straw sun hat sits on another.
 - [x] **`kotatsu.glb`** (2 × 2, the right of the room). *In: `MODELS.kotatsu`, at its blocks' footprint and 0.88 tall.*
 - [x] **`zabuton.glb`** (flat, one centred on each side of the kotatsu, as part of its piece). *In: `ZABUTON_MODEL`, one model for both cushions, 0.68 square and 0.16 tall; solid, so the player walks round them.*
-- [ ] **`basket.glb`** (1 × 1, the left of the room). In the room as blocks.
+- [ ] **`basket.glb`** (1 × 1, the back left corner, left of the bed). In the room as blocks.
   > A round woven wicker basket holding rolled-up blankets and a ball of yarn with knitting needles.
 - [x] **`shiba.glb`** (Katsu, the house dog). *In: ShibaModel.tsx, 0.7 tall. Rigged with no clips, so its legs and tail bones are swung in code: a trot, and a wag that quickens after a pet.*
 - [ ] **`lantern.glb`** (the paper lantern hanging from the ceiling, RoomLights.tsx; seen from above)
