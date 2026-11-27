@@ -48,10 +48,10 @@ The sizes are in floor tiles (1 tile = 1 unit), across × deep. The back of a pi
   > A tall wooden coat stand on four short curved feet, with round-tipped pegs at the top. A red knitted scarf hangs from one peg and a straw sun hat sits on another.
 - [x] **`kotatsu.glb`** (2 × 2, the right of the room). *In: `MODELS.kotatsu`, at its blocks' footprint and 0.88 tall.*
 - [x] **`zabuton.glb`** (flat, one centred on each side of the kotatsu, as part of its piece). *In: `ZABUTON_MODEL`, one model for both cushions, 0.68 square and 0.16 tall; solid, so the player walks round them.*
-- [ ] **`basket.glb`** (1 × 1, the back left corner, left of the bed). In the room as blocks.
+- [x] **`basket.glb`** (1 × 1, the back left corner, left of the bed). *In: `MODELS.basket`, 0.62 across, its own height.*
   > A round woven wicker basket holding rolled-up blankets and a ball of yarn with knitting needles.
 - [x] **`shiba.glb`** (Katsu, the house dog). *In: ShibaModel.tsx, 0.7 tall. Rigged with no clips, so its legs and tail bones are swung in code: a trot, and a wag that quickens after a pet.*
-- [ ] **`lantern.glb`** (the paper lantern hanging from the ceiling, RoomLights.tsx; seen from above)
+- [x] **`lantern.glb`** (the paper lantern hanging from the ceiling, RoomLights.tsx; seen from above). *In: `LANTERN_MODEL`, 0.55 across, hung from the cord; its paper glows at night and goes dark with the switch.*
   > A round Japanese paper ceiling lantern, cream rice paper over a thin bamboo frame, with a short dark cord at the top. Glowing softly from inside.
 - [x] **`recordPlayer.glb`** (1 × 1). *In: RecordPlayer.tsx.*
 

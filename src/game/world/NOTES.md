@@ -57,7 +57,10 @@ On the main island, trees never touch each other, diagonals included, so there's
 ```ts
 export const SQUARE = { i0: 9, i1: 15, j0: -3, j1: 3 } // layout.ts: the paved square east of the house, by the shop; FOUNTAIN is its middle
 export const NOTICE_AT = { x: 10, z: -2 } // layout.ts: the notice board, on the square's corner nearest the shop
-const BASIN_R = 1.15   // CitySquare.tsx: the fountain's basin (and its collider); BASIN_H = 0.42 tall
+const BASIN_R = 1.15   // CitySquare.tsx: the fountain's basin (and its collider); BASIN_H = 0.42 tall, to the top of its rim
+const BASIN_WATER = 0.37 // the top of the basin's water; BOWL = { r: 0.45, lip: 1.19, inner: 0.37, water: 1.165 } is the top bowl's
+// The basin and the top bowl are hollow lathes (8 sides, like the column), each with its water inside, below the lip and a
+// little into the wall, so no water face shares a plane with stone (a solid bowl with water on its top face flickered).
 const DROPS = 10       // droplets falling from the top bowl, each DROP_TIME = 0.7 s
 const LAMP_GLOW = 1.4  // the corner lamps' glow at night (× sky.weather.night)
 ```
