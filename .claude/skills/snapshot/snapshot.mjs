@@ -80,13 +80,14 @@ try {
     await startGame(p)
     await p.waitForTimeout(1500)
     if (label === 'morning' || label === 'night') await shot(p, `desktop-house-${label}`)
-    // From the bed: diagonally down and right to the front wall right of the door (the coat stand
-    // stands just left of it), then down and left together, which slides along the wall into the
-    // doorway and out. It needs no exact timing, so a slow frame rate can't miss the door. Long enough
-    // to reach the wall even at the software renderer's few fps (slower in the room, with its
-    // point-light shadows); extra time just presses against it.
+    // From the bed: down and right together into the front right corner (diagonally to the front
+    // wall, then sliding along it), then down and left together, which slides back along the wall
+    // into the doorway and out. The coat stand stands just left of the door, so it's reached from the
+    // right. Every leg ends against a wall, so it needs no exact timing and a slow frame rate can't
+    // miss the door; the first is long enough to reach the corner at the software renderer's few fps
+    // (about 0.3 units/s in the room, with its point-light shadows), and extra time just presses into it.
     await p.keyboard.down('KeyD')
-    await hold(p, 'KeyS', 14000)
+    await hold(p, 'KeyS', 32000)
     await p.keyboard.up('KeyD')
     await p.keyboard.down('KeyA')
     await p.keyboard.down('KeyS')
