@@ -125,12 +125,57 @@ Hundreds of these are drawn with instancing (Trees.tsx).
 ### The dock, the sea and the islet
 - [ ] **`dock.glb`**
   > A short wooden fishing pier on posts, with weathered planks, rope coiled on one post, and a small lantern.
-- [ ] **`boat.glb`**
-  > A small wooden rowing boat with two oars resting inside, painted in faded teal with a cream stripe.
+- [ ] **`boat.glb`**: the rowing boats at the dock and on the islet (IsletScene.tsx), about 2.5 times as long as wide. Empty: the game lays the oars in (`oar.glb`), one or two.
+  > A small wooden rowing boat, empty inside, with a plank bench across the middle, painted in faded teal with a cream stripe along the top edge. Seen from above, long and narrow, flat-bottomed.
+- [ ] **`oar.glb`**: in the boats, and found in the cave.
+  > A single wooden rowing oar, pale honey wood, a long round shaft and a flat rounded blade, with a dark worn grip at the end.
+- [ ] **`barrel.glb`**: the barrel of fishing rods at the foot of the dock (Dock.tsx).
+  > A small wooden barrel with dark iron hoops, open at the top, with three bamboo fishing rods standing up in it, leaning slightly apart.
+- [ ] **`carved-sign.glb`**: on the islet (IsletScene.tsx).
+  > A small weathered wooden sign on a single post, the board carved with a simple wavy line, a little crooked, with moss at the foot of the post.
+- [ ] **`bottle.glb`**: today's message bottle on the shore (DailyFinds.tsx).
+  > A small green glass bottle lying on its side with a cork stopper and a rolled paper message visible inside, tied with a bit of string.
+- [ ] **`dig-spot.glb`**: today's dig spot in the grass (DailyFinds.tsx). Flat and low.
+  > A small mound of loose brown soil with a few pebbles and a little wooden marker stick poking out, low and round, on no base.
 - [ ] **`chest-islet.glb`**: a treasure chest.
   > A small pirate treasure chest with a domed lid, wooden planks with iron bands and a big keyhole, slightly open with a glint of gold inside.
 - [ ] **`golf-flag.glb`**
   > A small golf flag on a thin white pole with a red triangular pennant.
+
+### Around the island
+- [ ] **`clay-pot.glb`**: the pots by the house and the dock that the sword breaks (Pots in combat/Grass.tsx). Small, under knee height.
+  > A small round clay pot with a narrow neck and a rolled lip, plain terracotta with a cream painted zigzag band, slightly squat.
+- [ ] **`grass-tuft.glb`**: the tall grass the sword cuts (Grass.tsx), drawn many times: keep it under 300 triangles.
+  > A small clump of tall grass blades, a few thick flat blades fanning out from one point, fresh green, darker at the base, stylised and chunky.
+- [ ] **`leaf-pile.glb`**: the autumn leaf piles (ui/Leaves.tsx), low and wide.
+  > A low, loose heap of autumn leaves in orange, red and yellow, a few leaves scattered at its edges.
+
+### The cave
+Seen from above in rooms of stone tiles (CaveRooms.tsx). Rock and torchlight colours.
+- [ ] **`torch.glb`**: on the back walls.
+  > A wall-mounted iron torch bracket holding a short wooden torch with a stylised orange flame, the bracket fixed to a small square plate.
+- [ ] **`push-block.glb`**: the blocks pushed onto switches. A cube, one tile across.
+  > A heavy square stone block with bevelled edges and a carved spiral on its top, grey-blue stone with a little moss in the cracks.
+- [ ] **`cave-chest.glb`**: the cave's chests, small and big. Its lid opens, so make the lid a separate part if Tripo allows.
+  > A sturdy dark wooden chest with a flat lid, thick iron bands and corner caps, and a round iron ring as a handle on the front.
+- [ ] **`tablet.glb`**: the stone tablets with words on them.
+  > An upright stone tablet with a rounded top, standing on a small base, with faint carved lines of runes on its face, mossy at the bottom.
+- [ ] **`gate-bars.glb`**: the bars that shut a doorway, one tile wide.
+  > A row of thick dark iron bars set in a stone frame, the bars joined by one cross band near the top, sized for a doorway.
+- [ ] **`locked-door.glb`**: the cave's locked door, opened by the brass key.
+  > A heavy arched wooden door with iron studs and straps and a big brass lock plate with a keyhole, set in a rough stone frame.
+- [ ] **`heart-container.glb`**: the prize that adds a heart.
+  > A glossy red heart inside a little crystal-clear casing, sitting on a small round gold stand, softly glowing.
+- [ ] **`hoard.glb`**: the treasure at the end.
+  > A small heap of gold coins with a few red and blue gems and a little gold goblet poking out of it.
+
+### Festive (only on a few days a year: Festive.tsx)
+- [ ] **`pumpkin.glb`** (Halloween)
+  > A round orange pumpkin with deep ribs, a short curly green stem and one leaf, carved with a friendly smiling face.
+- [ ] **`present.glb`** (Christmas): plain coloured, so the game can tint each one.
+  > A square gift box wrapped in plain white paper with a contrasting ribbon tied in a big bow on top.
+- [ ] **`balloon.glb`** (the island's birthday): plain coloured, tinted by the game.
+  > A single round party balloon in plain white with a small knot at the bottom and a short curly string.
 
 ### Villagers and creatures
 These need rigs or simple animation. Use Tripo's animation step, as for the player (see [CHARACTER.md](./CHARACTER.md)).
@@ -157,3 +202,23 @@ These are picked up or caught, and shown in the hand or the bag.
   > A simple bamboo fishing rod with a small reel and a red and white float on the line.
 - [ ] **`sword.glb`**
   > A small chunky toy-like wooden practice sword with a leather-wrapped grip.
+- [ ] **`heart.glb`**: the hearts slimes and pots drop (GroundDrops.tsx).
+  > A chunky glossy red heart, puffy and rounded, like a toy.
+- [ ] **`star.glb`**: the trinkets tucked round the island (Trinkets.tsx).
+  > A small chunky five-pointed star with rounded points, soft gold, slightly puffy.
+- [ ] **`sea-glass.glb`**, **`pine-cone.glb`**, **`coin.glb`**, **`feather.glb`**, **`brass-key.glb`**: the items found in the grass (Pickups.tsx, inventory.ts). One model each.
+  > Sea glass: A smooth rounded pebble of frosted sea-green glass.
+  > Pine cone: A small brown pine cone with chunky open scales.
+  > Coin: An old worn gold coin, thick, with a faint stamped face.
+  > Feather: A single soft blue feather with a slight curve.
+  > Brass key: An old brass key with a round looped bow and a simple toothed bit.
+
+### Hats (sold at Pip's shop: life/shop.ts; worn on the player's head, Hat.tsx)
+- [ ] **`hat-straw.glb`**
+  > A small round straw sun hat with a wide brim and a red ribbon band.
+- [ ] **`hat-party.glb`**
+  > A cone-shaped party hat in pink-red with white polka dots and a fluffy pompom on top.
+- [ ] **`hat-beanie.glb`**
+  > A blue knitted woolly beanie with a folded cuff and a fluffy pompom.
+- [ ] **`hat-crown.glb`**
+  > A small gold crown with five rounded points, each tipped with a tiny red gem.
