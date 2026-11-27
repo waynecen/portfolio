@@ -8,6 +8,8 @@ import {
   EffectPass,
   HueSaturationEffect,
   RenderPass,
+  SMAAEffect,
+  SMAAPreset,
   TiltShiftEffect,
   ToneMappingEffect,
   ToneMappingMode,
@@ -29,6 +31,9 @@ const BLOOM = { threshold: 0.9, smoothing: 0.25, intensity: 1, radius: 0.75 }
 // into a glow round them; a higher threshold there leaves only the flames and the shades glowing.
 const ROOM_THRESHOLD = 1.15
 const VIGNETTE = { offset: 0.32, darkness: 0.42 }
+// When frames run slow, multisampling goes off (core/adaptive.ts) and SMAA smooths the edges
+// instead, in its own pass after the finish: a fraction of multisampling's cost, near its look.
+const EDGES = SMAAPreset.HIGH
 // Photo mode's tilt-shift: a band in focus across the middle (where the player stands), blurring
 // above and below, so the island reads as a miniature. Only while taking photos.
 const TILT = { focusArea: 0.32, feather: 0.22, offset: 0.04 }
@@ -69,8 +74,11 @@ export function PostFX() {
     tilt.enabled = false
     composer.addPass(new RenderPass(scene, camera))
     composer.addPass(tilt)
-    composer.addPass(new EffectPass(camera, bloom, tone, light, colour, vignette))
-    return { composer, bloom, light, colour, tilt }
+    const finish = new EffectPass(camera, bloom, tone, light, colour, vignette)
+    const edges = new EffectPass(camera, new SMAAEffect({ preset: EDGES }))
+    composer.addPass(finish)
+    composer.addPass(edges)
+    return { composer, bloom, light, colour, tilt, finish, edges }
   }, [gl, scene, camera])
 
   useEffect(() => () => fx.composer.dispose(), [fx])
@@ -86,6 +94,9 @@ export function PostFX() {
     // When frames run slow, the samples come down before the resolution does (core/adaptive.ts).
     // Setting it frees the buffers; they're made again at the new level by this frame's render.
     if (fx.composer.multisampling !== quality.samples) fx.composer.multisampling = quality.samples
+    // SMAA only without multisampling; whichever pass is last draws to the screen.
+    fx.edges.enabled = quality.samples === 0
+    fx.finish.renderToScreen = !fx.edges.enabled
     fx.tilt.enabled = useGame.getState().photo
     fx.bloom.luminanceMaterial.threshold = where === 'house' ? ROOM_THRESHOLD : BLOOM.threshold
     let b = 0
