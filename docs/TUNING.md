@@ -37,7 +37,7 @@ Vercel Web Analytics, cookieless, loaded only on the deployed site (never on loc
 
 ```tsx
 dpr={[0.5, 1.5]}                            // the range core/adaptive.ts picks within, to hold the frame rate (see core/NOTES.md)
-gl={{ antialias: false }}                   // the composer multisamples instead (world/PostFX.tsx); adaptive.ts eases it before the resolution
+gl={{ antialias: false }}                   // the composer multisamples instead (world/PostFX.tsx); adaptive.ts swaps it for SMAA before lowering the resolution
 ```
 
 The background, lights and fog come from the time of day; see the next section.
