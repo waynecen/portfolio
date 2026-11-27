@@ -42,7 +42,7 @@ The sizes are in floor tiles (1 tile = 1 unit), across × deep. The back of a pi
   > A narrow, tall wooden bookshelf with three shelves of chunky books in soft red, blue, mustard, green and purple. A few books lean over, and there's a tiny plant on the top shelf.
 - [x] **`fireplace.glb`** (3 × 1, against the back wall). *In: `MODELS.fireplace`, stretched to its blocks' footprint and up to the top of the wall; the game's own flames flicker in its opening, and the golf trophy stands in the middle of its mantel.*
 - [x] **`logs.glb`** (1 × 1, right of the fire). *In: `MODELS.logs`, 0.6 across, its own height.*
-- [ ] **`coatstand.glb`** (1 × 1, in the back left corner). In the room as blocks.
+- [x] **`coatstand.glb`** (1 × 1, just right of the rug). *In: `MODELS.coatStand`, 0.76 across, its own height (1.55).*
   > A tall wooden coat stand on four short curved feet, with round-tipped pegs at the top. A red knitted scarf hangs from one peg and a straw sun hat sits on another.
 - [x] **`kotatsu.glb`** (2 × 2, the right of the room). *In: `MODELS.kotatsu`, at its blocks' footprint and 0.88 tall.*
 - [x] **`zabuton.glb`** (flat, one centred on each side of the kotatsu, as part of its piece). *In: `ZABUTON_MODEL`, one model for both cushions, 0.68 square and 0.16 tall; solid, so the player walks round them.*
