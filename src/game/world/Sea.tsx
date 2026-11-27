@@ -193,8 +193,10 @@ export function Sea({ color }: { color: Color }) {
   })
 
   return (
-    // Receives the cliffs' and trees' shadows, never casts (noShadow keeps the sweep off it).
-    <mesh rotation-x={-Math.PI / 2} position-y={WATER_Y} material={material} receiveShadow userData={{ noShadow: true }}>
+    // Receives the cliffs' and trees' shadows, never casts (noShadow keeps the sweep off it). Drawn after
+    // the other solid things (renderOrder 1), so wherever land covers it the depth test skips its
+    // shader; by distance alone it often came first, being centred on the island.
+    <mesh rotation-x={-Math.PI / 2} position-y={WATER_Y} material={material} receiveShadow renderOrder={1} userData={{ noShadow: true }}>
       <planeGeometry args={[SIZE, SIZE, SEGMENTS, SEGMENTS]} />
     </mesh>
   )

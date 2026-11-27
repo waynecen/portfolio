@@ -9,6 +9,10 @@ import { sky } from './sky'
 // fades into it with no seam) up to a deeper zenith, with soft clouds drifting across. The camera
 // looks down, so it shows as the strip above the curved horizon. Rain brings more, greyer cloud;
 // at night the clouds are faint. Its own shader: no curve, no fog, never in the shadow pass.
+//
+// It's drawn after the other solid things, pinned to the far plane (depth 1), so the depth test skips
+// every pixel something already covers: usually most of the screen, since the camera looks down.
+// Drawn first, it shaded every pixel only to be painted over.
 
 const RADIUS = 150
 const ZENITH = new Color('#7fb2e0') // the zenith leans this way from the slot's background
@@ -17,6 +21,8 @@ const DRIFT = 0.006 // cloud drift, sky units per second
 const COVER = { clear: 0.55, rain: 0.25 } // noise level above which there's cloud: lower = more cloud
 const CLOUD = new Color('#ffffff')
 const RAIN_CLOUD = new Color('#c9d0d6')
+
+const ORDER = 2 // after the other solid things (0) and the sea (1, Sea.tsx); transparent things draw after all of them
 
 const geometry = new SphereGeometry(RADIUS, 32, 16)
 
@@ -42,6 +48,7 @@ export function SkyDome() {
           void main() {
             vDir = normalize( position );
             gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+            gl_Position.z = gl_Position.w; // on the far plane: behind everything, so it shows only where nothing else drew
           }`,
         fragmentShader: /* glsl */ `
           uniform vec3 uHorizon;
@@ -91,5 +98,5 @@ export function SkyDome() {
     if (!reducedMotion()) u.uTime.value += delta * DRIFT
   })
 
-  return <mesh ref={dome} geometry={geometry} material={material} renderOrder={-1} frustumCulled={false} userData={{ noShadow: true }} />
+  return <mesh ref={dome} geometry={geometry} material={material} renderOrder={ORDER} frustumCulled={false} userData={{ noShadow: true }} />
 }
