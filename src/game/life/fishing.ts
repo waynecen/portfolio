@@ -22,9 +22,9 @@ export const DOCK_ROOT = { x: -9, z: 15 }
  * The dock's levels: a landing at the grass, a flight of steps down from STAIRS.z0, and a low deck
  * close to the water from there to the end, where the boat ties up.
  */
-export const DECK_Y = 0.06 // top of the landing's planks, just proud of the grass
+export const DECK_Y = 0.02 // top of the landing's planks: flush with the grass (just proud, so they don't flicker), so stepping on and off is level
 export const LOW_Y = WATER_Y + 0.3 // top of the low deck's planks
-export const STAIRS = { z0: 16.2, steps: 6, depth: 0.2 } // where the flight starts, its steps and each one's depth
+export const STAIRS = { z0: 16.6, steps: 6, depth: 0.2 } // where the flight starts (past the grass beside the landing, which ends at 16.5, so no step is beside land), its steps and each one's depth
 /** Height of the dock's walking surface at z: the landing, down the stairs (smoothly, through each step's middle), the low deck. */
 export function dockHeight(z: number): number {
   const drop = (DECK_Y - LOW_Y) / (STAIRS.steps + 1)
