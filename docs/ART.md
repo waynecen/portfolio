@@ -30,8 +30,6 @@ The sizes are in floor tiles (1 tile = 1 unit), across × deep. The back of a pi
   > A low rectangular wooden table, twice as wide as it is deep, with four sturdy square legs and a thick rounded top. A single folded paper note lies on top, slightly off centre.
 - [x] **`stool.glb`** (1 × 1). *In: `MODELS.stool`, in front of the table.*
   > A round wooden stool with three short splayed legs and a thick cushioned seat in faded red linen with a button in the middle. Knee height.
-- [ ] **`pot.glb`** (1 × 1, one in the room, down the left wall)
-  > A large terracotta floor pot, wider at the top, with a rolled rim and a simple painted band around it. Empty, or with a little soil showing.
 - [x] **`chest.glb`** (1 × 1, at the back of its tile). *In: `MODELS.chest`; the sword starts inside it.*
   > A small wooden storage chest with a domed lid, brass corner caps, a brass band around it and a chunky round brass latch on the front. Slightly chunky, toy-like proportions.
 - [x] **`rug.glb`** (3 × 2, flat). *In: `MODELS.rug`, laid flat (`flat`: Tripo made it standing up) and stretched to its blocks' footprint.*
@@ -107,7 +105,7 @@ Hundreds of these are drawn with instancing (Trees.tsx).
   > A small cosy cottage, wider than deep: cream plaster walls, a warm red-orange tiled gable roof with slight overhangs, a wooden front door in the centre of the long side, a square window either side of it with blue panes, and a little doorstep. Chunky toy-like proportions.
 - [ ] **`shop.glb`**: Pip's market stall.
   > A small wooden market stall with a red-and-white striped awning, a wooden counter at the front with a few baskets of fruit and goods, and a hand-painted sign board on top.
-- [ ] **`mailbox.glb`**: the contact point.
+- [x] **`mailbox.glb`**: the contact point. *In: `MODEL` in Mailbox.tsx, 0.55 across and 0.95 tall, a little narrower than its own shape.*
   > A cute rounded blue mailbox on a short wooden post, with a little red flag raised on the side and a slot in the front.
 - [ ] **`sign.glb`**: the About sign.
   > A wooden signboard on two posts with a blank cream panel, slightly rustic, knee to waist height.

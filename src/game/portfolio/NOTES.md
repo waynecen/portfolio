@@ -36,7 +36,9 @@ The projects themselves aren't constants. They're read from the `#projects artic
 export const ABOUT_AT = { x: -6, z: -2 } // places.ts: the About sign, left of the house (whole numbers, so a road reaches it)
 export const CONTACT_AT = { x: -1, z: 3 } // places.ts: the Contact mailbox, out front, just left of the path from the door
 const RANGE = 1.4 // Mailbox.tsx: how close the player must be for the contact card to show
-const RADIUS = 0.3 // Mailbox.tsx: collision radius
+const RADIUS = 0.25 // Mailbox.tsx: collision radius
 ```
+
+The mailbox is a Tripo model (`MODEL` in Mailbox.tsx: `/models/mailbox.glb`, `width 0.55, height 0.95`: narrower than its own shape, and a little lower than the blocks it replaced), shown by house/PropModel.tsx with `scene="world"`; the blocks stand in while it downloads.
 
 Like the projects, the words come from [index.html](../../../index.html). Each `<p>` in `#about` is one line the sign reads out. The links in `#contact` are listed on the contact card, and the mailbox opens the first one.
