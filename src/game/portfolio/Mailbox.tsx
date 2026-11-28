@@ -1,5 +1,5 @@
 import { track } from '../../analytics'
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { addCollider } from '../core/collision'
 import { register } from '../core/interact'
 import { CONTACT_AT, contactCard } from './places'
@@ -8,7 +8,13 @@ import { CONTACT_AT, contactCard } from './places'
 // the first one (email).
 
 const RANGE = 1.4
-const RADIUS = 0.3 // collision radius, a little wider than the box
+const RADIUS = 0.25 // collision radius, a little wider than the box
+
+// The Tripo model (models-src/mailbox.glb, through npm run models): narrower than its own shape (it'd be
+// 0.82 tall at this width) and a little lower than the blocks it replaced (1.2):
+// the blocks below stand in while it downloads.
+const Model = lazy(() => import('../house/PropModel'))
+const MODEL = { url: '/models/mailbox.glb', width: 0.55, height: 0.95 }
 
 export function Mailbox() {
   const { x, z } = CONTACT_AT
@@ -32,8 +38,8 @@ export function Mailbox() {
   )
   useEffect(() => addCollider({ kind: 'circle', x, z, r: RADIUS }), [x, z])
 
-  return (
-    <group position={[x, 0, z]}>
+  const blocks = (
+    <>
       {/* post */}
       <mesh position-y={0.4}>
         <boxGeometry args={[0.1, 0.8, 0.1]} />
@@ -62,6 +68,13 @@ export function Mailbox() {
         <boxGeometry args={[0.03, 0.1, 0.14]} />
         <meshLambertMaterial color="#d9473b" />
       </mesh>
+    </>
+  )
+  return (
+    <group position={[x, 0, z]}>
+      <Suspense fallback={blocks}>
+        <Model {...MODEL} scene="world" />
+      </Suspense>
     </group>
   )
 }
