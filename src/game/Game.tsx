@@ -52,7 +52,7 @@ import { Island } from './world/Island'
 import { Joystick, TouchStick } from './ui/Joystick'
 import { Leaves } from './ui/Leaves'
 import { LogPanel } from './ui/LogPanel'
-import { BED_SPAWN } from './world/layout'
+import { BED_SPAWN, OUTSIDE_SPAWN } from './world/layout'
 import { Mailbox } from './portfolio/Mailbox'
 import { MenuPanel, StartButton } from './ui/MenuPanel'
 import { MusicPanel, NowPlaying } from './house/MusicPanel'
@@ -105,7 +105,10 @@ function Controls() {
   return null
 }
 
-arrive('house', clearSpawn(BED_SPAWN)) // every visit starts at home (beside the bed, unless furniture's been moved there)
+// Every visit starts at home (beside the bed, unless furniture's been moved there); ?start=island starts
+// on the doorstep outside instead, for testing and the snapshot skill.
+if (new URLSearchParams(location.search).get('start') === 'island') arrive('world', OUTSIDE_SPAWN)
+else arrive('house', clearSpawn(BED_SPAWN))
 
 export function Game() {
   const [visible, setVisible] = useState(!document.hidden)
