@@ -24,11 +24,11 @@ The shots:
 
 - `desktop-page.png`: the plain HTML page, which is the first view. The script turns on reduced motion so the game doesn't start.
 - `desktop-house-morning.png` and `desktop-house-night.png`: the room the game starts in, at 1280 × 720.
-- `desktop-island-<slot>.png` for morning, dawn, afternoon, evening and night, plus `desktop-island-winter.png` (2pm with `?season=winter`, snowing): the island after walking out of the front door. Every other shot is pinned to `?season=summer`. It walks from the bed spawn down and right (S and D) into the front right corner, then holds S and A together to slide back along the front wall and out of the door (the coat stand stands just left of it, so the door is reached from the right), releasing them once outdoors. If the room layout blocks that route (the default one; a saved edit-mode layout never applies, since each shot starts in a fresh browser), update the walk in the script.
+- `desktop-island-<slot>.png` for morning, dawn, afternoon, evening and night, plus `desktop-island-winter.png` (2pm with `?season=winter`, snowing): the island outside the front door. Every other shot is pinned to `?season=summer`. Only the morning walks out of the room, which checks the door and that the room's layout leaves the way clear; the rest start on the doorstep with `?start=island`, as the walk is most of the run's time. The walk goes from the bed spawn down and right (S and D) into the front right corner, then holds S and A together to slide back along the front wall and out of the door (the coat stand stands just left of it, so the door is reached from the right), releasing them once outdoors. If the room layout blocks that route (the default one; a saved edit-mode layout never applies, since each shot starts in a fresh browser), update the walk in the script.
 - `desktop-character.png`: a close-up of the player on the doorstep in the morning, cropped from the island shot. It shows the pill, or the 3D model when `PLAYER_MODEL` is set in `src/game/models.ts`. Check it stands on the ground, faces the camera and isn't clipped.
 - `mobile-house.png`: the starting room at 390 × 844 with touch controls.
 
-Each game shot keeps Katsu, the house dog, on its start tile with `?dog=stay`, so it can't block the walk out, and pins the clock with `?hour=` (see `HOURS` in the script), so shots compare between runs whatever the real time. It takes about two minutes.
+Each game shot keeps Katsu, the house dog, on its start tile with `?dog=stay`, so it can't block the walk out, and pins the clock with `?hour=` (see `HOURS` in the script), so shots compare between runs whatever the real time. It takes a little over two minutes.
 
 ## After running
 

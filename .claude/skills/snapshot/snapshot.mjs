@@ -27,7 +27,7 @@ const errors = []
 const shots = []
 let failed = false
 
-async function page(name, options, hour, season = 'summer') {
+async function page(name, options, hour, season = 'summer', start = '') {
   const context = await browser.newContext(options)
   const p = await context.newPage()
   p.on('pageerror', (e) => errors.push(`${name}: ${e.message}`))
@@ -36,7 +36,8 @@ async function page(name, options, hour, season = 'summer') {
   })
   // Pin the clock and the season, so shots compare between runs whatever the date.
   // Katsu stays put (?dog=stay), so it can't stand in the walk out of the room.
-  await p.goto(hour === undefined ? URL : `${URL}?hour=${hour}&season=${season}&dog=stay`)
+  // ?start=island starts on the doorstep outside rather than beside the bed.
+  await p.goto(hour === undefined ? URL : `${URL}?hour=${hour}&season=${season}&dog=stay${start ? `&start=${start}` : ''}`)
   return p
 }
 
@@ -76,24 +77,36 @@ try {
     await p.context().close()
   }
 
-  // 2. The game on desktop at each time of day (see src/game/sky.ts): the room you start in, then
-  //    the island after walking out of the door. Mid-morning is the plain look, with no weather.
+  // 2. The game on desktop at each time of day (see src/game/sky.ts). Mid-morning is the plain look,
+  //    with no weather. Only the morning walks out of the room, which checks the door and that the
+  //    layout leaves the way clear. Every other island shot starts outdoors (?start=island), as the
+  //    walk is most of the run's time, and the night's room is a page of its own.
   for (const [hour, label, season] of HOURS) {
-    const p = await page(`desktop ${label}`, { viewport: { width: 1280, height: 720 } }, hour, season)
+    const walk = label === 'morning'
+    if (label === 'night') {
+      const p = await page('desktop night room', { viewport: { width: 1280, height: 720 } }, hour, season)
+      await startGame(p)
+      await p.waitForTimeout(1500)
+      await shot(p, 'desktop-house-night')
+      await p.context().close()
+    }
+    const p = await page(`desktop ${label}`, { viewport: { width: 1280, height: 720 } }, hour, season, walk ? '' : 'island')
     await startGame(p)
     await p.waitForTimeout(1500)
-    if (label === 'morning' || label === 'night') await shot(p, `desktop-house-${label}`)
-    // From the bed: down and right together into the front right corner (diagonally to the front
-    // wall, then sliding along it), then down and left together, which slides back along the wall
-    // into the doorway and out. The coat stand stands just left of the door, so it's reached from the
-    // right. Every leg ends against a wall, so it needs no exact timing and a slow frame rate can't
-    // miss the door; the first is long enough to reach the corner at the software renderer's few fps
-    // (about 0.3 units/s in the room, with its point-light shadows), and extra time just presses into it.
-    await p.keyboard.down('KeyD')
-    await hold(p, 'KeyS', 32000)
-    await p.keyboard.up('KeyD')
-    await p.keyboard.down('KeyA')
-    await p.keyboard.down('KeyS')
+    if (walk) await shot(p, 'desktop-house-morning')
+    if (walk) {
+      // From the bed: down and right together into the front right corner (diagonally to the front
+      // wall, then sliding along it), then down and left together, which slides back along the wall
+      // into the doorway and out. The coat stand stands just left of the door, so it's reached from the
+      // right. Every leg ends against a wall, so it needs no exact timing and a slow frame rate can't
+      // miss the door; the first is long enough to reach the corner at the software renderer's few fps
+      // (about 0.3 units/s in the room, with its point-light shadows), and extra time just presses into it.
+      await p.keyboard.down('KeyD')
+      await hold(p, 'KeyS', 32000)
+      await p.keyboard.up('KeyD')
+      await p.keyboard.down('KeyA')
+      await p.keyboard.down('KeyS')
+    }
     try {
       await p.waitForSelector('body[data-scene="world"]', { timeout: 40000 }) // set by Game.tsx once outdoors; generous, since the software renderer runs at a few fps
       await p.keyboard.up('KeyA')
@@ -103,7 +116,7 @@ try {
       // The player character close up on the doorstep (the camera keeps them mid-screen): the pill, or the 3D model.
       if (label === 'morning') await shot(p, 'desktop-character', { x: 490, y: 190, width: 300, height: 225 })
     } catch {
-      console.error(`Could not walk out of the house (the room layout may have changed); skipped desktop-island-${label}.`)
+      console.error(`Not outdoors${walk ? ' (could not walk out of the house: the room layout may have changed)' : ''}; skipped desktop-island-${label}.`)
       failed = true
     }
     await p.context().close()
