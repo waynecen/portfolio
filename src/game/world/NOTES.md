@@ -93,7 +93,7 @@ const COUNT = 55                   // life/swarm.ts: fireflies; SIZE = 0.3, WAND
 const GLOW = 1.1                   // House.tsx: window glow at full night
 ```
 
-**Seeing a given hour:** add `?hour=21` to the URL. Decimals work, so `?hour=16.75` is 4:45pm. The snapshot skill shoots each slot this way.
+**Seeing a given hour:** add `?hour=21` to the URL. Decimals work, so `?hour=16.75` is 4:45pm. The snapshot skill shoots each slot this way. `?start=island` starts on the doorstep outside rather than beside the bed (Game.tsx), so a test can skip the walk out.
 
 **Seasons:** [season.ts](./season.ts) picks the season from the visitor's month (northern hemisphere: December to February is winter). Only winter changes the island so far:
 
